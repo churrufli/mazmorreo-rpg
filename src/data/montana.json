@@ -1,0 +1,4320 @@
+{
+  "dungeon": {
+    "id": "montana_helada",
+    "name": "El Invierno del Dragón",
+    "summary": "Desde Cumbrenieve, una tormenta imposible desciende de las montañas y amenaza con aislar el valle. Tras la nieve se oculta un antiguo tributo: durante generaciones, una fortaleza enana entregó oro al dragón blanco Vharzûl para mantener abierto el paso. Ahora el pacto se ha convertido en una condena, y el héroe deberá alcanzar el glaciar antes de que el invierno lo reclame todo."
+  },
+  "zones": [
+    {
+      "id": "m1",
+      "order": 1,
+      "name": "Paso nevado",
+      "description": "Una senda de piedra se pierde bajo ventiscas y pinos escarchados.",
+      "expected_party_level": 5,
+      "entry_dialogue": [
+        {
+          "speaker": "sabio",
+          "text": "El hielo no viene solo del cielo. Los antiguos hitos enanos todavía señalan la senda, si el viento no los ha borrado."
+        },
+        {
+          "speaker": "hero",
+          "text": "Partiré antes de que la tormenta cierre el paso. ¿Dónde puedo refugiarme?"
+        },
+        {
+          "speaker": "sabio",
+          "text": "Una cabaña de tramperos resiste antes del collado. Busca allí resguardo si arrecia la ventisca."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "m1_r01",
+          "name": "Salida de Cumbrenieve",
+          "description": "Último hito de piedra antes de la nieve.",
+          "kind": "corridor",
+          "size_hexes": 7,
+          "shape": "corridor",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "m1_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "snow_rock",
+              "count": 2
+            },
+            {
+              "type": "dialogue",
+              "id": "m1_d01",
+              "lines": [
+                {
+                  "speaker": "sabio",
+                  "text": "La fortaleza pagaba tributo a la cumbre. No confundas el oro con un pacto de paz."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Encontraré la verdad en sus salones."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "m1_d03",
+              "lines": [
+                {
+                  "speaker": "aldric",
+                  "text": "Reconozco esa muesca en el hito. La hice antes de que empezaran estas tormentas."
+                },
+                {
+                  "speaker": "aldric",
+                  "text": "La nieve puede ocultar las rutas, pero las piedras siguen hablando si sabes mirarlas."
+                }
+              ],
+              "only": "aldric"
+            },
+            {
+              "type": "prop",
+              "prop": "milestone",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m1_r02",
+          "name": "Huellas entre los pinos",
+          "description": "Las marcas recientes desaparecen bajo un ventisquero.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m1_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "pine",
+              "count": 3
+            },
+            {
+              "type": "encounter",
+              "id": "m1_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo hambriento",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 1,
+              "xp_total": 50
+            },
+            {
+              "type": "chest",
+              "id": "m1_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 2,
+              "item": {
+                "id": "potion_healing_1",
+                "name": "Poción de curación",
+                "srd_item": "Potion of Healing",
+                "description": "Recupera 2d4 + 2 puntos de golpe."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "m1_d04",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "El lobo no iba solo. Algo más pequeño pasó por aquí antes que él."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Una hebra de tela se agita en una rama helada, demasiado alta para el animal."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m1_r03",
+          "name": "Refugio de tramperos",
+          "description": "Una cabaña protegida del viento.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m1_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "snow_cabin",
+              "count": 1
+            },
+            {
+              "type": "rest_point",
+              "id": "m1_rest1",
+              "rest": "short",
+              "name": "Refugio de tramperos",
+              "description": "Punto seguro; permite volver a Cumbrenieve porque es el último descanso de la zona."
+            },
+            {
+              "type": "scene",
+              "id": "m1_ev01",
+              "title": "El hombre de la manta",
+              "decision": true,
+              "on_return": true,
+              "after": "m1_r07",
+              "text": "Un trampero malherido pide ayuda. «Solo quiero que alguien sepa dónde nos alcanzó la tormenta».",
+              "question": "¿Qué haces?",
+              "options": [
+                {
+                  "label": "Curarle con el estuche",
+                  "needs": "healers_kit_1",
+                  "ok": {
+                    "lose": "healers_kit_1",
+                    "text": "Se recupera y te dice dónde escondió su bolsa en el almacén.",
+                    "gold": 5
+                  }
+                },
+                {
+                  "label": "Improvisar una cura",
+                  "attr": "wis",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Consigues estabilizarlo. Agradecido, te indica dónde escondió su bolsa.",
+                    "gold": 5
+                  },
+                  "fail": {
+                    "text": "Haces lo que puedes y lo dejas abrigado junto al fuego."
+                  }
+                },
+                {
+                  "label": "Marcar el lugar y seguir",
+                  "ok": {
+                    "text": "Le prometes avisar a Cumbrenieve."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m1_r04",
+          "name": "Paso del hielo fino",
+          "description": "Un puente natural cruza un arroyo congelado.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m1_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "frozen_pool",
+              "count": 1
+            },
+            {
+              "type": "trap",
+              "id": "m1_t01",
+              "name": "Placa de hielo fino",
+              "description": "Algo cruje bajo tus pies…",
+              "detect_dc": 12,
+              "disarm_dc": 12,
+              "save_ability": "DEX",
+              "save_dc": 12,
+              "effect": "2d6 contundente; la víctima cae al agua helada y vuelve a la orilla."
+            },
+            {
+              "type": "encounter",
+              "id": "m1_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 2,
+              "xp_total": 50
+            },
+            {
+              "type": "scene",
+              "id": "m1_q02",
+              "title": "El kobold del puente",
+              "img": "escena_kobold_puente",
+              "decision": true,
+              "after": "m1_e02",
+              "text": "Un kobold herido se aferra a la cuerda de un puente nevado y te mira aterrado. No parece dispuesto a luchar.",
+              "question": "¿Qué decides?",
+              "options": [
+                {
+                  "label": "Dejarle marchar",
+                  "ok": {
+                    "text": "Huye ladera abajo. Al pasar suelta la bolsa del tributo.",
+                    "gold": 4
+                  }
+                },
+                {
+                  "label": "Exigirle información",
+                  "attr": "cha",
+                  "dc": 12,
+                  "ok": {
+                    "text": "«Los guardias enanos escondieron un cofre bajo la roca para proteger sus provisiones de las tormentas», confiesa antes de huir.",
+                    "reveal": "m1_s01"
+                  },
+                  "fail": {
+                    "text": "Se escabulle sin decir nada."
+                  }
+                },
+                {
+                  "label": "Dejarle donde está",
+                  "ok": {
+                    "text": "Sigues adelante."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "m1_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "El kobold del tributo gruñe: «El oro sube. Los forasteros no»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Entonces ya conozco el precio de obedecerle."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m1_r05",
+          "name": "Cornisa de los aullidos",
+          "description": "Rocas altas ofrecen cobertura a los depredadores.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m1_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "snow_rock",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "m1_e03",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo hambriento",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 100
+            },
+            {
+              "type": "secret",
+              "id": "m1_s01",
+              "detect_dc": 13,
+              "reveals": "chest:m1_c03",
+              "description": "Un hueco bajo una roca guarda un pequeño botín."
+            },
+            {
+              "type": "chest",
+              "id": "m1_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 4,
+              "item": {
+                "id": "healing_herbs",
+                "name": "Vendajes de campaña",
+                "srd_item": null,
+                "description": "Material de primeros auxilios sin efecto mecánico adicional."
+              }
+            },
+            {
+              "type": "scene",
+              "id": "m1_s01_pista",
+              "title": "La guardia enterrada",
+              "text": "La nieve junto a las rocas del sendero se hunde en una línea recta. Entre las piedras se filtra aire que no trae la ventisca.",
+              "question": "¿Cómo investigas la roca?",
+              "reveals": "m1_s01",
+              "options": [
+                {
+                  "label": "Seguir el aire entre las rocas",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "El aire entre las piedras te permite localizar un cofre oculto bajo la roca.",
+                    "reveal": "m1_s01"
+                  },
+                  "fail": {
+                    "text": "No encuentras la entrada bajo la roca."
+                  }
+                },
+                {
+                  "label": "Examinar las juntas bajo la nieve",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Las juntas bajo la nieve delatan dónde se oculta un cofre enano.",
+                    "reveal": "m1_s01"
+                  },
+                  "fail": {
+                    "text": "La nieve oculta el ensamblaje."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m1_r06",
+          "name": "Almacén perdido",
+          "description": "Una hornacina guarda provisiones antiguas.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m1_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r07",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "fallen_pine",
+              "count": 1
+            },
+            {
+              "type": "chest",
+              "id": "m1_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 4,
+              "item": {
+                "id": "potion_healing_2",
+                "name": "Poción de curación",
+                "srd_item": "Potion of Healing",
+                "description": "Recupera 2d4 + 2 puntos de golpe."
+              }
+            },
+            {
+              "type": "chest",
+              "id": "m1_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 6,
+              "item": {
+                "id": "boots_winterlands",
+                "name": "Botas de las tierras invernales",
+                "srd_item": "Boots of the Winterlands",
+                "description": "Protegen contra el frío y facilitan el avance por nieve y hielo según el SRD."
+              }
+            }
+          ]
+        },
+        {
+          "id": "m1_r07",
+          "name": "Collado de las astas",
+          "description": "El viento amontona huesos junto a la senda.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m1_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r08",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "bone_pile",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "m1_e04",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Dire Wolf",
+                  "name": "Huargo",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "chest",
+              "id": "m1_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 3,
+              "item": {
+                "id": "potion_healing_greater",
+                "name": "Poción de curación mayor",
+                "srd_item": "Potion of Healing, Greater",
+                "description": "Recupera 4d4 + 4 puntos de golpe."
+              }
+            }
+          ]
+        },
+        {
+          "id": "m1_r08",
+          "name": "Mirador del bosque",
+          "description": "Desde aquí se divisa la siguiente franja de pinos.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m1_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r01",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "pine",
+              "count": 2
+            },
+            {
+              "type": "dialogue",
+              "id": "m1_d02",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Tras el collado, el bosque parece tragarse la luz."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Seguiré por la antigua ruta enana."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "m1_d10",
+              "lines": [
+                {
+                  "speaker": "aldric",
+                  "text": "Una grieta como esta me costó a mi hermano. No pienso ignorarla otra vez."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Tendré cuidado con cada paso."
+                }
+              ],
+              "only": "aldric"
+            },
+            {
+              "type": "encounter",
+              "id": "m1_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Dire Wolf",
+                  "name": "Huargo rastreador",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo rastreador",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "m1_pat01_paso",
+              "title": "Rastreadores del collado",
+              "text": "Un huargo y un lobo rastrean tu presencia. Todavía puedes evitar que te descubran.",
+              "question": "¿Qué haces?",
+              "on_return": true,
+              "after": "m2_r01",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Cortan la retirada y embisten.",
+                    "fight": "m1_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Te deslizas tras los pinos sin quebrar las ramas.",
+                    "remove": "m1_pat01"
+                  },
+                  "fail": {
+                    "text": "Te descubren.",
+                    "fight": "m1_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Tu voz retumba contra el collado. Los animales se pierden en la ventisca.",
+                    "remove": "m1_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "m1_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "milestone",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m1_r09",
+          "name": "Bosquecillo de los hitos",
+          "description": "Tres piedras enanas asoman entre abetos torcidos. Solo una apunta al terreno firme.",
+          "exits": [
+            {
+              "to": "m1_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "m1_d05",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Dos piedras señalan direcciones distintas."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Los enanos nunca dejaban un solo hito para los viajeros."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "m1_p01",
+              "title": "La senda enterrada",
+              "text": "Junto a las rocas nevadas del sendero asoma una bolsa de viaje. La ventisca ha cubierto de hielo sus posibles apoyos.",
+              "question": "¿Cómo intentas recuperar la bolsa?",
+              "options": [
+                {
+                  "label": "Leer las huellas y el hielo",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Tanteas la nieve y recuperas la bolsa. En su interior hay cuatro monedas.",
+                    "gold": 4
+                  },
+                  "fail": {
+                    "text": "El frío te cala.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Comparar el hielo de las rocas",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Distingues la roca firme bajo el hielo y recuperas las monedas de la bolsa.",
+                    "gold": 4
+                  },
+                  "fail": {
+                    "text": "El hielo oculta los apoyos."
+                  }
+                },
+                {
+                  "label": "Abrirse paso por la nieve profunda",
+                  "attr": "con",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Consigues salir de la nieve profunda, pero dejas la bolsa atrás."
+                  },
+                  "fail": {
+                    "text": "La ventisca te deja exhausto.",
+                    "damage": "1d4"
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "Rodeas el bosquecillo sin encontrar nada."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "milestone",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "milestone",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "pine",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m1_r10",
+          "name": "Trinchera del vendaval",
+          "description": "El sendero se estrecha entre paredes de nieve. Un tronco caído lo cierra a medias.",
+          "exits": [
+            {
+              "to": "m1_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "m1_e05",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo alertado",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "scene",
+              "id": "m1_p02",
+              "title": "Las piedras de la tormenta",
+              "text": "Una mochila de provisiones ha quedado bajo piedras cubiertas de nieve. Moverlas podría desencadenar un desprendimiento sobre el sendero.",
+              "question": "¿Cómo recuperas la mochila?",
+              "options": [
+                {
+                  "label": "Empujar la piedra hacia la ladera",
+                  "attr": "str",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Desplazas la piedra hacia la ladera y recuperas las provisiones.",
+                    "item": "healers_kit_1"
+                  },
+                  "fail": {
+                    "text": "Las piedras se deslizan y te golpean.",
+                    "fight": "m1_e05"
+                  }
+                },
+                {
+                  "label": "Estudiar las piedras bajo la nieve",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Liberas primero las piedras que soportan menos peso y recuperas las provisiones.",
+                    "item": "healers_kit_1"
+                  },
+                  "fail": {
+                    "text": "Las piedras se deslizan y te golpean."
+                  }
+                },
+                {
+                  "label": "Buscar un rodeo entre las rocas",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Encuentras un rodeo seguro, pero las provisiones quedan bajo las piedras."
+                  },
+                  "fail": {
+                    "text": "Las piedras se deslizan y te golpean.",
+                    "damage": "1d4"
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "No consigues recuperar lo que buscabas y te retiras."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "fallen_pine",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "snow_rock",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m1_r11",
+          "name": "Puesto de señales",
+          "description": "Una plataforma de piedra con una baliza apagada domina el camino.",
+          "exits": [
+            {
+              "to": "m1_r07",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "scene",
+              "id": "m1_q01",
+              "title": "La baliza apagada",
+              "img": "escena_baliza_apagada",
+              "decision": true,
+              "text": "Un trampero tiembla junto a una baliza apagada y unas piedras cubiertas de nieve. No encuentra el camino entre la ventisca.",
+              "question": "¿Qué haces?",
+              "options": [
+                {
+                  "label": "Darle una poción de curación",
+                  "needs": "potion_healing",
+                  "ok": {
+                    "lose": "potion_healing",
+                    "text": "Recupera el color. «Gracias. Los enanos ocultaron un cofre con provisiones bajo una roca, a salvo de las ventiscas».",
+                    "reveal": "m1_s01"
+                  }
+                },
+                {
+                  "label": "Ayudarle a encender la baliza",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "La llama prende y el trampero entra en calor. Te indica dónde escondieron los enanos un cofre de provisiones.",
+                    "reveal": "m1_s01"
+                  },
+                  "fail": {
+                    "text": "El viento apaga las chispas una y otra vez."
+                  }
+                },
+                {
+                  "label": "Dejarle comida y una manta",
+                  "cost": 5,
+                  "ok": {
+                    "text": "Te lo agradece y te enseña una señal enana que indica dónde ocultaron un cofre de provisiones.",
+                    "reveal": "m1_s01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "snow_rock",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m1_s01_r01",
+          "name": "Puesto de la última guardia",
+          "description": "Dos esqueletos de señalero y una hornacina con una nota petrificada por la escarcha.",
+          "exits": [
+            {
+              "to": "m1_r05",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "m1_d07",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "La nota conserva una despedida: «Cerramos el paso para que los niños llegaran al valle»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Su último trabajo fue cerrar el paso."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "m1_e06",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo de la guarida",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "m1_c06",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 8,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "gravestone",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "m1_j01",
+          "from": "m1_r02",
+          "until": "m1_r11",
+          "text": "Algo pequeño cruzó el paso antes que el lobo, cargando peso."
+        },
+        {
+          "id": "m1_j02",
+          "from": "m1_r05",
+          "until": "m1_s01",
+          "text": "Bajo una roca de la cornisa sopla aire de ninguna parte."
+        }
+      ],
+      "c_gold": true
+    },
+    {
+      "id": "m2",
+      "order": 2,
+      "name": "Bosque de pinos helado",
+      "description": "Un bosque oscuro de ramas negras y nieve profunda.",
+      "expected_party_level": 5,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "Los pinos se alzan inmóviles bajo un peso de nieve que no deja de crecer. Entre las raíces se hunden huellas demasiado grandes para un viajero."
+        },
+        {
+          "speaker": "hero",
+          "text": "El aire huele a resina y a hielo reciente. Algo vigila las rutas hacia la fortaleza."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "m2_r01",
+          "name": "Umbral de los pinos",
+          "description": "Una senda estrecha penetra en el bosque.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "corridor",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "m2_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m1_r08",
+              "type": "path",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "pine",
+              "count": 3
+            },
+            {
+              "type": "encounter",
+              "id": "m2_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Ice Mephit",
+                  "name": "Mefit de hielo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 1,
+              "xp_total": 100
+            },
+            {
+              "type": "dialogue",
+              "id": "m2_d03",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Esa criatura surgió del frío como si la nieve le hubiera dado forma."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "La escarcha crece de nuevo sobre las huellas recientes."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m2_r02",
+          "name": "Campamento de la cazadora",
+          "description": "Huellas recientes rodean una hoguera.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m2_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r03",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "ally",
+              "slot_zone": 2,
+              "default_ally": "vurka",
+              "default_scene": [
+                {
+                  "speaker": "vurka",
+                  "text": "Mi clan cayó bajo el aliento del dragón. Conozco las huellas que llevan a su guarida."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ven con nosotros. Nos hará falta tu fuerza."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "aldric",
+                  "text": "He seguido el rastro de una caravana perdida desde Cumbrenieve. Sé cruzar este bosque."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Entonces guía nuestros pasos, Tavin."
+                }
+              ]
+            },
+            {
+              "type": "rest_point",
+              "id": "m2_rest1",
+              "rest": "short",
+              "name": "Campamento de Vurka",
+              "description": "Lugar seguro para un descanso corto."
+            }
+          ]
+        },
+        {
+          "id": "m2_r03",
+          "name": "Túnel de raíces",
+          "description": "Raíces congeladas forman una galería natural.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m2_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "fallen_pine",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "m2_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Brown Bear",
+                  "name": "Oso pardo",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "trap",
+              "id": "m2_t01",
+              "name": "Cepo de cazadores",
+              "description": "Algo metálico cede bajo la nieve…",
+              "detect_dc": 13,
+              "disarm_dc": 12,
+              "save_ability": "DEX",
+              "save_dc": 13,
+              "effect": "2d6 perforante; velocidad reducida hasta liberarse."
+            },
+            {
+              "type": "dialogue",
+              "id": "m2_d08",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "El oso quedó atrapado aquí. Estas trampas no estaban destinadas solo a animales."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Alguien vigila este bosque."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "m2_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "m2_pat01_paso",
+              "title": "Vigías del tributo",
+              "text": "Unos kobolds inspeccionan sus trampas y discuten sobre los tributos.",
+              "question": "¿Qué hacéis?",
+              "on_return": true,
+              "after": "m3_r01",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Salen de detrás de los pinos, convencidos de que la ruta es suya.",
+                    "fight": "m2_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Cruzáis entre dos hileras de troncos sin mover las ramas.",
+                    "remove": "m2_pat01"
+                  },
+                  "fail": {
+                    "text": "Os descubren.",
+                    "fight": "m2_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Les enseñáis una marca del tributo rota. Se miran y retroceden.",
+                    "remove": "m2_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "m2_pat01"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m2_r04",
+          "name": "Claro del sabio",
+          "description": "Un viejo mojón señala la ruta de los enanos.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m2_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "snow_rock",
+              "count": 2
+            },
+            {
+              "type": "dialogue",
+              "id": "m2_d01",
+              "lines": [
+                {
+                  "speaker": "sabio",
+                  "text": "Estas piedras registran los antiguos tributos. Los enanos entregaban oro para mantener abierto el paso."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "¿Y el dragón cumplía su palabra?"
+                },
+                {
+                  "speaker": "sabio",
+                  "text": "Solo mientras le convenía. Los archivos de la fortaleza cuentan cuánto duró aquella promesa."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m2_r05",
+          "name": "Barranco del huargo",
+          "description": "Una grieta obliga a rodear un promontorio.",
+          "kind": "corridor",
+          "size_hexes": 10,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m2_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "crevasse",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "m2_e03",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Dire Wolf",
+                  "name": "Huargo",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Ice Mephit",
+                  "name": "Mefit de hielo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 2,
+              "xp_total": 300
+            },
+            {
+              "type": "chest",
+              "id": "m2_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 9,
+              "item": {
+                "id": "battleaxe_plus_one",
+                "name": "Hacha de guerra +1",
+                "srd_item": "Weapon, +1",
+                "description": "Hacha de guerra mágica con +1 a ataque y daño."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "m2_d10",
+              "lines": [
+                {
+                  "speaker": "vurka",
+                  "text": "Mi clan encontró marcas como estas antes de que el dragón lo atacara."
+                },
+                {
+                  "speaker": "vurka",
+                  "text": "No permitiré que otros paguen el mismo precio."
+                }
+              ],
+              "only": "vurka"
+            }
+          ]
+        },
+        {
+          "id": "m2_r06",
+          "name": "Nido del viento",
+          "description": "Un pino gigantesco se alza sobre una repisa.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m2_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r11",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "pine",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "m2_e04",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Harpy",
+                  "name": "Arpía de las cumbres",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 3,
+              "xp_total": 200
+            },
+            {
+              "type": "secret",
+              "id": "m2_s01",
+              "detect_dc": 14,
+              "reveals": "chest:m2_c02",
+              "description": "Tras una raíz aparece un escondite de mercaderes."
+            },
+            {
+              "type": "chest",
+              "id": "m2_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 5,
+              "item": {
+                "id": "silver_piece",
+                "name": "Broche del centinela",
+                "srd_item": null,
+                "description": "Broche de plata de un vigía enano."
+              }
+            },
+            {
+              "type": "scene",
+              "id": "m2_s01_pista",
+              "title": "El refugio de los porteadores",
+              "text": "Entre los pinos nevados hay ramas cortadas de forma regular. Un hueco entre sus raíces podría haber servido de refugio.",
+              "question": "¿Cómo lo buscáis?",
+              "reveals": "m2_s01",
+              "options": [
+                {
+                  "label": "Observar las agujas de los pinos",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Las ramas cortadas os guían hasta un cofre de suministros escondido entre los pinos.",
+                    "reveal": "m2_s01"
+                  },
+                  "fail": {
+                    "text": "La nieve oculta el rastro."
+                  }
+                },
+                {
+                  "label": "Examinar los cortes de las ramas",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Las ramas cortadas os guían hasta un cofre de suministros escondido entre los pinos.",
+                    "reveal": "m2_s01"
+                  },
+                  "fail": {
+                    "text": "La nieve oculta el rastro."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m2_r07",
+          "name": "Cabaña del leñador",
+          "description": "Techo hundido, pero muros aún firmes.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m2_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r08",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "snow_cabin",
+              "count": 1
+            },
+            {
+              "type": "rest_point",
+              "id": "m2_rest2",
+              "rest": "short",
+              "name": "Cabaña del leñador",
+              "description": "Último punto seguro de la zona; desde aquí se puede regresar a Cumbrenieve."
+            },
+            {
+              "type": "scene",
+              "id": "m2_ev01",
+              "title": "El mercader de la campana",
+              "decision": true,
+              "on_return": true,
+              "after": "m3_r01",
+              "text": "Un comerciante anciano os ofrece remedios. «Quienes siguen arriba necesitan una venda antes que un sermón».",
+              "question": "¿Le compráis algo?",
+              "options": [
+                {
+                  "label": "Una poción de curación",
+                  "cost": 20,
+                  "ok": {
+                    "text": "«Que os dure hasta el glaciar.»",
+                    "item": "potion_healing"
+                  }
+                },
+                {
+                  "label": "Un estuche de curandero",
+                  "cost": 10,
+                  "ok": {
+                    "text": "«Vendas limpias. Arriba no hay.»",
+                    "item": "healers_kit_1"
+                  }
+                },
+                {
+                  "label": "Nada, gracias",
+                  "ok": {
+                    "text": "«Cuidado con el hielo del glaciar: nunca es tan grueso como parece.»"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m2_r08",
+          "name": "Escalera de la ladera",
+          "description": "Peldaños enanos asoman bajo la nieve.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m2_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r01",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "m2_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Brown Bear",
+                  "name": "Oso pardo",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Ice Mephit",
+                  "name": "Mefit de hielo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 300
+            },
+            {
+              "type": "dialogue",
+              "id": "m2_d02",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Los peldaños tallados en roca ascienden hacia la puerta enana."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "La puerta parece llevar siglos cerrada. Averiguaré qué guarda."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m2_r09",
+          "name": "Vado del cristal",
+          "description": "Un arroyo corre bajo una lámina de hielo verdoso. Al otro lado, un puente de raíces que solo parece firme desde lejos.",
+          "exits": [
+            {
+              "to": "m2_r01",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "scene",
+              "id": "m2_p01",
+              "title": "Las raíces heladas",
+              "text": "Una bolsa de suministros está atrapada entre las raíces de los pinos, bajo una costra de hielo. El frío dificulta recuperarla.",
+              "question": "¿Cómo recuperáis la bolsa?",
+              "options": [
+                {
+                  "label": "Alcanzarla entre las raíces",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Alcanzáis la bolsa entre las raíces heladas.",
+                    "gold": 6
+                  },
+                  "fail": {
+                    "text": "El hielo cede y el frío os obliga a retroceder.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Inmovilizar una raíz agrietada",
+                  "attr": "str",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Estabilizáis la raíz antes de liberar la bolsa.",
+                    "gold": 6
+                  },
+                  "fail": {
+                    "text": "El hielo cede y el frío os obliga a retroceder."
+                  }
+                },
+                {
+                  "label": "Resistir el frío al buscar un rodeo",
+                  "attr": "con",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Superáis el hielo sin recuperar la bolsa, que sigue atrapada entre las raíces."
+                  },
+                  "fail": {
+                    "text": "El hielo cede y el frío os obliga a retroceder.",
+                    "damage": "1d4"
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "No conseguís recuperar lo que buscabais y os retiráis."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "frozen_pool",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m2_r10",
+          "name": "Círculo de las trampas",
+          "description": "Cuerdas entre las ramas bajas, estacas y pequeñas jaulas. Un campamento kobold abandonado a medias.",
+          "exits": [
+            {
+              "to": "m2_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "m2_e06",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold de las trampas",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "scene",
+              "id": "m2_q01",
+              "title": "El vigía de las trampas",
+              "img": "escena_vigia_trampas",
+              "decision": true,
+              "text": "Un kobold vigila unas trampas junto a una jaula cerrada. «No quiero morir aquí. Yo solo cumplo órdenes».",
+              "question": "¿Cómo lo tratas?",
+              "options": [
+                {
+                  "label": "Ofrecerle 8 monedas por su mapa",
+                  "cost": 8,
+                  "ok": {
+                    "text": "El mapa contiene información sobre un escondite de los antiguos porteadores.",
+                    "reveal": "m2_s01"
+                  }
+                },
+                {
+                  "label": "Persuadirle de que se retire",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Se marcha sin avisar a nadie. Antes os confía el secreto de los porteadores.",
+                    "remove": "m2_e06",
+                    "reveal": "m2_s01"
+                  },
+                  "fail": {
+                    "text": "Silba, y salen más kobolds de entre las cuerdas.",
+                    "fight": "m2_e06"
+                  }
+                },
+                {
+                  "label": "Desarmar las trampas",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Desarmáis las trampas y encontráis una nota sobre un escondite de porteadores.",
+                    "reveal": "m2_s01"
+                  },
+                  "fail": {
+                    "text": "Una cuerda salta y el vigía llama a los suyos.",
+                    "fight": "m2_e06"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "cell_bars",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "pine",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m2_r11",
+          "name": "Pinos de luto",
+          "description": "Tres árboles con cortes rectos en la corteza. Del central cuelga una correa de cuero rígida como el metal.",
+          "exits": [
+            {
+              "to": "m2_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "m2_d12",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "¿Quién lo dejó?"
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Los cortes de la corteza continúan hacia la ladera, casi ocultos por la nieve."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "m2_q02",
+              "title": "La correa del pino",
+              "img": "escena_correa_pino",
+              "decision": true,
+              "text": "Una vieja correa de porteador conserva señales talladas que podrían revelar una ruta olvidada.",
+              "question": "¿Qué haces con las señales?",
+              "options": [
+                {
+                  "label": "Examinar la correa",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Entre sus pliegues aparece una bolsita de cuero con monedas y una nota de los porteadores.",
+                    "gold": 6
+                  },
+                  "fail": {
+                    "text": "El cuero se deshace y la bolsita cae entre las raíces."
+                  }
+                },
+                {
+                  "label": "Dejar una marca para otros viajeros",
+                  "ok": {
+                    "text": "Encontráis una antigua bolsa de viajeros que contiene una poción.",
+                    "item": "potion_healing"
+                  }
+                },
+                {
+                  "label": "Examinar los cortes",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Las marcas señalan dónde ocultaron los porteadores un cofre bajo un pino mayor, más arriba.",
+                    "reveal": "m2_s01"
+                  },
+                  "fail": {
+                    "text": "No sacáis nada en claro."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "pine",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "fallen_pine",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m2_s01_r01",
+          "name": "Bodega de los ausentes",
+          "description": "Mochilas colgadas sobre el barro, cajas abiertas y una página de un libro de cargas.",
+          "exits": [
+            {
+              "to": "m2_r06",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "m2_d11",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "El libro enumera cargas para la fortaleza. Otra mano escribió al final: «Faltan dos; esperamos al amanecer»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Que esta página llegue al valle."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "m2_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold saqueador",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "chest",
+              "id": "m2_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 10,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "m2_j01",
+          "from": "m2_r03",
+          "until": "m2_r10",
+          "text": "Alguien pone cepos para quienes bajan sin pagar el tributo."
+        },
+        {
+          "id": "m2_j02",
+          "from": "m2_r06",
+          "until": "m2_s01",
+          "text": "Las agujas de un pino gigante se mueven sin viento."
+        }
+      ],
+      "c_gold": true
+    },
+    {
+      "id": "m3",
+      "order": 3,
+      "name": "Fortaleza enana abandonada",
+      "description": "Salones de piedra, forjas apagadas y estatuas cubiertas de escarcha.",
+      "expected_party_level": 5,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "Tras el bosque aparece la fortaleza enana. Sus muros siguen resistiendo, pero el hielo ha invadido las puertas y los patios."
+        },
+        {
+          "speaker": "hero",
+          "text": "Los relieves de los porteadores están arañados. Alguien intentó borrar el recuerdo del tributo."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "m3_r01",
+          "name": "Puerta de los ancestros",
+          "description": "Los relieves de los enanos han sido arañados.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "cross",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "m3_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m2_r08",
+              "type": "path",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "m3_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 6,
+              "xp_total": 75
+            },
+            {
+              "type": "dialogue",
+              "id": "m3_d03",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Han arañado las figuras de quienes cargaban el oro hacia la cumbre."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Borraron a los porteadores de la piedra. No pudieron borrar lo que ocurrió."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m3_r02",
+          "name": "Galería del guardián",
+          "description": "Un farol encendido señala una presencia amiga.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m3_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r06",
+              "type": "gate",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            },
+            {
+              "type": "ally",
+              "slot_zone": 3,
+              "default_ally": "durnok",
+              "default_scene": [
+                {
+                  "speaker": "durnok",
+                  "text": "He vuelto a encender el farol de mis antepasados. Esta fortaleza merece un último guardián."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ven con nosotros. Recuperaremos sus salones."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "aldric",
+                  "text": "Entré por una antigua chimenea para buscar a los viajeros cautivos. La ruta hacia arriba sigue libre."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Acompáñanos, Tavin. Conoces los accesos."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "m3_d08",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Al fondo, una reja de contrapesos deja ver un pasillo iluminado hacia el patio."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "El pasillo está a la vista, pero desde aquí no hay forma de abrir la reja."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m3_r03",
+          "name": "Sala de las cadenas",
+          "description": "Viejas cadenas cuelgan del techo.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m3_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "bone_pile",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "m3_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Esqueleto enano",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Ice Mephit",
+                  "name": "Mefit de hielo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 4,
+              "xp_total": 200
+            },
+            {
+              "type": "trap",
+              "id": "m3_t01",
+              "name": "Cuerda de alarma",
+              "description": "Un hilo tenso cruza la galería…",
+              "detect_dc": 13,
+              "disarm_dc": 12,
+              "save_ability": "DEX",
+              "save_dc": 12,
+              "effect": "1d6 cortante; el ruido pone en guardia al grupo (sin efecto mecánico extra)."
+            }
+          ]
+        },
+        {
+          "id": "m3_r04",
+          "name": "Forja extinguida",
+          "description": "Los yunques descansan bajo capas de hielo.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "cross",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m3_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r05",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "forge",
+              "count": 2
+            },
+            {
+              "type": "rest_point",
+              "id": "m3_rest1",
+              "rest": "short",
+              "name": "Forja protegida",
+              "description": "La puerta se puede atrancar; descanso corto seguro."
+            },
+            {
+              "type": "chest",
+              "id": "m3_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 4,
+              "item": {
+                "id": "healing_3",
+                "name": "Poción de curación",
+                "srd_item": "Potion of Healing",
+                "description": "Recupera 2d4 + 2 PG."
+              }
+            }
+          ]
+        },
+        {
+          "id": "m3_r05",
+          "name": "Archivo del tributo",
+          "description": "Tablillas de piedra conservan la contabilidad enana.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m3_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            },
+            {
+              "type": "dialogue",
+              "id": "m3_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Las tablillas registran carros de oro y nombres de porteadores. Cada viaje era otro pago impuesto por el miedo."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "El dragón convirtió el tributo en una cadena."
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "m3_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 8,
+              "item": {
+                "id": "old_map",
+                "name": "Plano de los túneles",
+                "srd_item": null,
+                "description": "Plano deteriorado de las galerías de la fortaleza."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "m3_d13",
+              "lines": [
+                {
+                  "speaker": "vurka",
+                  "text": "Mi clan se negó a entregar a sus jóvenes para transportar ese oro. Ahora veo cuánto tiempo llevaba ocurriendo."
+                }
+              ],
+              "only": "vurka"
+            },
+            {
+              "type": "dialogue",
+              "id": "m3_d21",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una tablilla suelta habla de una puerta sellada en el depósito: «Solo se abrirá con una luz traída de muy lejos»."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m3_r06",
+          "name": "Patio de los saqueadores",
+          "description": "Kobolds vigilan una carga de suministros.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m3_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r02",
+              "type": "gate",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "snow_rock",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "m3_e03",
+              "trigger": "enter",
+              "can_reinforce": [
+                "m3_e04"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Ice Mephit",
+                  "name": "Mefit de hielo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 7,
+              "xp_total": 150
+            },
+            {
+              "type": "encounter",
+              "id": "m3_e04",
+              "trigger": "seen",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 3,
+              "xp_total": 50
+            },
+            {
+              "type": "lever",
+              "id": "m3_g01_open",
+              "gate": "m3_g01",
+              "name": "Reja de contrapesos",
+              "text": "La reja queda abierta: hay un atajo entre el patio y la galería del guardián.",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Esta es la palanca de la reja que vimos junto al farol."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "La cadena asciende por el muro y el corredor queda abierto."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ahora servirá para regresar con vida."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "m3_ev01",
+              "title": "El que deja el arma",
+              "decision": true,
+              "on_return": true,
+              "after": "m3_r08",
+              "text": "Un kobold rezagado arroja su daga. «No quiero volver a cargar oro. Sé cómo salir de aquí sin que me vean».",
+              "question": "¿Qué le dices?",
+              "options": [
+                {
+                  "label": "Que se lleve a los demás",
+                  "ok": {
+                    "text": "Se marcha a avisar a otro porteador para que abandone la fortaleza. Uno menos se interpondrá.",
+                    "sub": "m3_pat01"
+                  }
+                },
+                {
+                  "label": "Ignorarle",
+                  "ok": {
+                    "text": "Se aleja sin mirar atrás."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "m3_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Porteador kobold",
+                  "count": 3,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "m3_pat01_paso",
+              "title": "Porteadores del carro",
+              "text": "Unos kobolds arrastran suministros para el dragón. No esperan encontraros.",
+              "question": "¿Qué hacéis?",
+              "on_return": true,
+              "after": "m3_r08",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Dejan el carro vacío y preparan sus armas.",
+                    "fight": "m3_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Os ocultáis tras los pilares hasta que el carro pasa.",
+                    "remove": "m3_pat01"
+                  },
+                  "fail": {
+                    "text": "Os descubren.",
+                    "fight": "m3_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Les convencéis de que la fortaleza ya no es suya. Huyen.",
+                    "remove": "m3_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "m3_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m3_r07",
+          "name": "Depósito sellado",
+          "description": "Una reja bloquea un almacén olvidado.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m3_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r08",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "forge",
+              "count": 1
+            },
+            {
+              "type": "secret",
+              "id": "m3_s01",
+              "detect_dc": 14,
+              "reveals": "chest:m3_c03",
+              "description": "Un ladrillo suelto descubre un compartimento de los maestros de forja."
+            },
+            {
+              "type": "chest",
+              "id": "m3_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 14,
+              "item": {
+                "id": "ring_warmth",
+                "name": "Anillo de calor",
+                "srd_item": "Ring of Warmth",
+                "description": "Otorga resistencia al daño de frío y protección frente al frío ambiental según el SRD."
+              }
+            },
+            {
+              "type": "scene",
+              "id": "m3_s01_pista",
+              "title": "El legado de la forja",
+              "text": "Al pie de las columnas enanas, una hilera de bloques presenta juntas recientes. Podría ocultar un compartimento.",
+              "question": "¿Cómo lo buscáis?",
+              "reveals": "m3_s01",
+              "options": [
+                {
+                  "label": "Escuchar el eco junto a las columnas",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "El cierre enano delata un cofre escondido tras la mampostería de la fortaleza.",
+                    "reveal": "m3_s01"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                },
+                {
+                  "label": "Comparar las juntas de los bloques",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "El cierre enano delata un cofre escondido tras la mampostería de la fortaleza.",
+                    "reveal": "m3_s01"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "m3_s02_pista",
+              "title": "La puerta de escarcha",
+              "text": "Al pie de las columnas de la fortaleza, una fina escarcha dibuja trazos sobre la piedra. Podrían delatar un cierre antiguo.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Mirar la escarcha de cerca",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Es una puerta enana sellada y no se mueve. La tablilla del archivo decía que hace falta una luz traída de lejos.",
+                    "flag": "m3_s02_visto"
+                  },
+                  "fail": {
+                    "text": "Solo veis hielo."
+                  }
+                },
+                {
+                  "label": "Buscar una marca enana",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Encontráis la marca de las tablillas: un ojo y un sol naciente. Esta puerta se abrirá algún día con una luz traída de lejos.",
+                    "flag": "m3_s02_visto"
+                  },
+                  "fail": {
+                    "text": "No encontráis ninguna marca."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "La escarcha no os dice nada más."
+              }
+            }
+          ]
+        },
+        {
+          "id": "m3_r08",
+          "name": "Portón del glaciar",
+          "description": "La salida da a una garganta de hielo azul.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m3_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r01",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 2
+            },
+            {
+              "type": "rest_point",
+              "id": "m3_rest2",
+              "rest": "short",
+              "name": "Garita del portón",
+              "description": "Último descanso seguro de la fortaleza; permite regresar al pueblo."
+            },
+            {
+              "type": "encounter",
+              "id": "m3_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Ogre",
+                  "name": "Ogro de las nieves",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Zombie",
+                  "name": "Zombi escarchado",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 3,
+              "xp_total": 750
+            },
+            {
+              "type": "dialogue",
+              "id": "m3_d19",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Más allá del portón, el glaciar conserva una luz que no pertenece al amanecer."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "El portón vibra y la luz azul llena la garganta."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m3_r09",
+          "name": "Atrio de los contrapesos",
+          "description": "Un reloj de agua petrificado por el frío. Una losa inclinada oculta el mecanismo del suelo.",
+          "exits": [
+            {
+              "to": "m3_r01",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "m3_d04",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Hasta la piedra estaba pensada para obedecer a una medida exacta."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "m3_p01",
+              "title": "El peso de la losa",
+              "text": "Un paquete ha quedado aprisionado bajo una losa caída junto a las columnas enanas. La piedra cruje al tocarla.",
+              "question": "¿Cómo recuperáis el paquete?",
+              "options": [
+                {
+                  "label": "Calcular cómo desplazar la losa",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Repartís el peso de la losa y liberáis el paquete.",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "La piedra se mueve bruscamente y os obliga a retroceder.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Escuchar el crujido de la piedra",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Reconocéis dónde cede la piedra y liberáis el paquete sin volcarla.",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "La piedra se mueve bruscamente y os obliga a retroceder."
+                  }
+                },
+                {
+                  "label": "Sostener la losa a pulso",
+                  "attr": "str",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Sostenéis la losa mientras recuperáis el paquete.",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "La piedra se mueve bruscamente y os obliga a retroceder.",
+                    "damage": "1d4"
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "No conseguís recuperar lo que buscabais y os retiráis."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m3_r10",
+          "name": "Cámara de las válvulas",
+          "description": "Dos tuberías cruzan una estancia circular. Una válvula está tibia; la otra, sellada por el hielo.",
+          "exits": [
+            {
+              "to": "m3_r03",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "m3_d10",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un leve murmullo circula por la tubería, el primero que se oye en muchos años."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "m3_q02",
+              "title": "Las dos válvulas",
+              "img": "escena_dos_valvulas",
+              "decision": true,
+              "text": "Un antiguo sistema de válvulas pierde vapor. Podéis intentar repararlo y recuperar unos suministros.",
+              "question": "¿Qué haces con las válvulas?",
+              "options": [
+                {
+                  "label": "Reparar la válvula",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "La tubería deja salir aire templado. El cajón queda libre y encuentras monedas.",
+                    "gold": 9
+                  },
+                  "fail": {
+                    "text": "La rueda no cede."
+                  }
+                },
+                {
+                  "label": "Forzarla de inmediato",
+                  "attr": "str",
+                  "dc": 14,
+                  "ok": {
+                    "text": "La tubería se descongela, pero un chorro de vapor vuelca el cajón y las monedas caen por una rejilla."
+                  },
+                  "fail": {
+                    "text": "La válvula sigue helada."
+                  }
+                },
+                {
+                  "label": "No tocar el mecanismo",
+                  "ok": {
+                    "text": "Lo dejáis como está."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "forge",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m3_r11",
+          "name": "Sala de los juramentos",
+          "description": "Bancos de piedra alrededor de una mesa rota. Un kobold desarmado se esconde tras un estandarte.",
+          "exits": [
+            {
+              "to": "m3_r05",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "scene",
+              "id": "m3_q01",
+              "title": "El kobold del estandarte",
+              "img": "escena_kobold_estandarte",
+              "decision": true,
+              "text": "Un kobold se refugia junto a un estandarte raído y una lámpara. Dice que guarda unos sellos de la fortaleza y pide una salida.",
+              "question": "¿Qué harás con él?",
+              "options": [
+                {
+                  "label": "Prometerle una salida",
+                  "attr": "cha",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Te entrega los sellos y se marcha. Otro porteador reconoce la señal y decide no enfrentarse a vosotros.",
+                    "sub": "m3_pat01",
+                    "gold": 3
+                  },
+                  "fail": {
+                    "text": "Huye con los sellos."
+                  }
+                },
+                {
+                  "label": "Comprarle los sellos",
+                  "cost": 40,
+                  "ok": {
+                    "text": "Los sellos convencen a un porteador de que puede dejar de vigilaros.",
+                    "sub": "m3_pat01"
+                  }
+                },
+                {
+                  "label": "Dejarle marchar",
+                  "ok": {
+                    "text": "El kobold se aleja y logra convencer a un compañero de que no debe enfrentarse al grupo.",
+                    "sub": "m3_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m3_s01_r01",
+          "name": "Inspección de los maestros",
+          "description": "Una mesa de piedra, dos bancos y herramientas guardadas con cuidado antes de abandonar el lugar.",
+          "exits": [
+            {
+              "to": "m3_r07",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "m3_d16",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una nota menciona «la última pieza que jamás debió fundirse para pagar el invierno»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ni siquiera escribieron qué era. Parece que les avergonzaba recordarlo."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "m3_e06",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Maestro de forja",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "m3_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 16,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "forge",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "m3_j01",
+          "from": "m3_r02",
+          "until": "m3_g01",
+          "text": "Una reja de contrapesos cierra un pasillo hacia el patio."
+        },
+        {
+          "id": "m3_j02",
+          "from": "m3_r07",
+          "until": "m3_s01",
+          "text": "Un ladrillo del depósito suena hueco."
+        },
+        {
+          "id": "m3_j03",
+          "from": "m3_r05",
+          "until": "m3_s02",
+          "text": "Una puerta sellada en el depósito se abrirá con una luz traída de lejos. Habrá que volver algún día."
+        }
+      ],
+      "c_gold": true
+    },
+    {
+      "id": "m4",
+      "order": 4,
+      "name": "Cueva del glaciar",
+      "description": "Túneles de hielo azul, un lago congelado y la cámara del tesoro.",
+      "expected_party_level": 5,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "El glaciar envuelve la entrada en una luz azulada. Bajo el hielo se oyen crujidos interrumpidos por un aliento que hace temblar la roca."
+        },
+        {
+          "speaker": "hero",
+          "text": "Vharzûl está cerca. Cada paso nos acerca al final del tributo."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "m4_r01",
+          "name": "Boca azul",
+          "description": "El glaciar cruje sobre la entrada.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "corridor",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "m4_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m3_r08",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "m4_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 5,
+              "xp_total": 50
+            },
+            {
+              "type": "rest_point",
+              "id": "m4_rest1",
+              "rest": "short",
+              "name": "Abrigo de la entrada",
+              "description": "Primer descanso seguro del glaciar; desde aquí se permite volver al pueblo."
+            },
+            {
+              "type": "dialogue",
+              "id": "m4_d03",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Estas monedas no llegaron en un solo viaje."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "El hielo conserva una columna de monedas doblada bajo su propio peso."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m4_r02",
+          "name": "Observatorio de escarcha",
+          "description": "Una investigadora examina grietas luminosas.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m4_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 2
+            },
+            {
+              "type": "ally",
+              "slot_zone": 4,
+              "default_ally": "syrael",
+              "default_scene": [
+                {
+                  "speaker": "syrael",
+                  "text": "He seguido el pulso del glaciar. El dragón alimenta la tormenta desde su cámara."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Tu magia nos ayudará a resistir el frío."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "aldric",
+                  "text": "He escalado por una grieta lateral para reconocer la guarida. Hay un paso junto al lago."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Perfecto. Nos llevarás hasta el dragón."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "m4_d07",
+              "lines": [
+                {
+                  "speaker": "syrael",
+                  "text": "Mi maestra decía que ningún hechizo es pequeño para quien debe soportarlo cada día."
+                },
+                {
+                  "speaker": "syrael",
+                  "text": "No basta con sobrevivir a sus ráfagas. Debemos alcanzar a quien las provoca."
+                }
+              ],
+              "only": "syrael"
+            }
+          ]
+        },
+        {
+          "id": "m4_r03",
+          "name": "Lago sin fondo",
+          "description": "El hielo transparente oculta agua negra.",
+          "kind": "room",
+          "size_hexes": 11,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m4_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "frozen_pool",
+              "count": 2
+            },
+            {
+              "type": "trap",
+              "id": "m4_t01",
+              "name": "Lago de hielo quebradizo",
+              "description": "El hielo se agrieta bajo las botas…",
+              "detect_dc": 14,
+              "disarm_dc": 13,
+              "save_ability": "DEX",
+              "save_dc": 14,
+              "effect": "3d6 contundente y caída al agua; el grupo rescata al afectado al borde."
+            },
+            {
+              "type": "encounter",
+              "id": "m4_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Winter Wolf",
+                  "name": "Lobo invernal",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Ice Mephit",
+                  "name": "Mefit de hielo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 800
+            }
+          ]
+        },
+        {
+          "id": "m4_r04",
+          "name": "Túnel de las crías",
+          "description": "Las paredes muestran arañazos recientes.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m4_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "m4_e03",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "White Dragon Wyrmling",
+                  "name": "Cría de dragón blanco",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 9,
+              "xp_total": 475
+            },
+            {
+              "type": "encounter",
+              "id": "m4_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Ice Mephit",
+                  "name": "Mefit de la fisura",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "m4_pat01_paso",
+              "title": "Mefits de la fisura",
+              "text": "Dos mefits de hielo aparecen entre una nube helada y os desafían.",
+              "question": "¿Qué hacéis?",
+              "on_return": true,
+              "after": "m4_r06",
+              "before": "m4_e05",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Os cierran el paso.",
+                    "fight": "m4_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Esperáis tras un pilar de hielo hasta que la bruma os oculta.",
+                    "remove": "m4_pat01"
+                  },
+                  "fail": {
+                    "text": "Os descubren.",
+                    "fight": "m4_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Una orden enérgica y la amenaza del fuego los hacen retroceder.",
+                    "remove": "m4_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "m4_pat01"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m4_r05",
+          "name": "Galería de los tributos",
+          "description": "Monedas y cajas aparecen atrapadas en el hielo.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "cross",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m4_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "dragon_hoard",
+              "count": 1
+            },
+            {
+              "type": "secret",
+              "id": "m4_s01",
+              "detect_dc": 15,
+              "reveals": "chest:m4_c02",
+              "description": "Una rendija revela una caja de ofrendas intacta."
+            },
+            {
+              "type": "chest",
+              "id": "m4_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 15,
+              "item": {
+                "id": "cloak_protection",
+                "name": "Capa de protección",
+                "srd_item": "Cloak of Protection",
+                "description": "Otorga +1 a la CA y a las tiradas de salvación mientras se lleva puesta."
+              }
+            },
+            {
+              "type": "chest",
+              "id": "m4_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 12,
+              "item": {
+                "id": "gem_ice",
+                "name": "Cuarzo glaciar",
+                "srd_item": null,
+                "description": "Piedra semipreciosa extraída de la cueva."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "m4_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Parte de este tesoro lleva marcas de la fortaleza enana. Cada moneda tiene el rastro de un tributo."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ningún pago consiguió detener al dragón."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "m4_s01_pista",
+              "title": "La ofrenda que nunca llegó",
+              "text": "Un reflejo extraño en el hielo delata algo que los antiguos porteadores quisieron ocultar.",
+              "question": "¿Cómo lo buscáis?",
+              "reveals": "m4_s01",
+              "options": [
+                {
+                  "label": "Observar el reflejo",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "El reflejo en el hielo permite localizar un cofre oculto por los porteadores.",
+                    "reveal": "m4_s01"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                },
+                {
+                  "label": "Buscar la unión con el muro",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "El reflejo en el hielo permite localizar un cofre oculto por los porteadores.",
+                    "reveal": "m4_s01"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "m4_q02",
+              "title": "La carta de los emisarios",
+              "img": "escena_carta_emisarios",
+              "decision": true,
+              "text": "Encontráis una carta sellada de los emisarios desaparecidos. Decidís qué hacer con su testimonio.",
+              "question": "¿Qué harás?",
+              "options": [
+                {
+                  "label": "Llevar la carta a Cumbrenieve",
+                  "ok": {
+                    "text": "Guardáis la carta sellada. Bajo los mantos hay unas monedas para el viaje.",
+                    "gold": 8
+                  }
+                },
+                {
+                  "label": "Examinar el hielo junto a los mantos",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "El hielo refleja un hueco oculto tras una roca cercana.",
+                    "reveal": "m4_s01"
+                  },
+                  "fail": {
+                    "text": "El hielo no deja distinguir nada."
+                  }
+                },
+                {
+                  "label": "Dejar el testimonio intacto",
+                  "ok": {
+                    "text": "Lo dejáis donde lo encontrasteis."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m4_r06",
+          "name": "Última barricada",
+          "description": "Los kobolds vigilan el acceso al santuario.",
+          "kind": "corridor",
+          "size_hexes": 10,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m4_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "snow_rock",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "m4_e04",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 8,
+              "xp_total": 75
+            },
+            {
+              "type": "dialogue",
+              "id": "m4_d13",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "La barricada no protege un hogar. Protege un tesoro que no les pertenece."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "El aliento del dragón resuena cada vez más cerca."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m4_r07",
+          "name": "Refugio del deshielo",
+          "description": "Un nicho seco, protegido por muros enanos, permite recuperar fuerzas.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m4_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "m4_r08",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "rest_point",
+              "id": "m4_rest2",
+              "rest": "short",
+              "name": "Refugio del deshielo",
+              "description": "Último rincón seguro, justo antes de la sala del jefe."
+            },
+            {
+              "type": "dialogue",
+              "id": "m4_d15",
+              "lines": [
+                {
+                  "speaker": "durnok",
+                  "text": "Descansad. Los antiguos colocaron esta cámara para quien llegara al final del camino."
+                }
+              ],
+              "only": "durnok"
+            },
+            {
+              "type": "dialogue",
+              "id": "m4_d16",
+              "lines": [
+                {
+                  "speaker": "aldric",
+                  "text": "Mi hermano creyó que conocía esta montaña. Yo también lo creía, hasta que vi lo que oculta el hielo."
+                }
+              ],
+              "only": "aldric"
+            }
+          ]
+        },
+        {
+          "id": "m4_r08",
+          "name": "Trono de hielo",
+          "description": "Vharzûl se yergue sobre el tesoro entregado durante generaciones.",
+          "kind": "room",
+          "size_hexes": 14,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "m4_r07",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "dragon_hoard",
+              "count": 2
+            },
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "m4_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Young White Dragon",
+                  "name": "Vharzûl, el Invierno Vivo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "White Dragon Wyrmling",
+                  "name": "Cría de dragón blanco",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold del tributo",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 2800
+            },
+            {
+              "type": "chest",
+              "id": "m4_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 91,
+              "item": {
+                "id": "relic_dwarf",
+                "name": "Sello del Deshielo",
+                "srd_item": null,
+                "description": "Medallón enano de hierro y ámbar, prueba del tributo y símbolo de la paz recuperada; sin bonificaciones de combate."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "m4_d02",
+              "lines": [
+                {
+                  "speaker": "dragon",
+                  "text": "¡Los enanos pagaron por vivir! Este valle me debe cuanto guarda."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "El valle no volverá a pagarte. Tu invierno termina aquí."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m4_r09",
+          "name": "Canal de las fisuras",
+          "description": "Un cauce de hielo se pierde bajo una arcada azul. Por las grietas sube una corriente helada.",
+          "exits": [
+            {
+              "to": "m4_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "scene",
+              "id": "m4_p01",
+              "title": "La corriente ascendente",
+              "text": "La luz azul del hielo deja ver un alijo junto a una grieta de la cueva. De ella salen ráfagas heladas.",
+              "question": "¿Cómo alcanzáis el alijo?",
+              "options": [
+                {
+                  "label": "Avanzar al abrigo del hielo",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Esperáis la pausa entre ráfagas y recuperáis las monedas del alijo.",
+                    "gold": 11
+                  },
+                  "fail": {
+                    "text": "La ráfaga os alcanza.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Escuchar el aire entre las grietas",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Calculáis el ritmo del viento y alcanzáis el alijo.",
+                    "gold": 11
+                  },
+                  "fail": {
+                    "text": "El ritmo cambia sin aviso."
+                  }
+                },
+                {
+                  "label": "Resistir el frío junto a la grieta",
+                  "attr": "con",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Os protegéis del viento, pero el alijo queda donde estaba."
+                  },
+                  "fail": {
+                    "text": "El frío os muerde.",
+                    "damage": "1d4"
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "Avanzáis por la orilla y el alijo se queda allí."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "crevasse",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m4_r10",
+          "name": "Cámara de los ecos",
+          "description": "Una bóveda de hielo devuelve cada palabra con segundos de retraso. Junto a la puerta cuelga una campanilla.",
+          "exits": [
+            {
+              "to": "m4_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "m4_e06",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Kobold",
+                  "name": "Kobold de la campanilla",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 25
+            },
+            {
+              "type": "scene",
+              "id": "m4_q01",
+              "title": "La campanilla de hielo",
+              "img": "escena_campanilla_hielo",
+              "decision": true,
+              "text": "Un kobold exhausto teme dar la alarma. «Si no aviso, el dragón sabrá que fallé».",
+              "question": "¿Qué le proponéis?",
+              "options": [
+                {
+                  "label": "Ofrecerle una salida",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Se aparta de la campanilla y huye. «En la barricada son tres», susurra antes de desaparecer.",
+                    "remove": "m4_e06"
+                  },
+                  "fail": {
+                    "text": "El kobold sacude la cuerda y hace sonar la campanilla.",
+                    "fight": "m4_e06"
+                  }
+                },
+                {
+                  "label": "Pagar por su silencio",
+                  "cost": 60,
+                  "ok": {
+                    "text": "Acepta las monedas y se aleja sin tocar la campanilla.",
+                    "remove": "m4_e06"
+                  }
+                },
+                {
+                  "label": "Impedir que dé la señal",
+                  "attr": "str",
+                  "dc": 15,
+                  "ok": {
+                    "text": "Te adelantas a la señal. El kobold huye sin llegar a tocar la campanilla.",
+                    "remove": "m4_e06"
+                  },
+                  "fail": {
+                    "text": "El kobold golpea la campanilla antes de que puedas detenerlo.",
+                    "fight": "m4_e06"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m4_r11",
+          "name": "Umbral del aliento",
+          "description": "Un arco de hielo vibra ante la corriente que llega de la cámara del dragón.",
+          "exits": [
+            {
+              "to": "m4_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "m4_d14",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Las ráfagas dejan breves intervalos. Podemos aprovecharlos para acercarnos."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "El eco anuncia otra ráfaga."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "m4_p03",
+              "title": "La respiración de la montaña",
+              "text": "Un frasco de poción se distingue en un nicho, al pie de una pared de hielo. El aire gélido que recorre la cueva dificulta alcanzarlas.",
+              "question": "¿Cómo recuperáis el frasco sin exponeros al frío?",
+              "options": [
+                {
+                  "label": "Avanzar junto al hielo cuando calme el aire",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Recuperáis el frasco del nicho durante un instante de calma.",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "La ráfaga os alcanza.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Calcular las ráfagas entre las paredes",
+                  "attr": "int",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Los destellos permiten anticipar una ráfaga y sacar una poción del nicho.",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "Los destellos os engañan.",
+                    "damage": "1d4"
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "Cruzáis al amparo de la roca, sin tiempo para el nicho."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "snow_rock",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "m4_s01_r01",
+          "name": "Cámara de los últimos emisarios",
+          "description": "Un cofre de ofrendas, dos mantos doblados y una carta sellada sin entregar.",
+          "exits": [
+            {
+              "to": "m4_r05",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "m4_d12",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "«No traemos el tributo pedido. Traemos una última solicitud: que el valle pueda pasar sin inclinar la cabeza»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Llevaremos su petición al valle, aunque llegue tarde para ellos."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "m4_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Ice Mephit",
+                  "name": "Mefit del calor",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 200
+            },
+            {
+              "type": "chest",
+              "id": "m4_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 26,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "ice_pillar",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "m4_j01",
+          "from": "m4_r05",
+          "until": "m4_s01",
+          "text": "Un reflejo bajo el hielo de la galería no coincide con los demás."
+        }
+      ],
+      "c_gold": true
+    }
+  ],
+  "allies": [
+    {
+      "id": "vurka",
+      "name": "Vurka Pielhierro",
+      "class": "Barbarian",
+      "species": "Orca",
+      "personality": "Directa, feroz y leal; busca justicia por su clan.",
+      "starting_items": [
+        "Hacha de guerra",
+        "Armadura de pieles"
+      ]
+    },
+    {
+      "id": "durnok",
+      "name": "Durnok Yunquehondo",
+      "class": "Cleric",
+      "species": "Enano",
+      "personality": "Paciente y protector; honra a los constructores de la fortaleza.",
+      "starting_items": [
+        "Martillo de guerra",
+        "Escudo",
+        "Farol"
+      ]
+    },
+    {
+      "id": "syrael",
+      "name": "Syrael Escarchaluz",
+      "class": "Wizard",
+      "species": "Elfa",
+      "personality": "Observadora y serena; conoce los peligros de la magia helada.",
+      "starting_items": [
+        "Bastón",
+        "Libro de conjuros"
+      ]
+    },
+    {
+      "id": "aldric",
+      "name": "Tavin Ventisca",
+      "class": "Ranger",
+      "species": "Humano",
+      "personality": "Práctico y prudente; se orienta por señales casi invisibles.",
+      "starting_items": [
+        "Arco largo",
+        "Daga",
+        "Capa de viaje"
+      ]
+    }
+  ],
+  "sage": {
+    "id": "sabio",
+    "name": "Eldran Barbanieve",
+    "appearances": [
+      "m1_d01",
+      "m2_d01"
+    ],
+    "clues": [
+      "Los hitos enanos indican un camino seguro entre ventiscas.",
+      "El tributo de oro mantenía abierto el paso solo temporalmente.",
+      "Los registros de la fortaleza explican el origen del tesoro del dragón."
+    ]
+  },
+  "boss": {
+    "id": "dragon",
+    "name": "Vharzûl, el Invierno Vivo",
+    "based_on": "Young White Dragon",
+    "adjustments": "Versión de encuentro adaptada, NO bloque de estadísticas SRD sin cambios. CA 16, 110 PG, velocidad 40 pies y vuelo 80 pies; ataque de mordisco +7 (2d10+4 perforante y 1d6 frío), dos ataques de garra +7 (2d6+4 cortante) en lugar de la multiataque original; usa solo mordisco + una garra por turno. Aliento helado: línea de 30 pies (adaptada a objetivos de cartas: hasta 3 personajes, prioriza si alcanza 2 o más), salvación CON CD 15, 6d8 frío, mitad si supera. Lo usa en ronda 2 y después en rondas 5, 8, 11... (cada 3 rondas), nunca fuera de esa cadencia. En las rondas sin aliento ataca a la vanguardia; mientras haya enemigos en vanguardia, el dragón de retaguardia solo emplea el aliento o ataques permitidos por la interfaz de cartas, sin atacar cuerpo a cuerpo desde atrás. Cuando su vanguardia desaparece, avanza a vanguardia al inicio de su siguiente turno. No hay acciones legendarias ni de guarida. Refuerzos kobold: 1 kobold en vanguardia al inicio de rondas 3 y 6, solo si hay hueco; no aparecen más después de la ronda 6. Al caer el dragón, los kobolds restantes huyen. Las cifras de daño y CD son ajustes deliberados al jefe, no las estadísticas íntegras del SRD.",
+    "minions": {
+      "based_on": "Kobold|White Dragon Wyrmling",
+      "effect": "Inicio: 1 cría de dragón blanco y 2 kobolds en vanguardia (3 plazas). La cría mantiene su bloque SRD; no se añaden más crías. Al comienzo de las rondas 3 y 6 llega 1 kobold si hay espacio en la vanguardia; si no, se omite ese refuerzo. Máximo 6 enemigos simultáneos y 3 por fila."
+    },
+    "room_id": "m4_r08",
+    "pre_boss_dialogue": [
+      {
+        "speaker": "dragon",
+        "text": "El oro de los enanos me pertenece. También el vuestro."
+      },
+      {
+        "speaker": "hero",
+        "text": "No habrá más tributos ni viajeros entregados."
+      }
+    ],
+    "victory_reward": "El Sello del Deshielo (cofre z4_c03), 120 po y desbloqueo de nivel 6 al finalizar la aventura."
+  },
+  "items": [
+    {
+      "id": "potion_healing_1",
+      "name": "Poción de curación",
+      "srd_item": "Potion of Healing",
+      "type": "potion",
+      "description": "Recupera 2d4 + 2 puntos de golpe.",
+      "value_gp": 50
+    },
+    {
+      "id": "potion_healing_2",
+      "name": "Poción de curación",
+      "srd_item": "Potion of Healing",
+      "type": "potion",
+      "description": "Recupera 2d4 + 2 puntos de golpe.",
+      "value_gp": 50
+    },
+    {
+      "id": "boots_winterlands",
+      "name": "Botas de las tierras invernales",
+      "srd_item": "Boots of the Winterlands",
+      "type": "other",
+      "description": "Protegen contra el frío y facilitan el avance por nieve y hielo según el SRD.",
+      "value_gp": 400
+    },
+    {
+      "id": "potion_healing_greater",
+      "name": "Poción de curación mayor",
+      "srd_item": "Potion of Healing, Greater",
+      "type": "potion",
+      "description": "Recupera 4d4 + 4 puntos de golpe.",
+      "value_gp": 100
+    },
+    {
+      "id": "battleaxe_plus_one",
+      "name": "Hacha de guerra +1",
+      "srd_item": "Weapon, +1",
+      "type": "weapon",
+      "description": "Hacha de guerra mágica con +1 a ataque y daño.",
+      "value_gp": 400
+    },
+    {
+      "id": "ring_warmth",
+      "name": "Anillo de calor",
+      "srd_item": "Ring of Warmth",
+      "type": "other",
+      "description": "Otorga resistencia al daño de frío y protección frente al frío ambiental según el SRD.",
+      "value_gp": 500
+    },
+    {
+      "id": "cloak_protection",
+      "name": "Capa de protección",
+      "srd_item": "Cloak of Protection",
+      "type": "other",
+      "description": "Otorga +1 a la CA y a las tiradas de salvación mientras se lleva puesta.",
+      "value_gp": 500
+    },
+    {
+      "id": "relic_dwarf",
+      "name": "Sello del Deshielo",
+      "srd_item": null,
+      "type": "treasure",
+      "description": "Medallón enano de hierro y ámbar, prueba del tributo y símbolo de la paz recuperada; sin bonificaciones de combate.",
+      "value_gp": 250
+    },
+    {
+      "id": "healing_herbs",
+      "name": "Vendajes de campaña",
+      "srd_item": null,
+      "type": "other",
+      "description": "Material de primeros auxilios sin efecto mecánico adicional.",
+      "value_gp": 5
+    },
+    {
+      "id": "silver_piece",
+      "name": "Broche del centinela",
+      "srd_item": null,
+      "type": "treasure",
+      "description": "Broche de plata de un vigía enano.",
+      "value_gp": 20
+    },
+    {
+      "id": "cold_resistance_potion",
+      "name": "Poción de resistencia al frío",
+      "srd_item": "Potion of Resistance",
+      "type": "potion",
+      "description": "Otorga resistencia al daño de frío durante 1 hora según el SRD.",
+      "value_gp": 100
+    },
+    {
+      "id": "hide_armor",
+      "name": "Armadura de pieles",
+      "srd_item": "Hide Armor",
+      "type": "armor",
+      "description": "Armadura de pieles; usa las estadísticas de Hide Armor del SRD.",
+      "value_gp": 10
+    },
+    {
+      "id": "spear",
+      "name": "Lanza",
+      "srd_item": "Spear",
+      "type": "weapon",
+      "description": "Lanza común según el SRD.",
+      "value_gp": 1
+    },
+    {
+      "id": "old_map",
+      "name": "Plano de los túneles",
+      "srd_item": null,
+      "type": "treasure",
+      "description": "Plano deteriorado de las galerías de la fortaleza.",
+      "value_gp": 15
+    },
+    {
+      "id": "gem_ice",
+      "name": "Cuarzo glaciar",
+      "srd_item": null,
+      "type": "treasure",
+      "description": "Piedra semipreciosa extraída de la cueva.",
+      "value_gp": 35
+    }
+  ],
+  "shops": {
+    "comunes": [
+      "potion_healing",
+      "antidote",
+      "torch"
+    ],
+    "cumbrenieve": [
+      "hide_armor",
+      "spear",
+      "cold_resistance_potion"
+    ],
+    "prices_gp": {
+      "hide_armor": 10,
+      "spear": 1,
+      "cold_resistance_potion": 100
+    },
+    "nota": "Cumbrenieve vende ropa de abrigo y provisiones. Iconos nuevos pendientes: hide_armor, spear, cold_resistance_potion."
+  },
+  "balance_notes": "Todos los personajes conservan nivel 5 hasta terminar la aventura: el motor debe diferir la subida aunque el PX alcance el umbral de nivel 6, y entonces aplicar el nivel 6 al finalizar. PX indicados por encuentro son PX de monstruos según VD (sin multiplicadores) y se dividen entre los miembros presentes. Zona 1 tiene solo dos miembros y encuentros de uno o dos enemigos; el lobo invernal (VD 3) es un pico de dificultad evitable, tras un descanso corto y con opción de huida. No se emplean oso lechuza, ogro ni espectro: elevarían demasiado la dificultad o la volatilidad; el yeti (VD 3) aparece solo y puede evitarse o combatirse tras descansar. En zona 4 se reduce la fuerza del dragón joven y se limita el aliento; la cría y dos kobolds hacen que el jefe siga siendo difícil, por lo que conviene probarlo con composiciones de clases distintas. No se añaden encuentros aleatorios ni regeneración al retroceder; enemigos heridos permanecen. Las trampas usan Percepción del mejor personaje, desactivación y salvación visibles. El sabio solo aparece en z1_d01 y z2_d01, además de las líneas introductorias de la zona 1, nunca como aliado. El compañero antiguo sale al entrar Vurka o Aldric en z2_r02. Aldric sustituye al aliado por defecto solo cuando la clase del héroe coincide con Barbarian en z2, Cleric en z3 o Wizard en z4; no se sustituye por coincidencia con Ranger. Para respetar el límite de 4 integrantes, la selección se hace por zona. Los campos de arma de los enemigos quedan nulos: no se implementan botines de armas aleatorios. La poción de resistencia al frío carece de precio fijo en el SRD; el precio 0 es un marcador que debe configurarse antes de habilitar la compra. Las botas, el anillo y la capa son objetos mágicos del SRD, pero sus precios no son universales. El anillo está en un cofre con cerradura CD 14, y la llave iron_key abre la reja opcional, no sustituye esa cerradura. La reliquia es un objeto narrativo original sin poderes. El esquema no ofrece campos para eventos globales, activación de tiendas, IA o la regla de regreso al pueblo: se especifican en estos apuntes y en descripciones. El tipo path_down se usa como transición ascendente entre zonas porque es el único tipo de salida interzona enumerado."
+}

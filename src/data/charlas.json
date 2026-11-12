@@ -1,0 +1,710 @@
+{
+ "tiko": {
+  "talks": [
+   [
+    {
+     "speaker": "tiko",
+     "text": "Aprendí a abrir cerraduras antes de aprender a leer."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Quién te enseñó?"
+    },
+    {
+     "speaker": "tiko",
+     "text": "Un cerrajero que nunca preguntó de dónde venían las monedas."
+    },
+    {
+     "speaker": "tiko",
+     "text": "Cuando murió, comprendí que una puerta abierta también puede salvar una vida."
+    }
+   ],
+   [
+    {
+     "speaker": "tiko",
+     "text": "Robé una llave al jefe goblin de la prisión. Podría haber escapado entonces."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Por qué regresaste?"
+    },
+    {
+     "speaker": "tiko",
+     "text": "Oí a un minero pedir auxilio al otro lado de una puerta cerrada."
+    },
+    {
+     "speaker": "tiko",
+     "text": "No me gusta admitirlo, pero su voz pesó más que el oro. Así acabé encadenado."
+    }
+   ],
+   [
+    {
+     "speaker": "tiko",
+     "text": "Siempre he temido que alguien descubra que también tengo miedo."
+    },
+    {
+     "speaker": "hero",
+     "text": "Has vuelto a luchar junto a nosotros."
+    },
+    {
+     "speaker": "tiko",
+     "text": "Porque ahora sé que no necesito esconderme para ser valiente."
+    },
+    {
+     "speaker": "tiko",
+     "text": "Si una cerradura nos separa de alguien, volveré a abrirla."
+    }
+   ]
+  ],
+  "insp": "Si hay una salida, encontraré la cerradura."
+ },
+ "edmund": {
+  "talks": [
+   [
+    {
+     "speaker": "edmund",
+     "text": "Mi orden heredó la custodia de Aldric cuando murió el último guardián enano."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Estabas preparado?"
+    },
+    {
+     "speaker": "edmund",
+     "text": "Pensaba que proteger la cripta bastaba. No vi que Orvane también amenazaba a los vivos."
+    },
+    {
+     "speaker": "edmund",
+     "text": "Ahora sé que los vivos también necesitan una voz."
+    }
+   ],
+   [
+    {
+     "speaker": "edmund",
+     "text": "Vi las primeras huellas de intrusos y no alerté a Valdescarcha."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Por qué?"
+    },
+    {
+     "speaker": "edmund",
+     "text": "Temía provocar el pánico. Mi prudencia dio tiempo a Orvane."
+    },
+    {
+     "speaker": "edmund",
+     "text": "No volveré a confundir cautela con abandono."
+    }
+   ],
+   [
+    {
+     "speaker": "edmund",
+     "text": "Pensé que mi deber terminaba en el altar."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Y ahora?"
+    },
+    {
+     "speaker": "edmund",
+     "text": "Está donde alguien necesite amparo, incluso lejos de la cripta."
+    },
+    {
+     "speaker": "edmund",
+     "text": "Caminaré sin esperar a que otro me conceda permiso."
+    }
+   ]
+  ],
+  "insp": "Que ningún vivo quede sin amparo."
+ },
+ "liss": {
+  "talks": [
+   [
+    {
+     "speaker": "liss",
+     "text": "Orvane me enseñó a leer los signos de la piedra. Admiraba su paciencia."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Cuándo empezaste a desconfiar?"
+    },
+    {
+     "speaker": "liss",
+     "text": "Cuando dejó de estudiar el cristal y empezó a hablar de someter a todo el valle."
+    },
+    {
+     "speaker": "liss",
+     "text": "Tardé demasiado en reconocer la diferencia."
+    }
+   ],
+   [
+    {
+     "speaker": "liss",
+     "text": "Ayudé a Orvane a activar sus primeros cristales. Creí que investigábamos cómo proteger el monasterio."
+    },
+    {
+     "speaker": "hero",
+     "text": "No sabías lo que sucedería."
+    },
+    {
+     "speaker": "liss",
+     "text": "Pero vi las consecuencias y seguí allí. Eso también fue una elección."
+    },
+    {
+     "speaker": "liss",
+     "text": "Ahora quiero usar lo aprendido para reparar cuanto pueda."
+    }
+   ],
+   [
+    {
+     "speaker": "liss",
+     "text": "Temo volver a seguir a alguien solo porque parece conocer todas las respuestas."
+    },
+    {
+     "speaker": "hero",
+     "text": "Puedes decidir por ti misma."
+    },
+    {
+     "speaker": "liss",
+     "text": "Entonces elegiré proteger a quienes no tienen voz."
+    },
+    {
+     "speaker": "liss",
+     "text": "El conocimiento no vale nada si exige abandonar a los demás."
+    }
+   ]
+  ],
+  "insp": "El conocimiento también puede reparar el daño."
+ },
+ "brunna": {
+  "talks": [
+   [
+    {
+     "speaker": "brunna",
+     "text": "Mi cuadrilla estaba formada por familias enteras de Valdescarcha."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Eras su jefa?"
+    },
+    {
+     "speaker": "brunna",
+     "text": "Era quien escuchaba las grietas antes de cada turno."
+    },
+    {
+     "speaker": "brunna",
+     "text": "El antiguo capataz humano no quiso escucharme. Orvane aprovechó el riesgo para obligarnos a seguir excavando."
+    }
+   ],
+   [
+    {
+     "speaker": "brunna",
+     "text": "Guardo la ficha de cobre de un aprendiz de mi cuadrilla. Lo capturaron con los demás."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Por qué no la has devuelto?"
+    },
+    {
+     "speaker": "brunna",
+     "text": "Porque todavía espero encontrarlo entre los supervivientes y devolvérsela."
+    },
+    {
+     "speaker": "brunna",
+     "text": "No he aprendido a despedirme de quienes quizá sigan vivos."
+    }
+   ],
+   [
+    {
+     "speaker": "brunna",
+     "text": "Durante años pensé que mi deber era resistir sin pedir ayuda."
+    },
+    {
+     "speaker": "hero",
+     "text": "Nadie puede sostener solo una montaña."
+    },
+    {
+     "speaker": "brunna",
+     "text": "Lo sé. Esta vez confiaré en quienes caminan a mi lado."
+    },
+    {
+     "speaker": "brunna",
+     "text": "Y si el techo vuelve a caer, encontraremos juntos una salida."
+    }
+   ]
+  ],
+  "insp": "No abandonaré a nadie bajo la piedra."
+ },
+ "maren": {
+  "talks": [
+   [
+    {
+     "speaker": "maren",
+     "text": "Mi hermano me enseñó a distinguir los árboles por el sonido de sus hojas."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Lo hacíais a menudo?"
+    },
+    {
+     "speaker": "maren",
+     "text": "Cuando éramos pequeños. Él nunca temía internarse demasiado."
+    },
+    {
+     "speaker": "maren",
+     "text": "Mi hermano se internó para talar. Desde entonces, cada día que pasa temo que las raíces lo retengan."
+    }
+   ],
+   [
+    {
+     "speaker": "maren",
+     "text": "Encontré uno de sus nudos en una cuerda abandonada."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Estás segura de que era suyo?"
+    },
+    {
+     "speaker": "maren",
+     "text": "Lo hacía al revés para burlarse de nuestro padre."
+    },
+    {
+     "speaker": "maren",
+     "text": "Esa pequeña torpeza me ha dado fuerzas para continuar."
+    }
+   ],
+   [
+    {
+     "speaker": "maren",
+     "text": "Al principio solo pensaba en sacar a mi hermano del bosque."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Y ahora?"
+    },
+    {
+     "speaker": "maren",
+     "text": "Ahora quiero que todos los cautivos puedan regresar a Vegaumbría."
+    },
+    {
+     "speaker": "maren",
+     "text": "Caminaré a tu lado, incluso cuando el rastro se borre."
+    }
+   ]
+  ],
+  "insp": "¡Que nadie más quede atrapado entre esas raíces!"
+ },
+ "anselmo": {
+  "talks": [
+   [
+    {
+     "speaker": "anselmo",
+     "text": "Una noche escuché la voz de alguien querido entre los juncos. La seguí con el farol apagado."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Encontraste a alguien?"
+    },
+    {
+     "speaker": "anselmo",
+     "text": "No encontré a nadie. Eran las raíces imitando una voz. Pude escapar por muy poco."
+    },
+    {
+     "speaker": "anselmo",
+     "text": "Desde entonces mantengo el farol encendido cuando cruzo la ciénaga."
+    }
+   ],
+   [
+    {
+     "speaker": "anselmo",
+     "text": "Mi maestro decía que la fe no debe imponer caminos."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Qué debe hacer entonces?"
+    },
+    {
+     "speaker": "anselmo",
+     "text": "Iluminar el suelo para que otro decida dónde pisar."
+    },
+    {
+     "speaker": "anselmo",
+     "text": "Me costó muchos años comprenderlo."
+    }
+   ],
+   [
+    {
+     "speaker": "anselmo",
+     "text": "Temía que todas las súplicas del pantano fueran trampas."
+    },
+    {
+     "speaker": "hero",
+     "text": "Aun así seguiste ayudando."
+    },
+    {
+     "speaker": "anselmo",
+     "text": "Ahora sé que las voces pueden ser falsas, pero los prisioneros son reales."
+    },
+    {
+     "speaker": "anselmo",
+     "text": "Ya no dejaré que el miedo apague mi farol."
+    }
+   ]
+  ],
+  "insp": "¡Mi farol nos guiará hasta los cautivos!"
+ },
+ "ivelle": {
+  "talks": [
+   [
+    {
+     "speaker": "ivelle",
+     "text": "Mi orden tallaba amuletos de corteza para cruzar el bosque cuando las raíces cerraban los senderos."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Por eso aún encontramos algunos colgados de los árboles?"
+    },
+    {
+     "speaker": "ivelle",
+     "text": "Sí. El Corazón los reconocía cuando protegía Umbría. Ni Brezna ha conseguido borrar esa magia."
+    },
+    {
+     "speaker": "ivelle",
+     "text": "Debimos seguir viniendo. Quizá habríamos descubierto antes lo que estaba sucediendo."
+    }
+   ],
+   [
+    {
+     "speaker": "ivelle",
+     "text": "Nuestra orden debía recordar al Corazón la promesa de proteger a los viajeros."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Cuándo dejasteis de visitarlo?"
+    },
+    {
+     "speaker": "ivelle",
+     "text": "Cuando la ciénaga cubrió el camino. Pensamos que seguiría cumpliendo su deber sin nosotros."
+    },
+    {
+     "speaker": "ivelle",
+     "text": "Nos equivocamos. Y Brezna encontró un protector abandonado al que podía engañar."
+    }
+   ],
+   [
+    {
+     "speaker": "ivelle",
+     "text": "He dejado de buscar absolución por nuestra antigua falta."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Qué buscas ahora?"
+    },
+    {
+     "speaker": "ivelle",
+     "text": "Evitar que alguien vuelva a confundir la protección con el encierro."
+    },
+    {
+     "speaker": "ivelle",
+     "text": "Mi espada estará al servicio de esa causa."
+    }
+   ]
+  ],
+  "insp": "¡Protegemos vidas, no construimos cárceles!"
+ },
+ "telmo": {
+  "talks": [
+   [
+    {
+     "speaker": "telmo",
+     "text": "De aprendiz encontré un mapa de los antiguos puestos de vigilancia de Umbría."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Qué vigilaban?"
+    },
+    {
+     "speaker": "telmo",
+     "text": "Al Corazón Hueco. Una orden le recordaba que debía dejar salir a quienes protegía."
+    },
+    {
+     "speaker": "telmo",
+     "text": "Creí que era una leyenda. Ahora sé que aquellos puestos existieron de verdad."
+    }
+   ],
+   [
+    {
+     "speaker": "telmo",
+     "text": "Durante años estudié cómo las raíces podían cerrar y abrir caminos."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Llegaste a comprenderlo?"
+    },
+    {
+     "speaker": "telmo",
+     "text": "Solo en parte. Los amuletos antiguos conservan una magia que obliga a las raíces a apartarse."
+    },
+    {
+     "speaker": "telmo",
+     "text": "Quien los fabricó quería que siempre existiera un camino de vuelta."
+    }
+   ],
+   [
+    {
+     "speaker": "telmo",
+     "text": "Solía creer que un libro bastaba para comprender el mundo."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Qué harás con lo aprendido?"
+    },
+    {
+     "speaker": "telmo",
+     "text": "Que debemos escuchar a las personas y proteger su libertad, como prometió el Corazón."
+    },
+    {
+     "speaker": "telmo",
+     "text": "Esta vez no dejaré la verdad encerrada en un libro."
+    }
+   ]
+  ],
+  "insp": "¡Las raíces conocen una salida y la encontraremos!"
+ },
+ "vurka": {
+  "talks": [
+   [
+    {
+     "speaker": "vurka",
+     "text": "Mi clan custodiaba el paso de los mercaderes."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Por qué desafiasteis al dragón?"
+    },
+    {
+     "speaker": "vurka",
+     "text": "Exigió que nuestros jóvenes cargaran sus tributos. Nos negamos."
+    },
+    {
+     "speaker": "vurka",
+     "text": "Desde entonces llevo una tira de nuestro estandarte."
+    }
+   ],
+   [
+    {
+     "speaker": "vurka",
+     "text": "Mi madre encendía dos fuegos al caer la noche."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Para quién era el segundo?"
+    },
+    {
+     "speaker": "vurka",
+     "text": "Para quienes ya no podían volver. Nunca lo dejábamos apagarse."
+    },
+    {
+     "speaker": "vurka",
+     "text": "Temo que algún día nadie recuerde sus nombres."
+    }
+   ],
+   [
+    {
+     "speaker": "vurka",
+     "text": "Creí que solo la venganza me mantendría en pie."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Y ahora?"
+    },
+    {
+     "speaker": "vurka",
+     "text": "He encontrado gente a la que proteger, no solo enemigos a los que vencer."
+    },
+    {
+     "speaker": "vurka",
+     "text": "Mi fuerza tendrá un propósito cuando el odio se apague."
+    }
+   ]
+  ],
+  "insp": "Mi fuerza protegerá a quienes aún pueden volver."
+ },
+ "durnok": {
+  "talks": [
+   [
+    {
+     "speaker": "durnok",
+     "text": "De niño me enseñaron a venerar a los constructores."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Nunca hablaron del tributo?"
+    },
+    {
+     "speaker": "durnok",
+     "text": "Lo llamaban un acuerdo honorable. Una carta familiar me hizo dudar."
+    },
+    {
+     "speaker": "durnok",
+     "text": "Vine a buscar la verdad que ocultaron."
+    }
+   ],
+   [
+    {
+     "speaker": "durnok",
+     "text": "Un herrero me enseñó a escuchar el hierro antes de golpear."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Qué escuchas ahora?"
+    },
+    {
+     "speaker": "durnok",
+     "text": "El silencio de una fortaleza que confundió resistencia con obediencia."
+    },
+    {
+     "speaker": "durnok",
+     "text": "Temo repetir ese error sin advertirlo."
+    }
+   ],
+   [
+    {
+     "speaker": "durnok",
+     "text": "Mis mayores dejaron grandes obras y una deuda amarga."
+    },
+    {
+     "speaker": "hero",
+     "text": "No puedes cambiar sus decisiones."
+    },
+    {
+     "speaker": "durnok",
+     "text": "Pero puedo elegir lo que construiré después de ellas."
+    },
+    {
+     "speaker": "durnok",
+     "text": "Seré guardián de los vivos, no de su silencio."
+    }
+   ]
+  ],
+  "insp": "Construiré algo mejor que un tributo."
+ },
+ "syrael": {
+  "talks": [
+   [
+    {
+     "speaker": "syrael",
+     "text": "Aprendí a leer las grietas de los cristales."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Para estudiar hechizos?"
+    },
+    {
+     "speaker": "syrael",
+     "text": "Para anticipar avalanchas y salvar expediciones."
+    },
+    {
+     "speaker": "syrael",
+     "text": "La montaña advierte a quien sabe escucharla."
+    }
+   ],
+   [
+    {
+     "speaker": "syrael",
+     "text": "Una vez confundimos un brillo extraño con hielo común."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Qué ocurrió?"
+    },
+    {
+     "speaker": "syrael",
+     "text": "La expedición desapareció antes de que pudiera advertirla."
+    },
+    {
+     "speaker": "syrael",
+     "text": "Desde entonces temo callar cuando percibo peligro."
+    }
+   ],
+   [
+    {
+     "speaker": "syrael",
+     "text": "Durante años creí que comprender era suficiente."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Has cambiado de idea?"
+    },
+    {
+     "speaker": "syrael",
+     "text": "El conocimiento debe servir a quienes caminan bajo la tormenta."
+    },
+    {
+     "speaker": "syrael",
+     "text": "Esta vez no me quedaré observando desde lejos."
+    }
+   ]
+  ],
+  "insp": "No dejaré que el frío silencie otra advertencia."
+ },
+ "aldric": {
+  "talks": [
+   [
+    {
+     "speaker": "aldric",
+     "text": "Hace años guié una cordada por un atajo inestable."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Llegasteis al valle?"
+    },
+    {
+     "speaker": "aldric",
+     "text": "Yo sí. Mi hermano nunca regresó."
+    },
+    {
+     "speaker": "aldric",
+     "text": "Desde entonces marco cada camino seguro."
+    }
+   ],
+   [
+    {
+     "speaker": "aldric",
+     "text": "A veces sueño con aquella grieta."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Temes volver a equivocarte?"
+    },
+    {
+     "speaker": "aldric",
+     "text": "Temo que alguien confíe en mí y pague por mi prisa."
+    },
+    {
+     "speaker": "aldric",
+     "text": "Por eso compruebo dos veces cada señal."
+    }
+   ],
+   [
+    {
+     "speaker": "aldric",
+     "text": "Antes creía que una buena ruta era aquella de la que regresábamos."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Y ahora?"
+    },
+    {
+     "speaker": "aldric",
+     "text": "También debe ser un camino que nadie esté obligado a recorrer."
+    },
+    {
+     "speaker": "aldric",
+     "text": "Quiero abrir sendas libres, no solo seguras."
+    }
+   ]
+  ],
+  "insp": "Ningún camino seguro debe ser una condena."
+ }
+}

@@ -1,0 +1,18 @@
+name: Idea o propuesta
+description: Una mejora de jugabilidad, interfaz, narrativa o arte
+labels: [idea]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options: [Código, Narrativa, Arte, Sonido, Equilibrio, Diseño]
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: La idea
+      description: Qué propones y por qué mejora el juego.
+    validations:
+      required: true

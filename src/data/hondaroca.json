@@ -1,0 +1,5167 @@
+{
+  "dungeon": {
+    "id": "hondaroca",
+    "name": "Las profundidades de Hondaroca",
+    "summary": "Los mineros de Valdescarcha han desaparecido. El mago Maese Orvane los obliga a excavar bajo Hondaroca para encontrar un cristal de gran poder. Hace siglos, el rey enano Aldric cerró el acceso para proteger el valle. Debes rescatar a los mineros y detener a Orvane antes de que libere la magia del cristal."
+  },
+  "zones": [
+    {
+      "id": "z1",
+      "order": 1,
+      "name": "La mina de Hondaroca",
+      "description": "La mina de Hondaroca estaba en funcionamiento hasta hace pocos días. Ahora los goblins la ocupan y vigilan a los mineros capturados. Actúan por orden de Maese Orvane.",
+      "expected_party_level": 1,
+      "difficulty": "Baja; encuentros de uno o dos enemigos débiles para un héroe de nivel 1.",
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "Hace días que los mineros de Hondaroca no regresan. Sus familias esperan noticias en Valdescarcha."
+        },
+        {
+          "speaker": "narrator",
+          "text": "La entrada está desierta. Hay huellas recientes y señales de una lucha."
+        },
+        {
+          "speaker": "hero",
+          "text": "Encontraré a los mineros y averiguaré quién se los ha llevado."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "z1_r01",
+          "name": "Boca de la mina",
+          "description": "La entrada, utilizada hasta hace pocos días, está dañada. Una vagoneta yace volcada junto a las vías.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "irregular",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "z1_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "mine_cart",
+              "count": 2
+            },
+            {
+              "type": "prop",
+              "prop": "rails",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "z1_e01",
+              "trigger": "seen",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Giant Rat",
+                  "name": "Rata de la entrada",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Mordisco",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 45
+            },
+            {
+              "type": "dialogue",
+              "id": "z1_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Bajo una rueda de la vagoneta hay un trozo de tela gris con una hebilla de minero."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "La hebilla está limpia. Los mineros desaparecieron hace poco."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "rubble",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z1_r02",
+          "name": "Galería de extracción",
+          "description": "Una galería estrecha sostenida por vigas de madera. Hay marcas recientes de picos y una lámpara goblin cuelga de una viga.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z1_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z1_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z1_r07",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z1_e02",
+              "trigger": "seen",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Goblin de la galería",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": "Arco corto",
+                  "drop_weapon": true
+                },
+                {
+                  "srd_creature": "Giant Rat",
+                  "name": "Rata de la galería",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Mordisco",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 1,
+              "xp_total": 45
+            },
+            {
+              "type": "trap",
+              "id": "z1_t01",
+              "name": "Viga debilitada",
+              "description": "Una cuerda oculta está conectada a unas piedras sueltas. Si no se detecta, el techo desprende fragmentos sobre quien avance primero.",
+              "detect_dc": 12,
+              "disarm_dc": 12,
+              "save_ability": "DEX",
+              "save_dc": 11,
+              "effect": "1d6 contundente; mitad del daño con salvación exitosa."
+            },
+            {
+              "type": "prop",
+              "prop": "torch",
+              "count": 2
+            },
+            {
+              "type": "rest_point",
+              "id": "z1_rest2",
+              "rest": "short",
+              "name": "Rincón resguardado",
+              "description": "Un hueco tranquilo donde recobrar el aliento; permite regresar a Valdescarcha."
+            },
+            {
+              "type": "scene",
+              "id": "z1_p01",
+              "title": "La viga que cede",
+              "text": "Entre las vigas del túnel, unas piedras sueltas han atrapado una bolsa de suministros. La madera cruje al acercarte.",
+              "question": "¿Cómo recuperas la bolsa sin provocar un derrumbe?",
+              "options": [
+                {
+                  "label": "Apartar las piedras y calzar la viga",
+                  "attr": "str",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Aseguras la viga y rescatas la bolsa: dentro hay un par de monedas.",
+                    "gold": 2
+                  },
+                  "fail": {
+                    "text": "La madera cae sobre tu brazo cuando intentas moverla.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Deslizarse entre las vigas",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Alcanzas la bolsa sin tocar la viga. Entre sus pliegues hay unas monedas.",
+                    "gold": 2
+                  },
+                  "fail": {
+                    "text": "Los cascotes se desplazan y te obligan a retirarte."
+                  }
+                },
+                {
+                  "label": "Examinar los apoyos de madera",
+                  "attr": "int",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Afianzas la cuña y extraes la bolsa. Conserva unas monedas.",
+                    "gold": 2
+                  },
+                  "fail": {
+                    "text": "La cuña se parte y los escombros quedan inestables."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "La bolsa queda atrapada bajo los escombros. No merece la pena arriesgarse más."
+              }
+            }
+          ]
+        },
+        {
+          "id": "z1_r03",
+          "name": "Almacén de herramientas",
+          "description": "Un ensanchamiento de la galería contiene cajas, lámparas, picos y vagonetas. Bajo unos tablones hay un pequeño cofre.",
+          "kind": "room",
+          "size_hexes": 12,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z1_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z1_r04",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z1_r08",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z1_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z1_e03",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Giant Rat",
+                  "name": "Rata del almacén",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": "Mordisco",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 45
+            },
+            {
+              "type": "chest",
+              "id": "z1_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 2,
+              "item": {
+                "id": "potion_healing_1",
+                "name": "Poción de curación",
+                "srd_item": "Potion of Healing",
+                "description": "Recupera 2d4 + 2 puntos de golpe."
+              }
+            },
+            {
+              "type": "secret",
+              "id": "z1_s01",
+              "detect_dc": 13,
+              "reveals": "exit:z1_r05",
+              "description": "Un antiguo acceso de mantenimiento comunica dos galerías de la mina."
+            },
+            {
+              "type": "prop",
+              "prop": "mine_cart",
+              "count": 2
+            },
+            {
+              "type": "chest",
+              "id": "z1_o02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 4,
+              "item": {
+                "id": "potion_healing"
+              },
+              "obstacle": {
+                "title": "Puerta atascada",
+                "img": "puerta_cerrada",
+                "text": "La puerta de un cuartucho del almacén está atascada.",
+                "needs": [
+                  "crowbar"
+                ],
+                "use": "{who} mete la palanqueta en la rendija y la puerta cede.",
+                "missing": "Con una palanqueta la abriríamos. En la tienda del pueblo venden.",
+                "alt": {
+                  "abil": "str",
+                  "dc": 12,
+                  "dmg": "1d4",
+                  "label": "Fuerza",
+                  "hurt": "La puerta no cede y {who} se hace daño",
+                  "try": "{who} empuja la puerta con el hombro."
+                }
+              }
+            },
+            {
+              "type": "scene",
+              "id": "z1_s01_pista",
+              "title": "Corriente de aire",
+              "text": "Una corriente fría pasa entre las vigas del túnel y levanta el polvo. Podría señalar un hueco oculto.",
+              "question": "¿Cómo lo buscas?",
+              "reveals": "z1_s01",
+              "options": [
+                {
+                  "label": "Seguir el aire entre las vigas",
+                  "attr": "wis",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Descubres una antigua ruta de mantenimiento que comunica con otra galería.",
+                    "reveal": "z1_s01"
+                  },
+                  "fail": {
+                    "text": "No das con ello por ahí."
+                  }
+                },
+                {
+                  "label": "Examinar los apoyos de madera",
+                  "attr": "int",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Encuentras el acceso a una ruta de mantenimiento olvidada.",
+                    "reveal": "z1_s01"
+                  },
+                  "fail": {
+                    "text": "No das con ello por ahí."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z1_r04",
+          "name": "Cruce de los raíles",
+          "description": "Tres galerías convergen en una cámara de roca. Una vagoneta bloquea parcialmente el paso. Los goblins han colocado allí un puesto de vigilancia.",
+          "kind": "room",
+          "size_hexes": 13,
+          "shape": "cross",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z1_r03",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z1_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z1_s02_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z1_e04",
+              "trigger": "enter",
+              "can_reinforce": [
+                "z1_e05"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Arquero del cruce",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": "Arco corto",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 2,
+              "xp_total": 45
+            },
+            {
+              "type": "secret",
+              "id": "z1_s02",
+              "detect_dc": 14,
+              "reveals": "chest:z1_c02",
+              "description": "Un pequeño cofre contiene parte del botín que los goblins escondieron durante la ocupación."
+            },
+            {
+              "type": "prop",
+              "prop": "rails",
+              "count": 3
+            },
+            {
+              "type": "prop",
+              "prop": "mine_cart",
+              "count": 1
+            },
+            {
+              "type": "scene",
+              "id": "z1_s02_pista",
+              "title": "El rastro del botín",
+              "text": "Unas huellas recientes se apartan del camino habitual. Alguien ha escondido algo por aquí.",
+              "question": "¿Cómo lo buscas?",
+              "reveals": "z1_s02",
+              "options": [
+                {
+                  "label": "Seguir las raspaduras del suelo",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Sigues las marcas y descubres un cofre escondido por los goblins.",
+                    "reveal": "z1_s02"
+                  },
+                  "fail": {
+                    "text": "No consigues seguir el rastro."
+                  }
+                },
+                {
+                  "label": "Examinar el polvo junto a las vigas",
+                  "attr": "int",
+                  "dc": 11,
+                  "ok": {
+                    "text": "El polvo removido te permite localizar un cofre oculto.",
+                    "reveal": "z1_s02"
+                  },
+                  "fail": {
+                    "text": "No consigues seguir el rastro."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "z1_q01",
+              "title": "El vigía herido",
+              "img": "escena_vigia_herido",
+              "decision": true,
+              "after": "z1_e04",
+              "text": "Tras el combate, un goblin herido suelta el arco, se arrodilla y extiende las manos. Está dispuesto a hablar.",
+              "question": "¿Qué haces con él?",
+              "options": [
+                {
+                  "label": "Perdonarle y preguntar por el botín",
+                  "attr": "cha",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Agradecido, el goblin te cuenta dónde escondieron un cofre con suministros. Después se marcha.",
+                    "reveal": "z1_s02"
+                  },
+                  "fail": {
+                    "text": "Aprovecha un descuido y huye sin decir nada."
+                  }
+                },
+                {
+                  "label": "Quitarle las monedas",
+                  "ok": {
+                    "text": "Le quitas dos monedas. Huye hacia el campamento y alerta a otro goblin, que se prepara para luchar.",
+                    "gold": 2,
+                    "add": "z1_e05"
+                  }
+                },
+                {
+                  "label": "Dejarle huir",
+                  "ok": {
+                    "text": "Dejas que escape. El goblin abandona la mina, así que tendrás un adversario menos más adelante.",
+                    "sub": "z1_e05"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z1_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Merodeador goblin",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "z1_pat01_paso",
+              "title": "Merodeadores del retorno",
+              "text": "Un grupo de goblins distraídos discute por el botín. Todavía no han reparado en tu presencia.",
+              "question": "¿Qué haces?",
+              "on_return": true,
+              "after": "z1_e04",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Sacan las armas al verte.",
+                    "fight": "z1_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Esperas tras la roca hasta que se alejan.",
+                    "remove": "z1_pat01"
+                  },
+                  "fail": {
+                    "text": "Te descubren.",
+                    "fight": "z1_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Les haces creer que vienen refuerzos. Huyen por el túnel.",
+                    "remove": "z1_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "z1_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "ore_sacks",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z1_r05",
+          "name": "Campamento de los mineros",
+          "description": "Un campamento de trabajo ha quedado desierto tras la captura de los mineros. Todavía hay mantas y utensilios.",
+          "kind": "room",
+          "size_hexes": 12,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z1_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z1_r06",
+              "type": "stairs_down",
+              "key_item_id": null
+            },
+            {
+              "to": "z1_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "rest_point",
+              "id": "z1_rest1",
+              "rest": "short",
+              "name": "Campamento de los mineros",
+              "description": "La hoguera conserva brasas bajo la ceniza. El lugar está protegido y permite realizar un descanso corto."
+            },
+            {
+              "type": "encounter",
+              "id": "z1_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Saqueador goblin",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Cimitarra",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 1,
+              "xp_total": 45
+            },
+            {
+              "type": "chest",
+              "id": "z1_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 3,
+              "item": {
+                "id": "potion_healing_2",
+                "name": "Poción de curación",
+                "srd_item": "Potion of Healing",
+                "description": "Recupera 2d4 + 2 puntos de golpe."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "torch",
+              "count": 3
+            },
+            {
+              "type": "scene",
+              "id": "z1_ev01",
+              "title": "El entibador superviviente",
+              "img": "escena_minero_agua_negra",
+              "decision": true,
+              "on_return": true,
+              "after": "z2_r02",
+              "text": "Un entibador de la mina llega herido al campamento. Ha escapado de los goblins y apenas puede caminar.",
+              "question": "¿Cómo le ayudas?",
+              "options": [
+                {
+                  "label": "Darle una poción de curación",
+                  "needs": "potion_healing",
+                  "ok": {
+                    "lose": "potion_healing",
+                    "text": "La poción le devuelve las fuerzas. Te entrega cinco monedas de sus ahorros antes de regresar al pueblo.",
+                    "gold": 5
+                  }
+                },
+                {
+                  "label": "Vendarle y estabilizarle",
+                  "attr": "wis",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Le vendes la herida. Agradecido, te da cinco monedas y emprende el regreso a Valdescarcha.",
+                    "gold": 5
+                  },
+                  "fail": {
+                    "text": "No consigues vendarle bien la herida, pero le ayudas a ponerse a salvo."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "z1_r06",
+          "name": "Pozo de las profundidades",
+          "description": "Una enorme cavidad natural desciende hacia el interior de la montaña. Una escalera conduce a construcciones antiguas cubiertas de símbolos enanos.",
+          "kind": "corridor",
+          "size_hexes": 14,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z1_r05",
+              "type": "stairs_down",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r01",
+              "type": "stairs_down",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z1_e06",
+              "trigger": "seen",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Vigía goblin",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": "Arco corto",
+                  "drop_weapon": true
+                },
+                {
+                  "srd_creature": "Giant Rat",
+                  "name": "Rata de las profundidades",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Mordisco",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 2,
+              "xp_total": 65
+            },
+            {
+              "type": "prop",
+              "prop": "stairs",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "rubble",
+              "count": 2
+            },
+            {
+              "type": "chest",
+              "id": "z1_o01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 3,
+              "item": {
+                "id": "potion_healing"
+              },
+              "obstacle": {
+                "title": "El pozo",
+                "img": "pozo_mina",
+                "text": "Un pozo vertical baja a la oscuridad. A media altura se ve un saliente con un arcón.",
+                "needs": [
+                  "rope"
+                ],
+                "use": "{who} ata la cuerda al torno y baja hasta el saliente.",
+                "missing": "Necesitaremos una cuerda para bajar. En la tienda del pueblo venden."
+              }
+            }
+          ]
+        },
+        {
+          "id": "z1_r07",
+          "name": "Cámara de las poleas",
+          "description": "Las cadenas de un montacargas desaparecen en el techo. Una plataforma de mineral se balancea sola sobre el suelo.",
+          "exits": [
+            {
+              "to": "z1_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z1_d02",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Encuentras una advertencia grabada en la madera del montacargas."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Dice: «No os acerquéis al agua que brilla. Los goblins nos obligan a bajar»."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Las últimas palabras están arañadas, como si alguien hubiera escrito con prisa."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "z1_d02b",
+              "lines": [
+                {
+                  "speaker": "tiko",
+                  "text": "El montacargas se usó después del secuestro. Por aquí bajaron a los mineros."
+                }
+              ],
+              "only": "tiko"
+            },
+            {
+              "type": "scene",
+              "id": "z1_p02",
+              "title": "Las maderas en tensión",
+              "text": "La plataforma del montacargas ha quedado atrapada entre maderas caídas. Sobre ella cuelga una bolsa de suministros, y el peso amenaza con hundir los apoyos.",
+              "question": "¿Cómo recuperas la bolsa?",
+              "options": [
+                {
+                  "label": "Levantar la madera más pesada",
+                  "attr": "str",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Levantas la madera y liberas la bolsa de suministros.",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "La madera cede y te obliga a retroceder.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Calcular cómo liberar los apoyos",
+                  "attr": "int",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Repartes el peso entre los apoyos y liberas la bolsa.",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "La madera cede y te obliga a retroceder."
+                  }
+                },
+                {
+                  "label": "Alcanzar la bolsa entre las vigas",
+                  "attr": "con",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Alcanzas la bolsa sin mover las vigas.",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "La madera cede y te obliga a retroceder.",
+                    "damage": "1d4"
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "Al intentar retirar los escombros, se rompe tu bolsa. Pierdes cinco monedas y abandonas los suministros.",
+                "gold": -5
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "ore_sacks",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mine_cart",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z1_r08",
+          "name": "Pasadizo de las marcas",
+          "description": "En las paredes, la tiza de los mineros se mezcla con flechas goblins que apuntan en sentido contrario.",
+          "exits": [
+            {
+              "to": "z1_r03",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z1_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Unas flechas de tiza señalan la salida. Otras marcas recientes indican por dónde llevaron a los cautivos."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Una inscripción apresurada dice: «Nos llevan bajo la ciudad antigua. Avisad a Valdescarcha»."
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "z1_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 2,
+              "item": null
+            },
+            {
+              "type": "prop",
+              "prop": "mine_cart",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "rubble",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z1_r09",
+          "name": "Cámara del agua negra",
+          "description": "Un manantial brota entre las rocas y desaparece por una fisura. Bajo la costra oscura del agua brilla un destello violeta.",
+          "exits": [
+            {
+              "to": "z1_r05",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z1_d08",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "El agua devuelve un reflejo violáceo, aunque no hay ninguna luz sobre tu cabeza."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Esa luz violeta llega desde abajo. Quizá sea lo que busca Orvane."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z1_e09",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Giant Rat",
+                  "name": "Rata del agua negra",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 45
+            },
+            {
+              "type": "scene",
+              "id": "z1_q02",
+              "title": "El minero en el agua negra",
+              "img": "escena_minero_agua_negra",
+              "decision": true,
+              "after": "z1_e09",
+              "text": "Un minero enano exhausto, empapado por el agua negra, te tiende la mano y pide ayuda.",
+              "question": "¿Cómo le ayudas?",
+              "options": [
+                {
+                  "label": "Darle una poción de curación",
+                  "needs": "potion_healing",
+                  "ok": {
+                    "lose": "potion_healing",
+                    "text": "La poción le devuelve las fuerzas. Te explica dónde encontrar una antigua ruta de mantenimiento.",
+                    "reveal": "z1_s01"
+                  }
+                },
+                {
+                  "label": "Guiarle entre las piedras",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Ayudas al minero a salir del agua. Agradecido, te indica una antigua ruta de mantenimiento.",
+                    "reveal": "z1_s01"
+                  },
+                  "fail": {
+                    "text": "Intentas guiarle, pero resbala. Consigue salir del agua, exhausto, y se aleja sin poder hablar."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z1_s01_r01",
+          "name": "Caseta del entibador",
+          "description": "Un banco de trabajo junto a una pared con cinco marcas de altura infantil, hechas en años distintos.",
+          "exits": [
+            {
+              "to": "z1_r03",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z1_d04",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "El entibador dejó una nota: «Orvane exige que sigamos excavando. No le importa que las galerías cedan»."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "La última línea advierte: «Sus goblins vigilan la bajada. No nos dejan cerrar el paso»."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z1_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Giant Rat",
+                  "name": "Rata del banco",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 25
+            },
+            {
+              "type": "chest",
+              "id": "z1_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 5,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z1_s02_r01",
+          "name": "Sala de avisos",
+          "description": "Un tablero con fichas de turnos y una campana rota que nadie llegó a tocar.",
+          "exits": [
+            {
+              "to": "z1_r04",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z1_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Encuentras el tablero de avisos. Una orden exige tocar la campana si aparece una luz violeta bajo la mina."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "La cuerda está cortada. Una nota goblin añade: «Orvane prohíbe dar la alarma»."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z1_e08",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Goblin rebuscador",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "chest",
+              "id": "z1_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 7,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "z1_j01",
+          "from": "z1_r01",
+          "until": "z1_r08",
+          "text": "Las marcas de los mineros parecen indicar por dónde se llevaron a sus compañeros."
+        },
+        {
+          "id": "z1_j02",
+          "from": "z1_r05",
+          "until": "z1_ev01",
+          "text": "Alguien ha vuelto al campamento hace poco. Quizá quede algún minero con vida por aquí."
+        },
+        {
+          "id": "z1_j03",
+          "from": "z1_r03",
+          "until": "z1_s01",
+          "text": "Una corriente de aire sale de un lugar donde no debería haber paso."
+        },
+        {
+          "id": "z1_j04",
+          "from": "z1_r04",
+          "until": "z1_s02",
+          "text": "Alguien escondió un pequeño botín cerca del cruce. Las marcas recientes podrían delatarlo."
+        },
+        {
+          "id": "z1_j05",
+          "from": "z1_r09",
+          "until": "z4_e05",
+          "text": "Una luz violeta llega desde el fondo de Hondaroca. Hay que averiguar de dónde procede."
+        },
+        {
+          "id": "z1_j06",
+          "from": "z1_s02_r01",
+          "until": "z4_e05",
+          "text": "La campana de alarma fue inutilizada por orden de Orvane. Hay que detener al responsable."
+        }
+      ],
+      "c_scaled": true,
+      "c_gold": true
+    },
+    {
+      "id": "z2",
+      "order": 2,
+      "name": "Las ruinas enanas",
+      "description": "Ruinas de una antigua ciudad enana bajo la mina. Los goblins han ocupado sus galerías para abrir camino a Orvane. Aquí se encuentra al primer aliado.",
+      "expected_party_level": 2,
+      "difficulty": "Moderada para dos personajes de nivel 2. El aliado se incorpora en la segunda sala, antes del primer combate.",
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "Bajo la mina encuentras una ciudad enana sepultada. Los goblins han abierto nuevos túneles entre sus ruinas."
+        },
+        {
+          "speaker": "narrator",
+          "text": "Herramientas recientes y cadenas rotas demuestran que los mineros han pasado por aquí."
+        },
+        {
+          "speaker": "hero",
+          "text": "Orvane los está obligando a excavar cada vez más hondo. Tengo que seguirlos."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "z2_r01",
+          "name": "Vestíbulo de los canteros",
+          "description": "Un vestíbulo enano con columnas robustas y relieves de antiguos mineros. Las marcas de los picos goblins destrozan parte de las inscripciones.",
+          "kind": "room",
+          "size_hexes": 14,
+          "shape": "cross",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "z1_r06",
+              "type": "stairs_down",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r10",
+              "type": "gate",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 4
+            },
+            {
+              "type": "prop",
+              "prop": "rubble",
+              "count": 2
+            },
+            {
+              "type": "dialogue",
+              "id": "z2_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una reja antigua bloquea un corredor. Más allá hay una palanca que parece controlar el mecanismo."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "No puedo alcanzarla desde aquí. Tendré que buscar otro camino."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "z2_ev01",
+              "title": "La mercader del umbral",
+              "img": "pnj_buhonera",
+              "decision": true,
+              "on_return": true,
+              "after": "z2_b01",
+              "text": "Una mercader ambulante os ofrece pociones y antídotos. Asegura que aún regresa a Valdescarcha con sus mercancías.",
+              "question": "¿Qué compráis?",
+              "options": [
+                {
+                  "label": "Una poción de curación",
+                  "cost": 20,
+                  "ok": {
+                    "text": "Pagáis veinte monedas. La mercader os entrega una poción de curación.",
+                    "item": "potion_healing"
+                  }
+                },
+                {
+                  "label": "Un antídoto",
+                  "cost": 15,
+                  "ok": {
+                    "text": "Pagáis quince monedas. La mercader os entrega un antídoto.",
+                    "item": "antidote"
+                  }
+                },
+                {
+                  "label": "Nada, gracias",
+                  "ok": {
+                    "text": "La mercader os desea suerte y sigue preparando sus mercancías."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "z2_r02",
+          "name": "Prisión de los excavadores",
+          "description": "Una antigua cámara de almacenamiento ha sido transformada en prisión. Una figura pequeña permanece encadenada a una columna. La liberación del prisionero permite incorporar al primer aliado antes de cualquier combate de la zona.",
+          "kind": "room",
+          "size_hexes": 13,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z2_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r03",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r08",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "ally",
+              "slot_zone": 2,
+              "default_ally": "tiko",
+              "default_scene": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un mediano encadenado os llama desde una antigua prisión."
+                },
+                {
+                  "speaker": "tiko",
+                  "text": "¡Soy Tiko Manosrápidas! Intenté sacar a un minero de aquí y los goblins me atraparon."
+                },
+                {
+                  "speaker": "tiko",
+                  "text": "Entré buscando tesoros, pero no pienso abandonar a los cautivos. Liberadme y os ayudaré."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una enana con casco de minero y un pico al hombro os llama desde una jaula."
+                },
+                {
+                  "speaker": "brunna",
+                  "text": "Soy Brunna Piedrahonda, minera de Valdescarcha. Los goblins me apresaron mientras buscaba a mi cuadrilla."
+                },
+                {
+                  "speaker": "brunna",
+                  "text": "Busco a un aprendiz desaparecido. Si me liberáis, os ayudaré a encontrar a los demás."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z2_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Boss",
+                  "name": "Jefe goblin de la prisión",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Cimitarra",
+                  "drop_weapon": true
+                },
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Carcelero goblin",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": "Cimitarra",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 8,
+              "xp_total": 300
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 2
+            },
+            {
+              "type": "rest_point",
+              "id": "z2_rest2",
+              "rest": "short",
+              "name": "Rincón resguardado",
+              "description": "Un hueco tranquilo donde recobrar el aliento; permite regresar a Valdescarcha."
+            },
+            {
+              "type": "chest",
+              "id": "z2_o02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 4,
+              "item": {
+                "id": "potion_healing"
+              },
+              "obstacle": {
+                "title": "Celda cerrada",
+                "img": "celda_reja",
+                "text": "Una celda cerrada con un candado oxidado. Dentro hay un fardo.",
+                "needs": [
+                  "thieves_tools",
+                  "crowbar"
+                ],
+                "use": "{who} fuerza el candado con {item}.",
+                "missing": "El candado no cede a mano: harían falta herramientas de ladrón o una palanqueta."
+              }
+            }
+          ]
+        },
+        {
+          "id": "z2_r03",
+          "name": "Galería de las arañas",
+          "description": "Una galería cubierta de telarañas atraviesa antiguas estatuas enanas. Los cuerpos de varios goblins cuelgan del techo. La oscuridad oculta una criatura peligrosa.",
+          "kind": "corridor",
+          "size_hexes": 11,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z2_r02",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z2_e02",
+              "trigger": "seen",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Giant Spider",
+                  "name": "Tejedora de las ruinas",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Mordisco venenoso",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "trap",
+              "id": "z2_t01",
+              "name": "Red de captura",
+              "description": "Una red de seda oculta entre las piedras se desprende del techo y atrapa al primero que pisa el pasillo.",
+              "detect_dc": 13,
+              "disarm_dc": 13,
+              "save_ability": "DEX",
+              "save_dc": 12,
+              "effect": "El objetivo queda Restrained hasta escapar con una prueba de Fuerza o Destreza CD 12."
+            },
+            {
+              "type": "chest",
+              "id": "z2_o01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 7,
+              "item": {
+                "id": "antidote"
+              },
+              "obstacle": {
+                "title": "Telaraña",
+                "img": "tela_arana",
+                "text": "Una telaraña gruesa tapa un hueco lateral. Detrás se adivinan los restos de un minero.",
+                "needs": [
+                  "torch",
+                  "alchemists_fire"
+                ],
+                "use": "{who} prende la telaraña con {item} y arde en un momento.",
+                "missing": "Esta telaraña no se corta: habría que quemarla con una antorcha o con fuego de alquimista."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "web",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z2_r04",
+          "name": "Sala de los murciélagos",
+          "description": "Una sala abovedada contiene antiguos respiraderos. El techo está cubierto de murciélagos que reaccionan al ruido y a la luz.",
+          "kind": "room",
+          "size_hexes": 15,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z2_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r06",
+              "type": "secret",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r09",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z2_e03",
+              "trigger": "enter",
+              "can_reinforce": [
+                "z2_e04"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Swarm of Bats",
+                  "name": "Enjambre de murciélagos",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Mordiscos",
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Cazador goblin",
+                  "count": 2,
+                  "row": "back",
+                  "weapon": "Arco corto",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 4,
+              "xp_total": 150
+            },
+            {
+              "type": "trap",
+              "id": "z2_t02",
+              "name": "Placa de presión enana",
+              "description": "Una placa de piedra activa dardos ocultos en las paredes.",
+              "detect_dc": 14,
+              "disarm_dc": 13,
+              "save_ability": "DEX",
+              "save_dc": 12,
+              "effect": "1d6 perforante; mitad del daño con salvación exitosa."
+            },
+            {
+              "type": "rest_point",
+              "id": "z2_rest1",
+              "rest": "short",
+              "name": "Alcoba de los canteros",
+              "description": "Una alcoba protegida por una puerta de piedra permite realizar un descanso corto una vez despejada la sala."
+            },
+            {
+              "type": "secret",
+              "id": "z2_s01",
+              "detect_dc": 14,
+              "reveals": "exit:z2_r06",
+              "description": "Un respiradero enano conecta con un pasadizo que evita la cámara del capataz."
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 3
+            },
+            {
+              "type": "scene",
+              "id": "z2_s01_pista",
+              "title": "La grieta de los murciélagos",
+              "text": "Entre los arcos derruidos, los murciélagos esquivan una grieta de la escalinata. Quizá haya algo detrás.",
+              "question": "¿Cómo lo buscáis?",
+              "reveals": "z2_s01",
+              "options": [
+                {
+                  "label": "Observar su vuelo junto a los arcos",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "El vuelo de los murciélagos os permite localizar un conducto hacia otra sala.",
+                    "reveal": "z2_s01"
+                  },
+                  "fail": {
+                    "text": "No localizáis el origen de la corriente."
+                  }
+                },
+                {
+                  "label": "Examinar las juntas de la escalinata",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Las juntas de la escalinata delatan un conducto hacia otra sala.",
+                    "reveal": "z2_s01"
+                  },
+                  "fail": {
+                    "text": "No localizáis el origen de la corriente."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "z2_r05",
+          "name": "Cámara del jefe goblin",
+          "description": "La sala de mando de los goblins contiene listas de prisioneros y planos de excavación.",
+          "kind": "room",
+          "size_hexes": 16,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z2_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r06",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r10",
+              "type": "door",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z2_e04",
+              "trigger": "enter",
+              "can_reinforce": [
+                "z2_e05"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Guardia del jefe goblin",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": "Cimitarra",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 7,
+              "xp_total": 150
+            },
+            {
+              "type": "chest",
+              "id": "z2_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 9,
+              "item": {
+                "id": "weapon_plus1_warhammer",
+                "name": "Martillo de guerra +1",
+                "srd_item": "Weapon, +1",
+                "rarity": "Uncommon",
+                "magical": true,
+                "description": "Un martillo de guerra mágico que concede un bonificador +1 a las tiradas de ataque y daño. Es especialmente útil para un Guerrero o un Clérigo."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "altar",
+              "count": 1
+            },
+            {
+              "type": "dialogue",
+              "id": "z2_d07b",
+              "lines": [
+                {
+                  "speaker": "tiko",
+                  "text": "El jefe goblin guardaba planos de las excavaciones. Orvane quería llegar todavía más abajo."
+                }
+              ],
+              "only": "tiko"
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z2_r06",
+          "name": "Puerta de la ciudad hundida",
+          "description": "Una puerta monumental enana permanece abierta. Más allá se extienden corredores silenciosos que conducen a una región funeraria.",
+          "kind": "room",
+          "size_hexes": 14,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z2_r05",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r07",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z2_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Excavadores goblin",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": "Pico de minero",
+                  "drop_weapon": true
+                },
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Arquero excavador",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": "Arco corto",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 7,
+              "xp_total": 200
+            },
+            {
+              "type": "trap",
+              "id": "z2_t03",
+              "name": "Martillo basculante",
+              "description": "Un mecanismo enano oculto acciona un enorme martillo de piedra al cruzar una losa.",
+              "detect_dc": 14,
+              "disarm_dc": 14,
+              "save_ability": "DEX",
+              "save_dc": 13,
+              "effect": "2d6 contundente; mitad del daño con salvación exitosa."
+            },
+            {
+              "type": "prop",
+              "prop": "stairs",
+              "count": 1
+            },
+            {
+              "type": "scene",
+              "id": "z2_p03",
+              "title": "El brasero de las ruinas",
+              "text": "En una sala de arcos derruidos, varias monedas brillan junto a un brasero. El suelo agrietado amenaza con ceder.",
+              "question": "¿Cómo recuperáis las monedas sin hundir el suelo?",
+              "options": [
+                {
+                  "label": "Buscar un paso firme entre las grietas",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Avanzáis sobre las losas firmes y recogéis las monedas sin mover los escombros.",
+                    "gold": 4
+                  },
+                  "fail": {
+                    "text": "Una losa se hunde y os golpeáis al retroceder.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Examinar los apoyos de los arcos",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Identificáis las piedras que soportan la bóveda y recuperáis las monedas.",
+                    "gold": 4
+                  },
+                  "fail": {
+                    "text": "Un cascote cae cerca y os obliga a retroceder."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "Los escombros cubren las monedas. Decidís no arriesgaros más."
+              }
+            }
+          ]
+        },
+        {
+          "id": "z2_r07",
+          "name": "Galería de los tributos",
+          "description": "Una galería enana conduce a la cripta. Un jefe goblin vigila el paso y un cofre permanece oculto.",
+          "kind": "corridor",
+          "size_hexes": 12,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z2_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r01",
+              "type": "stairs_down",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_s02_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z2_e06",
+              "trigger": "seen",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Boss",
+                  "name": "Jefe goblin de la salida",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Cimitarra",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 7,
+              "xp_total": 200
+            },
+            {
+              "type": "secret",
+              "id": "z2_s02",
+              "detect_dc": 15,
+              "reveals": "chest:z2_c02",
+              "description": "Un pequeño cofre de tributos permanece escondido entre las antiguas piedras de la ciudad."
+            },
+            {
+              "type": "chest",
+              "id": "z2_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 13,
+              "item": {
+                "id": "healers_kit_1",
+                "name": "Estuche de curandero",
+                "srd_item": "Healer's Kit",
+                "description": "Contiene diez usos para estabilizar criaturas sin gastar magia."
+              }
+            },
+            {
+              "type": "scene",
+              "id": "z2_s02_pista",
+              "title": "El tesoro de los canteros",
+              "text": "Una inscripción entre los arcos indica que los canteros guardaban aquí una pequeña reserva para tiempos difíciles.",
+              "question": "¿Cómo buscáis el escondite?",
+              "reveals": "z2_s02",
+              "options": [
+                {
+                  "label": "Seguir las marcas de los canteros",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Las marcas os llevan hasta el escondite de un cofre antiguo.",
+                    "reveal": "z2_s02"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                },
+                {
+                  "label": "Comparar las piedras de los arcos",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Descubrís una pequeña cavidad donde se oculta el cofre de los canteros.",
+                    "reveal": "z2_s02"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "z2_r08",
+          "name": "Corredor de las balanzas",
+          "description": "Dos balanzas gigantes vigilan un pasillo donde se pesaba el mineral.",
+          "exits": [
+            {
+              "to": "z2_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z2_d03",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Las balanzas aún tienen las cuentas de las cuadrillas. Alguien ha añadido nombres de mineros de Valdescarcha."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Orvane ha convertido esta ciudad en una prisión y una zona de trabajos forzados."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "z2_q01",
+              "title": "El registro del excavador",
+              "img": "escena_registro_excavador",
+              "decision": true,
+              "text": "Un excavador goblin aprieta un libro contra el pecho y os mira con desconfianza. Parece dispuesto a negociar.",
+              "question": "¿Cómo conseguís el registro?",
+              "options": [
+                {
+                  "label": "Negociar su entrega",
+                  "attr": "cha",
+                  "dc": 12,
+                  "ok": {
+                    "text": "El goblin os entrega el libro. Contiene la ubicación de un conducto que permite avanzar entre las ruinas.",
+                    "reveal": "z2_s01"
+                  },
+                  "fail": {
+                    "text": "El goblin os cobra diez monedas por mostrar una página. Después huye con el libro.",
+                    "gold": -10
+                  }
+                },
+                {
+                  "label": "Arrebatárselo",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Le quitáis el libro y encontráis la ubicación de un conducto oculto.",
+                    "reveal": "z2_s01"
+                  },
+                  "fail": {
+                    "text": "El goblin escapa dando voces. Sus compañeros estarán prevenidos.",
+                    "add": "z2_e04"
+                  }
+                },
+                {
+                  "label": "Dejarle y seguir",
+                  "ok": {
+                    "text": "El goblin desaparece entre las balanzas."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z2_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Vigilante goblin",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "z2_pat01_paso",
+              "title": "Vigilantes de la ciudad",
+              "text": "Unos vigilantes goblins inspeccionan su botín, distraídos por una discusión.",
+              "question": "¿Qué hacéis?",
+              "on_return": true,
+              "after": "z2_r07",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Se interponen y llaman a gritos a sus compañeros.",
+                    "fight": "z2_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Os ocultáis tras los contrapesos hasta que se van.",
+                    "remove": "z2_pat01"
+                  },
+                  "fail": {
+                    "text": "Os descubren.",
+                    "fight": "z2_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Les decís que el capataz ya no puede protegerles. Huyen.",
+                    "remove": "z2_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "z2_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "ore_sacks",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "milestone",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z2_r09",
+          "name": "Archivo de las cuadrillas",
+          "description": "Hileras de tablillas de piedra con nombres y turnos. Varias han sido arrancadas con violencia.",
+          "exits": [
+            {
+              "to": "z2_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z2_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En las tablillas aparecen nombres recientes, escritos sobre los registros enanos."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Son los mineros de Valdescarcha. Los han separado en grupos para excavar hacia la cripta."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "z2_d06b",
+              "lines": [
+                {
+                  "speaker": "brunna",
+                  "text": "Aquí hay nombres de mi cuadrilla. Busco a un aprendiz cuya ficha de cobre aún conservo."
+                }
+              ],
+              "only": "brunna"
+            },
+            {
+              "type": "chest",
+              "id": "z2_c06",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 5,
+              "item": null
+            },
+            {
+              "type": "prop",
+              "prop": "lectern",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z2_r10",
+          "name": "Patio de los hornos",
+          "description": "Un patio con tres hornos de fundición, dos apagados y uno aún encendido. Tras uno de ellos está la palanca de la reja del vestíbulo.",
+          "exits": [
+            {
+              "to": "z2_r05",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z2_r01",
+              "type": "gate",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z2_e08",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Goblin de los hornos",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 100
+            },
+            {
+              "type": "scene",
+              "id": "z2_q02",
+              "title": "La rendición en los hornos",
+              "img": "escena_rendicion_hornos",
+              "decision": true,
+              "text": "Unos goblins sueltan las armas y levantan las manos ante vosotros. Aseguran que no quieren seguir luchando.",
+              "question": "¿Qué hacéis con los goblins rendidos?",
+              "options": [
+                {
+                  "label": "Aceptar su rendición",
+                  "ok": {
+                    "text": "Se van sin mirar atrás.",
+                    "remove": "z2_e08"
+                  }
+                },
+                {
+                  "label": "Exigirles el botín",
+                  "attr": "cha",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Os dan una bolsa y se marchan.",
+                    "gold": 5,
+                    "remove": "z2_e08"
+                  },
+                  "fail": {
+                    "text": "Se miran, recogen las armas y atacan.",
+                    "fight": "z2_e08"
+                  }
+                },
+                {
+                  "label": "Cerrarles el paso",
+                  "ok": {
+                    "text": "Les cerráis la salida. Piden auxilio y otro goblin acude; todos se disponen a luchar.",
+                    "add": "z2_e08",
+                    "fight": "z2_e08"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "lever",
+              "id": "z2_b01_open",
+              "gate": "z2_b01",
+              "name": "Reja de los turnos",
+              "text": "La reja del vestíbulo queda abierta: ahora hay un atajo entre este patio y la entrada de las ruinas.",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Accionáis la palanca del patio. La vieja reja comienza a subir."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Es la reja que vimos al entrar. Ahora tenemos un atajo de regreso."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "forge",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z2_s01_r01",
+          "name": "Puesto del vigía",
+          "description": "Una mesa orientada hacia el conducto y un cuaderno abierto por su última página.",
+          "exits": [
+            {
+              "to": "z2_r04",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z2_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un cuaderno recoge los últimos turnos de los vigilantes enanos."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Su última orden dice: «El rey Aldric ha cerrado el camino a la cripta. Nadie debe llegar al cristal»."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "z2_d05b",
+              "lines": [
+                {
+                  "speaker": "brunna",
+                  "text": "Los canteros no dejaban un puesto sin entregar el relevo. Algo interrumpió aquel turno."
+                }
+              ],
+              "only": "brunna"
+            },
+            {
+              "type": "encounter",
+              "id": "z2_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Goblin Warrior",
+                  "name": "Goblin escondido",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "z2_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 13,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z2_s02_r01",
+          "name": "Sala de los juramentos",
+          "description": "Un círculo de taburetes rodea un pedestal con juramentos de canteros escritos en tablillas.",
+          "exits": [
+            {
+              "to": "z2_r07",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z2_d10",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Las tablillas explican que los canteros obedecieron al rey Aldric y sellaron los accesos más profundos."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "La última advertencia dice: «Bajo la cripta hay un cristal peligroso. No rompáis los cierres»."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z2_e09",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Centinela de los juramentos",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "chest",
+              "id": "z2_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 16,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "gravestone",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "z2_j01",
+          "from": "z2_r01",
+          "until": "z2_b01",
+          "text": "Una reja bloquea el atajo de vuelta. Debe de haber un mecanismo para levantarla."
+        },
+        {
+          "id": "z2_j02",
+          "from": "z2_r09",
+          "until": "z4_r09",
+          "text": "Los registros confirman que los mineros trabajan como prisioneros. Falta saber adónde los han trasladado."
+        },
+        {
+          "id": "z2_j03",
+          "from": "z2_r04",
+          "until": "z2_s01",
+          "text": "Las corrientes de aire podrían conducir a un puesto de vigilancia oculto."
+        },
+        {
+          "id": "z2_j04",
+          "from": "z2_r07",
+          "until": "z2_s02",
+          "text": "Los canteros enanos dejaron señales de un pequeño cofre escondido entre las ruinas."
+        }
+      ],
+      "c_gold": true
+    },
+    {
+      "id": "z3",
+      "order": 3,
+      "name": "La cripta real de Aldric el Olvidado",
+      "description": "Una antigua cripta enana custodia el camino hacia el monasterio. Orvane ha profanado las tumbas para franquear el cierre de Aldric. Aquí se incorpora el segundo aliado.",
+      "expected_party_level": 3,
+      "difficulty": "Moderada para tres personajes de nivel 3. El aliado se incorpora en la segunda sala, antes de cualquier combate de la zona.",
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "Descendéis hasta la cripta del rey Aldric. Los enanos la construyeron para vigilar el acceso al monasterio."
+        },
+        {
+          "speaker": "narrator",
+          "text": "Hay sarcófagos abiertos y huellas recientes. Orvane ha perturbado a los muertos durante sus excavaciones."
+        },
+        {
+          "speaker": "hero",
+          "text": "Aldric encerró algo peligroso bajo estas tumbas. Tenemos que impedir que Orvane lo libere."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "z3_r01",
+          "name": "Umbral de los reyes",
+          "description": "Una escalera conduce a una cámara funeraria cubierta de niebla. Dos estatuas de guerreros enanos custodian una inscripción que prohíbe perturbar el descanso real.",
+          "kind": "room",
+          "size_hexes": 14,
+          "shape": "cross",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "z2_r07",
+              "type": "stairs_down",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r02",
+              "type": "door",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 2
+            },
+            {
+              "type": "prop",
+              "prop": "sarcophagus",
+              "count": 1
+            },
+            {
+              "type": "dialogue",
+              "id": "z3_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una inscripción cuenta que Aldric ordenó cerrar el acceso al monasterio para proteger su reino."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "El rey no guardaba un tesoro. Intentaba que nadie encontrase algo peligroso."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z3_r02",
+          "name": "Capilla de los antepasados",
+          "description": "Una pequeña capilla conserva un altar enano y restos de velas. Un superviviente protege la entrada a las cámaras interiores. El aliado se incorpora antes de que el grupo encuentre enemigos.",
+          "kind": "room",
+          "size_hexes": 13,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z3_r01",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r03",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r08",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "ally",
+              "slot_zone": 3,
+              "default_ally": "edmund",
+              "default_scene": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un clérigo anciano, con un farol y una maza, protege la entrada a las tumbas."
+                },
+                {
+                  "speaker": "edmund",
+                  "text": "Soy el hermano Edmund. Mi orden recibió el encargo de custodiar esta cripta cuando murieron sus guardianes enanos."
+                },
+                {
+                  "speaker": "edmund",
+                  "text": "Orvane ha despertado a los muertos para llegar al monasterio. Os acompañaré para detenerlo."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una enana con casco de minero aparece herida entre los sarcófagos."
+                },
+                {
+                  "speaker": "brunna",
+                  "text": "Soy Brunna Piedrahonda. He seguido a los goblins hasta aquí, pero los muertos me impidieron avanzar."
+                },
+                {
+                  "speaker": "brunna",
+                  "text": "Busco a los mineros desaparecidos. Si me ayudáis a salir de la cripta, lucharé a vuestro lado."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "altar",
+              "count": 1
+            },
+            {
+              "type": "rest_point",
+              "id": "z3_rest2",
+              "rest": "short",
+              "name": "Rincón resguardado",
+              "description": "Un hueco tranquilo donde recobrar el aliento; permite regresar a Valdescarcha."
+            },
+            {
+              "type": "chest",
+              "id": "z3_o02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 7,
+              "item": {
+                "id": "potion_healing"
+              },
+              "obstacle": {
+                "title": "Espíritu inquieto",
+                "img": "altar",
+                "text": "Un espíritu inquieto vela el altar y no os deja acercaros a las ofrendas.",
+                "needs": [
+                  "holy_water"
+                ],
+                "use": "{who} rocía el altar con agua bendita y el espíritu descansa por fin.",
+                "missing": "Con agua bendita podríamos darle descanso. En la tienda del pueblo venden."
+              }
+            }
+          ]
+        },
+        {
+          "id": "z3_r03",
+          "name": "Sala de los guardianes",
+          "description": "Una cámara de piedra contiene sarcófagos abiertos. Los esqueletos de antiguos soldados se levantan cuando el grupo se acerca.",
+          "kind": "room",
+          "size_hexes": 14,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z3_r02",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z3_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Guardianes esqueléticos",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": "Espada corta",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 5,
+              "xp_total": 150
+            },
+            {
+              "type": "prop",
+              "prop": "sarcophagus",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "z3_r04",
+          "name": "Galería de las tumbas",
+          "description": "Un largo corredor contiene nichos funerarios a ambos lados. La niebla oculta parcialmente los cuerpos que yacen entre las tumbas.",
+          "kind": "corridor",
+          "size_hexes": 12,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z3_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z3_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Zombie",
+                  "name": "Antiguos sepultureros",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": "Golpe putrefacto",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 150
+            },
+            {
+              "type": "trap",
+              "id": "z3_t01",
+              "name": "Losa funeraria",
+              "description": "Una losa oculta activa un mecanismo que lanza fragmentos de piedra desde las paredes.",
+              "detect_dc": 14,
+              "disarm_dc": 14,
+              "save_ability": "DEX",
+              "save_dc": 13,
+              "effect": "2d6 contundente; mitad del daño con salvación exitosa."
+            },
+            {
+              "type": "prop",
+              "prop": "sarcophagus",
+              "count": 4
+            },
+            {
+              "type": "dialogue",
+              "id": "z3_d04b",
+              "lines": [
+                {
+                  "speaker": "edmund",
+                  "text": "No todos estos muertos eligieron levantarse. Hay que devolverles el silencio."
+                }
+              ],
+              "only": "edmund"
+            },
+            {
+              "type": "scene",
+              "id": "z3_p02",
+              "title": "La losa de los nombres",
+              "text": "Bajo una losa con nombres grabados hay una ofrenda olvidada. Recuperarla sin dañarla requiere paciencia.",
+              "question": "¿Cómo recuperáis lo que hay debajo?",
+              "options": [
+                {
+                  "label": "Apartar las piedras más pesadas",
+                  "attr": "str",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Liberáis la ofrenda: contiene pequeñas piezas funerarias de oro.",
+                    "gold": 7
+                  },
+                  "fail": {
+                    "text": "Las piedras se os vienen encima.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Alcanzar la ofrenda entre las grietas",
+                  "attr": "dex",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Recuperáis las piezas funerarias sin mover toda la piedra.",
+                    "gold": 7
+                  },
+                  "fail": {
+                    "text": "Los escombros se desplazan y ocultan la ofrenda."
+                  }
+                },
+                {
+                  "label": "Buscar las piedras inestables",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Apartáis con cuidado las piedras inestables y recuperáis las piezas de oro.",
+                    "gold": 7
+                  },
+                  "fail": {
+                    "text": "Una piedra rueda y la ofrenda se pierde entre las grietas."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "La ofrenda se pierde. El camino principal sigue libre."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "rubble",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z3_r05",
+          "name": "Cámara de las ofrendas",
+          "description": "Las paredes están decoradas con escenas de la coronación de Aldric. Un sarcófago secundario contiene ofrendas de oro. Los muertos protegen el lugar.",
+          "kind": "room",
+          "size_hexes": 15,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z3_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r06",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r07",
+              "type": "secret",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z3_e03",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Ghoul",
+                  "name": "Necrófago de las ofrendas",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Garras y mordisco",
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Guardianes de las ofrendas",
+                  "count": 2,
+                  "row": "back",
+                  "weapon": "Arco corto",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 4,
+              "xp_total": 300
+            },
+            {
+              "type": "secret",
+              "id": "z3_s01",
+              "detect_dc": 15,
+              "reveals": "exit:z3_r07",
+              "description": "Un acceso lateral, disimulado entre las tumbas, comunica con el antiguo sepulcro del rey."
+            },
+            {
+              "type": "prop",
+              "prop": "sarcophagus",
+              "count": 2
+            },
+            {
+              "type": "chest",
+              "id": "z3_o01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 13,
+              "item": {
+                "id": "spell_scroll_shield"
+              },
+              "obstacle": {
+                "title": "Sarcófago sellado",
+                "img": "sarcofago",
+                "text": "Un sarcófago sellado con una losa pesada.",
+                "needs": [
+                  "crowbar"
+                ],
+                "use": "{who} apalanca la losa y la desliza a un lado.",
+                "missing": "Con una palanqueta moveríamos la losa. En la tienda del pueblo venden.",
+                "alt": {
+                  "abil": "str",
+                  "dc": 14,
+                  "dmg": "1d6",
+                  "label": "Fuerza",
+                  "hurt": "La losa resbala y aplasta la mano de {who}",
+                  "try": "{who} intenta mover la losa a pulso."
+                }
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "z3_d06b",
+              "lines": [
+                {
+                  "speaker": "edmund",
+                  "text": "Estas ofrendas no son un botín abandonado. Alguien las dejó para que una historia no se perdiera."
+                }
+              ],
+              "only": "edmund"
+            },
+            {
+              "type": "scene",
+              "id": "z3_s01_pista",
+              "title": "Los trazos funerarios",
+              "text": "Unas marcas de los canteros parecen señalar una antigua entrada secundaria a la cámara real.",
+              "question": "¿Cómo lo buscáis?",
+              "reveals": "z3_s01",
+              "options": [
+                {
+                  "label": "Buscar aire bajo los arcos",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Encontráis una antigua entrada lateral que comunica con otra cámara de la cripta.",
+                    "reveal": "z3_s01"
+                  },
+                  "fail": {
+                    "text": "No lográis seguir la pista."
+                  }
+                },
+                {
+                  "label": "Comparar los trazos de la piedra",
+                  "attr": "int",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Descifráis las marcas y descubrís una entrada secundaria a la cámara real.",
+                    "reveal": "z3_s01"
+                  },
+                  "fail": {
+                    "text": "No lográis seguir la pista."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "gravestone",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z3_r06",
+          "name": "Galería de los centinelas",
+          "description": "Tres figuras esqueléticas custodian el último corredor antes del sepulcro real. Las paredes muestran escenas de antiguas batallas.",
+          "kind": "corridor",
+          "size_hexes": 12,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z3_r05",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z3_e04",
+              "trigger": "enter",
+              "can_reinforce": [
+                "z3_e05"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Centinelas de Aldric",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": "Espada corta",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 9,
+              "xp_total": 150
+            },
+            {
+              "type": "trap",
+              "id": "z3_t02",
+              "name": "Lanza del sepulcro",
+              "description": "Un mecanismo funerario dispara una lanza desde una estatua cuando se pisa una baldosa marcada.",
+              "detect_dc": 15,
+              "disarm_dc": 14,
+              "save_ability": "DEX",
+              "save_dc": 13,
+              "effect": "2d6 perforante; mitad del daño con salvación exitosa."
+            },
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z3_r07",
+          "name": "Sepulcro de Aldric",
+          "description": "Una enorme cámara contiene el sarcófago real. La niebla gira alrededor de la tumba, donde una presencia maligna custodia el acceso al monasterio.",
+          "kind": "room",
+          "size_hexes": 18,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z3_r05",
+              "type": "secret",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_r06",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r01",
+              "type": "stairs_down",
+              "key_item_id": null
+            },
+            {
+              "to": "z3_s02_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z3_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Ghoul",
+                  "name": "Necrófago custodio",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Garras y mordisco",
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Zombie",
+                  "name": "Muertos del sarcófago",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": "Golpe putrefacto",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 11,
+              "xp_total": 300
+            },
+            {
+              "type": "rest_point",
+              "id": "z3_rest1",
+              "rest": "short",
+              "name": "Vigilia del rey",
+              "description": "La presencia sagrada del sepulcro permite un descanso corto cuando la cámara está despejada."
+            },
+            {
+              "type": "secret",
+              "id": "z3_s02",
+              "detect_dc": 16,
+              "reveals": "chest:z3_c02",
+              "description": "Tras el pedestal real se encuentra una cavidad con un último tributo funerario."
+            },
+            {
+              "type": "chest",
+              "id": "z3_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 24,
+              "item": {
+                "id": "potion_greater_healing_1",
+                "name": "Poción de curación mayor",
+                "srd_item": "Potion of Greater Healing",
+                "rarity": "Uncommon",
+                "magical": true,
+                "description": "Recupera 4d4 + 4 puntos de golpe. Es un recurso de curación útil para cualquier integrante del grupo."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "sarcophagus",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "stairs",
+              "count": 1
+            },
+            {
+              "type": "dialogue",
+              "id": "z3_d10b",
+              "lines": [
+                {
+                  "speaker": "edmund",
+                  "text": "Aldric no quería que lo recordaran como un gran rey. Quería impedir que usaran el cristal."
+                }
+              ],
+              "only": "edmund"
+            },
+            {
+              "type": "scene",
+              "id": "z3_s02_pista",
+              "title": "Las losas removidas",
+              "text": "Bajo un arco funerario, el polvo de las losas está removido. Una corriente fría cruza el suelo.",
+              "question": "¿Cómo lo buscáis?",
+              "reveals": "z3_s02",
+              "options": [
+                {
+                  "label": "Seguir el aire bajo el arco",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Las juntas removidas delatan dónde se oculta un cofre funerario bajo el arco.",
+                    "reveal": "z3_s02"
+                  },
+                  "fail": {
+                    "text": "El frío y el polvo os impiden localizarlo."
+                  }
+                },
+                {
+                  "label": "Examinar las juntas de las losas",
+                  "attr": "int",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Las juntas removidas delatan dónde se oculta un cofre funerario bajo el arco.",
+                    "reveal": "z3_s02"
+                  },
+                  "fail": {
+                    "text": "El frío y el polvo os impiden localizarlo."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z3_r08",
+          "name": "Cámara de las cenizas",
+          "description": "Urnas de piedra apiladas bajo nichos vacíos. La ceniza del suelo se mueve hacia una rendija.",
+          "exits": [
+            {
+              "to": "z3_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z3_d03",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Sobre un atril de piedra hay una lista de los guardianes que sellaron el acceso al monasterio."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Todos juraron impedir que alguien alcanzara el cristal. Por eso custodian este lugar."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "z3_p01",
+              "title": "El aire de los antiguos",
+              "text": "Entre los arcos de la cripta circula aire gélido. Una ofrenda ha quedado en una grieta al pie del muro.",
+              "question": "¿Cómo examináis el escondrijo?",
+              "options": [
+                {
+                  "label": "Contener el aliento junto al muro",
+                  "attr": "con",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Al abrigo del arco recuperáis la ofrenda de la grieta.",
+                    "item": "holy_water",
+                    "gold": 5
+                  },
+                  "fail": {
+                    "text": "El aire helado os obliga a retroceder.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Esperar al abrigo de un arco",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Al abrigo del arco recuperáis la ofrenda de la grieta.",
+                    "item": "holy_water",
+                    "gold": 5
+                  },
+                  "fail": {
+                    "text": "El aire helado os obliga a retroceder."
+                  }
+                },
+                {
+                  "label": "Estudiar las grietas de la piedra",
+                  "attr": "int",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Al abrigo del arco recuperáis la ofrenda de la grieta.",
+                    "item": "holy_water",
+                    "gold": 5
+                  },
+                  "fail": {
+                    "text": "El aire helado os obliga a retroceder."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "No conseguís recuperar lo que buscabais y os retiráis."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "lectern",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "sarcophagus",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z3_r09",
+          "name": "Cámara de los nombres perdidos",
+          "description": "Lápidas sin sarcófago. Sus nombres se guardaron en cajas; una de ellas está abierta y vacía.",
+          "exits": [
+            {
+              "to": "z3_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z3_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un registro nombra a los guardianes, pero omite al rey que dio la orden."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Aldric quiso borrar su nombre de los documentos. Tal vez así evitara que buscaran su tumba."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z3_e06",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Guardián de los nombres",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "scene",
+              "id": "z3_q01",
+              "title": "El escriba de los nombres",
+              "img": "escena_escriba_nombres",
+              "decision": true,
+              "text": "Un escriba fantasmal señala una caja de pergaminos junto a unas lápidas sin nombre. Parece pedir que los respetéis.",
+              "question": "¿Cómo respondéis al escriba?",
+              "options": [
+                {
+                  "label": "Prometer conservar los nombres",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "El escriba acepta vuestra promesa. Os muestra una antigua entrada lateral hacia el sepulcro real.",
+                    "reveal": "z3_s01"
+                  },
+                  "fail": {
+                    "text": "El escriba se desvanece sin creeros."
+                  }
+                },
+                {
+                  "label": "Dejar 15 monedas de tributo",
+                  "cost": 15,
+                  "ok": {
+                    "text": "Dejáis quince monedas de tributo. El escriba os muestra una entrada secundaria hacia el sepulcro real.",
+                    "reveal": "z3_s01"
+                  }
+                },
+                {
+                  "label": "Despreciar los pergaminos",
+                  "ok": {
+                    "text": "El escriba se retira. Unos guardianes surgen entre las lápidas.",
+                    "add": "z3_e06",
+                    "fight": "z3_e06"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "gravestone",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "gravestone",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z3_r10",
+          "name": "Antesala de las inscripciones",
+          "description": "Estatuas de guardianes sin rostro flanquean las paredes. En la piedra se conserva la última orden de Aldric.",
+          "exits": [
+            {
+              "to": "z3_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z3_d09",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una inscripción dice: «Encerrad el cristal bajo el agua y la piedra. Que nadie vuelva a utilizar su poder»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Orvane ha venido precisamente a romper la prohibición de Aldric."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "z3_q02",
+              "title": "La estatua sin rostro",
+              "img": "escena_estatua_sin_rostro",
+              "decision": true,
+              "text": "Una estatua de guardián tiene el rostro borrado a cincel. Frente a ella hay una puerta entreabierta y un cuenco de bronce.",
+              "question": "¿Cómo mostráis respeto ante la estatua?",
+              "options": [
+                {
+                  "label": "Jurar que protegeréis el cristal",
+                  "attr": "cha",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Al pronunciar el juramento, descubrís una inscripción que señala un tributo funerario escondido.",
+                    "reveal": "z3_s02"
+                  },
+                  "fail": {
+                    "text": "La estatua permanece inmóvil. No encontráis ninguna pista."
+                  }
+                },
+                {
+                  "label": "Dejar 10 monedas en el cuenco",
+                  "cost": 10,
+                  "ok": {
+                    "text": "Dejáis diez monedas en el cuenco. Bajo su base aparece una pista sobre un cofre funerario oculto.",
+                    "reveal": "z3_s02"
+                  }
+                },
+                {
+                  "label": "Guardar silencio",
+                  "ok": {
+                    "text": "Seguís adelante sin decir nada."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "z3_c06",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 7,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "altar",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z3_s01_r01",
+          "name": "Escribanía sellada",
+          "description": "Un escritorio guarda el borrador de una declaración real que nunca se hizo pública.",
+          "exits": [
+            {
+              "to": "z3_r05",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z3_d07",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un documento explica que los monjes del monasterio encerraron un cristal capaz de liberar una enorme fuerza mágica."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Aldric ordenó sellar el camino. Quería impedir que alguien usara el cristal para dominar el valle."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z3_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Zombie",
+                  "name": "Copista muerto",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "chest",
+              "id": "z3_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 11,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "lectern",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z3_s02_r01",
+          "name": "Guardia sin relevo",
+          "description": "Un casco y un escudo ante un asiento de piedra. Bajo el asiento, la lista de las guardias tras la muerte de Aldric.",
+          "exits": [
+            {
+              "to": "z3_r07",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z3_d11",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "El libro de guardias confirma que Aldric ordenó ocultar incluso su nombre. Así nadie buscaría el camino al cristal."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Con el tiempo olvidaron el motivo del cierre. Solo los guardianes siguieron cumpliendo su deber."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z3_e08",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Último custodio",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "chest",
+              "id": "z3_c07",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 15,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "gravestone",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "z3_j01",
+          "from": "z3_r01",
+          "until": "z3_r10",
+          "text": "Un relieve muestra a Aldric cerrando el paso hacia las profundidades. Falta descubrir qué quería proteger."
+        },
+        {
+          "id": "z3_j02",
+          "from": "z3_r09",
+          "until": "z3_r07",
+          "text": "Un documento explica que Aldric ocultó su nombre. Hay que comprobar si su sepulcro sigue intacto."
+        },
+        {
+          "id": "z3_j03",
+          "from": "z3_r05",
+          "until": "z3_s01",
+          "text": "Una lápida parece ocultar una antigua estancia de escribas."
+        },
+        {
+          "id": "z3_j04",
+          "from": "z3_r07",
+          "until": "z3_s02",
+          "text": "Un hueco en el pedestal del sepulcro podría guardar el último tributo del rey."
+        }
+      ],
+      "c_gold": true
+    },
+    {
+      "id": "z4",
+      "order": 4,
+      "name": "El monasterio hundido",
+      "description": "El monasterio inundado oculta el cristal que Aldric mandó encerrar. Los monjes lo mantuvieron bajo el agua para contener su energía. Ahora Orvane intenta controlarlo con ayuda de sus cultistas.",
+      "expected_party_level": 3,
+      "difficulty": "Moderada-alta para cuatro personajes de nivel 3. El aliado se incorpora en la segunda sala, antes del primer combate. El descanso largo está inmediatamente antes del jefe.",
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "Llegáis a un monasterio medio sumergido. Los cristales violetas iluminan las aguas oscuras."
+        },
+        {
+          "speaker": "narrator",
+          "text": "Los monjes inundaron este lugar para contener el poder de un cristal. Orvane ha comenzado a romper sus protecciones."
+        },
+        {
+          "speaker": "narrator",
+          "text": "La voz de Orvane resuena desde las profundidades: «No podréis detenerme. El cristal será mío»."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "z4_r01",
+          "name": "Atrio de las aguas",
+          "description": "El atrio está cubierto por una fina capa de agua. Columnas rotas emergen del suelo y una luz violácea se filtra desde las cámaras interiores.",
+          "kind": "room",
+          "size_hexes": 15,
+          "shape": "cross",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "z3_r07",
+              "type": "stairs_down",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 3
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 3
+            },
+            {
+              "type": "prop",
+              "prop": "crystal",
+              "count": 2
+            },
+            {
+              "type": "chest",
+              "id": "z4_o01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 11,
+              "item": {
+                "id": "potion_healing"
+              },
+              "obstacle": {
+                "title": "El islote",
+                "img": "agua_oscura",
+                "text": "Un islote en medio del agua profunda, con un cofre medio hundido.",
+                "needs": [
+                  "rope"
+                ],
+                "use": "{who} lanza la cuerda a una columna y cruzáis agarrados a ella.",
+                "missing": "Con una cuerda cruzaríamos sin mojarnos. En la tienda del pueblo venden.",
+                "alt": {
+                  "abil": "str",
+                  "dc": 13,
+                  "dmg": "1d6",
+                  "label": "Atletismo",
+                  "hurt": "La corriente arrastra a {who} contra las piedras",
+                  "try": "{who} intenta cruzar a nado."
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "z4_r02",
+          "name": "Claustro de los iniciados",
+          "description": "Un claustro inundado conserva restos de bancos y atriles. Una figura permanece oculta entre los restos de una estancia lateral. El aliado se incorpora antes de cualquier combate de la zona.",
+          "kind": "corridor",
+          "size_hexes": 13,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z4_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r03",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r08",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "ally",
+              "slot_zone": 4,
+              "default_ally": "liss",
+              "default_scene": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una elfa joven, con un libro y un bastón de cristal apagado, sale de su escondite."
+                },
+                {
+                  "speaker": "liss",
+                  "text": "Soy Liss. Fui aprendiz de Orvane y le ayudé a estudiar estos cristales. No sabía lo que pretendía."
+                },
+                {
+                  "speaker": "liss",
+                  "text": "Tardé demasiado en actuar. Ahora conozco sus defensas y quiero ayudaros a liberar a los mineros."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una enana empapada sale de un conducto. Lleva un casco de minero y un pico al hombro."
+                },
+                {
+                  "speaker": "brunna",
+                  "text": "Soy Brunna Piedrahonda. Escapé de los cultistas mientras buscaba a los mineros desaparecidos."
+                },
+                {
+                  "speaker": "brunna",
+                  "text": "Orvane los tiene encerrados aquí abajo. Quiero liberarlos y acabar con sus planes."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z4_r03",
+          "name": "Laboratorio de los cristales",
+          "description": "Una cámara de investigación contiene mesas de piedra, recipientes rotos y cristales que flotan sobre pedestales. Los cultistas vigilan la estancia.",
+          "kind": "room",
+          "size_hexes": 16,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z4_r02",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z4_e01",
+              "trigger": "seen",
+              "can_reinforce": [
+                "z4_e02"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Cultist",
+                  "name": "Acólitos de Orvane",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": "Daga",
+                  "drop_weapon": true
+                },
+                {
+                  "srd_creature": "Cultist",
+                  "name": "Acólito arquero",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": "Ballesta ligera",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 11,
+              "xp_total": 100
+            },
+            {
+              "type": "trap",
+              "id": "z4_t01",
+              "name": "Runa de descarga",
+              "description": "Una runa bajo el agua libera una descarga eléctrica cuando alguien pisa su centro.",
+              "detect_dc": 15,
+              "disarm_dc": 15,
+              "save_ability": "DEX",
+              "save_dc": 13,
+              "effect": "2d6 de daño de relámpago; mitad del daño con salvación exitosa."
+            },
+            {
+              "type": "secret",
+              "id": "z4_s01",
+              "detect_dc": 15,
+              "reveals": "chest:z4_c01",
+              "description": "Un pequeño cofre de los monjes permanece oculto entre cristales sin luz."
+            },
+            {
+              "type": "chest",
+              "id": "z4_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 22,
+              "item": {
+                "id": "spell_scroll_shield",
+                "name": "Pergamino de escudo",
+                "srd_item": "Spell Scroll",
+                "description": "Contiene el conjuro Escudo. Solo puede utilizarlo un personaje que tenga el conjuro en su lista de clase."
+              }
+            },
+            {
+              "type": "rest_point",
+              "id": "z4_rest1",
+              "rest": "short",
+              "name": "Cámara de los cristales",
+              "description": "Una barrera arcana mantiene a raya a las criaturas del monasterio. Permite realizar un descanso corto cuando la sala está despejada."
+            },
+            {
+              "type": "prop",
+              "prop": "crystal",
+              "count": 4
+            },
+            {
+              "type": "chest",
+              "id": "z4_o02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 16,
+              "item": {
+                "id": "potion_greater_healing_1"
+              },
+              "obstacle": {
+                "title": "Vapores venenosos",
+                "img": "cristal",
+                "text": "Unos vapores venenosos salen de una grieta junto a una vitrina de cristales.",
+                "needs": [
+                  "antidote",
+                  "potion_poison_resistance"
+                ],
+                "use": "{who} bebe {item} y se acerca a la vitrina entre los vapores.",
+                "missing": "Sin un antídoto o una poción de resistencia al veneno no podemos acercarnos."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "z4_d05b",
+              "lines": [
+                {
+                  "speaker": "liss",
+                  "text": "Esas placas son mías. Orvane las cambió para extraer energía del cristal. Debemos detenerlo."
+                }
+              ],
+              "only": "liss"
+            },
+            {
+              "type": "scene",
+              "id": "z4_s01_pista",
+              "title": "El cristal opaco",
+              "text": "Entre los destellos violetas destaca un cristal apagado. Parece ocultar algo bajo una capa de polvo.",
+              "question": "¿Cómo seguís la pista?",
+              "reveals": "z4_s01",
+              "options": [
+                {
+                  "label": "Escuchar junto al cristal apagado",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Un eco hueco os ayuda a encontrar un cofre escondido entre las ruinas.",
+                    "reveal": "z4_s01"
+                  },
+                  "fail": {
+                    "text": "El chapoteo os impide distinguir el eco."
+                  }
+                },
+                {
+                  "label": "Comparar los reflejos de los cristales",
+                  "attr": "int",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Los reflejos delatan el lugar donde los monjes escondieron un cofre.",
+                    "reveal": "z4_s01"
+                  },
+                  "fail": {
+                    "text": "Los reflejos se confunden en el agua."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z4_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Cultist",
+                  "name": "Recolector del cristal",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "z4_pat01_paso",
+              "title": "Recolectores del cristal",
+              "text": "Unos cultistas recogen energía de los cristales para Orvane. Todavía no han dado la alarma.",
+              "question": "¿Qué hacéis?",
+              "on_return": true,
+              "after": "z4_e01",
+              "before": "z4_e05",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Sueltan los recipientes y os cierran el paso.",
+                    "fight": "z4_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Aprovecháis su distracción para evitar que os descubran.",
+                    "remove": "z4_pat01"
+                  },
+                  "fail": {
+                    "text": "Os descubren.",
+                    "fight": "z4_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Les advertís de que los cierres de Orvane se desmoronan. Huyen.",
+                    "remove": "z4_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "z4_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z4_r04",
+          "name": "Galería de los penitentes",
+          "description": "Una galería parcialmente inundada contiene estatuas de monjes arrodillados. Los cultistas han colocado símbolos arcanos sobre sus rostros.",
+          "kind": "corridor",
+          "size_hexes": 14,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z4_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r05",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z4_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Steam Mephit",
+                  "name": "Elementales de vapor",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": "Garras y aliento de vapor",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 100
+            },
+            {
+              "type": "trap",
+              "id": "z4_t02",
+              "name": "Estatua de presión",
+              "description": "Una estatua enana adaptada por los cultistas libera una descarga de energía al presionar una losa oculta.",
+              "detect_dc": 15,
+              "disarm_dc": 14,
+              "save_ability": "DEX",
+              "save_dc": 13,
+              "effect": "2d6 de daño de fuerza; mitad del daño con salvación exitosa."
+            },
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 2
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 2
+            },
+            {
+              "type": "scene",
+              "id": "z4_p02",
+              "title": "El voto de silencio",
+              "text": "Junto a los cristales violetas, unas monedas y una poción han quedado entre piedras sumergidas. Remover las ruinas podría hacer ruido y atraer atención.",
+              "question": "¿Cómo recuperáis la ofrenda sin hacer ruido?",
+              "options": [
+                {
+                  "label": "Apartar las piedras bajo el agua",
+                  "attr": "str",
+                  "dc": 15,
+                  "ok": {
+                    "text": "Apartáis las piedras sin hacer ruido y recuperáis la poción y las monedas.",
+                    "item": "potion_healing",
+                    "gold": 9
+                  },
+                  "fail": {
+                    "text": "Una piedra se desliza y os golpea la mano.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Buscar un hueco seguro entre los cristales",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Distinguís un hueco entre los reflejos y recuperáis la poción y las monedas.",
+                    "item": "potion_healing",
+                    "gold": 9
+                  },
+                  "fail": {
+                    "text": "El agua turbia os impide encontrar un acceso seguro."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "La ofrenda sigue entre las piedras sumergidas."
+              }
+            },
+            {
+              "type": "encounter",
+              "id": "z4_e08",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Cultist",
+                  "name": "Devoto rendido",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 25
+            },
+            {
+              "type": "scene",
+              "id": "z4_ev01",
+              "title": "El devoto que suelta el arma",
+              "img": "escena_cultista_llave",
+              "decision": true,
+              "on_return": true,
+              "after": "z4_e03",
+              "before": "z4_e05",
+              "text": "Un devoto de Orvane, con la túnica empapada, deja caer su daga al agua y se arrodilla ante vosotros.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Aceptar su rendición",
+                  "ok": {
+                    "text": "El cultista confirma que Orvane mantiene cautivos. Os entrega una poción antes de escapar.",
+                    "item": "potion_healing"
+                  }
+                },
+                {
+                  "label": "Atacarle",
+                  "ok": {
+                    "text": "Recoge la daga del agua y se defiende.",
+                    "fight": "z4_e08"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "dwarf_statue",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z4_r05",
+          "name": "Cámara de estudio",
+          "description": "Una cámara de estudio contiene libros mojados, instrumentos arcanos y una mesa de alquimia. Los cultistas protegen los últimos recursos del monasterio.",
+          "kind": "room",
+          "size_hexes": 15,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z4_r04",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z4_e03",
+              "trigger": "enter",
+              "can_reinforce": [
+                "z4_e04"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Cultist",
+                  "name": "Devotos de Orvane",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": "Daga",
+                  "drop_weapon": true
+                },
+                {
+                  "srd_creature": "Cultist",
+                  "name": "Devoto de retaguardia",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": "Ballesta ligera",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 13,
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "z4_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 16,
+              "item": {
+                "id": "wand_magic_missiles_1",
+                "name": "Varita de proyectiles mágicos",
+                "srd_item": "Wand of Magic Missiles",
+                "rarity": "Uncommon",
+                "magical": true,
+                "description": "Tiene 7 cargas. Permite lanzar Proyectil mágico gastando de 1 a 3 cargas. Recupera 1d6 + 1 cargas gastadas cada día al amanecer."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "crystal",
+              "count": 3
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z4_r06",
+          "name": "Santuario de la fuente",
+          "description": "Una fuente circular ocupa el centro de una gran sala. El agua flota en pequeñas esferas y la energía arcana se concentra en el techo. Es el último lugar seguro antes de Orvane.",
+          "kind": "room",
+          "size_hexes": 18,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z4_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_r07",
+              "type": "door",
+              "key_item_id": null
+            },
+            {
+              "to": "z4_s02_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "rest_point",
+              "id": "z4_rest2",
+              "rest": "short",
+              "name": "Fuente de la serenidad",
+              "description": "La fuente conserva una energía purificadora. Es el último rincón seguro antes de Orvane."
+            },
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 3
+            },
+            {
+              "type": "prop",
+              "prop": "crystal",
+              "count": 4
+            },
+            {
+              "type": "dialogue",
+              "id": "z4_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "El brillo violeta se vuelve más intenso. Orvane está en la siguiente cámara, junto al cristal."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Tenemos que detenerlo antes de que rompa las últimas protecciones."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "z4_d01b",
+              "lines": [
+                {
+                  "speaker": "edmund",
+                  "text": "Descansad mientras podáis. Después tendremos que enfrentar a Orvane y salvar a los mineros."
+                }
+              ],
+              "only": "edmund"
+            },
+            {
+              "type": "scene",
+              "id": "z4_s02_pista",
+              "title": "El vínculo de Umbría",
+              "before": "b2_r01",
+              "text": "Un sello de piedra lleva símbolos de Umbría, un bosque lejano. Parece una antigua señal de los monjes viajeros.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Observar las ondas bajo los símbolos",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Descubrís una marca con forma de amuleto de corteza. Hará falta uno para activar el antiguo vínculo.",
+                    "flag": "z4_s02_visto"
+                  },
+                  "fail": {
+                    "text": "El agua se agita y perdéis el rastro de las ondas."
+                  }
+                },
+                {
+                  "label": "Interpretar los símbolos violetas",
+                  "attr": "int",
+                  "dc": 15,
+                  "ok": {
+                    "text": "Interpretáis el símbolo: un monje trajo esta magia de Umbría. Se necesita un amuleto de corteza.",
+                    "flag": "z4_s02_visto"
+                  },
+                  "fail": {
+                    "text": "No conseguís interpretar los trazos."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "Los símbolos siguen brillando sin revelar su secreto."
+              }
+            },
+            {
+              "type": "scene",
+              "id": "z4_s02_abrir",
+              "title": "El vínculo de Umbría",
+              "after": "b2_r01",
+              "reveals": "z4_s02",
+              "text": "El amuleto de corteza responde al sello de Umbría. Una luz violeta recorre la piedra.",
+              "question": "¿Probáis?",
+              "options": [
+                {
+                  "label": "Acercar el amuleto a los símbolos",
+                  "ok": {
+                    "text": "El amuleto activa un antiguo acceso de los monjes. Habéis descubierto el secreto del vínculo.",
+                    "reveal": "z4_s02"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "z4_r07",
+          "name": "Cámara del poder prohibido",
+          "description": "En una gran cámara medio inundada flota el cristal oscuro. Orvane lo rodea de magia, protegido por criaturas de vapor.",
+          "kind": "room",
+          "size_hexes": 20,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "z4_r06",
+              "type": "door",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "z4_e04",
+              "trigger": "seen",
+              "can_reinforce": [
+                "z4_e05"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Steam Mephit",
+                  "name": "Guardianes de vapor",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": "Garras y aliento de vapor",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 100
+            },
+            {
+              "type": "encounter",
+              "id": "z4_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Orvane",
+                  "name": "Maese Orvane",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": "Bastón arcano",
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 700
+            },
+            {
+              "type": "prop",
+              "prop": "crystal",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 4
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 4
+            },
+            {
+              "type": "dialogue",
+              "id": "z4_d12a",
+              "lines": [
+                {
+                  "speaker": "brunna",
+                  "text": "Orvane, esos mineros son gente de mi pueblo. Voy a liberarlos, aunque tenga que derribar esta montaña."
+                }
+              ],
+              "only": "brunna"
+            },
+            {
+              "type": "dialogue",
+              "id": "z4_d12b",
+              "lines": [
+                {
+                  "speaker": "tiko",
+                  "text": "Vinimos a rescatar a los mineros, no a conseguir tesoros. Orvane, se acabaron tus trampas."
+                }
+              ],
+              "only": "tiko"
+            }
+          ]
+        },
+        {
+          "id": "z4_r08",
+          "name": "Pasarela de las compuertas",
+          "description": "Una pasarela de losas cruza un canal rápido sobre tres compuertas de piedra.",
+          "exits": [
+            {
+              "to": "z4_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z4_d04",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Las compuertas conservan marcas antiguas de inundación. Los monjes las usaban para mantener el cristal bajo el agua."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Orvane ha cambiado el caudal para extraer energía del cristal. Por eso está fallando la protección."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "z4_p01",
+              "title": "El caudal contenido",
+              "text": "Entre las ruinas inundadas, la luz violeta permite distinguir unas monedas bajo el agua. La corriente dificulta alcanzarlas.",
+              "question": "¿Cómo recuperáis las monedas?",
+              "options": [
+                {
+                  "label": "Alcanzarlas desde el borde de piedra",
+                  "attr": "dex",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Recogéis las monedas sin perder el equilibrio.",
+                    "gold": 9
+                  },
+                  "fail": {
+                    "text": "Resbaláis y la corriente os golpea contra la piedra.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Buscar un remanso entre las columnas",
+                  "attr": "int",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Localizáis un remanso y recuperáis las monedas.",
+                    "gold": 9
+                  },
+                  "fail": {
+                    "text": "Los reflejos os impiden calcular la profundidad."
+                  }
+                },
+                {
+                  "label": "Soportar el agua helada para recogerlas",
+                  "attr": "con",
+                  "dc": 15,
+                  "ok": {
+                    "text": "Resistís el frío hasta recuperar las monedas.",
+                    "gold": 9
+                  },
+                  "fail": {
+                    "text": "El frío os entumece y el agua os derriba.",
+                    "damage": "1d4"
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "La corriente dispersa las monedas. Al intentar recogerlas, perdéis parte de las vuestras.",
+                "gold": -10
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "walkway",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z4_r09",
+          "name": "Registro de los cautivos",
+          "description": "Una cámara de escribas sobre el agua. Sus tablillas recientes tienen nombres de Valdescarcha.",
+          "exits": [
+            {
+              "to": "z4_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z4_d07",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un registro enumera a los mineros que Orvane mantiene prisioneros. Varios figuran como «trasladados detrás de la cámara de estudio»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ya sabemos dónde están los supervivientes. Primero tenemos que detener a Orvane para liberarlos."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "z4_d07b",
+              "lines": [
+                {
+                  "speaker": "liss",
+                  "text": "Conocía este registro. Debí denunciarlo antes. Ahora ayudaré a sacar a los mineros de aquí."
+                }
+              ],
+              "only": "liss"
+            },
+            {
+              "type": "dialogue",
+              "id": "z4_d07c",
+              "lines": [
+                {
+                  "speaker": "brunna",
+                  "text": "¡Aquí está el nombre del aprendiz! Lo trasladaron con los supervivientes. Aún puedo encontrarlo."
+                }
+              ],
+              "only": "brunna"
+            },
+            {
+              "type": "scene",
+              "id": "z4_q01",
+              "title": "El escribiente cautivo",
+              "img": "escena_escribiente_cautivo",
+              "decision": true,
+              "text": "Tras una reja oxidada, un escribiente cautivo os muestra dos tablillas: una con los turnos de guardia y otra con provisiones.",
+              "question": "¿Qué le pedís que os explique?",
+              "options": [
+                {
+                  "label": "Consultar los turnos de guardia",
+                  "ok": {
+                    "text": "El escribiente os señala una ruta que permite esquivar a uno de los guardias de la cámara de estudio.",
+                    "sub": "z4_e03"
+                  }
+                },
+                {
+                  "label": "Consultar la tablilla de provisiones",
+                  "ok": {
+                    "text": "El escribiente os entrega una poción de curación que guardaba entre sus provisiones.",
+                    "item": "potion_healing"
+                  }
+                },
+                {
+                  "label": "Comparar las dos tablillas",
+                  "attr": "int",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Descifráis ambas tablillas. Evitáis a un guardia y el escribiente os entrega una poción de curación.",
+                    "sub": "z4_e03",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "Solo comprendéis los turnos de guardia. El escribiente os explica cómo evitar a uno de ellos.",
+                    "sub": "z4_e03"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "lectern",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "cell_bars",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z4_r10",
+          "name": "Sala de los sellos rotos",
+          "description": "Una cámara octogonal con sellos arcanos quebrados y trazos recientes que los deforman.",
+          "exits": [
+            {
+              "to": "z4_r05",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z4_d09",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Los sellos de piedra están dañados. Las marcas más recientes fueron hechas por Orvane."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Está rompiendo las protecciones de los monjes para absorber la energía del cristal."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "z4_q02",
+              "title": "El cultista rendido",
+              "img": "escena_cultista_llave",
+              "decision": true,
+              "text": "Un joven cultista se arrodilla entre las ruinas inundadas y levanta las manos. Ofrece información a cambio de su libertad.",
+              "question": "¿Qué hacéis con el cultista?",
+              "options": [
+                {
+                  "label": "Perdonarle a cambio de información",
+                  "ok": {
+                    "text": "El cultista os revela dónde ocultaron un cofre y cómo evitar a uno de los guardianes de vapor. Después huye.",
+                    "reveal": "z4_s01",
+                    "sub": "z4_e04"
+                  }
+                },
+                {
+                  "label": "Exigirle sus monedas",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "El cultista os entrega siete monedas y se marcha.",
+                    "gold": 7
+                  },
+                  "fail": {
+                    "text": "El cultista huye y da la alarma. Un guardián de vapor más se prepara para combatir.",
+                    "add": "z4_e04"
+                  }
+                },
+                {
+                  "label": "Rechazar el trato",
+                  "ok": {
+                    "text": "El cultista se pierde por los pasillos inundados."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "z4_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 11,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "crystal",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "crystal",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z4_s01_r01",
+          "name": "Celda de los escribas",
+          "description": "Un atril seco en medio del agua guarda un diario sobre el cierre del monasterio.",
+          "exits": [
+            {
+              "to": "z4_r03",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z4_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un diario explica que los monjes inundaron el monasterio para enfriar el cristal y mantener su magia contenida."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Orvane está deshaciendo su trabajo. Si controla el cristal, pondrá en peligro todo el valle."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z4_e06",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Steam Mephit",
+                  "name": "Mefit del cristal",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "chest",
+              "id": "z4_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 22,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "lectern",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "z4_s02_r01",
+          "name": "Depósito del vínculo",
+          "description": "Una habitación seca con un estante de tablillas y un arcón de piedra. Las raíces fosilizadas no son de ningún árbol de la montaña.",
+          "exits": [
+            {
+              "to": "z4_r06",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "z4_d10",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un cuaderno cuenta que un monje viajó a Umbría y aprendió a crear vínculos mágicos con madera y piedra."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Este vínculo recuerda sus viajes a Umbría. No necesitamos entenderlo para detener a Orvane."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "z4_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Guardia del depósito",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "z4_c06",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 45,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "z4_j01",
+          "from": "z4_r05",
+          "until": "z4_e05",
+          "text": "Un registro revela que algunos mineros siguen encerrados tras la cámara de estudio. Debéis liberarlos cuando sea seguro."
+        },
+        {
+          "id": "z4_j03",
+          "from": "z4_r03",
+          "until": "z4_s01",
+          "text": "En el laboratorio hay pistas sobre un escondite de los monjes. Quizá contenga sus últimas instrucciones."
+        },
+        {
+          "id": "z4_j04",
+          "from": "z4_r03",
+          "until": "z4_r10",
+          "text": "Orvane está rompiendo las protecciones que mantienen controlada la energía del cristal."
+        },
+        {
+          "id": "z4_j05",
+          "from": "z4_r06",
+          "until": "z4_s02",
+          "text": "Un antiguo símbolo de Umbría responde a la magia de un amuleto de corteza."
+        }
+      ],
+      "c_gold": true
+    }
+  ],
+  "allies": [
+    {
+      "id": "brunna",
+      "name": "Brunna Piedrahonda",
+      "class": "Fighter",
+      "species": "Enana",
+      "personality": "Práctica, testaruda y protectora. Conoce las galerías mineras y no soporta a los capataces abusivos. Prefiere resolver los problemas con su martillo y proteger a sus compañeros.",
+      "starting_items": [
+        "Cota de escamas",
+        "Martillo de guerra",
+        "Escudo",
+        "Antorcha"
+      ]
+    },
+    {
+      "id": "tiko",
+      "name": "Tiko Manosrápidas",
+      "class": "Rogue",
+      "species": "Mediano",
+      "personality": "Ingenioso, hablador y oportunista. Siempre busca una salida y un tesoro. Tiene buen corazón, aunque intenta ocultarlo detrás de sus bromas.",
+      "starting_items": [
+        "Armadura de cuero",
+        "Espada corta",
+        "Arco corto",
+        "Herramientas de ladrón"
+      ]
+    },
+    {
+      "id": "edmund",
+      "name": "Hermano Edmund",
+      "class": "Cleric",
+      "species": "Humano",
+      "personality": "Sereno, compasivo y profundamente comprometido con su deber. Es el último guardián de la cripta y siente que ha fallado a los antepasados.",
+      "starting_items": [
+        "Cota de escamas",
+        "Maza",
+        "Escudo",
+        "Símbolo sagrado"
+      ]
+    },
+    {
+      "id": "liss",
+      "name": "Liss",
+      "class": "Wizard",
+      "species": "Elfa",
+      "personality": "Inteligente, reservada y atormentada por su participación en los experimentos de Orvane. Desea reparar el daño que ha causado y teme el poder que su antiguo maestro ha descubierto.",
+      "starting_items": [
+        "Túnica",
+        "Daga",
+        "Foco arcano",
+        "Libro de conjuros"
+      ]
+    }
+  ],
+  "boss": {
+    "id": "orvane",
+    "name": "Maese Orvane",
+    "based_on": "Mage",
+    "room_id": "z4_r07",
+    "stat_block": {
+      "cr": "3 (variante personalizada)",
+      "xp": 700,
+      "ac": 13,
+      "hp": {
+        "average": 45,
+        "hit_dice": "6d8 + 18"
+      },
+      "speed": {
+        "walk": "30 ft.",
+        "fly": "0 ft.",
+        "swim": "0 ft."
+      },
+      "abilities": {
+        "strength": {
+          "score": 9,
+          "modifier": -1
+        },
+        "dexterity": {
+          "score": 14,
+          "modifier": 2
+        },
+        "constitution": {
+          "score": 16,
+          "modifier": 3
+        },
+        "intelligence": {
+          "score": 16,
+          "modifier": 3
+        },
+        "wisdom": {
+          "score": 12,
+          "modifier": 1
+        },
+        "charisma": {
+          "score": 11,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {
+        "intelligence": "+5",
+        "wisdom": "+3"
+      },
+      "skills": {
+        "arcana": "+5",
+        "history": "+5",
+        "investigation": "+5"
+      },
+      "senses": {
+        "passive_perception": 11,
+        "darkvision": "60 ft."
+      },
+      "languages": [
+        "Common",
+        "Dwarvish",
+        "Elvish"
+      ],
+      "traits": [
+        {
+          "name": "Defensa arcana",
+          "description": "Orvane tiene ventaja en las pruebas de característica para evitar ser desplazado o derribado mientras permanezca a 5 pies del cristal oscuro."
+        },
+        {
+          "name": "Vínculo con el cristal",
+          "description": "Mientras el cristal oscuro permanezca intacto, Orvane puede utilizar su acción adicional para desplazarse 5 pies sin provocar ataques de oportunidad. Este movimiento no atraviesa criaturas ni obstáculos."
+        },
+        {
+          "name": "Concentración de combate",
+          "description": "Orvane solo puede mantener un conjuro que requiera concentración. Si recibe daño, realiza las salvaciones de concentración conforme a las reglas normales."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Bastón arcano",
+          "type": "Melee Weapon Attack",
+          "attack_bonus": "+3",
+          "reach": "5 ft.",
+          "targets": "Una criatura",
+          "damage": "1d6 + 1 contundente"
+        },
+        {
+          "name": "Descarga arcana",
+          "type": "Ranged Spell Attack",
+          "attack_bonus": "+5",
+          "range": "60 ft.",
+          "targets": "Una criatura",
+          "damage": "2d8 de fuerza"
+        },
+        {
+          "name": "Onda atronadora",
+          "type": "Spell Save",
+          "attack_bonus": null,
+          "range": "15 ft. de cubo originado en Orvane",
+          "targets": "Cada criatura en el área",
+          "damage": "2d8 de trueno; salvación de Constitución CD 13 para mitad de daño. Con fallo, también es empujada 10 pies."
+        }
+      ],
+      "spellcasting": {
+        "ability": "Intelligence",
+        "spell_attack_bonus": "+5",
+        "spell_save_dc": 13,
+        "cantrips": [
+          "Fire Bolt",
+          "Ray of Frost",
+          "Mage Hand"
+        ],
+        "spells": {
+          "level_1": [
+            "Magic Missile",
+            "Shield",
+            "Thunderwave"
+          ],
+          "level_2": [
+            "Misty Step",
+            "Scorching Ray"
+          ]
+        },
+        "spell_slots": {
+          "level_1": 3,
+          "level_2": 2,
+          "level_3": 0
+        },
+        "prepared_spells": [
+          "Magic Missile",
+          "Shield",
+          "Thunderwave",
+          "Misty Step",
+          "Scorching Ray"
+        ],
+        "rules": "Orvane utiliza los espacios indicados. No puede lanzar Counterspell ni Fireball y no recupera espacios durante el combate. Los trucos no consumen espacios."
+      },
+      "reactions": [
+        {
+          "name": "Escudo",
+          "trigger": "Orvane es impactado por un ataque o queda dentro del área de Magic Missile.",
+          "effect": "Gasta un espacio de nivel 1 para lanzar Shield. Su CA aumenta en 5 hasta el inicio de su siguiente turno y Magic Missile no le causa daño durante ese tiempo."
+        }
+      ],
+      "tactics": {
+        "round_1": "Si los mephits siguen protegiéndolo, Orvane permanece en retaguardia y lanza Scorching Ray contra un objetivo vulnerable. Si varios héroes están agrupados, utiliza Thunderwave.",
+        "round_2": "Prioriza Magic Missile contra un enemigo herido. Utiliza Shield como reacción si un ataque amenaza con impactarle.",
+        "round_3": "Si un enemigo llega a su fila, utiliza Misty Step para alejarse y después lanza Fire Bolt o Ray of Frost.",
+        "later_rounds": "Mantiene la retaguardia mientras los mephits sigan protegiéndolo. Cuando no quedan enemigos en la fila delantera, puede ser atacado normalmente. Conserva Shield para ataques peligrosos y no puede atacar a través de obstáculos."
+      }
+    },
+    "pre_boss_dialogue": [
+      {
+        "speaker": "orvane",
+        "text": "¡Apartaos! ¡Este cristal me dará un poder que ningún mago ha conocido jamás!"
+      },
+      {
+        "speaker": "hero",
+        "text": "Has esclavizado a los mineros y puesto en peligro Valdescarcha. Libéralos y detente."
+      },
+      {
+        "speaker": "orvane",
+        "text": "¡Cuando domine su energía, nadie volverá a darme órdenes! ¡El valle entero obedecerá mi voluntad!"
+      },
+      {
+        "speaker": "hero",
+        "text": "No dejaré que conviertas a esta gente en esclavos. Se acabó, Orvane."
+      }
+    ],
+    "pre_boss_dialogue_brunna": [
+      {
+        "speaker": "orvane",
+        "text": "¡Apartaos! ¡Este cristal me dará un poder que ningún mago ha conocido jamás!"
+      },
+      {
+        "speaker": "brunna",
+        "text": "Soy minera de Valdescarcha. ¡Has utilizado a nuestra gente y voy a sacarla de aquí!"
+      },
+      {
+        "speaker": "orvane",
+        "text": "¡Cuando domine su energía, nadie volverá a darme órdenes! ¡El valle entero obedecerá mi voluntad!"
+      },
+      {
+        "speaker": "hero",
+        "text": "No vas a esclavizar a nadie más, Orvane. Esto termina ahora."
+      }
+    ],
+    "dialogue_selection_rule": "Utiliza pre_boss_dialogue_brunna únicamente cuando Brunna haya sustituido a Liss y esté presente en el encuentro final. En los demás casos utiliza pre_boss_dialogue, que no depende de ningún aliado.",
+    "victory_reward": "Orvane cae derrotado. El cristal oscuro se agrieta y se deshace. Sin su energía, las aguas del monasterio empiezan a descender. Los cultistas supervivientes huyen. Tras la cámara de estudio encontráis a los mineros que siguen vivos, encerrados y agotados. Los liberáis y regresáis con ellos a Valdescarcha. Los documentos recuperados confirman la verdad: Aldric cerró el camino y los monjes sumergieron el cristal para proteger el valle. Las familias vuelven a reunirse. Hondaroca ya no está en peligro."
+  },
+  "items": [
+    {
+      "id": "potion_healing_1",
+      "name": "Poción de curación",
+      "srd_item": "Potion of Healing",
+      "type": "potion",
+      "description": "Recupera 2d4 + 2 puntos de golpe.",
+      "value_gp": 50
+    },
+    {
+      "id": "potion_healing_2",
+      "name": "Poción de curación",
+      "srd_item": "Potion of Healing",
+      "type": "potion",
+      "description": "Recupera 2d4 + 2 puntos de golpe.",
+      "value_gp": 50
+    },
+    {
+      "id": "thieves_tools_1",
+      "name": "Herramientas de ladrón",
+      "srd_item": "Thieves' Tools",
+      "type": "other",
+      "description": "Herramientas para abrir cerraduras y desactivar trampas.",
+      "value_gp": 25
+    },
+    {
+      "id": "healers_kit_1",
+      "name": "Estuche de curandero",
+      "srd_item": "Healer's Kit",
+      "type": "other",
+      "description": "Contiene diez usos para estabilizar criaturas sin magia.",
+      "value_gp": 5
+    },
+    {
+      "id": "weapon_plus1_warhammer",
+      "name": "Martillo de guerra +1",
+      "srd_item": "Weapon, +1",
+      "type": "weapon",
+      "rarity": "Uncommon",
+      "magical": true,
+      "description": "Arma mágica que concede un bonificador +1 a las tiradas de ataque y daño.",
+      "value_gp": 400
+    },
+    {
+      "id": "potion_greater_healing_1",
+      "name": "Poción de curación mayor",
+      "srd_item": "Potion of Greater Healing",
+      "type": "potion",
+      "rarity": "Uncommon",
+      "magical": true,
+      "description": "Recupera 4d4 + 4 puntos de golpe.",
+      "value_gp": 200
+    },
+    {
+      "id": "spell_scroll_shield",
+      "name": "Pergamino de escudo",
+      "srd_item": "Spell Scroll",
+      "type": "other",
+      "description": "Pergamino que contiene el conjuro Escudo. Requiere que el usuario tenga el conjuro en su lista de clase.",
+      "value_gp": 25
+    },
+    {
+      "id": "wand_magic_missiles_1",
+      "name": "Varita de proyectiles mágicos",
+      "srd_item": "Wand of Magic Missiles",
+      "type": "wand",
+      "rarity": "Uncommon",
+      "magical": true,
+      "description": "Tiene 7 cargas. Permite lanzar Proyectil mágico gastando de 1 a 3 cargas. Recupera 1d6 + 1 cargas gastadas cada día al amanecer.",
+      "value_gp": 400
+    }
+  ],
+  "balance_notes": {
+    "progression": "El héroe comienza en nivel 1 con 0 PX. La zona 1 concede 325 PX y alcanza el nivel 2 al terminarla. La zona 2 concede 1.200 PX, repartidos entre dos personajes: 600 PX por personaje. El héroe llega a 925 PX y alcanza el nivel 3 al terminar la zona 2. La zona 3 concede 1.050 PX, repartidos entre tres personajes: 350 PX por personaje. El héroe llega a 1.275 PX. La zona 4 concede 1.100 PX, repartidos entre cuatro personajes: 275 PX por personaje. El héroe termina con 1.550 PX y permanece en nivel 3. El umbral de nivel 4 es 2.700 PX.",
+    "xp_values": "Valores utilizados del SRD 5.2.1: Giant Rat 25 PX; Goblin Warrior 50 PX; Goblin Boss 200 PX; Giant Spider 200 PX; Swarm of Bats 50 PX; Skeleton 50 PX; Zombie 50 PX; Ghoul 200 PX; Cultist 25 PX; Steam Mephit 50 PX. Orvane es una variante personalizada del Mage, con VD 3 y 700 PX. El Mage original del SRD tiene VD 6 y 2.300 PX; no se utiliza ese valor para el jefe personalizado.",
+    "xp_distribution": "Los PX de cada encuentro se dividen a partes iguales entre los personajes presentes en el momento de derrotar a los enemigos. Los aliados no reciben PX de encuentros anteriores a su incorporación. Todos los encuentros de las zonas 2, 3 y 4 se han ajustado para que sus PX sean divisibles entre los miembros presentes y no queden restos.",
+    "party_progression": "En zona 1 el héroe está solo. En zona 2 hay dos personajes. En zona 3 hay tres personajes. En zona 4 hay cuatro personajes. El aliado de cada zona se incorpora en la segunda sala y antes de cualquier encuentro de esa zona.",
+    "ally_selection": "Nunca se incorpora un aliado de la misma clase que el héroe. Si el héroe es Guerrero, se unen Tiko, Edmund y Liss. Si es Pícaro, se unen Brunna, Edmund y Liss. Si es Clérigo, se unen Tiko, Brunna y Liss. Si es Mago, se unen Tiko, Edmund y Brunna. Brunna sustituye al aliado cuya clase coincide con la del protagonista y nunca se incorpora dos veces.",
+    "enemy_xp_calculation": "Los PX de cada encuentro son la suma de los PX individuales de sus criaturas. No se aplica multiplicador por número de enemigos para el reparto de experiencia.",
+    "formation": "Ningún encuentro tiene más de tres enemigos en una misma fila. Los encuentros z2_e05, z4_e01 y z4_e03 distribuyen cuatro enemigos en tres posiciones delanteras y una posición trasera. El máximo global es seis enemigos por encuentro.",
+    "zone_1": "La zona 1 contiene seis encuentros, todos con uno o dos enemigos débiles. El héroe lucha solo. Hay exactamente dos pociones de curación garantizadas y un descanso corto seguro antes de llegar al primer aliado.",
+    "zone_2": "La zona 2 contiene tres trampas de mecanismos enanos antiguos y un punto de descanso corto. El aliado se incorpora en z2_r02 antes del encuentro z2_e01. El encuentro z2_e06 se añade para completar la progresión de PX y evitar que el héroe llegue a la zona 3 sin alcanzar el nivel 3.",
+    "zone_3": "La zona 3 contiene dos trampas en la cripta. Edmund o Brunna se incorporan en z3_r02 antes del primer combate. El encuentro z3_e05 contiene un Ghoul y dos Zombies, con 300 PX en total. La zona concede 1.050 PX.",
+    "zone_4": "La zona 4 contiene dos trampas. Liss o Brunna se incorporan en z4_r02 antes del primer combate. Se conserva un descanso corto y el único descanso largo de toda la mazmorra, situado inmediatamente antes de Orvane. Los encuentros con Steam Mephits conceden 50 PX por criatura.",
+    "magic_loot": "La zona 2 incluye un arma mágica +1; la zona 3, una Poción de curación mayor; y la zona 4, una Varita de proyectiles mágicos. Son objetos mágicos del SRD 5.2.1 de rareza poco común y adecuados para una campaña de nivel bajo.",
+    "traps_and_secrets": "Las trampas y secretos se comprueban automáticamente mediante la mejor Percepción pasiva del grupo. Si se supera la CD, el elemento queda marcado y puede desactivarse; el Pícaro obtiene ventaja en la desactivación. No existe un botón de búsqueda. Los secretos revelan accesos o cofres existentes, no crean contenidos duplicados.",
+    "mandatory_ally_rooms": "Las salas z2_r02, z3_r02 y z4_r02 son de paso obligado en la ruta normal. Ningún secreto ni camino alternativo permite evitarlas. El antiguo atajo z4_s02 ha sido eliminado.",
+    "resting": "Zona 1: un descanso corto. Zona 2: un descanso corto. Zona 3: un descanso corto. Zona 4: un descanso corto y el único descanso largo de toda la mazmorra. Los descansos solo pueden realizarse en los puntos fijos indicados.",
+    "reinforcements": "z1_e02 puede reforzar z1_e03; z1_e04 puede reforzar z1_e05; z2_e03 puede reforzar z2_e04; z2_e04 puede reforzar z2_e05; z3_e04 puede reforzar z3_e05; z4_e01 puede reforzar z4_e02; z4_e03 puede reforzar z4_e04; z4_e04 puede reforzar z4_e05. Un refuerzo solo entra al inicio de una ronda y nunca crea un segundo combate simultáneo. Los refuerzos no pueden hacer que se supere el máximo de tres enemigos por fila ni seis enemigos por encuentro.",
+    "combat_ai": "Los goblins atacan al personaje con menos puntos de golpe actuales y pueden huir cuando su salud cae por debajo del 25 por ciento. Los no muertos atacan al objetivo más cercano y nunca huyen. Las bestias atacan preferentemente a quien las haya dañado. Orvane permanece en retaguardia mientras tenga protección y utiliza conjuros para evitar el combate cuerpo a cuerpo.",
+    "exploration": "La exploración no utiliza turnos. El mapa es hexagonal y se revela con niebla de guerra: se muestran las casillas visitadas y una casilla por delante, ampliable a dos con antorcha o luz mágica. Los encuentros con trigger seen se activan al entrar en la línea de visión de los enemigos; enter se activa al pisar la casilla. Las paredes opacas bloquean la visión.",
+    "retreat": "Huir devuelve al grupo a la última casilla segura anterior y conserva los puntos de golpe perdidos por los enemigos. Los encuentros ya iniciados permanecen activos y no se regeneran.",
+    "loot": "El oro de cofres y enemigos es fijo. Las armas enemigas solo se sueltan cuando drop_weapon es true. Los objetos se conservan para su uso o venta en Valdescarcha.",
+    "room_count": "La zona 1 tiene 6 salas, la zona 2 tiene 7, la zona 3 tiene 7 y la zona 4 tiene 7. Los corredores cuentan como salas.",
+    "boss": "Orvane es una variante original y reducida del Mage del SRD, diseñada como jefe de VD 3 y 700 PX. No es una reproducción exacta de la ficha oficial del Mage. Sus estadísticas, acciones y tácticas están incluidas en boss.stat_block. No tiene acciones legendarias ni resistencias legendarias.",
+    "implementation_limits": "El esquema no incluye estadísticas individuales completas de todos los enemigos, algoritmos de IA, tiradas de iniciativa ni reglas completas de visibilidad por iluminación. Esos elementos deberán implementarse como reglas globales del motor. Los efectos de trampas se expresan en texto y requieren interpretación por el motor. Las clases, especies y niveles iniciales del protagonista deben generarse según las reglas de creación de personajes del SRD.",
+    "difficulty_caveat": "La dificultad indicada es orientativa y se basa en el nivel y tamaño del grupo al entrar en cada zona. El motor debe considerar la composición real del grupo, los recursos restantes, los descansos, la iniciativa y las capacidades de cada clase. No se garantiza que todos los encuentros tengan idéntica dificultad para las cuatro composiciones posibles."
+  }
+}

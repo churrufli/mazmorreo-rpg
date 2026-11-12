@@ -1,0 +1,24 @@
+name: Limpiar artefactos
+
+# Manual: borra todos los artefactos guardados (capturas de las pruebas) para liberar la cuota de almacenamiento.
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  limpiar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Borrar artefactos
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ids=$(gh api --paginate "repos/${{ github.repository }}/actions/artifacts?per_page=100" --jq '.artifacts[].id')
+          n=0
+          for id in $ids; do
+            gh api -X DELETE "repos/${{ github.repository }}/actions/artifacts/$id" && n=$((n+1))
+          done
+          echo "Artefactos borrados: $n"

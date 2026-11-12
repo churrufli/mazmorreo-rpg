@@ -1,0 +1,67 @@
+name: Validación de PR
+
+on:
+  pull_request:
+    branches: [master]
+    # No gasta minutos si la PR solo cambia documentación o notas.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.claude/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Un push nuevo a la misma PR cancela la validación anterior.
+concurrency:
+  group: pr-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: TypeScript
+        run: npx tsc --noEmit
+      - name: Tests
+        run: npm test -- --ci --runInBand --passWithNoTests
+      - name: Validar aventuras
+        run: npm run validate:adventures
+      - name: Compilar web
+        run: npm run web:build
+      - name: Preparar Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Comprobar combate compacto en navegador
+        run: |
+          # Mismo React que la publicación; los portales de RNW no soportan el montaje doble de desarrollo.
+          NODE_ENV=production ./node_modules/.bin/vite --host 127.0.0.1 --port 5194 > /tmp/mazmorreo-vite.log 2>&1 &
+          task_server_pid=$!
+          trap 'kill "$task_server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..40}; do
+            if curl --silent --fail http://127.0.0.1:5194 > /dev/null; then break; fi
+            sleep 0.5
+          done
+          node scripts/probar-combate-compacto.cjs
+          node scripts/probar-flujo-combate.cjs
+          node scripts/probar-usabilidad-combate.cjs
+      # Solo si algo falla: el almacenamiento de artefactos tiene cuota y, si se llena, no debe tumbar la validación.
+      - name: Guardar capturas de combate
+        if: failure()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: combate-compacto
+          path: |
+            /tmp/mazmorreo-compacto-*.png
+            /tmp/mazmorreo-flujo-*.png
+            /tmp/mazmorreo-usabilidad-*.png
+            /tmp/mazmorreo-usabilidad-resultados.json
+          retention-days: 3

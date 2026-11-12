@@ -1,0 +1,57 @@
+name: Android APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      # En mazmorreo-rpg la numeración sigue la del repositorio anterior (última: v0.142).
+      - name: Version number
+        run: |
+          N=$(( ${{ github.run_number }} + ${{ github.repository == 'churrufli/mazmorreo-rpg' && 142 || 0 }} ))
+          echo "N=$N" >> "$GITHUB_ENV"
+          echo "export const BUILD: number = $N;" > src/version.ts
+      - run: npx tsc --noEmit
+      - run: npx jest --ci --passWithNoTests
+      # Clave propia de firma desde los Secrets; si no están, Gradle usa la de depuración.
+      - name: Signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        if: env.KEYSTORE_BASE64 != ''
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/mazmorreo.jks"
+          echo "MAZMORREO_KEYSTORE=$RUNNER_TEMP/mazmorreo.jks" >> "$GITHUB_ENV"
+      - name: Build release APK
+        working-directory: android
+        env:
+          MAZMORREO_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          MAZMORREO_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          MAZMORREO_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --no-daemon
+      - name: Rename APK
+        run: mv android/app/build/outputs/apk/release/app-release.apk mazmorreo-${{ env.N }}.apk
+      # Publica en Releases si el mensaje del commit contiene [release] o si se lanza a mano (Run workflow).
+      - if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[release]')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.${{ env.N }}
+          name: Mazmorreo v0.${{ env.N }} (prueba)
+          prerelease: true
+          files: mazmorreo-*.apk
+          body: APK de prueba. Instálalo en el móvil Android (permite instalar apps de origen desconocido).

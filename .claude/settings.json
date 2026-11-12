@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit",
+      "Write",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx jest:*)",
+      "Bash(npm test:*)",
+      "Bash(git:*)",
+      "Bash(convert:*)",
+      "Bash(montage:*)",
+      "Bash(identify:*)",
+      "Bash(bash scripts/:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)"
+    ]
+  }
+}

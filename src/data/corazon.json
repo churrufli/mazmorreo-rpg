@@ -1,0 +1,4713 @@
+{
+  "dungeon": {
+    "id": "corazon_hueco",
+    "name": "El Corazón Hueco",
+    "summary": "En el bosque de Umbría desaparecen vecinos de Vegaumbría. Muchos siguieron voces familiares y no regresaron. Las raíces cierran caminos y esconden a los cautivos. Una anciana ofrece ayuda, pero alguien utiliza al Corazón Hueco, el antiguo protector del bosque, para atraer nuevas víctimas. Tendréis que descubrir el engaño y liberar a los desaparecidos."
+  },
+  "zones": [
+    {
+      "id": "b1",
+      "order": 1,
+      "name": "Linde del bosque",
+      "description": "En la linde de Umbría, las huellas de los desaparecidos terminan junto a raíces que se mueven.",
+      "expected_party_level": 4,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "La luna ilumina un carro abandonado y un farol aún encendido. Más allá, la niebla oculta el bosque de Umbría. En Vegaumbría faltan cazadores, leñadores y viajeros."
+        },
+        {
+          "speaker": "hero",
+          "text": "Voy a buscar a los desaparecidos. Dicen que siguieron voces conocidas entre los árboles. Averiguaré quién los llama."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "b1_r01",
+          "name": "Hojas de la linde",
+          "description": "Robles viejos, niebla baja y huellas que se interrumpen.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "b1_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "big_tree",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "b1_r02",
+          "name": "Paso de los cazadores",
+          "description": "Un lazo oculto cruza el sendero.",
+          "kind": "corridor",
+          "size_hexes": 5,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b1_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r03",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "trap",
+              "id": "b1_t01",
+              "name": "Lazo de cazador",
+              "description": "Algo cruje bajo tus pies…",
+              "detect_dc": 12,
+              "disarm_dc": 12,
+              "save_ability": "DEX",
+              "save_dc": 12,
+              "effect": "1d6 contundente y apresado hasta liberarse con acción y CD 12 de Fuerza."
+            },
+            {
+              "type": "encounter",
+              "id": "b1_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo famélico",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 50
+            },
+            {
+              "type": "scene",
+              "id": "b1_p01",
+              "title": "El lazo tendido",
+              "near": "b1_t01",
+              "before": "b1_t01",
+              "text": "Entre las raíces y las hojas del sendero hay un lazo de cazador. Desactivarlo permitirá pasar sin sufrir la trampa.",
+              "question": "¿Cómo desactivas el lazo?",
+              "options": [
+                {
+                  "label": "Buscar la cuerda entre las raíces",
+                  "attr": "wis",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Localizas la cuerda y desmontas el lazo. La trampa del camino queda desactivada.",
+                    "open": "b1_t01"
+                  },
+                  "fail": {
+                    "text": "La cuerda se pierde entre las hojas."
+                  }
+                },
+                {
+                  "label": "Soltar el lazo entre las hojas",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Sueltas el lazo sin tensarlo. La trampa del camino queda desactivada.",
+                    "open": "b1_t01"
+                  },
+                  "fail": {
+                    "text": "El lazo se tensa de golpe y te hiere.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Estudiar los nudos junto a las raíces",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Aflojas el nudo que mantiene tenso el lazo. La trampa del camino queda desactivada.",
+                    "open": "b1_t01"
+                  },
+                  "fail": {
+                    "text": "El nudo queda trabado entre las raíces."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "El lazo sigue armado. Te alejas de la trampa sin tocarla."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "b1_d03",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Unas pisadas entran en el bosque. Otras regresan a toda prisa."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Junto a un guante abandonado hay surcos profundos. Parecen marcas de raíces que se arrastraron por el barro."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b1_r03",
+          "name": "Carromato abandonado",
+          "description": "Un carro volcado oculta provisiones.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b1_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r04",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "chest",
+              "id": "b1_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 4,
+              "item": {
+                "id": "potion_healing_1",
+                "name": "Poción de curación",
+                "srd_item": "Potion of Healing",
+                "description": "Recupera 2d4+2 PG."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "fallen_tree",
+              "count": 1
+            },
+            {
+              "type": "chest",
+              "id": "b1_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 3,
+              "item": {
+                "id": "healing_3",
+                "name": "Poción de curación",
+                "srd_item": "Potion of Healing",
+                "description": "Recupera 2d4+2 PG."
+              }
+            },
+            {
+              "type": "chest",
+              "id": "b1_o01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 5,
+              "item": {
+                "id": "alchemists_fire"
+              },
+              "obstacle": {
+                "title": "Arcón clavado",
+                "img": "cofre_cerrado",
+                "text": "Un arcón clavado al suelo del carromato.",
+                "needs": [
+                  "crowbar"
+                ],
+                "use": "{who} arranca los clavos con la palanqueta.",
+                "missing": "Necesitas una palanqueta para liberar el arcón. Puedes comprarla en Vegaumbría.",
+                "alt": {
+                  "abil": "str",
+                  "dc": 12,
+                  "dmg": "1d4",
+                  "label": "Fuerza",
+                  "hurt": "Un clavo suelto le hace un corte a {who}",
+                  "try": "{who} tira del arcón con todas sus fuerzas."
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "b1_r04",
+          "name": "Refugio de carboneros",
+          "description": "Una hoguera fría, a salvo entre rocas.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "cross",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b1_r03",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r05",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "rest_point",
+              "id": "b1_rest1",
+              "rest": "short",
+              "name": "Refugio de carboneros",
+              "description": "Lugar protegido; permite regresar a Vegaumbría."
+            },
+            {
+              "type": "dialogue",
+              "id": "b1_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Entre los robles aparece una anciana de pelo blanco. Lleva un cesto de hierbas y un chal cubierto de musgo."
+                },
+                {
+                  "speaker": "ortiga",
+                  "text": "Me llaman abuela Brezna. Conozco este bosque desde antes de que nacieras."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Busco a la gente que ha desaparecido. ¿Sabes dónde está?"
+                },
+                {
+                  "speaker": "ortiga",
+                  "text": "Aquí las raíces guardan lo que encuentran. Y si escuchas una voz querida, no la sigas. El bosque sabe imitarla."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "b1_ev01",
+              "title": "El leñador del refugio",
+              "decision": true,
+              "on_return": true,
+              "after": "b2_r01",
+              "text": "Un leñador herido intenta mantenerse despierto. «Las raíces me sujetaron. Solo pude escapar cuando dejaron de moverse».",
+              "question": "¿Qué haces?",
+              "options": [
+                {
+                  "label": "Darle una poción de curación",
+                  "needs": "potion_healing",
+                  "ok": {
+                    "lose": "potion_healing",
+                    "text": "La poción le devuelve las fuerzas. «Toma mi paga. Me has salvado», dice antes de regresar a Vegaumbría.",
+                    "gold": 7
+                  }
+                },
+                {
+                  "label": "Vendarle y acompañarle",
+                  "attr": "wis",
+                  "dc": 11,
+                  "ok": {
+                    "text": "Le vendas la herida y le muestras un camino seguro. Te entrega su paga, agradecido.",
+                    "gold": 7
+                  },
+                  "fail": {
+                    "text": "No logras cerrar la herida, pero le ayudas a llegar hasta la linde."
+                  }
+                },
+                {
+                  "label": "Indicarle la salida",
+                  "ok": {
+                    "text": "Se aleja despacio hacia Vegaumbría."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b1_r05",
+          "name": "Vereda del miedo",
+          "description": "Dos fugitivos empuñan armas temblorosas.",
+          "kind": "corridor",
+          "size_hexes": 6,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b1_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b1_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Bandit",
+                  "name": "Bandido extraviado",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": "Scimitar",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 3,
+              "xp_total": 50
+            },
+            {
+              "type": "prop",
+              "prop": "thorn_bush",
+              "count": 2
+            },
+            {
+              "type": "dialogue",
+              "id": "b1_d04",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Unos bandidos te salen al paso. Robaban a los viajeros, pero ahora también ellos están perdidos. Apuntan con manos temblorosas."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Si queréis salir de aquí, bajad las armas."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "b1_q01",
+              "title": "El fugitivo entre los robles",
+              "img": "escena_fugitivo_robles",
+              "decision": true,
+              "after": "b1_e02",
+              "text": "Un bandido herido se apoya contra las raíces de un roble. Su brazo sangra y aún sostiene una daga.",
+              "question": "¿Qué haces con él?",
+              "options": [
+                {
+                  "label": "Vendarle el brazo y dejarle ir",
+                  "ok": {
+                    "text": "Le vendas el brazo. «Los leñadores marcaron un escondite cerca de unas campanillas», confiesa. Después, se marcha.",
+                    "reveal": "b1_s02"
+                  }
+                },
+                {
+                  "label": "Pedirle información sobre el bosque",
+                  "attr": "cha",
+                  "dc": 12,
+                  "ok": {
+                    "text": "«Robábamos a los viajeros. Luego el bosque cerró la salida». Te entrega sus monedas a cambio de que le dejes marchar.",
+                    "gold": 7
+                  },
+                  "fail": {
+                    "text": "Desconfía y huye gritando. El ruido atrae a otro lobo hacia la barricada.",
+                    "add": "b1_e04"
+                  }
+                },
+                {
+                  "label": "Dejarle marchar",
+                  "ok": {
+                    "text": "Se aleja cojeando entre los helechos."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b1_r06",
+          "name": "Hueco del roble",
+          "description": "Una señal de cazadores está oculta bajo corteza.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b1_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "secret",
+              "id": "b1_s01",
+              "detect_dc": 14,
+              "reveals": "chest:b1_c02",
+              "description": "La corteza suelta revela un pequeño escondite."
+            },
+            {
+              "type": "chest",
+              "id": "b1_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 2,
+              "item": {
+                "id": "restorative_ointment",
+                "name": "Ungüento restaurador",
+                "srd_item": "Restorative Ointment",
+                "description": "Tarro con varias dosis (1d4+1). Cada dosis cura 2d8+2 PG y elimina el veneno."
+              }
+            },
+            {
+              "type": "scene",
+              "id": "b1_s01_pista",
+              "title": "La memoria del roble",
+              "text": "Un roble hueco deja escapar aire frío entre sus raíces. La corteza parece estar suelta.",
+              "question": "¿Cómo investigas el hueco?",
+              "reveals": "b1_s01",
+              "options": [
+                {
+                  "label": "Seguir el aire entre las raíces",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Sigues el aire, levantas la corteza y descubres un cofre escondido.",
+                    "reveal": "b1_s01"
+                  },
+                  "fail": {
+                    "text": "No das con ello por ahí."
+                  }
+                },
+                {
+                  "label": "Escuchar el eco junto al tronco",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "El eco revela una cavidad tras la corteza. Dentro encuentras un cofre escondido.",
+                    "reveal": "b1_s01"
+                  },
+                  "fail": {
+                    "text": "No das con ello por ahí."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b1_r07",
+          "name": "Barricada de ramas",
+          "description": "Los últimos bandidos defienden una salida.",
+          "kind": "room",
+          "size_hexes": 12,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b1_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r08",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b1_e03",
+              "trigger": "enter",
+              "can_reinforce": [
+                "b1_e04"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Bandit",
+                  "name": "Bandido acorralado",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": "Scimitar",
+                  "drop_weapon": true
+                },
+                {
+                  "srd_creature": "Bandit",
+                  "name": "Vigía de la barricada",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": "Light Crossbow",
+                  "drop_weapon": true
+                }
+              ],
+              "gold_drop": 9,
+              "xp_total": 75
+            },
+            {
+              "type": "dialogue",
+              "id": "b1_d02",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Tras una barricada, unos bandidos vigilan el camino con las armas en alto. No dejan de mirar las raíces."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "¿Por qué seguís aquí si tenéis tanto miedo?"
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "«Entramos a robar», responde uno. «Luego una voz nos llevó en círculos. Ahora las raíces no nos dejan salir»."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b1_e04",
+              "trigger": "seen",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo atraído por el alboroto",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 50
+            },
+            {
+              "type": "rest_point",
+              "id": "b1_rest2",
+              "rest": "short",
+              "name": "Rincón resguardado",
+              "description": "Un hueco tranquilo donde recobrar el aliento; permite regresar a Vegaumbría."
+            },
+            {
+              "type": "chest",
+              "id": "b1_o02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 7,
+              "item": {
+                "id": "potion_healing"
+              },
+              "obstacle": {
+                "title": "Barricada de ramas",
+                "img": "barricada_ramas",
+                "text": "Una barricada de ramas secas cierra un rincón del camino.",
+                "needs": [
+                  "torch",
+                  "alchemists_fire"
+                ],
+                "use": "{who} prende las ramas con {item}; cuando se apagan, el paso queda libre.",
+                "missing": "Las ramas están fuertemente atadas. Puedes quemarlas con una antorcha o con fuego de alquimista."
+              }
+            },
+            {
+              "type": "scene",
+              "id": "b1_q02",
+              "title": "La barricada cede",
+              "img": "escena_barricada_cede",
+              "decision": true,
+              "after": "b1_e03",
+              "text": "Tras la pelea, una antorcha caída prende los troncos de la barricada. Un bandido queda atrapado debajo.",
+              "question": "¿Qué haces?",
+              "options": [
+                {
+                  "label": "Apagar la antorcha y sacarle",
+                  "ok": {
+                    "text": "Apagas el fuego y lo liberas. «Alejaré al lobo que merodea por aquí», promete antes de marcharse.",
+                    "remove": "b1_e04"
+                  }
+                },
+                {
+                  "label": "Levantar los troncos a pulso",
+                  "attr": "str",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Levantas los troncos y lo liberas. Te ofrece una poción de curación como agradecimiento.",
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "Los troncos caen con estrépito. Consigues sacarlo, pero el ruido atrae a otro lobo.",
+                    "add": "b1_e04"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b1_r08",
+          "name": "Umbral oscuro",
+          "description": "El bosque se cierra detrás del último roble.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b1_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r01",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "b1_r09",
+          "name": "Claro de las hachas",
+          "description": "Tres tocones recién cortados rodean un hacha oxidada, clavada en una raíz que aún sangra savia oscura.",
+          "exits": [
+            {
+              "to": "b1_r03",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b1_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En un claro hay tocones y un hacha atrapada por raíces nuevas. Unas huellas humanas terminan en surcos que se adentran en el bosque."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Quien talaba aquí no pudo recuperar el hacha. Las raíces lo impidieron."
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "b1_c06",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 4,
+              "item": null
+            },
+            {
+              "type": "prop",
+              "prop": "stump",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "stump",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b1_r10",
+          "name": "Barranco del eco",
+          "description": "Un barranco estrecho repite las palabras con una voz apenas distinta. En la pared quedan restos de una cuerda rota.",
+          "exits": [
+            {
+              "to": "b1_r05",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b1_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Del otro lado del barranco llega una súplica con la voz de una persona desaparecida. No ves a nadie."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "La voz sale de las raíces. Así atraen a la gente."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "b1_p04",
+              "title": "El zurrón entre las raíces",
+              "text": "Un zurrón de provisiones se ha enganchado en las raíces junto al sendero. Una correa sobresale entre las hojas.",
+              "question": "¿Cómo intentas recuperarlo?",
+              "options": [
+                {
+                  "label": "Tirar de la correa entre las raíces",
+                  "attr": "str",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Tiras de la correa hasta liberar el zurrón y sus provisiones.",
+                    "item": "potion_healing",
+                    "gold": 4
+                  },
+                  "fail": {
+                    "text": "Las raíces ceden y te hacen perder el equilibrio.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Apartar las hojas con una rama",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Apartas las hojas y desenganchas el zurrón con la rama.",
+                    "item": "potion_healing",
+                    "gold": 4
+                  },
+                  "fail": {
+                    "text": "Las raíces ceden y te hacen perder el equilibrio."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "No consigues recuperar lo que buscabas y te retiras."
+              }
+            },
+            {
+              "type": "encounter",
+              "id": "b1_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Bandit",
+                  "name": "Bandido de la linde",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "b1_pat01_paso",
+              "title": "Patrulla de la linde",
+              "text": "Unos bandidos hambrientos, atrapados en la linde, te exigen provisiones para dejarte pasar.",
+              "question": "¿Qué haces?",
+              "on_return": true,
+              "after": "b2_r01",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Desenvainan las armas.",
+                    "fight": "b1_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Cruzas tras los helechos mientras ellos discuten.",
+                    "remove": "b1_pat01"
+                  },
+                  "fail": {
+                    "text": "Te descubren.",
+                    "fight": "b1_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Les haces creer que vienen refuerzos por el sendero. Retroceden y desaparecen.",
+                    "remove": "b1_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "b1_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "fallen_tree",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b1_r11",
+          "name": "Sendero de las campanillas",
+          "description": "Campanillas de hueso y madera cuelgan entre dos árboles, pero ninguna suena al rozarla.",
+          "exits": [
+            {
+              "to": "b1_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_s02_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "scene",
+              "id": "b1_s02_pista",
+              "title": "Las marcas del sendero",
+              "text": "Unas campanillas de hueso y madera cuelgan entre los árboles. Debajo hay muescas antiguas y huellas de leñadores.",
+              "question": "¿Cómo buscas el escondite?",
+              "reveals": "b1_s02",
+              "options": [
+                {
+                  "label": "Seguir las huellas entre las raíces",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Las huellas llevan hasta un escondite que utilizaban los leñadores.",
+                    "reveal": "b1_s02"
+                  },
+                  "fail": {
+                    "text": "No das con ello por ahí."
+                  }
+                },
+                {
+                  "label": "Examinar las muescas del tronco",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Las muescas marcan la entrada de un antiguo escondite.",
+                    "reveal": "b1_s02"
+                  },
+                  "fail": {
+                    "text": "No das con ello por ahí."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "big_tree",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "thorn_bush",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b1_s01_r01",
+          "name": "Cubil del vigía",
+          "description": "Un escondite dentro de un tronco muerto: una manta podrida, un cuenco de barro y un zurrón colgado.",
+          "exits": [
+            {
+              "to": "b1_r06",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b1_d07",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En un refugio oculto hay una lista de leñadores desaparecidos. Junto a cada nombre alguien escribió cuándo oyó que lo llamaban."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "No siguieron voces al azar. Alguien conocía sus nombres."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b1_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo del cubil",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "b1_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 9,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mushrooms",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b1_s02_r01",
+          "name": "Garita de las cintas",
+          "description": "Un escondite abandonado donde cuelgan cintas de tela de las cuadrillas de leñadores.",
+          "exits": [
+            {
+              "to": "b1_r11",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b1_d08",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una nota de los leñadores advierte: «No sigáis las voces. Aunque suenen como familiares, vienen de los árboles»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Así que debo desconfiar incluso de las voces que reconozca."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b1_e06",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Bandit",
+                  "name": "Bandido escondido",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 50
+            },
+            {
+              "type": "chest",
+              "id": "b1_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 11,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "stump",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "b1_j01",
+          "from": "b1_r02",
+          "until": "b1_r09",
+          "text": "Las huellas de los leñadores acaban de golpe. ¿Los arrastraron las raíces?"
+        },
+        {
+          "id": "b1_j03",
+          "from": "b1_r06",
+          "until": "b1_s01",
+          "text": "Una corriente de aire sale del roble. Puede haber algo escondido."
+        },
+        {
+          "id": "b1_j04",
+          "from": "b1_r11",
+          "until": "b1_s02",
+          "text": "Las señales de los leñadores indican un escondite cerca de las campanillas."
+        },
+        {
+          "id": "b1_j05",
+          "from": "b1_r10",
+          "until": "b4_r05",
+          "text": "Algo utiliza las raíces para repetir voces conocidas y atraer a los caminantes."
+        }
+      ],
+      "c_gold": true
+    },
+    {
+      "id": "b2",
+      "order": 2,
+      "name": "Bosque profundo",
+      "description": "Entre árboles enormes, las raíces desvían los pasos y guardan las voces de los desaparecidos.",
+      "expected_party_level": 4,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "El bosque se vuelve más oscuro. Las raíces se enredan entre los troncos y hay restos de campamentos abandonados."
+        },
+        {
+          "speaker": "hero",
+          "text": "Si los desaparecidos siguen vivos, las raíces podrían tenerlos atrapados. Debemos encontrar de dónde salen."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "b2_r01",
+          "name": "Raíces de bienvenida",
+          "description": "Una cazadora herida vigila el único paso.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "b2_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b1_r08",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "ally",
+              "slot_zone": 2,
+              "default_ally": "maren",
+              "default_scene": [
+                {
+                  "speaker": "maren",
+                  "text": "Soy Maren, cazadora de Vegaumbría. Mi hermano desapareció entre estos árboles. No me marcharé sin encontrarlo."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Buscamos a los mismos cautivos. Ven con nosotros."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "telmo",
+                  "text": "Soy Corvalen, estudioso de Vegaumbría. Las raíces bloquearon mi regreso cuando investigaba las desapariciones."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Tus conocimientos nos vendrán bien. Acompáñanos."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "big_tree",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "b2_r02",
+          "name": "Tronco partido",
+          "description": "Una bestia olfatea una mochila abandonada.",
+          "kind": "room",
+          "size_hexes": 5,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b2_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r03",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r10",
+              "type": "gate",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b2_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Brown Bear",
+                  "name": "Oso pardo",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "chest",
+              "id": "b2_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 5,
+              "item": {
+                "id": "longbow_plus1",
+                "name": "Arco largo +1",
+                "srd_item": "Longbow +1",
+                "description": "+1 a las tiradas de ataque y daño. Arco élfico de tejo."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "b2_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Unos troncos caídos ocultan una verja de raíces muy tensas. Parece cerrar un viejo paso entre los árboles."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "No podemos abrirla desde aquí. Busquemos cómo aflojarla por el otro lado."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b2_r03",
+          "name": "Paso de zarzas",
+          "description": "La maleza vibra al rozarla.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b2_r02",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "trap",
+              "id": "b2_t01",
+              "name": "Raíces que aprietan",
+              "description": "Las raíces se tensan bajo vuestros pies…",
+              "detect_dc": 13,
+              "disarm_dc": 13,
+              "save_ability": "STR",
+              "save_dc": 13,
+              "effect": "2d6 contundente; velocidad 0 hasta superar CD 13 Fuerza."
+            },
+            {
+              "type": "encounter",
+              "id": "b2_e02",
+              "trigger": "enter",
+              "can_reinforce": [
+                "b2_e07"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Awakened Shrub",
+                  "name": "Arbusto despertado",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 30
+            },
+            {
+              "type": "encounter",
+              "id": "b2_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Awakened Shrub",
+                  "name": "Zarza despertada",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 10
+            },
+            {
+              "type": "chest",
+              "id": "b2_o01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 6,
+              "item": {
+                "id": "potion_healing"
+              },
+              "obstacle": {
+                "title": "Zarzas",
+                "img": "arbusto_espinoso",
+                "text": "Unas zarzas tapan un rincón donde brilla algo.",
+                "needs": [
+                  "torch",
+                  "alchemists_fire"
+                ],
+                "use": "{who} quema las zarzas con {item}.",
+                "missing": "Con fuego despejaríamos las zarzas.",
+                "alt": {
+                  "abil": "dex",
+                  "dc": 12,
+                  "dmg": "1d4",
+                  "label": "Destreza",
+                  "hurt": "Las espinas le hacen cortes a {who}",
+                  "try": "{who} intenta colarse entre las espinas."
+                }
+              }
+            },
+            {
+              "type": "encounter",
+              "id": "b2_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo de la maleza",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "b2_pat01_paso",
+              "title": "Lobos en la maleza",
+              "text": "Entre los helechos aparece una manada de lobos. Están inquietos y no dejan de olfatear las raíces.",
+              "question": "¿Qué hacéis?",
+              "on_return": true,
+              "after": "b3_r01",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Os rodean entre gruñidos.",
+                    "fight": "b2_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "El viento os favorece: siguen otro rastro sin oleros.",
+                    "remove": "b2_pat01"
+                  },
+                  "fail": {
+                    "text": "Os descubren.",
+                    "fight": "b2_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "¡Atrás! Los lobos se retiran ante la firmeza del grupo.",
+                    "remove": "b2_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "b2_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "thorn_bush",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b2_r04",
+          "name": "Cabaña de resineros",
+          "description": "La puerta aguanta contra las raíces.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "cross",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b2_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "rest_point",
+              "id": "b2_rest1",
+              "rest": "short",
+              "name": "Cabaña de resineros",
+              "description": "Lugar protegido; permite regresar a Vegaumbría."
+            },
+            {
+              "type": "dialogue",
+              "id": "b2_d01",
+              "lines": [
+                {
+                  "speaker": "ortiga",
+                  "text": "Veo que seguís con vida. Es bueno encontrar caras conocidas en un bosque tan peligroso."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Siempre apareces donde vamos. ¿Cómo encuentras el camino?"
+                },
+                {
+                  "speaker": "ortiga",
+                  "text": "Conozco las raíces mejor que nadie. Os conviene hacerme caso: más adelante aguarda un nido de arañas."
+                }
+              ],
+              "gift": {
+                "item": "antidote",
+                "unless": [
+                  "antidote",
+                  "potion_poison_resistance"
+                ],
+                "text": "Tomad este antídoto. Prefiero que lleguéis sanos hasta lo más hondo del bosque."
+              }
+            },
+            {
+              "type": "scene",
+              "id": "b2_ev01",
+              "title": "La viajera de los antídotos",
+              "decision": true,
+              "on_return": true,
+              "after": "b2_g01",
+              "text": "Una mercader que ha sobrevivido entre las raíces os ofrece remedios. «Ya he visto suficiente bosque para toda una vida».",
+              "question": "¿Le compráis algo?",
+              "options": [
+                {
+                  "label": "Una poción de curación",
+                  "cost": 20,
+                  "ok": {
+                    "text": "«Que no os haga falta.»",
+                    "item": "potion_healing"
+                  }
+                },
+                {
+                  "label": "Un antídoto",
+                  "cost": 15,
+                  "ok": {
+                    "text": "«Para las arañas del nido.»",
+                    "item": "antidote"
+                  }
+                },
+                {
+                  "label": "Nada, gracias",
+                  "ok": {
+                    "text": "«Haced lo que queráis», responde. «Pero no sigáis a nadie que os llame desde los árboles»."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "cabin",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b2_r05",
+          "name": "Nido de seda",
+          "description": "La luz se pierde en telarañas densas.",
+          "kind": "room",
+          "size_hexes": 6,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b2_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b2_e03",
+              "trigger": "enter",
+              "can_reinforce": [
+                "b2_e08"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Giant Spider",
+                  "name": "Araña gigante",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "prop",
+              "prop": "web",
+              "count": 3
+            },
+            {
+              "type": "encounter",
+              "id": "b2_e06",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Owlbear",
+                  "name": "Oso lechuza territorial",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 700
+            },
+            {
+              "type": "encounter",
+              "id": "b2_e08",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Giant Spider",
+                  "name": "Araña del ramaje",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "chest",
+              "id": "b2_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 0,
+              "item": {
+                "id": "wand_of_web",
+                "name": "Varita de telarañas",
+                "srd_item": "Wand of Web",
+                "description": "Lanzadores de conjuros: 7 cargas; lanza Telaraña (CD 13) y apresa a los enemigos. Recupera 1d6+1 al amanecer."
+              }
+            },
+            {
+              "type": "notice",
+              "id": "b2_n01",
+              "needs": [
+                "antidote",
+                "potion_poison_resistance"
+              ],
+              "title": "Nido de seda",
+              "img": "tela_arana",
+              "text": "Las telarañas cubren los árboles y las arañas pueden envenenaros. Sin antídoto correréis un riesgo. También venden en Vegaumbría.",
+              "text_ok": "Las telarañas cubren los árboles. Las arañas pueden envenenaros: tened el antídoto preparado."
+            },
+            {
+              "type": "dialogue",
+              "id": "b2_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Entre las telarañas cuelga el zurrón de un cazador. Su mapa muestra la verja de raíces y un mecanismo al otro lado."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Si alcanzamos el mecanismo, podremos abrir el atajo de las raíces."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b2_r06",
+          "name": "Barrera de colmillos",
+          "description": "Un gran lobo defiende un paso estrecho.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b2_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r08",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r07",
+              "type": "secret",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b2_e04",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Dire Wolf",
+                  "name": "Lobo terrible",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "chest",
+              "id": "b2_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 6,
+              "item": {
+                "id": "silver_dagger",
+                "name": "Daga de plata",
+                "srd_item": "Dagger",
+                "description": "Daga plateada de un cazador."
+              }
+            },
+            {
+              "type": "secret",
+              "id": "b2_s01",
+              "detect_dc": 13,
+              "reveals": "exit:b2_r07",
+              "description": "Habéis encontrado el paso que lleva hasta la charca apartada."
+            },
+            {
+              "type": "scene",
+              "id": "b2_s01_pista",
+              "title": "Huellas entre las raíces",
+              "text": "Unas huellas de lobo se apartan del sendero. Entre las raíces se intuye un paso hacia una charca.",
+              "question": "¿Cómo lo buscáis?",
+              "reveals": "b2_s01",
+              "options": [
+                {
+                  "label": "Seguir las huellas junto a las raíces",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Siguiendo el rastro encontráis el paso que lleva a la charca.",
+                    "reveal": "b2_s01"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                },
+                {
+                  "label": "Examinar los huecos entre las raíces",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Los huecos entre las raíces os permiten localizar un paso hacia la charca.",
+                    "reveal": "b2_s01"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "swamp_water",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b2_r07",
+          "name": "Charca de barro",
+          "description": "Un jabalí enorme levanta tierra con los colmillos.",
+          "kind": "room",
+          "size_hexes": 12,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b2_r06",
+              "type": "secret",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r08",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r11",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "mushrooms",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "b2_e05",
+              "trigger": "seen",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Giant Boar",
+                  "name": "Jabalí gigante",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 450
+            },
+            {
+              "type": "rest_point",
+              "id": "b2_rest2",
+              "rest": "short",
+              "name": "Rincón resguardado",
+              "description": "Un hueco tranquilo donde recobrar el aliento; permite regresar a Vegaumbría."
+            },
+            {
+              "type": "chest",
+              "id": "b2_o02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 6,
+              "item": {
+                "id": "potion_poison_resistance"
+              },
+              "obstacle": {
+                "title": "Cofre en el barro",
+                "img": "agua_cienaga",
+                "text": "Un cofre asoma hundido en el barro de la charca.",
+                "needs": [
+                  "rope"
+                ],
+                "use": "{who} ata la cuerda al asa y lo sacáis entre todos.",
+                "missing": "Con una cuerda lo sacaríamos del barro. En la tienda del pueblo venden.",
+                "alt": {
+                  "abil": "str",
+                  "dc": 13,
+                  "dmg": "1d4",
+                  "label": "Fuerza",
+                  "hurt": "El barro atrapa a {who}, que sale magullado",
+                  "try": "{who} se mete en el barro para sacarlo."
+                }
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "swamp_water",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b2_r08",
+          "name": "Umbral de aguas negras",
+          "description": "El suelo se vuelve esponjoso bajo los pies.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b2_r06",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r01",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b2_d02",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Junto a las primeras aguas de la ciénaga, una pared de raíces se alza hasta cerrar el camino."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Solo un amuleto de corteza apartará estas raíces."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b2_r09",
+          "name": "Anillo de resina",
+          "description": "Un círculo de troncos heridos rodea una poza de resina endurecida. Unas tablas llevan hasta una caja abandonada.",
+          "exits": [
+            {
+              "to": "b2_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_s02_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b2_d03",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Los resineros dejaron símbolos junto a los cortes de estos troncos. La resina ha cubierto casi todas las señales."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Si limpiamos las marcas, quizá encontremos su antiguo refugio."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "b2_q01",
+              "title": "La caja de los resineros",
+              "img": "escena_caja_resineros",
+              "decision": true,
+              "text": "Un cofre descansa sobre tablones entre los árboles. Una resina amarillenta cubre la madera y desprende vapores irritantes.",
+              "question": "¿Qué hacéis con la caja?",
+              "options": [
+                {
+                  "label": "Cruzar por los tablones",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Llegáis hasta el cofre. Dentro hay unas monedas que aún no ha cubierto la resina.",
+                    "gold": 6
+                  },
+                  "fail": {
+                    "text": "Resbaláis sobre la resina caliente. Gastáis una poción de curación al tratar las quemaduras y abandonáis el intento.",
+                    "lose": "potion_healing"
+                  }
+                },
+                {
+                  "label": "Examinar la resina de los troncos",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Retiráis parte de la resina y descubrís el símbolo que señala un refugio oculto de los resineros.",
+                    "reveal": "b2_s02"
+                  },
+                  "fail": {
+                    "text": "La resina endurecida impide reconocer las marcas."
+                  }
+                },
+                {
+                  "label": "Dejarla intacta",
+                  "ok": {
+                    "text": "Dejáis la caja cubierta de resina y continuáis."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "b2_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 6,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "stump",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "stump",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b2_s02_r01",
+          "name": "Archivo de savia",
+          "description": "Una estancia de trabajo cerrada durante años: una mesa, raspadores y frascos vacíos.",
+          "exits": [
+            {
+              "to": "b2_r09",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b2_d08",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En el refugio de los resineros hay una carta: «Las raíces se mueven de noche. Hemos oído pedir ayuda desde el interior de los árboles»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Las raíces no pedían ayuda. Usaban las voces de otras personas."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b2_e09",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Giant Spider",
+                  "name": "Araña de la mesa",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 200
+            },
+            {
+              "type": "chest",
+              "id": "b2_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 12,
+              "item": {
+                "id": "antidote"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "desk",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b2_r10",
+          "name": "Pasaje de las raíces tensas",
+          "description": "Un corredor de tierra atraviesa el vientre de un árbol caído. Al fondo cruje la verja de raíces del principio.",
+          "exits": [
+            {
+              "to": "b2_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r02",
+              "type": "gate",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "lever",
+              "id": "b2_g01_open",
+              "gate": "b2_g01",
+              "name": "La reja que crece",
+              "text": "Las raíces se recogen con un crujido profundo. Ahora hay un atajo entre este pasaje y el tronco partido.",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Esta es la otra cara de la verja que nos cortaba el paso."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Una palanca de piedra sale del suelo. Al moverla, las raíces se repliegan y dejan libre el atajo."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ya podemos regresar por aquí sin dar todo el rodeo."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "fallen_tree",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b2_r11",
+          "name": "Claro de las marcas",
+          "description": "Árboles con señales de herramientas a distintas alturas. La más reciente está por encima de la cabeza de cualquier leñador.",
+          "exits": [
+            {
+              "to": "b2_r07",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "scene",
+              "id": "b2_q02",
+              "title": "Las marcas altas",
+              "img": "escena_marcas_altas",
+              "decision": true,
+              "text": "Un leñador barbudo señala las muescas talladas muy alto en un árbol. Tiene un mapa, pero no sabe si puede fiarse de él.",
+              "question": "¿Cómo buscáis un camino seguro?",
+              "options": [
+                {
+                  "label": "Estudiar las marcas con el leñador",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Comparáis las muescas con las huellas del suelo. El leñador os muestra un paso hacia una charca apartada.",
+                    "reveal": "b2_s01"
+                  },
+                  "fail": {
+                    "text": "Las marcas no os permiten distinguir un camino seguro."
+                  }
+                },
+                {
+                  "label": "Comprar su mapa por 10 monedas",
+                  "cost": 10,
+                  "ok": {
+                    "text": "Su mapa marca un paso poco conocido hacia una charca escondida.",
+                    "reveal": "b2_s01"
+                  }
+                },
+                {
+                  "label": "Dejar que continúe",
+                  "ok": {
+                    "text": "El leñador se aleja con su hacha, aún mirando las marcas."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "big_tree",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "fallen_tree",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b2_s01_r01",
+          "name": "Orilla olvidada",
+          "description": "Una charca pequeña donde se acumulan objetos perdidos: un morral hundido y una caja metálica.",
+          "exits": [
+            {
+              "to": "b2_r07",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b2_d07",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una nota mojada cuenta cómo un aprendiz escuchó la voz de su madre desde un tronco hueco. Nadie volvió a verlo."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ese aprendiz también escuchó una voz conocida. Era otra trampa del bosque."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b2_e10",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Wolf",
+                  "name": "Lobo de la orilla",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "b2_c06",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 10,
+              "item": {
+                "id": "potion_poison_resistance"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "swamp_water",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "standing_stone",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "b2_j01",
+          "from": "b2_r02",
+          "until": "b2_g01",
+          "text": "Una verja de raíces bloquea un atajo. Debe de haber un modo de apartarla desde el otro lado."
+        },
+        {
+          "id": "b2_j02",
+          "from": "b2_r09",
+          "until": "b2_s02",
+          "text": "Las marcas de los resineros podrían conducir a un refugio escondido."
+        },
+        {
+          "id": "b2_j03",
+          "from": "b2_r06",
+          "until": "b2_s01",
+          "text": "Un rastro de animales señala un paso apartado del camino principal."
+        }
+      ],
+      "c_gold": true
+    },
+    {
+      "id": "b3",
+      "order": 3,
+      "name": "Ciénaga",
+      "description": "Las aguas negras esconden antiguos puestos de vigilancia y raíces que conducen hacia el Corazón Hueco.",
+      "expected_party_level": 4,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "Entráis en una ciénaga de árboles muertos y aguas oscuras. Entre los juncos brillan luces azules. Algunas raíces parecen latir."
+        },
+        {
+          "speaker": "hero",
+          "text": "Las raíces llegan hasta aquí. El origen de las desapariciones debe de estar más adentro."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "b3_r01",
+          "name": "Ermita del farol",
+          "description": "Un ermitaño protege una pasarela con su lámpara.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "b3_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b2_r08",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "ally",
+              "slot_zone": 3,
+              "default_ally": "anselmo",
+              "default_scene": [
+                {
+                  "speaker": "anselmo",
+                  "text": "Me llamo Ismerel. Protejo esta ermita. Las luces atraen a los viajeros, pero mi farol las mantiene lejos."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ven con nosotros. Hay personas atrapadas más allá de la ciénaga."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "telmo",
+                  "text": "Soy Corvalen. He seguido las raíces hasta esta ciénaga. Mi luz mantiene a raya a los fuegos fatuos."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Necesitaremos esa luz. Acompáñanos."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "cabin",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b3_r02",
+          "name": "Pasarela hundida",
+          "description": "Tablas podridas cruzan agua negra.",
+          "kind": "corridor",
+          "size_hexes": 5,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b3_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "trap",
+              "id": "b3_t01",
+              "name": "Tablones podridos",
+              "description": "Los tablones ceden bajo vuestros pies…",
+              "detect_dc": 13,
+              "disarm_dc": 13,
+              "save_ability": "DEX",
+              "save_dc": 13,
+              "effect": "2d6 contundente y caída al agua; salir requiere una acción."
+            },
+            {
+              "type": "prop",
+              "prop": "bridge",
+              "count": 1
+            },
+            {
+              "type": "rest_point",
+              "id": "b3_rest2",
+              "rest": "short",
+              "name": "Rincón resguardado",
+              "description": "Un hueco tranquilo donde recobrar el aliento; permite regresar a Vegaumbría."
+            },
+            {
+              "type": "scene",
+              "id": "b3_p01",
+              "title": "Los tablones podridos",
+              "near": "b3_t01",
+              "before": "b3_t01",
+              "text": "Entre el agua y las raíces de la ciénaga, unos tablones podridos forman un paso inestable. Cruzarlo sin hundirse exige encontrar apoyos firmes.",
+              "question": "¿Cómo aseguráis el paso?",
+              "options": [
+                {
+                  "label": "Pisar la madera junto a las raíces",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Evitáis las tablas podridas y dejáis señalado un paso seguro.",
+                    "open": "b3_t01"
+                  },
+                  "fail": {
+                    "text": "El apoyo cede sobre el agua y el barro.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Apoyar un madero entre las raíces",
+                  "attr": "str",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Apoyáis el madero entre las raíces. El paso queda asegurado.",
+                    "open": "b3_t01"
+                  },
+                  "fail": {
+                    "text": "El apoyo cede sobre el agua y el barro."
+                  }
+                },
+                {
+                  "label": "Buscar apoyos en las raíces",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Reconocéis las raíces firmes y señaláis cómo cruzar sin pisar las tablas podridas.",
+                    "open": "b3_t01"
+                  },
+                  "fail": {
+                    "text": "El apoyo cede sobre el agua y el barro."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "El paso sigue siendo peligroso. Tendréis que afrontar las tablas podridas."
+              }
+            }
+          ]
+        },
+        {
+          "id": "b3_r03",
+          "name": "Luces errantes",
+          "description": "Una luz azul oscila entre los juncos.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b3_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b3_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Will-o'-Wisp",
+                  "name": "Fuego fatuo",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 450
+            },
+            {
+              "type": "prop",
+              "prop": "swamp_water",
+              "count": 2
+            },
+            {
+              "type": "scene",
+              "id": "b3_q01",
+              "title": "La voz en el agua",
+              "img": "escena_voz_agua",
+              "decision": true,
+              "after": "b3_e01",
+              "text": "Una luz azul flota sobre el agua. Entre la niebla aparece una sombra encapuchada. Una voz familiar pide auxilio.",
+              "question": "¿Qué hacéis ante la voz?",
+              "options": [
+                {
+                  "label": "Seguirla con cautela",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Avanzáis sin seguir la voz. Entre las raíces del árbol muerto descubrís un paso que lleva hacia un túmulo.",
+                    "reveal": "b3_s02"
+                  },
+                  "fail": {
+                    "text": "La voz os distrae. Entre la niebla se despierta otra presencia hostil cerca de la isla.",
+                    "add": "b3_e05"
+                  }
+                },
+                {
+                  "label": "Apagar la luz con una piedra",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "La piedra apaga el brillo azul. Una de las presencias atraídas por la luz se aleja de la isla.",
+                    "sub": "b3_e05"
+                  },
+                  "fail": {
+                    "text": "La piedra cae al agua y la luz sigue flotando."
+                  }
+                },
+                {
+                  "label": "Ignorarla",
+                  "ok": {
+                    "text": "Os alejáis sin contestar. La voz continúa llamando desde el agua."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b3_r04",
+          "name": "Isla de huesos",
+          "description": "Plumas húmedas cuelgan de los árboles.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "cross",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b3_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r05",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b3_e02",
+              "trigger": "enter",
+              "can_reinforce": [
+                "b3_e05"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Harpy",
+                  "name": "Arpía",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "chest",
+              "id": "b3_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 6,
+              "item": {
+                "id": "periapt_wound_closure",
+                "name": "Periapto de cierre de heridas",
+                "srd_item": "Periapt of Wound Closure",
+                "description": "Quien lo lleva se estabiliza solo al caer a 0 PG y cura el doble con los dados de golpe."
+              },
+              "obstacle": {
+                "title": "Puente roto",
+                "img": "puente",
+                "text": "El cofre está en un islote de huesos, al otro lado de un puente de tablas roto sobre el agua negra.",
+                "needs": [
+                  "rope"
+                ],
+                "use": "{who} ata la cuerda a un tronco y cruzáis agarrados a ella.",
+                "missing": "Con una cuerda podríais cruzar. En la tienda del pueblo venden."
+              }
+            },
+            {
+              "type": "encounter",
+              "id": "b3_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Specter",
+                  "name": "Vigía atrapado",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "prop",
+              "prop": "swamp_water",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "bone_pile",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b3_r05",
+          "name": "Caseta de vigilancia",
+          "description": "Un refugio elevado aún conserva su puerta.",
+          "kind": "room",
+          "size_hexes": 6,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b3_r04",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "rest_point",
+              "id": "b3_rest1",
+              "rest": "short",
+              "name": "Caseta sobre pilotes",
+              "description": "Lugar protegido; permite regresar a Vegaumbría."
+            },
+            {
+              "type": "dialogue",
+              "id": "b3_d01",
+              "lines": [
+                {
+                  "speaker": "ortiga",
+                  "text": "Ya estáis cerca. El bosque guarda muchas voces bajo estas aguas. Algunas pertenecen a quienes todavía siguen vivos."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "¿Cómo puedes saber que siguen vivos?"
+                },
+                {
+                  "speaker": "ortiga",
+                  "text": "Las raíces conservan su fuerza. Mientras el Corazón las sujete, no podrán marcharse."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "b3_ev01",
+              "title": "La rendición junto al agua",
+              "decision": true,
+              "on_return": true,
+              "after": "b4_r05",
+              "text": "Un bandido deja caer su arma. «Brezna me prometió una salida. Ahora sé que nos trajo para atraparnos».",
+              "question": "¿Qué le decís?",
+              "options": [
+                {
+                  "label": "Que vuelva por las marcas del sendero",
+                  "ok": {
+                    "text": "«Decid en Vegaumbría que sigo vivo», suplica. Os entrega sus monedas antes de iniciar el regreso.",
+                    "gold": 4
+                  }
+                },
+                {
+                  "label": "Que siga su camino",
+                  "ok": {
+                    "text": "Se aleja desarmado hacia la linde, sin volver la vista atrás."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "notice",
+              "id": "b3_n_peligro",
+              "title": "Algo se mueve en el túmulo",
+              "text": "Desde el túmulo llega un crujido profundo. Algo enorme se mueve bajo el barro. No hace falta acercarse: podéis seguir otro camino."
+            }
+          ]
+        },
+        {
+          "id": "b3_r06",
+          "name": "Bosque sumergido",
+          "description": "Un tronco muerto se endereza sin viento.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b3_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r08",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r07",
+              "type": "secret",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_s02_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b3_e03",
+              "trigger": "seen",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Walking Tree",
+                  "name": "Árbol ahogado",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 450
+            },
+            {
+              "type": "prop",
+              "prop": "swamp_water",
+              "count": 2
+            },
+            {
+              "type": "secret",
+              "id": "b3_s02",
+              "detect_dc": 12,
+              "reveals": "exit:b3_r07",
+              "description": "Habéis descubierto un paso bajo las raíces que conduce al túmulo."
+            },
+            {
+              "type": "scene",
+              "id": "b3_s02_pista",
+              "title": "El paso entre las raíces",
+              "text": "Junto a un árbol caído, la corriente desaparece bajo las raíces. Parece haber un hueco al otro lado.",
+              "question": "¿Cómo lo buscáis?",
+              "reveals": "b3_s02",
+              "options": [
+                {
+                  "label": "Seguir la corriente",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Seguís la corriente y encontráis un paso hacia el túmulo oculto.",
+                    "reveal": "b3_s02"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                },
+                {
+                  "label": "Buscar el hueco entre las raíces",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Localizáis un hueco transitable entre las raíces, en dirección al túmulo.",
+                    "reveal": "b3_s02"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b3_r07",
+          "name": "Túmulo del guardián",
+          "description": "Piedras cubiertas de raíces conservan una ofrenda.",
+          "kind": "room",
+          "size_hexes": 11,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b3_r06",
+              "type": "secret",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r08",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "secret",
+              "id": "b3_s01",
+              "detect_dc": 14,
+              "reveals": "chest:b3_c02",
+              "description": "Bajo una losa aparece el cofre que guardaba la antigua ofrenda."
+            },
+            {
+              "type": "chest",
+              "id": "b3_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 7,
+              "item": {
+                "id": "druid_relic",
+                "name": "Semilla de la promesa",
+                "srd_item": null,
+                "description": "Semilla fosilizada que recuerda la promesa original del Corazón Hueco; no otorga bonificaciones."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "b3_d02",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En una losa se lee: «El Corazón Hueco protege a quienes cruzan Umbría y les permite regresar a casa»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Así que el Corazón no siempre encerró a la gente. Alguien cambió su propósito."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b3_e04",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Shambling Mound",
+                  "name": "Montículo andante del pantano",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 1800
+            },
+            {
+              "type": "chest",
+              "id": "b3_o01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 11,
+              "item": {
+                "id": "holy_water"
+              },
+              "obstacle": {
+                "title": "Túmulo",
+                "img": "sarcofago",
+                "text": "La losa de un túmulo antiguo, cubierta de musgo.",
+                "needs": [
+                  "crowbar"
+                ],
+                "use": "{who} apalanca la losa y la aparta.",
+                "missing": "Con una palanqueta moveríamos la losa. En la tienda del pueblo venden.",
+                "alt": {
+                  "abil": "str",
+                  "dc": 14,
+                  "dmg": "1d6",
+                  "label": "Fuerza",
+                  "hurt": "La losa cae sobre el pie de {who}",
+                  "try": "{who} intenta mover la losa a pulso."
+                }
+              }
+            },
+            {
+              "type": "scene",
+              "id": "b3_s01_pista",
+              "title": "La ofrenda olvidada",
+              "text": "Bajo un dolmen, una losa cubierta de raíces refleja un brillo dorado. Parece ocultar un pequeño hueco.",
+              "question": "¿Cómo lo buscáis?",
+              "reveals": "b3_s01",
+              "options": [
+                {
+                  "label": "Observar las hojas sobre el agua",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Las hojas os muestran dónde se levanta la losa. Debajo descubrís un cofre.",
+                    "reveal": "b3_s01"
+                  },
+                  "fail": {
+                    "text": "No conseguís localizar el origen del brillo."
+                  }
+                },
+                {
+                  "label": "Examinar el hueco bajo las raíces",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Apartáis las raíces y encontráis un cofre escondido bajo la losa.",
+                    "reveal": "b3_s01"
+                  },
+                  "fail": {
+                    "text": "No conseguís localizar el origen del brillo."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "b3_q02",
+              "title": "La ofrenda del Corazón",
+              "img": "escena_ofrenda_guardian",
+              "decision": true,
+              "text": "Bajo un dolmen, una semilla dorada descansa sobre una losa de piedra. La inscripción habla del Corazón Hueco.",
+              "question": "¿Qué hacéis ante la ofrenda?",
+              "options": [
+                {
+                  "label": "Prometer ayudar a los cautivos",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "La semilla brilla al oír vuestra promesa. Su luz señala un cofre oculto bajo la losa.",
+                    "reveal": "b3_s01"
+                  },
+                  "fail": {
+                    "text": "La semilla permanece inmóvil sobre la losa."
+                  }
+                },
+                {
+                  "label": "Dejar una poción como ofrenda",
+                  "needs": "potion_healing",
+                  "ok": {
+                    "lose": "potion_healing",
+                    "text": "Dejáis la poción sobre la piedra. La semilla desprende una luz cálida que alivia las heridas del grupo.",
+                    "heal": 5
+                  }
+                },
+                {
+                  "label": "Dejarla como está",
+                  "ok": {
+                    "text": "Dejáis la semilla en su lugar y seguís adelante."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b3_r08",
+          "name": "Salida de la niebla",
+          "description": "El agua cede ante una escalinata de piedra.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b3_r06",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r01",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "standing_stone",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "b3_r09",
+          "name": "Orilla de los juncos blancos",
+          "description": "Juncos casi blancos bordean una charca sin insectos. Unas estacas señalan un camino desaparecido.",
+          "exits": [
+            {
+              "to": "b3_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b3_d03",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "El barro conserva huellas que llegan a la orilla. Ninguna sale del agua."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "No son huellas de quien haya logrado salir por su propio pie."
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "b3_c06",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 4,
+              "item": {
+                "id": "antidote"
+              }
+            },
+            {
+              "type": "encounter",
+              "id": "b3_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Bandit",
+                  "name": "Bandido extraviado",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "b3_pat01_paso",
+              "title": "Extraviados de la ciénaga",
+              "text": "Unos bandidos extraviados bloquean el paso. Exigen provisiones, aunque apenas pueden sostener sus armas.",
+              "question": "¿Qué hacéis?",
+              "on_return": true,
+              "after": "b4_r01",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "No os dejan otra salida.",
+                    "fight": "b3_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Bordeáis las estacas por una franja de barro firme.",
+                    "remove": "b3_pat01"
+                  },
+                  "fail": {
+                    "text": "Os descubren.",
+                    "fight": "b3_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 13,
+                  "ok": {
+                    "text": "«Podéis salir por la linde si dejáis de pelear». Los hombres bajan las armas y retroceden.",
+                    "remove": "b3_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "b3_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "swamp_water",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b3_r10",
+          "name": "Puente de la promesa",
+          "description": "Dos monolitos sostienen un arco de madera petrificada sobre agua poco profunda.",
+          "exits": [
+            {
+              "to": "b3_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b3_d04",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Unos monolitos sostienen un arco de madera petrificada. En sus piedras se lee la promesa original del Corazón Hueco."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "«Proteger a quienes entran y permitirles regresar». Eso era lo que debía cumplir."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "b3_d04b",
+              "lines": [
+                {
+                  "speaker": "anselmo",
+                  "text": "Cuando alguien confunde proteger con encerrar, hasta una buena promesa puede convertirse en una prisión."
+                }
+              ],
+              "only": "anselmo"
+            },
+            {
+              "type": "scene",
+              "id": "b3_p02",
+              "title": "El saquito sumergido",
+              "text": "Un saquito asoma bajo el agua fría junto a las raíces. El barro amenaza con hundirse al acercaros.",
+              "question": "¿Cómo lo sacáis?",
+              "options": [
+                {
+                  "label": "Entrar en el agua junto a las raíces",
+                  "attr": "con",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Recuperáis el saquito junto a las raíces.",
+                    "item": "potion_healing",
+                    "gold": 4
+                  },
+                  "fail": {
+                    "text": "El agua fría os entumece y os obliga a retroceder.",
+                    "damage": "1d4"
+                  }
+                },
+                {
+                  "label": "Buscar apoyo en las raíces",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Recuperáis el saquito junto a las raíces.",
+                    "item": "potion_healing",
+                    "gold": 4
+                  },
+                  "fail": {
+                    "text": "El agua fría os entumece y os obliga a retroceder."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "No conseguís recuperar lo que buscabais y os retiráis."
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "standing_stone",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "walkway",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "standing_stone",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "swamp_water",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b3_r11",
+          "name": "Fosa de la marea lenta",
+          "description": "Una depresión retiene agua oscura que sube y baja sin relación con la corriente.",
+          "exits": [
+            {
+              "to": "b3_r05",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "chest",
+              "id": "b3_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 7,
+              "item": {
+                "id": "antidote"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "swamp_water",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b3_s02_r01",
+          "name": "Puesto del testigo",
+          "description": "Una pequeña cripta con un asiento de piedra, una mesa rota y un estandarte sin emblema.",
+          "exits": [
+            {
+              "to": "b3_r06",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b3_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En un antiguo puesto hay un relato: «Un druida entregó su vida al bosque y se convirtió en el Corazón Hueco»."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "«La ciénaga cortó el paso a la orden. Algunos vigilantes murieron aquí y sus cuerpos todavía custodian estos lugares»."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b3_e06",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Esqueleto de la antigua orden",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "b3_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 12,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "gravestone",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b3_s01_r01",
+          "name": "Cámara de la promesa",
+          "description": "Un santuario pequeño detrás de la ofrenda: un cuenco de piedra, dos relieves y una raíz en el centro.",
+          "exits": [
+            {
+              "to": "b3_r07",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b3_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En la pared se lee: «Protegeré a quienes crucen Umbría. No los retendré contra su voluntad»."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Varias raíces han roto la piedra justo bajo esas palabras."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b3_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Zombie",
+                  "name": "Vigilante olvidado",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "b3_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 14,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "b3_j01",
+          "from": "b3_r03",
+          "until": "b4_r05",
+          "text": "En la ciénaga, las raíces repiten voces familiares. ¿Quién las obliga a hacerlo?"
+        },
+        {
+          "id": "b3_j02",
+          "from": "b3_r06",
+          "until": "b3_s02",
+          "text": "Una corriente desaparece bajo un árbol caído. Puede ocultar otro paso."
+        },
+        {
+          "id": "b3_j03",
+          "from": "b3_r07",
+          "until": "b3_s01",
+          "text": "En el túmulo hay una ofrenda antigua. Quizá esconda algo bajo las raíces."
+        }
+      ],
+      "c_gold": true
+    },
+    {
+      "id": "b4",
+      "order": 4,
+      "name": "Claro maldito e interior del Corazón",
+      "description": "En el claro maldito, las raíces conducen al Corazón Hueco y a las personas cautivas en su interior.",
+      "expected_party_level": 4,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "En un círculo de piedras se lee que un druida se convirtió en el Corazón Hueco para proteger a quienes cruzaban Umbría."
+        },
+        {
+          "speaker": "hero",
+          "text": "Su promesa era proteger a los viajeros y dejarlos regresar. Pero ahora sus raíces los retienen. Encontraremos al responsable."
+        }
+      ],
+      "rooms": [
+        {
+          "id": "b4_r01",
+          "name": "Círculo de las encinas",
+          "description": "Un círculo de piedras marca la última entrada.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "b4_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b3_r08",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "ally",
+              "slot_zone": 4,
+              "default_ally": "ivelle",
+              "default_scene": [
+                {
+                  "speaker": "ivelle",
+                  "text": "Soy Ivelle. Mi orden protegía al Corazón Hueco, pero dejó de visitarlo cuando la ciénaga cerró el camino."
+                },
+                {
+                  "speaker": "ivelle",
+                  "text": "No volveré a abandonar a quienes necesitan nuestra ayuda."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "telmo",
+                  "text": "Soy Corvalen. He descifrado las inscripciones: el Corazón Hueco debía proteger a los viajeros, no encarcelarlos."
+                },
+                {
+                  "speaker": "telmo",
+                  "text": "Os acompañaré hasta el final."
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "standing_stone",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "b4_r02",
+          "name": "Galería de espinas",
+          "description": "La vegetación protege un túnel de tierra.",
+          "kind": "corridor",
+          "size_hexes": 5,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b4_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r03",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b4_e01",
+              "trigger": "enter",
+              "can_reinforce": [
+                "b4_e05"
+              ],
+              "enemies": [
+                {
+                  "srd_creature": "Awakened Shrub",
+                  "name": "Arbusto despertado",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 30
+            },
+            {
+              "type": "trap",
+              "id": "b4_t01",
+              "name": "Nube de esporas",
+              "description": "Una nube de esporas estalla entre las espinas…",
+              "detect_dc": 14,
+              "disarm_dc": 14,
+              "save_ability": "CON",
+              "save_dc": 14,
+              "effect": "2d6 veneno; mitad con salvación superada."
+            },
+            {
+              "type": "encounter",
+              "id": "b4_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Awakened Shrub",
+                  "name": "Raíz espinosa",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 10
+            },
+            {
+              "type": "rest_point",
+              "id": "b4_rest2",
+              "rest": "short",
+              "name": "Rincón resguardado",
+              "description": "Un hueco tranquilo donde recobrar el aliento; permite regresar a Vegaumbría."
+            }
+          ]
+        },
+        {
+          "id": "b4_r03",
+          "name": "Altar de savia",
+          "description": "Una figura feérica vigila el altar.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b4_r02",
+              "type": "thicket",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b4_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Dryad",
+                  "name": "Dríade corrompida",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Awakened Shrub",
+                  "name": "Arbusto despertado",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 4,
+              "xp_total": 220
+            },
+            {
+              "type": "prop",
+              "prop": "druid_altar",
+              "count": 1
+            },
+            {
+              "type": "scene",
+              "id": "b4_s01_pista",
+              "title": "El hueco del altar",
+              "text": "Tras el altar de piedra agrietada, la savia ilumina unas marcas entre las raíces. Sale aire frío de una abertura.",
+              "question": "¿Cómo investigáis la abertura?",
+              "reveals": "b4_s01",
+              "options": [
+                {
+                  "label": "Seguir el aire entre las raíces",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Seguís la corriente de aire y encontráis una entrada oculta tras el altar.",
+                    "reveal": "b4_s01"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                },
+                {
+                  "label": "Seguir las marcas sobre la madera",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Las marcas os indican dónde se esconde la entrada de un pequeño santuario.",
+                    "reveal": "b4_s01"
+                  },
+                  "fail": {
+                    "text": "No dais con ello por ahí."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "b4_q01",
+              "title": "El altar herido",
+              "img": "escena_altar_herido",
+              "decision": true,
+              "after": "b4_e02",
+              "text": "La dríade que acabáis de vencer yace herida ante un altar partido. Savia dorada corre por la grieta de la piedra.",
+              "question": "¿Qué hacéis ante el altar?",
+              "options": [
+                {
+                  "label": "Limpiar la inscripción",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Apartáis la savia y descubrís una abertura oculta tras el altar.",
+                    "reveal": "b4_s01"
+                  },
+                  "fail": {
+                    "text": "La savia se endurece de golpe. Al otro lado de la grieta, un arbusto cobra vida y espera.",
+                    "add": "b4_e06"
+                  }
+                },
+                {
+                  "label": "Dejar 10 monedas de ofrenda",
+                  "cost": 10,
+                  "ok": {
+                    "text": "Dejáis las monedas sobre el altar. La savia se retira y revela una entrada oculta.",
+                    "reveal": "b4_s01"
+                  }
+                },
+                {
+                  "label": "No tocar el altar",
+                  "ok": {
+                    "text": "Dejáis a la dríade y el altar sin tocar. Seguís adelante."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b4_r04",
+          "name": "Garganta de raíces",
+          "description": "La piedra palpita bajo una película de savia.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "cross",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b4_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "chest",
+              "id": "b4_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 13,
+              "item": {
+                "id": "healing_4",
+                "name": "Poción de curación",
+                "srd_item": "Potion of Healing",
+                "description": "Recupera 2d4+2 PG."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "b4_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "El túnel de raíces tiene marcas de manos y rostros atrapados en la madera. De sus paredes salen débiles respiraciones."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Los desaparecidos están aquí dentro. Aún siguen vivos."
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "b4_o01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 13,
+              "item": {
+                "id": "potion_greater_healing_1"
+              },
+              "obstacle": {
+                "title": "Espinos vivos",
+                "img": "arbusto_espinoso",
+                "text": "Unos espinos vivos cierran un hueco entre las raíces; se apartan del fuego.",
+                "needs": [
+                  "alchemists_fire"
+                ],
+                "use": "{who} lanza fuego de alquimista y los espinos se retuercen y se apartan.",
+                "missing": "Solo el fuego de alquimista los haría apartarse."
+              }
+            },
+            {
+              "type": "encounter",
+              "id": "b4_pat01",
+              "trigger": "patrol",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Awakened Shrub",
+                  "name": "Arbusto rezagado",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 0
+            },
+            {
+              "type": "scene",
+              "id": "b4_pat01_paso",
+              "title": "Las raíces quietas",
+              "text": "Unos arbustos despertados os cierran el paso. Aunque el Corazón haya caído, todavía se mueven por su antigua orden.",
+              "question": "¿Qué hacéis?",
+              "on_return": true,
+              "after": "b4_e04",
+              "options": [
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Se lanzan contra vosotros.",
+                    "fight": "b4_pat01"
+                  }
+                },
+                {
+                  "label": "Esquivarlos",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Pasáis sin hacer ruido mientras las criaturas rastrean el olor de la savia.",
+                    "remove": "b4_pat01"
+                  },
+                  "fail": {
+                    "text": "Os descubren.",
+                    "fight": "b4_pat01"
+                  }
+                },
+                {
+                  "label": "Espantarlos",
+                  "attr": "cha",
+                  "dc": 12,
+                  "ok": {
+                    "text": "¡Se acabó la orden! Vacilan y se repliegan a las grietas.",
+                    "remove": "b4_pat01"
+                  },
+                  "fail": {
+                    "text": "No se lo tragan.",
+                    "fight": "b4_pat01"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "thorn_bush",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b4_r05",
+          "name": "Máscara caída",
+          "description": "Brezna espera junto a una puerta de raíces. Su apariencia de anciana es una ilusión.",
+          "kind": "room",
+          "size_hexes": 6,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b4_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b4_d02",
+              "lines": [
+                {
+                  "speaker": "ortiga",
+                  "text": "Has llegado justo donde quería. Necesitaba que llegaras con fuerzas hasta el Corazón."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Tú provocaste las desapariciones. ¿También las voces que oímos?"
+                },
+                {
+                  "speaker": "ortiga",
+                  "text": "Engañé al Corazón para que los retuviera. Sus raíces imitan sus voces y atraen a más gente. Yo me alimento de su fuerza."
+                },
+                {
+                  "speaker": "ortiga",
+                  "text": "Mis consejos y el antídoto eran para que confiaras en mí. La anciana amable era un disfraz. Ahora tu fuerza también será mía."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b4_e03",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Green Hag",
+                  "name": "Brezna, la bruja del bosque",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Awakened Shrub",
+                  "name": "Arbusto despertado",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 6,
+              "xp_total": 720
+            }
+          ]
+        },
+        {
+          "id": "b4_r06",
+          "name": "Cámara del descanso",
+          "description": "Un círculo de piedra aislado de la savia.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b4_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "rest_point",
+              "id": "b4_rest1",
+              "rest": "short",
+              "name": "Santuario de la última vigilia",
+              "description": "Lugar protegido; permite regresar a Vegaumbría."
+            },
+            {
+              "type": "chest",
+              "id": "b4_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 5,
+              "item": {
+                "id": "healing_5",
+                "name": "Poción de curación",
+                "srd_item": "Potion of Healing",
+                "description": "Recupera 2d4+2 PG."
+              }
+            },
+            {
+              "type": "chest",
+              "id": "b4_c04",
+              "locked": true,
+              "lock_dc": 13,
+              "gold": 0,
+              "item": {
+                "id": "gauntlets_ogre_power",
+                "name": "Guanteletes de fuerza de ogro",
+                "srd_item": "Gauntlets of Ogre Power",
+                "description": "La Fuerza de quien los lleva pasa a ser 19."
+              }
+            }
+          ]
+        },
+        {
+          "id": "b4_r07",
+          "name": "Cámara de los nudos",
+          "description": "Tres pilares de raíz sostienen una masa de madera petrificada.",
+          "kind": "room",
+          "size_hexes": 12,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b4_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_r08",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "b4_e04",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Awakened Tree",
+                  "name": "Nudo de raíz",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Treant",
+                  "name": "El Corazón Hueco",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 700
+            },
+            {
+              "type": "prop",
+              "prop": "big_tree",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "b4_r08",
+          "name": "Raíz silenciosa",
+          "description": "Tras la victoria, las paredes dejan de latir.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "b4_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "b4_s02_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "chest",
+              "id": "b4_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 39,
+              "item": {
+                "id": "heart_fragment",
+                "name": "Astilla del Corazón",
+                "srd_item": null,
+                "description": "Madera petrificada sin poder tras la derrota."
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "b4_d03",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Las raíces dejan de apretar. Por todo el bosque se oyen voces verdaderas: los cautivos están despertando."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ahora podrán regresar a Vegaumbría. El Corazón ya no los retendrá."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "b4_d03b",
+              "lines": [
+                {
+                  "speaker": "maren",
+                  "text": "¡Mi hermano está entre ellos! Respira. Esta vez volvemos juntos."
+                }
+              ],
+              "only": "maren"
+            },
+            {
+              "type": "scene",
+              "id": "b4_s02_pista",
+              "title": "La raíz del invierno",
+              "before": "m4_e05",
+              "text": "Una raíz cubierta de escarcha permanece helada dentro del árbol. En su corteza hay una hendidura con forma de escama.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Examinar la escarcha de la raíz",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Encontráis una hendidura que parece esperar un objeto helado. No tenéis nada que encaje.",
+                    "flag": "b4_s02_visto"
+                  },
+                  "fail": {
+                    "text": "El hielo no deja ver nada."
+                  }
+                },
+                {
+                  "label": "Estudiar los trazos de la madera",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Las marcas dibujan una escama. Este hielo no es propio de Umbría: aún os falta la pieza adecuada.",
+                    "flag": "b4_s02_visto"
+                  },
+                  "fail": {
+                    "text": "No reconocéis el sello."
+                  }
+                }
+              ],
+              "fallback": {
+                "text": "El cierre permanece helado. Quizá podáis volver cuando encontréis algo relacionado con ese frío."
+              }
+            },
+            {
+              "type": "scene",
+              "id": "b4_s02_abrir",
+              "title": "La raíz del invierno",
+              "after": "m4_e05",
+              "reveals": "b4_s02",
+              "text": "La escama de un dragón blanco desprende el mismo frío que la raíz helada. Sus marcas encajan con la hendidura.",
+              "question": "¿La usáis?",
+              "options": [
+                {
+                  "label": "Acercar la escama a la raíz",
+                  "ok": {
+                    "text": "Acercáis la escama. El sello de hielo se rompe y queda descubierta una entrada entre las raíces.",
+                    "reveal": "b4_s02"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b4_r09",
+          "name": "Cripta de la savia seca",
+          "description": "Raíces petrificadas por fuera y polvo por dentro. Varias manos esculpidas señalan una puerta que ya no existe.",
+          "exits": [
+            {
+              "to": "b4_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b4_d04",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una pared muestra a los antiguos miembros de una orden rodeando al Corazón Hueco, cuando todavía protegía a los viajeros."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Dejaron de visitarlo. Fue entonces cuando Brezna pudo aprovechar su soledad."
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "b4_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 13,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b4_r10",
+          "name": "Cámara de los ecos cautivos",
+          "description": "Cavidades con forma de rostro reproducen murmullos de lugares por los que habéis pasado.",
+          "exits": [
+            {
+              "to": "b4_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b4_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Las paredes tienen huecos con forma de rostro. Cada uno repite palabras de alguien que quedó atrapado en el bosque."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Así aprendían las raíces las voces. Las usaban para atraer a otras personas."
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "b4_c07",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 10,
+              "item": {
+                "id": "antidote"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b4_r11",
+          "name": "Antes del último latido",
+          "description": "Tres arcos de madera fosilizada conducen hacia una cámara donde la tierra palpita.",
+          "exits": [
+            {
+              "to": "b4_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b4_d06",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Bajo unos arcos de madera hay una losa rota. Todavía se lee la promesa original del Corazón Hueco."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Si hacemos que recuerde por qué protegía el bosque, quizá sus raíces se debiliten."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "b4_q02",
+              "title": "La promesa rota",
+              "img": "escena_ultima_palabra",
+              "decision": true,
+              "text": "Ante unos arcos de madera retorcida, una losa agrietada brilla con luz roja. En ella está escrita la promesa del Corazón.",
+              "question": "¿Qué hacéis ante la losa?",
+              "options": [
+                {
+                  "label": "Pedir al Corazón que los libere",
+                  "attr": "cha",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Vuestras palabras llegan al Corazón. Una de las raíces que lo protegen deja de obedecerlo.",
+                    "sub": "b4_e04"
+                  },
+                  "fail": {
+                    "text": "Las raíces siguen moviéndose. El Corazón no responde."
+                  }
+                },
+                {
+                  "label": "Leer la promesa en voz alta",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Recordáis las palabras: «Proteger, nunca retener». La savia dorada de la losa cura las heridas del grupo.",
+                    "heal": 5
+                  },
+                  "fail": {
+                    "text": "Las letras se confunden bajo la luz roja y no lográis completar la lectura."
+                  }
+                },
+                {
+                  "label": "Guardar silencio",
+                  "ok": {
+                    "text": "Guardáis silencio. La luz roja continúa palpitando bajo las raíces."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "standing_stone",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b4_s01_r01",
+          "name": "Sala de las manos",
+          "description": "Tres manos talladas se apoyan en un pedestal en el centro del recinto.",
+          "exits": [
+            {
+              "to": "b4_r03",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b4_d07",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un pergamino conserva la promesa del Corazón Hueco: «Protegeré a quienes entren en Umbría y los dejaré regresar a casa»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Es una promesa clara. El Corazón nunca debió encerrar a nadie."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b4_e06",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Awakened Shrub",
+                  "name": "Arbusto del pedestal",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 20
+            },
+            {
+              "type": "chest",
+              "id": "b4_c06",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 23,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "b4_s02_r01",
+          "name": "Recuerdo de dos estaciones",
+          "description": "Una cavidad donde conviven la corteza verde y el hielo cristalino.",
+          "exits": [
+            {
+              "to": "b4_r08",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "b4_d08",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Un grabado cuenta que el Corazón encerró una antigua helada bajo sus raíces. Solo un fragmento de aquel invierno abrirá el sello."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ese hielo no pertenece a Umbría. Quizá algún día encontremos la pieza que falta."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "b4_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "gold_drop": 0,
+              "enemies": [
+                {
+                  "srd_creature": "Awakened Shrub",
+                  "name": "Guardia helada",
+                  "count": 2,
+                  "row": "front",
+                  "drop_weapon": false
+                }
+              ],
+              "xp_total": 20
+            },
+            {
+              "type": "chest",
+              "id": "b4_c08",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 26,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "root_arch",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "mossy_rock",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "pending": [
+        {
+          "id": "b4_j01",
+          "from": "b4_r03",
+          "until": "b4_s01",
+          "text": "La savia del altar cubre una grieta que conduce a un recinto oculto."
+        },
+        {
+          "id": "b4_j03",
+          "from": "b4_r11",
+          "until": "b4_e04",
+          "text": "El Corazón sigue reteniendo a los desaparecidos. Hay que derrotarlo para que puedan salir."
+        },
+        {
+          "id": "b4_j04",
+          "from": "b4_r08",
+          "until": "b4_s02",
+          "text": "Una raíz está cubierta de hielo sobrenatural. Quizá algún día encontremos la forma de abrirla."
+        }
+      ],
+      "c_gold": true
+    }
+  ],
+  "allies": [
+    {
+      "id": "maren",
+      "name": "Maren Brezoscuro",
+      "class": "Ranger",
+      "species": "Elfa",
+      "personality": "Tenaz, protectora y desconfiada.",
+      "starting_items": [
+        "Arco largo",
+        "Dos espadas cortas",
+        "Armadura de cuero"
+      ]
+    },
+    {
+      "id": "anselmo",
+      "name": "Hermano Ismerel",
+      "class": "Cleric",
+      "species": "Humano",
+      "personality": "Sereno, perspicaz y compasivo.",
+      "starting_items": [
+        "Maza",
+        "Escudo",
+        "Cota de escamas",
+        "Farol"
+      ]
+    },
+    {
+      "id": "ivelle",
+      "name": "Dama Ivelle de la Encina",
+      "class": "Paladin",
+      "species": "Humana",
+      "personality": "Leal, grave y resuelta.",
+      "starting_items": [
+        "Espada larga",
+        "Escudo",
+        "Cota de malla"
+      ]
+    },
+    {
+      "id": "telmo",
+      "name": "Maese Corvalen",
+      "class": "Wizard",
+      "species": "Humano",
+      "personality": "Erudito, prudente y obstinado.",
+      "starting_items": [
+        "Bastón",
+        "Libro de conjuros",
+        "Foco arcano"
+      ]
+    }
+  ],
+  "traitor": {
+    "id": "ortiga",
+    "name": "La abuela Brezna",
+    "based_on": "Green Hag",
+    "appearances": [
+      "b1_d01",
+      "b2_d01",
+      "b3_d01"
+    ],
+    "reveal_encounter_id": "b4_e03",
+    "clues": [
+      "Conoce los senderos antes de recorrerlos.",
+      "Habla de hambre y de vigilar al grupo.",
+      "Reconoce voces de los desaparecidos."
+    ]
+  },
+  "boss": {
+    "id": "corazon",
+    "name": "El Corazón Hueco",
+    "based_on": "Treant",
+    "adjustments": "Jefe adaptado para cuatro personajes de nivel 4 (reglas especiales del videojuego, no bloque SRD literal). CA 15, 80 PG, velocidad 0, iniciativa +0. En TODAS sus rondas, incluso con tres nudos vivos, realiza dos ataques de raíz desde retaguardia: +5 al ataque, alcance a cualquier personaje de la vanguardia rival, 1d6+3 contundente cada impacto; no se considera ataque cuerpo a cuerpo contra la retaguardia protegida. Si no quedan héroes en vanguardia, puede atacar retaguardia. Sin lanzamiento de rocas, sin animar árboles. Tres nudos de raíz inmóviles en vanguardia: CA 12, 12 PG cada uno, velocidad 0, no atacan; cuentan como componentes del jefe y no otorgan PX por separado. Mientras viva al menos un nudo, el Corazón tiene resistencia a todo daño excepto psíquico y recupera 5 PG al inicio de cada ronda, hasta 80. Destruidos todos, cesan ambas ventajas. Al inicio de las rondas 2 y 4 aparece un Awakened Shrub en vanguardia, únicamente si hay una plaza libre; si no la hay, se omite la oleada. Máximo tres criaturas por fila y seis en total. Visiones de texto en impactos del Corazón. PX: recompensa de jefe adaptado 700 PX, definida como equivalencia de dificultad VD 3, no como PX del Treant original; los arbustos realmente aparecidos dan 10 PX cada uno.",
+    "knots": {
+      "based_on": "Awakened Tree",
+      "count": 3,
+      "effect": "Cada nudo: CA 12, 12 PG, inmóvil, sin ataques y sin PX independientes. Mientras sobreviva al menos uno, el Corazón resiste todo daño salvo psíquico y recupera 5 PG al principio de cada ronda; no impiden sus ataques de raíz desde atrás."
+    },
+    "room_id": "b4_r07",
+    "pre_boss_dialogue": [
+      {
+        "speaker": "narrator",
+        "text": "Las raíces se abren. Entre ellas distinguís rostros de los desaparecidos, todavía vivos, alrededor de un árbol gigantesco."
+      },
+      {
+        "speaker": "corazon",
+        "text": "Brezna me enseñó que fuera del bosque sufrirán. Aquí no les pasará nada. No dejaré que se marchen."
+      },
+      {
+        "speaker": "hero",
+        "text": "Los has convertido en prisioneros. Vamos a liberarlos."
+      }
+    ],
+    "visions": [
+      "Un leñador suelta el hacha. Las raíces lo envuelven mientras grita el nombre de su familia.",
+      "Una niña sigue la voz de su padre hasta un árbol. Una raíz la atrapa antes de que pueda volver.",
+      "Un druida se une a un gran árbol y promete proteger a todos los que atraviesen Umbría.",
+      "Un cazador intenta regresar a casa. Las raíces cambian el sendero y lo conducen de nuevo al mismo árbol."
+    ],
+    "victory_reward": "75 po y Astilla del Corazón en z4_c03; 700 PX por jefe adaptado más 10 PX por cada arbusto que llegue a aparecer."
+  },
+  "items": [
+    {
+      "id": "potion_healing_1",
+      "name": "Poción de curación",
+      "srd_item": "Potion of Healing",
+      "type": "potion",
+      "description": "Recupera 2d4+2 PG.",
+      "value_gp": 50
+    },
+    {
+      "id": "silver_dagger",
+      "name": "Daga de plata",
+      "srd_item": "Dagger",
+      "type": "weapon",
+      "description": "Daga plateada de un cazador.",
+      "value_gp": 102
+    },
+    {
+      "id": "healing_3",
+      "name": "Poción de curación",
+      "srd_item": "Potion of Healing",
+      "type": "potion",
+      "description": "Recupera 2d4+2 PG.",
+      "value_gp": 50
+    },
+    {
+      "id": "druid_relic",
+      "name": "Semilla de la promesa",
+      "srd_item": null,
+      "type": "treasure",
+      "description": "Semilla fosilizada que recuerda la promesa original del Corazón Hueco; no otorga bonificaciones.",
+      "value_gp": 75
+    },
+    {
+      "id": "healing_4",
+      "name": "Poción de curación",
+      "srd_item": "Potion of Healing",
+      "type": "potion",
+      "description": "Recupera 2d4+2 PG.",
+      "value_gp": 50
+    },
+    {
+      "id": "healing_5",
+      "name": "Poción de curación",
+      "srd_item": "Potion of Healing",
+      "type": "potion",
+      "description": "Recupera 2d4+2 PG.",
+      "value_gp": 50
+    },
+    {
+      "id": "heart_fragment",
+      "name": "Astilla del Corazón",
+      "srd_item": null,
+      "type": "treasure",
+      "description": "Madera petrificada sin poder tras la derrota.",
+      "value_gp": 150
+    },
+    {
+      "id": "restorative_ointment",
+      "name": "Ungüento restaurador",
+      "srd_item": "Restorative Ointment",
+      "type": "potion",
+      "description": "Tarro con varias dosis (1d4+1). Cada dosis cura 2d8+2 PG y elimina el veneno.",
+      "value_gp": 150,
+      "icon": "6.26"
+    },
+    {
+      "id": "longbow_plus1",
+      "name": "Arco largo +1",
+      "srd_item": "Longbow +1",
+      "type": "weapon",
+      "description": "+1 a las tiradas de ataque y daño. Arco élfico de tejo.",
+      "value_gp": 500,
+      "icon": "6.22"
+    },
+    {
+      "id": "wand_of_web",
+      "name": "Varita de telarañas",
+      "srd_item": "Wand of Web",
+      "type": "wand",
+      "description": "Lanzadores de conjuros: 7 cargas; lanza Telaraña (CD 13) y apresa a los enemigos. Recupera 1d6+1 al amanecer.",
+      "value_gp": 500,
+      "icon": "6.25"
+    },
+    {
+      "id": "periapt_wound_closure",
+      "name": "Periapto de cierre de heridas",
+      "srd_item": "Periapt of Wound Closure",
+      "type": "wondrous",
+      "description": "Quien lo lleva se estabiliza solo al caer a 0 PG y cura el doble con los dados de golpe.",
+      "value_gp": 500,
+      "icon": "6.23"
+    },
+    {
+      "id": "gauntlets_ogre_power",
+      "name": "Guanteletes de fuerza de ogro",
+      "srd_item": "Gauntlets of Ogre Power",
+      "type": "wondrous",
+      "description": "La Fuerza de quien los lleva pasa a ser 19.",
+      "value_gp": 500,
+      "icon": "6.24"
+    }
+  ],
+  "balance_notes": "PX SRD por criatura y reparto equitativo entre miembros actuales, sin PX de misión. Umbrales acumulados: nivel 4 2700 PX, nivel 5 6500 PX. Todas las zonas y el jefe se equilibran para nivel 4; entrar con más PX importados puede cambiar el nivel real. PX potenciales de encuentros por zona (incluidos opcionales y grupos de refuerzo, sin contar jefe adaptado): {'z1': 225, 'z2': 1990, 'z3': 2850, 'z4': 980}. El jefe adaptado otorga 700 PX (equivalencia de VD 3, regla casera explícita), más 10 por arbusto generado; no se usan los 5000 PX del Treant ni los 450 PX de Awakened Tree para nudos no combatientes. Los refuerzos son encuentros independientes identificados que se incorporan al inicio de una ronda del combate origen, y no desencadenan combate simultáneo; si el jugador los derrotó antes no aparecen. z1_e04 refuerza z1_e03 cuando queda espacio (3 bandidos + 1 lobo). El Owlbear VD 3 (700 PX) es combate visible y opcional en z2_r05, separado espacialmente de la araña; la ciénaga incluye Specter VD 1 (200 PX) y Shambling Mound VD 5 (1800 PX), encuentro de alto riesgo, evitable en ramal secreto z3_r07; no se recomienda combatirlo sin recursos y no forma parte del camino obligatorio. Las dificultades exactas por presupuesto 2024 dependen de descansos, equipo y clase: Owlbear y Shambling Mound pueden superar la dificultad alta para sus grupos; se conservan como desafíos opcionales solicitados. El uso de lazos de visibilidad seen permite preparación/evitación. La entrada de cada zona se enlaza automáticamente con la salida de la anterior. Los secretos revelan los accesos opcionales; los encuentros en una misma sala ocupan casillas distintas. Los arbustos del jefe solo brotan si hay espacio. Las formas permitidas son round, long, irregular, cross y corridor: no se usa wide porque no figura en el esquema. El arma Light Crossbow del bandido se adapta a su equipo para la fila trasera. Los nudos y el Corazón usan reglas caseras declaradas, no estadísticas literales del SRD.",
+  "shops": {
+    "comunes": [
+      "potion_healing",
+      "antidote",
+      "torch",
+      "rope",
+      "crowbar"
+    ],
+    "valdescarcha": [
+      "mace",
+      "longsword",
+      "light_crossbow",
+      "scale_mail",
+      "chain_mail",
+      "shield",
+      "alchemists_fire",
+      "acid_vial",
+      "holy_water"
+    ],
+    "vegahumbria": [
+      "dagger",
+      "shortbow",
+      "leather",
+      "net",
+      "holy_water",
+      "potion_poison_resistance"
+    ],
+    "nota": "Iconos nuevos: alchemists_fire 6.27, acid_vial 6.28, holy_water 6.29, net 6.30, potion_poison_resistance 6.31, rope 6.19."
+  }
+}

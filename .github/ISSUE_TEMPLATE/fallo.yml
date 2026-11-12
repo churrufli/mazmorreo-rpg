@@ -1,0 +1,25 @@
+name: Fallo
+description: Algo no funciona como debería
+labels: [fallo]
+body:
+  - type: textarea
+    id: que
+    attributes:
+      label: Qué pasa
+      description: Qué has hecho, qué esperabas y qué ha pasado.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versión
+      description: Aparece en Ajustes (por ejemplo, v0.143) o di si es la web.
+  - type: input
+    id: dispositivo
+    attributes:
+      label: Móvil o navegador
+  - type: textarea
+    id: capturas
+    attributes:
+      label: Capturas
+      description: Arrastra aquí capturas de pantalla si las tienes.

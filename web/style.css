@@ -1,0 +1,40 @@
+html,body,#root{height:100%;min-height:100%;margin:0;background:#14100e}*{box-sizing:border-box}body{overflow:hidden;font-family:system-ui,sans-serif}#root{width:100%;max-width:540px;margin:0 auto;position:relative}button{cursor:pointer}
+@font-face{font-family:Cinzel-Regular;src:url('../android/app/src/main/assets/fonts/Cinzel-Regular.ttf') format('truetype');font-display:swap}
+@font-face{font-family:Cinzel-Bold;src:url('../android/app/src/main/assets/fonts/Cinzel-Bold.ttf') format('truetype');font-weight:bold;font-display:swap}
+@font-face{font-family:CormorantGaramond-Medium;src:url('../android/app/src/main/assets/fonts/CormorantGaramond-Medium.ttf') format('truetype');font-display:swap}
+@font-face{font-family:CormorantGaramond-Bold;src:url('../android/app/src/main/assets/fonts/CormorantGaramond-Bold.ttf') format('truetype');font-weight:bold;font-display:swap}
+@font-face{font-family:CormorantGaramond-Italic;src:url('../android/app/src/main/assets/fonts/CormorantGaramond-Italic.ttf') format('truetype');font-style:italic;font-display:swap}
+#root{height:100dvh}button,[role=button]{touch-action:manipulation}input{font-family:inherit}
+
+.web-back{position:absolute;top:max(4px,env(safe-area-inset-top));left:4px;z-index:1000;background:#1a1612e8;color:#e0b56e;border:1px solid #5a4630;border-radius:6px;padding:6px 9px;font:14px system-ui}
+
+#root{display:flex;flex-direction:column;padding-top:0}
+
+/* La misma franja superior del menú; sigue disponible durante la partida. */
+.web-fullscreen{position:fixed;top:max(4px,env(safe-area-inset-top));right:max(4px,calc((100vw - 540px)/2 + 4px),env(safe-area-inset-right));z-index:1000;max-width:calc(100vw - 100px);min-height:28px;background:#1a1612e8;color:#e0b56e;border:1px solid #5a4630;border-radius:6px;padding:6px 9px;font:14px system-ui}
+.web-fullscreen:focus-visible{outline:2px solid #e0b56e;outline-offset:2px}
+.web-fullscreen:disabled{cursor:wait;opacity:.65}
+.web-fullscreen-status{position:fixed;top:max(40px,calc(env(safe-area-inset-top) + 36px));left:50%;transform:translateX(-50%);z-index:1100;width:calc(100% - 24px);max-width:516px;padding:10px;border:1px solid #5a4630;border-radius:6px;background:#1a1612;color:#e0b56e;font:14px system-ui}
+
+/* El mapa gestiona el arrastre y el pellizco; el navegador no amplía la página aquí. */
+#mazmorreo-map{touch-action:none;overscroll-behavior:contain}
+
+/* En navegador apaisado el juego utiliza toda la superficie disponible.
+   No se escala el lienzo: React Native Web recalcula mapas, cartas y fondos
+   según el tamaño real del contenedor. La vista vertical móvil se conserva. */
+@media (orientation:landscape) and (min-width:700px) {
+  html,body,#root{width:100%;height:100%;min-height:100%;overflow:hidden}
+  #root{width:100%;max-width:none;margin:0;height:100dvh;min-height:0}
+  #root>div{min-width:0;min-height:0}
+  .web-fullscreen{right:max(8px,env(safe-area-inset-right))}
+  .web-fullscreen-status{max-width:min(680px,calc(100vw - 24px))}
+}
+/* Tablets verticales: evita una franja estrecha de teléfono en pantallas grandes. */
+@media (orientation:portrait) and (min-width:700px) {
+  #root{max-width:720px}
+  .web-fullscreen{right:max(8px,calc((100vw - 720px)/2 + 8px))}
+}
+
+/* Deslizar horizontalmente gira la carta; conserva scroll vertical y pellizco. */
+#character-card-flip{touch-action:pan-y pinch-zoom}
+#character-card-flip img{-webkit-user-drag:none}
