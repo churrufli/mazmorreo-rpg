@@ -6,6 +6,10 @@
   <a href="CONTRIBUTING.md"><b>Participa en el proyecto</b></a>
 </p>
 
+<p align="center">
+  <a href="https://discord.gg/VvKXn7ZMEG"><img src="https://img.shields.io/badge/%C3%9Anete%20a%20nuestro%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Únete a nuestro Discord" height="44"></a>
+</p>
+
 <p align="center"><b>Proyecto abierto: colabora en código, narrativa, arte, mapas o combate, también con tu IA.</b></p>
 
 <p align="center">
