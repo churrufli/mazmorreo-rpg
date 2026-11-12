@@ -71,6 +71,9 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 ];
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
+  { version: 'v0.144', items: [
+    'Vuelve la música original del juego, creada con Suno.',
+  ] },
   { version: 'v0.143', items: [
     'Mazmorreo pasa a ser un proyecto abierto en github.com/churrufli/mazmorreo-rpg: cualquiera puede colaborar.',
     'Música, ambientes y efectos nuevos, todos de licencia libre.',
@@ -310,7 +313,7 @@ export const CREDITOS: string[] = [
   'Reglas: este juego usa material del System Reference Document 5.2.1 (SRD 5.2.1) de Wizards of the Coast, disponible en https://www.dndbeyond.com/srd, bajo la licencia Creative Commons Atribución 4.0 Internacional (https://creativecommons.org/licenses/by/4.0/legalcode).',
   'Tipografías: Cinzel y Cormorant Garamond, licencia SIL Open Font License.',
   'Iconos: Material Design Icons (Pictogrammers), licencia Apache 2.0.',
-  'Música: «Angevin», «The Britons» y «Heroic Age» de Kevin MacLeod (incompetech.com), licencia CC BY 4.0; «Moon Cave» y «Forgotten Shrine in the Forest» de John Oestmann y «Dungeon of Qetzyl» de Ragnar Random, CC0.',
+  'Música: todas las pistas se han creado con Suno (suno.com). Uso no comercial; no van con la licencia libre del resto del juego.',
   'Efectos de sonido: Kenney (kenney.nl), «80 CC0 RPG SFX» de rubberduck, «Tinysized SFX» de Vehicle y «RPG Sound Pack» de artisticdude, CC0.',
   'Ambientes: pack «Ambience» de yewbic (CC0) y «Nature Sounds Pack» de Antoine Goumain (CC BY 4.0).',
 ];

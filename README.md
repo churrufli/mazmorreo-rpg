@@ -154,6 +154,6 @@ Repositorio: [github.com/churrufli/mazmorreo-rpg](https://github.com/churrufli/m
 - **Código:** MIT ([LICENSE](LICENSE)).
 - **Arte y textos:** CC BY-NC-SA 4.0 ([LICENSE-CONTENIDO.md](LICENSE-CONTENIDO.md)).
 - **Reglas:** SRD 5.2.1 de Wizards of the Coast, CC BY 4.0 ([NOTICE.md](NOTICE.md)).
-- **Tipografías, iconos, música y sonido:** ver [CREDITS.md](CREDITS.md). Todo el audio es CC0 o CC BY.
+- **Tipografías, iconos, música y sonido:** ver [CREDITS.md](CREDITS.md). La música está hecha con Suno y queda fuera de las licencias del proyecto (solo uso no comercial); ambientes y efectos son CC0 o CC BY.
 
 Las ilustraciones se generaron con IA (ChatGPT) y se revisaron a mano. Mazmorreo es un proyecto independiente, sin relación con Wizards of the Coast.

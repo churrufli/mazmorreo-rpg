@@ -23,16 +23,13 @@ Todo el audio está en `android/app/src/main/res/raw/`, convertido a OGG, recort
 
 ### Música
 
-| Archivo | Obra | Autor | Licencia |
-| --- | --- | --- | --- |
-| `mus_principal` | Angevin | [Kevin MacLeod](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200110) | CC BY 4.0 |
-| `mus_pueblo` | The Britons | [Kevin MacLeod](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2600004) | CC BY 4.0 |
-| `mus_combate` | Heroic Age | [Kevin MacLeod](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100848) | CC BY 4.0 |
-| `mus_minas` | Moon Cave | John Oestmann, [Chasing the Leviathan](https://opengameart.org/content/chasing-the-leviathan-adventure-world-music-album) | CC0 |
-| `mus_bosque` | Forgotten Shrine in the Forest | John Oestmann, [Chasing the Leviathan](https://opengameart.org/content/chasing-the-leviathan-adventure-world-music-album) | CC0 |
-| `mus_jefe` | Dungeon of Qetzyl | Ragnar Random, [Orchestral and World Music Pack](https://opengameart.org/content/orchestral-and-world-music-pack) | CC0 |
+Las seis pistas (`mus_principal`, `mus_pueblo`, `mus_combate`, `mus_minas`, `mus_bosque` y `mus_jefe`) se crearon con [Suno](https://suno.com) en su plan gratuito.
 
-Las tres pistas de Kevin MacLeod: «Licensed under Creative Commons: By Attribution 4.0 License», http://creativecommons.org/licenses/by/4.0/.
+**Excepción a las licencias del proyecto.** Según las condiciones de Suno, estas pistas pertenecen a Suno y solo se pueden usar sin fines comerciales y citando a Suno. Por eso **no** van con la licencia CC BY-NC-SA 4.0 ni con la MIT del proyecto:
+
+- Se incluyen solo para que Mazmorreo, que es y será siempre gratuito y sin anuncios, tenga su música.
+- No se pueden reutilizar fuera de Mazmorreo ni en una versión con fines comerciales.
+- Si haces una versión derivada del juego, sustitúyelas o comprueba antes las condiciones de Suno.
 
 ### Ambientes
 

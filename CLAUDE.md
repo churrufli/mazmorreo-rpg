@@ -12,7 +12,7 @@ RPG de fantasía para Android (y versión web) basado en las reglas de quinta ed
 - `docs/GUIA_CONTENIDOS.md`: convenciones de narrativa y equilibrio. Léela antes de tocar aventuras.
 - `docs/GUIA_ARTE.md` y `docs/arte/referencia-maestra.png`: estilo y prompts para generar arte nuevo.
 - Colaboración y licencias: `CONTRIBUTING.md`, `LICENSE-CONTENIDO.md`, `NOTICE.md` y `CREDITS.md`.
-- El audio (`android/app/src/main/res/raw/`) es libre (CC0 y CC BY): cada archivo nuevo, con su autor y licencia en `CREDITS.md`.
+- Audio en `android/app/src/main/res/raw/`: música `mus_*` hecha con Suno (plan gratuito, fuera de las licencias del proyecto, ver `CREDITS.md`); ambientes y efectos CC0 o CC BY. Cada archivo nuevo, CC0 o CC BY, con su autor y licencia en `CREDITS.md`.
 
 ## Reglas de trabajo
 
