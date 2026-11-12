@@ -61,7 +61,7 @@ Lee la [guía de arte](docs/GUIA_ARTE.md) y adjunta al generador la [imagen maes
 
 ### Sonido
 
-Todo el audio es libre (CC0 o CC BY) y está en `android/app/src/main/res/raw/`. Para cambiar un sonido, sustituye el archivo con el mismo nombre que usa `src/sonido.ts` (OGG; efectos en mono) y actualiza su línea en `CREDITS.md` con autor, enlace y licencia. Nada de packs que prohíban redistribuir los archivos ni de música generada con planes gratuitos de IA.
+El audio está en `android/app/src/main/res/raw/`. Ambientes y efectos son libres (CC0 o CC BY). La música actual está hecha con Suno y queda fuera de las licencias del proyecto (ver `CREDITS.md`). Para cambiar un sonido, sustituye el archivo con el mismo nombre que usa `src/sonido.ts` (OGG; efectos en mono) y actualiza su línea en `CREDITS.md` con autor, enlace y licencia. Lo que aportes nuevo, solo CC0 o CC BY: nada de packs que prohíban redistribuir los archivos ni de música generada con planes gratuitos de IA.
 
 ## Validación
 
