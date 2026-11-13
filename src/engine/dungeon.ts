@@ -241,6 +241,8 @@ export type Ev =
   /** Grupo lleno al unirse un aliado: hay que elegir quién vuelve a la posada. */
   | { kind: 'swap'; ally: string }
   | { kind: 'zone'; to: string }
+  /** Secreto recién descubierto: el mapa se desplaza hasta él y lo ilumina antes de seguir (y antes de un combate). */
+  | { kind: 'look'; id: string }
   | { kind: 'back' };
 
 const marksAt = (zone: string, k: string) => plan(zone).marks.filter(m => `${m.q},${m.r}` === k);
@@ -468,6 +470,7 @@ function enterRoom(g: Game, room: Room): Ev[] {
       evs.push({ kind: 'msg', title: 'Secreto descubierto', img: 'losa_secreta', lines: [c.description,
         c.reveals?.startsWith('chest:') ? 'Dentro hay un cofre escondido: ya lo veis en el mapa.' : 'Se abre un pasadizo secreto: ya aparece en el mapa.',
         `(Percepción pasiva ${pp} contra CD ${c.detect_dc})`] });
+      evs.push({ kind: 'look', id: c.id });
     }
     if (c.type === 'ally') {
       const hero = g.party.find(x => x.isHero)!;

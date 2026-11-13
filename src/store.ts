@@ -7,7 +7,7 @@ import { endAdventure, sendToInn } from './engine/posada';
 import { markReturn, react, atEntrance, atRest, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step } from './engine/dungeon';
 import { ADVS, ADV_LIST, AdvId, TOWNS, TownId, advOf, firstZone, wonAdv } from './engine/aventuras';
 import { ITEMS } from './data/srd';
-import { Action, actionsFor, autoTurn, Combat, devWin, endTurn, enemyTurn, perform, startCombat, withDice } from './engine/combat';
+import { Action, actionsFor, autoTurn, Combat, devWin, endTurn, enemyTurn, perform, startCombat, withDice, useInspiration } from './engine/combat';
 import * as storage from './storage';
 import { Char, MAX_ITEMS, longRest, raiseTo } from './engine/rules';
 
@@ -42,6 +42,8 @@ interface State {
   rest: (accept: boolean) => void;
   act: (a: Action, target?: string) => void;
   endTurn: () => void;
+  /** Repetir el último ataque fallado gastando la Inspiración heroica (o descartarlo). */
+  reroll: (use: boolean) => void;
   enemyStep: () => void;
   closeCombat: () => void;
   edit: (fn: (g: Game) => void, save?: boolean) => void;
@@ -217,6 +219,7 @@ export const useStore = create<State>((set, get) => {
     },
     act: (a, target) => mutate((g, cb) => { withDice(cb!, () => perform(g, cb!, a, target)); }),
     endTurn: () => mutate((g, cb) => { if (!cb!.result) endTurn(g, cb!); }),
+    reroll: use => mutate((g, cb) => { if (!cb) return; if (use) withDice(cb, () => useInspiration(g, cb)); else cb.reroll = undefined; }),
     enemyStep: () => mutate((g, cb) => { if (cb && !cb.result && autoTurn(cb)) withDice(cb, () => enemyTurn(g, cb)); }),
     closeCombat: () => {
       const cb = get().combat;

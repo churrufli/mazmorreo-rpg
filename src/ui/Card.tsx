@@ -4,7 +4,7 @@ import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Bar, Btn, Crop, Icon } from './kit';
-import { mdiCheck } from '@mdi/js';
+import { mdiBagPersonalOutline, mdiCardAccountDetailsOutline, mdiCheck, mdiStarShooting } from '@mdi/js';
 import { Portrait } from './Overlays';
 import { FACE } from '../data/caras';
 import type { FxKind } from '../engine/combat';
@@ -340,8 +340,9 @@ function Sheet({ c, party, onGive, onDrop, onUse, onFlip }: { c: Char; party?: C
   return (
     <View style={{ flex: 1 }}>
     <View style={st.sheetTabs}>
-      {([['ficha', 'Ficha'], ['habilidades', 'Habilidades'], ['inventario', 'Inventario']] as const).map(([id, label]) => (
-        <Pressable key={id} accessibilityRole="tab" accessibilityState={{ selected: tab === id }} onPress={() => changeTab(id)} style={[st.sheetTab, tab === id && st.sheetTabActive]}>
+      {([['ficha', 'Ficha', mdiCardAccountDetailsOutline], ['habilidades', 'Habilidades', mdiStarShooting], ['inventario', 'Inventario', mdiBagPersonalOutline]] as const).map(([id, label, icon]) => (
+        <Pressable key={id} accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: tab === id }} onPress={() => changeTab(id)} style={[st.sheetTab, tab === id && st.sheetTabActive]}>
+          <Icon path={icon} size={16} color={tab === id ? C.goldHi : C.textDim} />
           <Text style={[st.sheetTabText, tab === id && { color: C.goldHi }]}>{label}</Text>
         </Pressable>
       ))}
@@ -553,7 +554,7 @@ const st = StyleSheet.create({
   backFace: { borderRadius: 10, overflow: 'hidden', borderWidth: 2, borderColor: C.gold },
   sheet: { flex: 1, backgroundColor: C.panel },
   sheetTabs: { flexDirection: 'row', backgroundColor: C.panel, borderBottomWidth: 1, borderColor: C.border },
-  sheetTab: { flex: 1, paddingVertical: 9, alignItems: 'center', borderBottomWidth: 2, borderColor: 'transparent' },
+  sheetTab: { flex: 1, flexDirection: 'row', gap: 5, paddingVertical: 9, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderColor: 'transparent' },
   sheetTabActive: { borderColor: C.goldHi },
   sheetTabText: { fontFamily: F.textBold, fontSize: 12, color: C.textDim },
   sheetName: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 24, textAlign: 'center' },

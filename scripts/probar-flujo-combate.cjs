@@ -75,7 +75,7 @@ const {chromium}=require('playwright');
       assert.ok(Math.abs(dodge.width-(await button('IR ATRÁS').boundingBox()).width)<1,'Defensa y movimiento del mismo ancho');
       // Tres categorías en una fila.
       const cats=await page.getByTestId('combat-categories').locator(':scope > [role="button"]').evaluateAll(n=>n.map(x=>x.getBoundingClientRect().y));
-      assert.ok(Math.abs(cats[0]-cats[1])<2&&(cats.length<3||cats[2]>cats[0]),'Dos categorías por fila');
+      assert.ok(cats.every(y=>Math.abs(y-cats[0])<2),'Tres categorías en una sola fila');
       const rollBefore=(await data()).roll||0;
       await button('MAZA').dblclick();
       assert.equal((await data()).acted,true);assert.equal((await data()).roll,rollBefore+1,'Doble toque no ejecuta dos ataques');

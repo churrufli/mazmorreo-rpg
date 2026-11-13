@@ -303,6 +303,11 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
   return <View style={st.center}>{panel}</View>;
 }
 
+/** Qué pasa con la tirada, dicho de quien tira cuando no es el grupo: «Necrófago falla» (el autor 2026-11-13). */
+const resultOf = (r: Roll) => r.save && r.who ? `${r.who} ${r.ok ? 'la supera' : 'falla'}`
+  : r.who ? `${r.who} ${r.ok ? 'le encuentra' : 'no le encuentra'}`
+  : r.enemy ? (r.ok ? 'Acierta' : 'Falla') : r.ok ? 'Éxito' : 'Fallo';
+
 /** Dado de veinte caras animado para las tiradas importantes. */
 /** Lo que tarda en irse de la pantalla una tirada (giro, pausa y fundido). */
 export const rollMs = (r: Roll) => (r.enemy ? 320 : 500) + (r.enemy ? 900 : 650) + (r.dice ? 700 : 0) + 250;
@@ -354,7 +359,7 @@ export function D20({ roll }: { roll?: Roll }) {
           </View>
           {shown.adv ? <Text style={[st.d20Label, { color: shown.adv > 0 ? '#7fcf8f' : '#e8796b', marginTop: 2 }]}>{shown.adv > 0 ? 'Ventaja' : 'Desventaja'}</Text> : null}
           <Text style={st.d20Label}>{shown.label}</Text>
-          <Text style={[st.d20Total, { color: fin === NAT1 ? '#e0485e' : fin }, !rolling && shown.d20 === 20 && st.critGlow]}>{shown.crit ? '¡CRÍTICO! ' : ''}{shown.total} · {shown.enemy ? (shown.ok ? 'Acierta' : 'Falla') : shown.ok ? 'Éxito' : 'Fallo'}</Text>
+          <Text style={[st.d20Total, { color: fin === NAT1 ? '#e0485e' : fin }, !rolling && shown.d20 === 20 && st.critGlow]}>{shown.crit ? '¡CRÍTICO! ' : ''}{shown.total} · {resultOf(shown)}</Text>
         </>
       ) : null}
       {shown.dice ? (

@@ -71,6 +71,17 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 ];
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
+  { version: 'v0.145', items: [
+    'Combate más táctico con reglas del SRD 5.2.1: nueva acción Ayudar (ventaja para el siguiente ataque de un aliado) y Maestría de armas para guerrero, pícaro, paladín, bárbaro y explorador (Debilitar, Hostigar, Derribar y Empujar).',
+    'La Inspiración heroica ya no se gasta sola: tras fallar un ataque, tú decides si repites el dado.',
+    'Esconderse solo desde la retaguardia. El enemigo que quiera atacarte tiene que encontrarte con Percepción contra tu Sigilo.',
+    'La ventaja y la desventaja se anulan como en el SRD aunque haya varias de un tipo. El tirador cubierto por un enemigo grande da +2 a la CA en vez de desventaja.',
+    'Atacar, Habilidades y Objetos caben en una fila. Los rótulos de vanguardia y retaguardia van en vertical.',
+    'Tocar una cara de la barra de turnos hace parpadear su carta. La explicación de una acción enseña la imagen de su objeto.',
+    'Las salvaciones del enemigo dicen quién falla («Necrófago falla»).',
+    'Al descubrir un secreto, el mapa se desplaza hasta él y lo ilumina antes de seguir, también si después hay combate.',
+    'Pestañas de la ficha con iconos y botones de menú y pantalla completa más pequeños en la web.',
+  ] },
   { version: 'v0.144', items: [
     'Vuelve la música original del juego, creada con Suno.',
   ] },
