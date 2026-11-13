@@ -1,3 +1,8 @@
+import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
+
+/** Icono SVG de 20 px con el trazado de MDI. */
+const svg = (d: string) => `<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${d}"/></svg>`;
+
 /** Control exclusivo de la web; la raíz completa mantiene visibles también los diálogos. */
 export function installFullscreenControl() {
   if (!document.fullscreenEnabled || !document.documentElement.requestFullscreen) return () => {};
@@ -13,7 +18,11 @@ export function installFullscreenControl() {
 
   const update = () => {
     const active = !!document.fullscreenElement;
-    button.textContent = active ? 'Salir de pantalla completa' : 'Pantalla completa';
+    // Solo icono, para que ocupe poco (el autor 2026-11-13); el nombre va en la etiqueta accesible y en el título.
+    const label = active ? 'Salir de pantalla completa' : 'Pantalla completa';
+    button.innerHTML = svg(active ? mdiFullscreenExit : mdiFullscreen);
+    button.setAttribute('aria-label', label);
+    button.title = label;
     button.setAttribute('aria-pressed', String(active));
     button.disabled = pending;
   };

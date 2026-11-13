@@ -1,10 +1,10 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG } from '../assets';
 import { C, F } from '../theme';
 import { useStore } from '../store';
-import { Action, Unit, actionsFor, autoTurn, current, hasUseful, targetsFor } from '../engine/combat';
+import { Action, MASTERY_NAME, Unit, actionsFor, autoTurn, current, hasUseful, masteryOf, targetsFor } from '../engine/combat';
 import { Card, CardInfo, CardModal, resetFx, slotsOf } from '../ui/Card';
 import { statesOf } from '../ui/estados';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
@@ -39,7 +39,7 @@ const GEAR_H = 44;
 const EMPTY_ROW = 28;
 
 export function Combat() {
-  const { game, combat, act, endTurn, enemyStep, closeCombat, devWin } = useStore();
+  const { game, combat, act, endTurn, enemyStep, closeCombat, devWin, reroll } = useStore();
   const g = game!;
   const cb = combat!;
   const ins = useSafeAreaInsets();
@@ -64,6 +64,13 @@ export function Combat() {
   const [opts, setOpts] = useState(false);
   // Enemigos derrotados cuya carta ya se ha roto y desaparecido.
   const [gone, setGone] = useState<string[]>([]);
+  // Carta que parpadea al tocar su cara en la barra de turnos (para distinguir enemigos iguales).
+  const [flash, setFlash] = useState<{ key: string; n: number }>();
+  useEffect(() => {
+    if (!flash) return;
+    const t = setTimeout(() => setFlash(f => (f?.n === flash.n ? undefined : f)), 1600);
+    return () => clearTimeout(t);
+  }, [flash]);
   const me = current(cb);
   const auto = !cb.result && autoTurn(cb);
   // Presentación del encuentro con la iniciativa; nadie actúa hasta cerrarla.
@@ -169,7 +176,9 @@ export function Combat() {
   const slots = meChar && CLASSES[meChar.cls].spell ? slotsLeft(meChar) : undefined;
   const pending = sel && !sel.off && sel.target !== 'none' ? sel : undefined;
   // Si ya no queda nada útil que hacer (solo cambiar de fila o acciones que no sirven), el turno acaba solo.
-  const idle = ready && !paused && !auto && !cb.result && !sel && !tip && !askFlee && !hasUseful(g, cb) && (!rowAct || !!rowAct.off);
+  // Ataque fallado que se puede repetir con Inspiración heroica: decide el jugador.
+  const rerollAsk = !auto && !cb.result && ready && cb.reroll ? cb.reroll : undefined;
+  const idle = ready && !paused && !rerollAsk && !auto && !cb.result && !sel && !tip && !askFlee && !hasUseful(g, cb) && (!rowAct || !!rowAct.off);
   useEffect(() => {
     if (!idle) return;
     const t = setTimeout(endTurn, 1100);
@@ -206,6 +215,12 @@ export function Combat() {
     endTurn();
   };
   const explain = (a: Action) => { setSel(undefined); setTip({ title: a.label.toLocaleUpperCase('es-ES'), text: descOf(a) ?? '', a }); };
+  // Imagen del objeto del que depende la acción (arma, poción, arrojadizo, varita o pergamino).
+  const imgOf = (a: Action) => {
+    const [k, arg] = a.id.split(':');
+    const id = k === 'atk' ? arg : g.party.flatMap(c => c.items).find(i => i.uid === arg)?.id;
+    return id && ITEMS[id]?.img ? IMG[ITEMS[id].img] : undefined;
+  };
   // Mantener pulsado (o la pestaña) abre el cuadro de explicación sin usar nada.
   // Toque corto: un único objetivo se usa directamente; con varios se marcan las cartas;
   // sin objetivo sale el cuadro con USAR (o se usa tocando el botón otra vez); apagada, explica el motivo.
@@ -247,7 +262,8 @@ export function Combat() {
   const descOf = (a: Action) => {
     const [k, arg] = a.id.split(':');
     const it = ['potion', 'throw', 'web', 'wand', 'scroll'].includes(k) ? g.party.flatMap(c => c.items).find(i => i.uid === arg) : undefined;
-    return k === 'atk' ? `${ITEMS[arg]?.desc ?? ''} ${DESC.atk}` : it ? `${ITEMS[it.id].desc} ${DESC[k] ?? ''}` : DESC[k];
+    const mastery = k === 'atk' && meChar ? masteryOf(meChar, arg) : undefined;
+    return k === 'atk' ? `${ITEMS[arg]?.desc ?? ''} ${DESC.atk}${mastery ? ` Maestría: ${MASTERY_NAME[mastery]}. ${DESC.mastery}` : ''}` : it ? `${ITEMS[it.id].desc} ${DESC[k] ?? ''}` : DESC[k];
   };
 
   const info = (u: Unit): CardInfo => {
@@ -290,11 +306,12 @@ export function Combat() {
     }
     return (
       <View style={[st.row, st.rowBand, side === 'enemy' && st.rowEnemy, { minHeight: cardW * 1.5 + 2 }]}>
-        <Text style={st.rowLabel}>{name}</Text>
+        <View pointerEvents="none" style={[st.rowLabelBox, { width: cardW * 1.5, left: 7 - cardW * 0.75, top: cardW * 0.75 - 6 }]}><Text numberOfLines={1} style={st.rowLabel}>{name}</Text></View>
         {us.map(u => {
           const isT = targets.includes(u.key);
           return (
             <Animated.View testID={`combat-unit-${u.key}`} key={u.key} ref={(r: View | null) => { cardRefs.current[u.key] = r; }} collapsable={false} style={{ marginHorizontal: 3, zIndex: lungeKey === u.key ? 5 : 0, transform: lungeKey === u.key ? [...lunge.getTranslateTransform(), { rotate: rot }] : [] }}>
+              {flash?.key === u.key ? <Blink key={flash.n} /> : null}
               <Card
                 info={info(u)}
                 minTouchSize={44}
@@ -342,10 +359,11 @@ export function Combat() {
               const now = i === cb.turn, past = i < cb.turn, down = !!u.dead || u.hp <= 0;
               const sz = now ? 40 : 32;
               return (
-                <View key={k} style={{ width: sz, height: sz, borderRadius: sz / 2, overflow: 'hidden', borderWidth: now ? 3 : 2, backgroundColor: '#000',
+                <Pressable key={k} onPress={() => setFlash(f => ({ key: k, n: (f?.n ?? 0) + 1 }))} accessibilityRole="button" accessibilityLabel={`Ver la carta de ${u.name}`} hitSlop={4}
+                  style={{ width: sz, height: sz, borderRadius: sz / 2, overflow: 'hidden', borderWidth: now ? 3 : 2, backgroundColor: '#000',
                   borderColor: down ? '#555' : now ? C.goldHi : u.side === 'enemy' ? '#b5483a' : C.gold, opacity: down ? 0.35 : past ? 0.5 : 1 }}>
                   <FaceImage img={u.img} size={sz - (now ? 6 : 4)} />
-                </View>
+                </Pressable>
               );
             })}
           </ScrollView>
@@ -401,7 +419,7 @@ export function Combat() {
             {groups.length ? (
               <View testID="combat-categories" style={st.categoryRow}>
                 {CATEGORIES.filter(([id]) => groups.includes(id)).map(([id, label]) => (
-                  <Btn key={id} small combatTone="parent" disabled={!ready} icon={{attack:mdiSwordCross,skills:mdiCreation,items:mdiSack}[id]} onInfo={() => showCategory(id)} onLongPress={() => showCategory(id)}  primary={activeGroup === id} off={menu.filter(a => groupOf(a) === id).every(a => !!a.off)}
+                  <Btn key={id} small combatTone="parent" tight={groups.length > 2} disabled={!ready} icon={{attack:mdiSwordCross,skills:mdiCreation,items:mdiSack}[id]} onInfo={() => showCategory(id)} onLongPress={() => showCategory(id)}  primary={activeGroup === id} off={menu.filter(a => groupOf(a) === id).every(a => !!a.off)}
                     label={label.toLocaleUpperCase('es-ES')}
                     onPress={() => { lastGroup.current[me.key] = id; setActionGroup(id); close(); }}
                     style={st.categoryOrnate} />
@@ -422,7 +440,10 @@ export function Combat() {
         {/* Cuadro de explicación encima de los botones: no mueve ni encoge las cartas. */}
         {tip && !cb.result ? (
           <View testID="combat-tip" style={[st.strip, { bottom: ins.bottom + 4 }]}>
-            <Text style={st.stripTitle}>{tip.title}{tip.a ? <Text style={st.stripCost}>{[COST[tip.a.cost], tip.a.detail].filter(Boolean).map(x => `  ·  ${x}`).join('')}</Text> : null}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {tip.a && imgOf(tip.a) ? <Image source={imgOf(tip.a)!} style={st.stripImg} /> : null}
+              <Text style={[st.stripTitle, { flex: 1 }]}>{tip.title}{tip.a ? <Text style={st.stripCost}>{[COST[tip.a.cost], tip.a.detail].filter(Boolean).map(x => `  ·  ${x}`).join('')}</Text> : null}</Text>
+            </View>
             <ScrollView style={{ maxHeight: 130, flexGrow: 0 }} nestedScrollEnabled>
               {tip.a?.off ? <Text style={st.stripOff}>{tip.a.off}</Text> : null}
               {tip.text ? <Text style={st.stripTxt}>{tip.text}</Text> : null}
@@ -430,6 +451,17 @@ export function Combat() {
             <View style={st.stripBtns}>
               {tip.a && !tip.a.off && !auto ? <Btn small primary label="Usar" onPress={useTip} style={{ flex: 1 }} /> : null}
               <Pressable accessibilityRole="button" accessibilityLabel="CANCELAR ACCIÓN" onPress={close} style={st.stripClose}><Text style={st.stripCloseTxt}>CERRAR</Text></Pressable>
+            </View>
+          </View>
+        ) : null}
+        {/* Inspiración heroica: tras fallar, el jugador decide si repite el dado (SRD 5.2.1). */}
+        {rerollAsk && !tip ? (
+          <View testID="combat-reroll" style={[st.strip, { bottom: ins.bottom + 4 }]}>
+            <Text style={st.stripTitle}>INSPIRACIÓN HEROICA</Text>
+            <Text style={st.stripTxt}>{`${me.name} ha fallado (${rerollAsk.total}). ¿Repites el dado? Te quedas con el nuevo resultado y la inspiración se gasta hasta la próxima aventura.`}</Text>
+            <View style={st.stripBtns}>
+              <Btn small primary label="Repetir dado" onPress={() => reroll(true)} style={{ flex: 1 }} />
+              <Pressable accessibilityRole="button" accessibilityLabel="Conservar resultado" onPress={() => reroll(false)} style={st.stripClose}><Text style={st.stripCloseTxt}>CONSERVAR</Text></Pressable>
             </View>
           </View>
         ) : null}
@@ -610,6 +642,16 @@ function RoundBanner({ round, text, delay = 0, hold = 0, onEnd }: { round?: numb
   );
 }
 
+/** Borde dorado que parpadea alrededor de una carta. */
+function Blink() {
+  const o = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const pulse = Animated.sequence([Animated.timing(o, { toValue: 1, duration: 180, useNativeDriver: true }), Animated.timing(o, { toValue: 0.15, duration: 180, useNativeDriver: true })]);
+    Animated.sequence([pulse, pulse, pulse, Animated.timing(o, { toValue: 0, duration: 200, useNativeDriver: true })]).start();
+  }, [o]);
+  return <Animated.View pointerEvents="none" style={[st.blink, { opacity: o }]} />;
+}
+
 // Lo que se ve el cartel del final del combate antes de la ventana de victoria o derrota.
 const END_MS = 1500;
 // Lo que tarda un ataque en llegar: el golpe y su efecto en la carta se ven justo entonces.
@@ -675,7 +717,9 @@ const st = StyleSheet.create({
   devText: { fontFamily: F.titleBold, fontSize: 11, color: C.textDim },
   hint: { width: '100%', fontFamily: F.italic, color: C.textDim, fontSize: 11, textAlign: 'center', marginTop: 2 },
   row: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 1 },
-  rowLabel: { position: 'absolute', left: 6, top: 0, fontFamily: F.titleBold, color: C.text, fontSize: 9, letterSpacing: 1, textTransform: 'uppercase', textShadowColor: '#000', textShadowRadius: 4 },
+  // Rótulo de la fila en vertical, pegado a la izquierda (el autor 2026-11-13).
+  rowLabelBox: { position: 'absolute', height: 12, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-90deg' }] },
+  rowLabel: { textAlign: 'center', fontFamily: F.titleBold, color: C.text, fontSize: 9, letterSpacing: 1, textTransform: 'uppercase', textShadowColor: '#000', textShadowRadius: 4 },
   rowBand: { borderRadius: 6, borderWidth: 1, borderColor: 'rgba(201,162,92,0.25)', backgroundColor: 'rgba(0,0,0,0.18)' },
   rowEnemy: { borderColor: 'rgba(181,72,58,0.35)' },
   emptyRow: { height: EMPTY_ROW, paddingTop: 0, marginVertical: 2, alignItems: 'center', justifyContent: 'center' },
@@ -698,8 +742,9 @@ const st = StyleSheet.create({
   actions: { backgroundColor: 'rgba(10,9,7,0.92)', paddingTop: 6, paddingHorizontal: 6, borderTopWidth: 1, borderColor: C.border },
   btns: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
   actionFamily: { borderWidth: 1, borderColor: '#6e5431', borderRadius: 3, padding: 2, marginBottom: 2 },
-  categoryRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 4, rowGap: 2, marginBottom: 2 },
-  categoryOrnate: { width: '49%', flexGrow: 0, flexShrink: 0, minWidth: 0, marginHorizontal: 0, marginVertical: 0 },
+  // Atacar, Habilidades y Objetos en una sola fila; sin objetos, las otras dos se reparten la fila (el autor 2026-11-13).
+  categoryRow: { flexDirection: 'row', justifyContent: 'center', gap: 4, marginBottom: 2 },
+  categoryOrnate: { flex: 1, flexBasis: 0, minWidth: 0, marginHorizontal: 0, marginVertical: 0 },
   scrollerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 0, borderTopWidth: 1, borderColor: '#5f4a2d', paddingTop: 2 },
   arrowSlot: { width: 20, alignItems: 'center', justifyContent: 'center' },
   scrollArrow: { color: C.goldHi, fontSize: 26, fontWeight: 'bold' },
@@ -712,6 +757,8 @@ const st = StyleSheet.create({
   wait: { fontFamily: F.italic, color: C.textDim, fontSize: 16, textAlign: 'center', paddingVertical: 14 },
   strip: { position: 'absolute', left: 6, right: 6, backgroundColor: 'rgba(18,15,12,0.98)', borderColor: C.gold, borderWidth: 1, borderRadius: 6, padding: 10 },
   stripTitle: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 20 },
+  stripImg: { width: 40, height: 40 },
+  blink: { position: 'absolute', left: -3, right: -3, top: -3, bottom: -3, borderRadius: 10, borderWidth: 3, borderColor: C.goldHi, zIndex: 3 },
   stripCost: { fontFamily: F.text, color: C.textDim, fontSize: 14 },
   stripTxt: { fontFamily: F.text, color: C.text, fontSize: 15, lineHeight: 19, marginTop: 2 },
   stripAsk: { fontFamily: F.italic, color: C.goldHi, fontSize: 15, marginTop: 4 },

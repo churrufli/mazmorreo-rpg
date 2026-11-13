@@ -50,11 +50,13 @@ export const testBonus = (c: Char, a: Ability) => abilMod(c, a);
 /** Quién lo haría mejor (el de mayor bonificador entre los que están en pie). */
 export const bestFor = (g: Game, a: Ability) => [...g.party.filter(c => !isDown(c))].sort((x, y) => testBonus(y, a) - testBonus(x, a))[0];
 
+/** ¿Le queda Inspiración heroica en esta aventura? */
+export const canInspire = (g: Game, c: Char) => !!c.inspired && g.inspUsed?.[c.id] !== advOf(g.zone);
+
 /** Inspiración heroica: una vez por aventura, quien la tiene repite una tirada fallida. */
 export function inspire(g: Game, c: Char): boolean {
-  if (!c.inspired) return false;
+  if (!canInspire(g, c)) return false;
   const adv = advOf(g.zone);
-  if (g.inspUsed?.[c.id] === adv) return false;
   g.inspUsed = { ...g.inspUsed, [c.id]: adv };
   return true;
 }
@@ -235,6 +237,7 @@ export function chooseOption(g: Game, id: string, i: number, charId?: string, fo
   const st: { closed: number[]; said?: string[]; fight?: string } = { closed: [...sceneState(g, id).closed] };
   const who = g.party.find(c => c.id === charId) ?? (o.attr ? bestFor(g, o.attr) : undefined);
   const rolls: ShownRoll[] = [];
+  const found0 = g.found.length;
   let ok = true;
   if (o.attr && o.dc && who) {
     const bonus = testBonus(who, o.attr);
@@ -273,6 +276,8 @@ export function chooseOption(g: Game, id: string, i: number, charId?: string, fo
   evs.push({ kind: 'msg', title: s.title, img: s.img, rolls: rolls.length ? rolls : undefined, items: r.items.length ? r.items : undefined, lines, save: true });
   // El resultado de cada escena queda en el registro (el autor 2026-11-06).
   logEvs(g, evs);
+  // Lo que se acaba de descubrir se enseña en el mapa antes de seguir (y antes del combate, si lo hay).
+  for (const f of g.found.slice(found0)) evs.push({ kind: 'look', id: f });
   if (r.fight) evs.push({ kind: 'combat', id: r.fight });
   else if (!finished && !spent) evs.push({ kind: 'scene', id });
   return evs;

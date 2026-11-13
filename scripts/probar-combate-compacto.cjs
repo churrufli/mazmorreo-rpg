@@ -38,7 +38,7 @@ const { chromium } = require('playwright');
       const parents=categories.locator(':scope > [role="button"]');
       assert.equal(await parents.count(),3);
       const rects=await parents.evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};}));
-      assert.ok(Math.abs(rects[0].y-rects[1].y)<2&&rects[2].y>rects[0].y,`Dos categorías por fila, última centrada: ${JSON.stringify(rects)}`);
+      assert.ok(rects.every(r=>Math.abs(r.y-rects[0].y)<2),`Las tres categorías en una sola fila: ${JSON.stringify(rects)}`);
       assert.ok(rects.every(r=>r.height<=46),'Botones compactos, también con nombres largos');
       const controls=await page.getByTestId('combat-controls').boundingBox();
       const field=await page.getByTestId('combat-field').boundingBox();

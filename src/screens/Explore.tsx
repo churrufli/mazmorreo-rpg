@@ -317,6 +317,25 @@ export function Explore() {
     const t = setTimeout(() => setNewPaths(current => current[0]?.n === n ? [] : current), 2700);
     return () => clearTimeout(t);
   }, [head, g.found, g.done]);
+  // Secreto recién descubierto: el mapa se desplaza hasta él y lo ilumina; lo siguiente (un combate, por ejemplo) espera a que se vea (el autor 2026-11-13).
+  useEffect(() => {
+    if (head?.kind !== 'look') return;
+    const m = zp.marks.find(x => x.id === head.id);
+    const cells = m ? (m.path?.length ? m.path : [`${m.q},${m.r}`]) : [];
+    pendingPaths.current = pendingPaths.current.filter(k => !cells.includes(k));
+    if (!cells.length) { next(); return; }
+    const n = Date.now();
+    setNewPaths(cells.map(k => ({ k, n })));
+    const pts = cells.map(k => { const [q, r] = k.split(',').map(Number); const [x, y] = center(q, r); return { x: X(x), y: Y(y) }; });
+    const mx = pts.reduce((t, p) => t + p.x, 0) / pts.length, my = pts.reduce((t, p) => t + p.y, 0) / pts.length;
+    const z = zoomNow.current;
+    dragged.current = true;
+    Animated.timing(pan, { toValue: { x: -(mx - lastPos.current.x) * z, y: -(my - lastPos.current.y) * z }, duration: 500, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+    // El brillo se apaga solo aunque ya haya empezado lo siguiente.
+    setTimeout(() => setNewPaths(c => (c[0]?.n === n ? [] : c)), 2700);
+    const t = setTimeout(next, 2300);
+    return () => clearTimeout(t);
+  }, [head]); // eslint-disable-line react-hooks/exhaustive-deps
   const hero = g.party.find(c => c.isHero)!;
   const sheetChar = g.party.find(c => c.id === sheet);
   const cardW = Math.min(86, (win.width - 24) / Math.max(4, g.party.length) - 6);

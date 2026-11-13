@@ -1,3 +1,4 @@
+import { mdiMenu } from '@mdi/js';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from '../App';
@@ -14,7 +15,7 @@ window.addEventListener('pagehide', saveProgress);
 document.addEventListener('visibilitychange', () => { if (document.hidden) saveProgress(); });
 function WebGame() {
   const screen = useStore(s => s.screen);
-  return <><App topInset={36} />{screen !== 'title' && <button className="web-back" aria-label="Volver al menú" onClick={() => window.dispatchEvent(new Event('mazmorreo:back'))}>‹ Menú</button>}</>;
+  return <><App topInset={36} />{screen !== 'title' && <button className="web-back" aria-label="Volver al menú" title="Volver al menú" onClick={() => window.dispatchEvent(new Event('mazmorreo:back'))}><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d={mdiMenu} /></svg></button>}</>;
 }
 
 const removeFullscreenControl = installFullscreenControl();

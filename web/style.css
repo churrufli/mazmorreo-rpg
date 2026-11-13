@@ -6,12 +6,13 @@ html,body,#root{height:100%;min-height:100%;margin:0;background:#14100e}*{box-si
 @font-face{font-family:CormorantGaramond-Italic;src:url('../android/app/src/main/assets/fonts/CormorantGaramond-Italic.ttf') format('truetype');font-style:italic;font-display:swap}
 #root{height:100dvh}button,[role=button]{touch-action:manipulation}input{font-family:inherit}
 
-.web-back{position:absolute;top:max(4px,env(safe-area-inset-top));left:4px;z-index:1000;background:#1a1612e8;color:#e0b56e;border:1px solid #5a4630;border-radius:6px;padding:6px 9px;font:14px system-ui}
+/* Menú y pantalla completa: solo iconos, cuadrados y pequeños. */
+.web-back{position:absolute;top:max(4px,env(safe-area-inset-top));left:4px;z-index:1000;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:#1a1612e8;color:#e0b56e;border:1px solid #5a4630;border-radius:6px;padding:0}
 
 #root{display:flex;flex-direction:column;padding-top:0}
 
 /* La misma franja superior del menú; sigue disponible durante la partida. */
-.web-fullscreen{position:fixed;top:max(4px,env(safe-area-inset-top));right:max(4px,calc((100vw - 540px)/2 + 4px),env(safe-area-inset-right));z-index:1000;max-width:calc(100vw - 100px);min-height:28px;background:#1a1612e8;color:#e0b56e;border:1px solid #5a4630;border-radius:6px;padding:6px 9px;font:14px system-ui}
+.web-fullscreen{position:fixed;top:max(4px,env(safe-area-inset-top));right:max(4px,calc((100vw - 540px)/2 + 4px),env(safe-area-inset-right));z-index:1000;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:#1a1612e8;color:#e0b56e;border:1px solid #5a4630;border-radius:6px;padding:0}
 .web-fullscreen:focus-visible{outline:2px solid #e0b56e;outline-offset:2px}
 .web-fullscreen:disabled{cursor:wait;opacity:.65}
 .web-fullscreen-status{position:fixed;top:max(40px,calc(env(safe-area-inset-top) + 36px));left:50%;transform:translateX(-50%);z-index:1100;width:calc(100% - 24px);max-width:516px;padding:10px;border:1px solid #5a4630;border-radius:6px;background:#1a1612;color:#e0b56e;font:14px system-ui}

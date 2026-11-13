@@ -1,6 +1,6 @@
 // Combate por turnos al estilo D&D 5e 2024, con dos filas por bando.
 // Todo son funciones puras sobre el estado de la partida (se muta una copia).
-import { enemiesOf, inspire, maxFoesFor, sizeEncounter } from './escenas';
+import { canInspire, enemiesOf, inspire, maxFoesFor, sizeEncounter } from './escenas';
 import type { ImgKey } from '../assets';
 import { Ability, CLASSES, DmgType, ITEMS, MONSTERS, MonsterAttack } from '../data/srd';
 import B from '../data/corazon.json';
@@ -39,7 +39,17 @@ export interface Unit {
   shield?: boolean;
   bless?: boolean;
   guided?: boolean;
-  hidden?: boolean;
+  /** Escondido: el resultado de su Sigilo (lo que tiene que igualar la Percepción de quien le busque). */
+  hidden?: number;
+  /** Distraído con Ayudar: el próximo ataque de un aliado de quien ayuda contra él tiene ventaja (clave de quien ayuda). */
+  helped?: string;
+  /** Maestría Debilitar: su próximo ataque tiene desventaja (clave de quien le debilitó). */
+  sapped?: string;
+  /** Maestría Hostigar: ventaja en su próximo ataque contra esta unidad. */
+  vex?: string;
+  vexNew?: boolean;
+  /** Derribado (maestría Derribar): ataca con desventaja; cuerpo a cuerpo contra él con ventaja, a distancia con desventaja. */
+  prone?: boolean;
   spiritual?: boolean;
   lastHitBy?: string;
   fled?: boolean;
@@ -73,6 +83,8 @@ export interface Unit {
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
 export interface Roll { id: number; d20: number; total: number; label: string; ok: boolean; crit?: boolean; enemy?: boolean; dice?: { f: number; v: number }[];
+  /** Quién tira cuando no es el grupo (salvaciones y pruebas del enemigo): el resultado dice quién falla o supera. */
+  who?: string; save?: boolean;
   /** Ventaja (1) o desventaja (-1): se ven los dos d20 y el descartado sale apagado. */
   adv?: number; other?: number }
 export interface LogLine { t: string; c?: 'dmg' | 'heal' | 'info' | 'big' | 'miss' }
@@ -113,6 +125,8 @@ export interface Combat {
   endLine?: string;
   /** PX extra (arbustos que aparecen en el combate del Corazón Hueco). */
   bonusXp?: number;
+  /** Ataque fallado que se puede repetir con Inspiración heroica (decide el jugador). */
+  reroll?: { a: string; t: string; o: AtkOpts; adv: number; total: number };
 }
 
 const MAX_ROW = 3;
@@ -129,6 +143,20 @@ const aura = (g: Game, cb: Combat) => Math.max(0, ...cb.units.filter(u => u.side
   .filter(c => c.cls === 'paladin' && c.level >= 6).map(c => Math.max(1, abilMod(c, 'cha'))));
 /** Nombre corto en los botones de combate para los objetos de nombre muy largo. */
 const SHORT: Record<string, string> = { potion_poison_resistance: 'Poción antiveneno', potion_greater_healing_1: 'Poción mayor' };
+/** Maestría de armas (SRD 5.2.1): solo las que tienen efecto con dos filas. */
+export type Mastery = 'sap' | 'vex' | 'topple' | 'push';
+export const MASTERY: Record<string, Mastery> = {
+  longsword: 'sap', longsword_plus1: 'sap', mace: 'sap', mace_plus1: 'sap', spear: 'sap', pick: 'sap',
+  shortsword: 'vex', rapier_plus1: 'vex', shortbow: 'vex',
+  quarterstaff: 'topple', battleaxe: 'topple', battleaxe_plus_one: 'topple',
+  warhammer: 'push', weapon_plus1_warhammer: 'push',
+};
+export const MASTERY_NAME: Record<Mastery, string> = { sap: 'Debilitar', vex: 'Hostigar', topple: 'Derribar', push: 'Empujar' };
+/** Clases con el rasgo Maestría de armas. */
+const MASTERY_CLS = ['fighter', 'rogue', 'paladin', 'barbarian', 'ranger'];
+export const masteryOf = (c: Char, weapon: string): Mastery | undefined => (MASTERY_CLS.includes(c.cls) ? MASTERY[weapon] : undefined);
+/** Criaturas Enormes: no se las derriba ni se las empuja. */
+const HUGE = ['Treant', 'Awakened Tree', 'Walking Tree'];
 const solo = (cb: Combat) => cb.units.filter(u => u.side === 'party').length === 1;
 
 const PHYSICAL: DmgType[] = ['cortante', 'perforante', 'contundente'];
@@ -346,41 +374,44 @@ function heal(cb: Combat, u: Unit, amount: number) {
   say(cb, `${u.name} recupera ${amount} PG${wasDown ? ' y se levanta' : ''}.`, 'heal');
 }
 
-interface AtkOpts { name: string; toHit: number; dice: string; bonus: number; type: DmgType; ranged: boolean; extra?: { dice: string; type: DmgType }; sneak?: boolean; spell?: boolean }
+interface AtkOpts { name: string; toHit: number; dice: string; bonus: number; type: DmgType; ranged: boolean; extra?: { dice: string; type: DmgType }; sneak?: boolean; spell?: boolean;
+  mastery?: Mastery; masteryDc?: number;
+  /** Repetición con Inspiración heroica: la misma ventaja o desventaja, sin volver a gastar estados. */
+  rerollAdv?: number }
 
 /** Tirada de ataque completa. Devuelve si impactó. */
 function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   swing(cb, a, t, !o.ranged ? 'melee' : o.spell ? 'magic' : 'arrow', o.type);
-  let adv = 0;
   const notes: string[] = [];
-  if (t.dodge) adv--;
-  if (o.ranged && a.row === 'front' && frontHeld(cb, t.side) && t.side !== a.side) { adv--; notes.push('cuerpo a cuerpo'); }
-  // Un enemigo grande en la vanguardia cubre a su tirador de detrás: atacarle cuesta más.
-  if (a.side === 'party' && t.side === 'enemy' && t.row === 'back' && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.plan?.guard)) { adv--; notes.push('cubierto'); }
-  if (t.guided) { adv++; t.guided = false; }
-  if (t.restrained) adv++;
-  if (a.restrained) adv--;
-  if (a.poisoned) adv--;
-  if (a.hidden) { adv++; a.hidden = false; }
-  if (t.asleep || t.paralyzed || t.hp <= 0) adv++;
-  if (a.mon && MONSTERS[a.mon].packTactics && cb.units.some(u => u !== a && u.side === a.side && conscious(u) && u.row === 'front')) adv++;
-  adv = Math.sign(adv);
+  // Como en el SRD: si hay al menos una fuente de ventaja y una de desventaja, se anulan (no se suman).
+  let up = 0, down = 0;
+  if (o.rerollAdv === undefined) {
+    if (t.dodge) down++;
+    if (o.ranged && a.row === 'front' && frontHeld(cb, t.side) && t.side !== a.side) { down++; notes.push('cuerpo a cuerpo'); }
+    if (t.guided) { up++; t.guided = false; }
+    if (t.restrained) up++;
+    if (a.restrained) down++;
+    if (a.poisoned) down++;
+    if (a.hidden) { up++; a.hidden = undefined; }
+    if (t.asleep || t.paralyzed || t.hp <= 0) up++;
+    if (a.mon && MONSTERS[a.mon].packTactics && cb.units.some(u => u !== a && u.side === a.side && conscious(u) && u.row === 'front')) up++;
+    if (a.side === 'party' && t.helped && t.helped !== a.key) { up++; t.helped = undefined; }
+    if (a.sapped) { down++; notes.push('debilitado'); a.sapped = undefined; }
+    if (a.vex && a.vex === t.key) { up++; a.vex = undefined; }
+    if (t.prone) { if (o.ranged) { down++; notes.push('derribado'); } else up++; }
+    if (a.prone) { down++; notes.push('en el suelo'); }
+  }
+  const adv = o.rerollAdv ?? (up && down ? 0 : up ? 1 : down ? -1 : 0);
+  // Un enemigo grande en la vanguardia cubre a su tirador de detrás: media cobertura, +2 a la CA (SRD).
+  const cover = a.side === 'party' && t.side === 'enemy' && t.row === 'back' && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.plan?.guard) ? 2 : 0;
   let d20 = rollD20(g, adv, isHalfling(g, a));
   const bless = a.bless ? die(g.rng, 4) : 0;
   let total = d20 + o.toHit + bless;
   const champ = a.side === 'party' && charOf(g, a).cls === 'fighter' && charOf(g, a).level >= 3 && !o.spell;
   const critOf = (d: number) => d === 20 || (champ && d === 19) || (!o.ranged && (t.paralyzed || t.asleep || t.hp <= 0) && d !== 1);
   let crit = critOf(d20);
-  let ac = t.ac + (t.shield ? 5 : 0);
+  const ac = t.ac + (t.shield ? 5 : 0) + cover;
   let hit = d20 !== 1 && (crit || total >= ac);
-  // Inspiración heroica: una vez por aventura se repite un ataque fallado.
-  if (!hit && a.side === 'party' && inspire(g, charOf(g, a))) {
-    say(cb, `${a.name} falla (${total}), pero su Inspiración heroica le da otra oportunidad.`, 'info');
-    d20 = rollD20(g, adv, isHalfling(g, a));
-    total = d20 + o.toHit + bless;
-    crit = critOf(d20);
-    hit = d20 !== 1 && (crit || total >= ac);
-  }
   // Reacción Escudo (mago del grupo u Orvane).
   if (hit && !crit && !t.shield && total < ac + 5) {
     const c = t.side === 'party' ? charOf(g, t) : undefined;
@@ -388,9 +419,11 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     else if ((t.shieldSlots ?? 0) > 0) { t.shieldSlots!--; t.shield = true; hit = false; say(cb, `${t.name} lanza Escudo (+5 CA).`, 'info'); }
   }
   setRoll(cb, { d20, total, label: a.side === 'party' ? `${o.name} contra CA ${ac}` : `${a.name}: ${o.name} contra CA ${ac}`, ok: hit, crit, enemy: a.side === 'enemy', ...pairOf() });
-  const advTxt = adv > 0 ? ' con ventaja' : adv < 0 ? ` con desventaja${notes.length ? ` (${notes.join(', ')})` : ''}` : '';
+  const advTxt = (adv > 0 ? ' con ventaja' : adv < 0 ? ` con desventaja${notes.length ? ` (${notes.join(', ')})` : ''}` : '') + (cover ? ' (media cobertura: +2 CA)' : '');
   if (!hit) {
     say(cb, `${a.name} usa ${o.name}${advTxt}: ${d20}+${o.toHit + bless} = ${total}. Falla.`, 'miss');
+    // Inspiración heroica: el jugador decide si repite el dado (SRD 5.2.1); se ofrece al acabar la acción.
+    if (a.side === 'party' && o.rerollAdv === undefined && canInspire(g, charOf(g, a))) cb.reroll = { a: a.key, t: t.key, o, adv, total };
     return false;
   }
   say(cb, `${a.name} usa ${o.name}${advTxt}: ${d20}+${o.toHit + bless} = ${total}. ${crit ? '¡CRÍTICO!' : 'Impacta.'}`, crit ? 'big' : undefined);
@@ -417,8 +450,47 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   applyDamage(g, cb, t, dmg, o.type, a, crit);
   if (o.extra && alive(t)) applyDamage(g, cb, t, Math.max(0, roll(g.rng, o.extra.dice, crit)), o.extra.type, a, crit);
   if (a.concentration === 'mark' && a.mark === t.key && !o.spell) { const bonus = roll(g.rng, '1d6', crit); say(cb, `Marca del cazador: +${bonus} de fuerza.`, 'info'); if (alive(t)) applyDamage(g, cb, t, bonus, 'fuerza', a, crit); }
+  if (o.mastery && conscious(t)) masteryHit(g, cb, a, t, o.mastery, o.masteryDc ?? 10);
   if (a.mon === 'Treant') say(cb, pick(g.rng, B.boss.visions), 'info');
   return true;
+}
+
+/** Efecto de la maestría del arma tras un impacto. */
+function masteryHit(g: Game, cb: Combat, a: Unit, t: Unit, m: Mastery, dc: number) {
+  const huge = HUGE.includes(t.mon ?? '');
+  if (m === 'sap') { t.sapped = a.key; say(cb, `Debilitar: ${t.name} atacará con desventaja en su próximo ataque.`, 'info'); }
+  if (m === 'vex') { a.vex = t.key; a.vexNew = true; say(cb, `Hostigar: ${a.name} tendrá ventaja en su próximo ataque contra ${t.name}.`, 'info'); }
+  if (m === 'topple' && !huge && !t.prone) {
+    // Salvación de Constitución sin dado grande en pantalla: el d20 que se ve es el del ataque.
+    const d20 = die(g.rng, 20), total = d20 + (MONSTERS[t.mon!]?.saves.con ?? 0);
+    if (total >= dc) say(cb, `Derribar: ${t.name} resiste (Constitución ${total} contra CD ${dc}).`, 'miss');
+    else { t.prone = true; say(cb, `Derribar: ${t.name} cae al suelo (Constitución ${total} contra CD ${dc}).`, 'big'); }
+  }
+  if (m === 'push' && !huge && t.side === 'enemy' && t.row === 'front' && rowSpace(cb, 'enemy', 'back')) {
+    t.row = 'back';
+    t.plan = undefined;
+    say(cb, `Empujar: ${t.name} sale despedido a la retaguardia.`, 'info');
+  }
+}
+
+/** El jugador gasta la Inspiración heroica: repite el d20 del último ataque fallado y se queda con el nuevo. */
+export function useInspiration(g: Game, cb: Combat) {
+  const r = cb.reroll;
+  cb.reroll = undefined;
+  const a = cb.units.find(x => x.key === r?.a), t = cb.units.find(x => x.key === r?.t);
+  if (!r || !a || !t || cb.result || !conscious(a) || !alive(t) || !inspire(g, charOf(g, a))) return;
+  say(cb, `${a.name} gasta su Inspiración heroica y repite el dado.`, 'big');
+  attack(g, cb, a, t, { ...r.o, rerollAdv: r.adv });
+  if (!checkEnd(g, cb)) planAll(g, cb);
+}
+
+/** El enemigo busca a quien se ha escondido: Percepción contra su Sigilo. Si iguala o supera, le encuentra. */
+function spot(g: Game, cb: Combat, e: Unit, t: Unit): boolean {
+  const d20 = die(g.rng, 20), total = d20 + (MONSTERS[e.mon!].saves.wis ?? 0), ok = total >= t.hidden!;
+  setRoll(cb, { d20, total, label: `${e.name}: Percepción contra el Sigilo de ${t.name} (${t.hidden})`, ok, enemy: true, who: e.name });
+  if (ok) { say(cb, `${e.name} encuentra a ${t.name} (${total} contra ${t.hidden}): deja de estar escondido.`, 'info'); t.hidden = undefined; }
+  else say(cb, `${e.name} busca a ${t.name}, pero no le encuentra (${total} contra ${t.hidden}).`, 'info');
+  return ok;
 }
 
 function saveRoll(g: Game, cb: Combat, t: Unit, abil: Ability, dc: number, label: string): boolean {
@@ -430,8 +502,8 @@ function saveRoll(g: Game, cb: Combat, t: Unit, abil: Ability, dc: number, label
   if (t.side === 'party') bonus += aura(g, cb);
   const d20 = rollD20(g, adv, isHalfling(g, t));
   const ok = d20 + bonus >= dc;
-  setRoll(cb, { d20, total: d20 + bonus, label: `${t.name}: salvación (${label}) CD ${dc}`, ok, enemy: t.side === 'enemy', ...pairOf() });
-  say(cb, `${t.name}: salvación de ${label} ${d20 + bonus} contra CD ${dc}. ${ok ? 'Supera' : 'Falla'}.`, ok ? 'miss' : undefined);
+  setRoll(cb, { d20, total: d20 + bonus, label: `Salvación de ${label} de ${t.name} · CD ${dc}`, ok, enemy: t.side === 'enemy', who: t.name, save: true, ...pairOf() });
+  say(cb, `Salvación de ${label} de ${t.name}: ${d20 + bonus} contra CD ${dc}. ${ok ? `${t.name} la supera` : `${t.name} falla`}.`, ok ? 'miss' : undefined);
   return ok;
 }
 
@@ -505,6 +577,10 @@ function startTurn(g: Game, cb: Combat) {
   planAll(g, cb);
   cb.moved = cb.acted = cb.bonus = cb.sneakUsed = false;
   cb.smiteHit = undefined;
+  cb.reroll = undefined;
+  // Ayudar y Debilitar duran hasta el principio del siguiente turno de quien los hizo; Hostigar, hasta el final.
+  for (const x of cb.units) { if (x.helped === u.key) x.helped = undefined; if (x.sapped === u.key) x.sapped = undefined; }
+  if (u.vexNew) u.vexNew = false; else u.vex = undefined;
   if (u.concentration === 'spiritual' && cb.round >= (u.spiritualUntil ?? Infinity)) endConcentration(cb, u);
   if (u.concentration === 'mark' && !cb.units.some(x => x.key === u.mark && conscious(x))) u.mark = undefined;
   cb.savageUsed = false;
@@ -704,6 +780,8 @@ function uselessWhy(g: Game, cb: Combat, a: Action): string | undefined {
   if (a.id === 'second_wind' && u.hp >= u.maxHp) return 'No es necesario: tienes los PG al máximo.';
   if (a.id === 'bless' && cb.units.filter(x => x.side === 'party' && alive(x)).every(x => x.bless)) return 'No es necesario: el grupo ya está bendecido.';
   if (a.id === 'hide' && u.hidden) return 'No es necesario: ya estás escondido.';
+  if (a.id === 'hide' && u.row !== 'back') return 'Solo puedes esconderte desde la retaguardia.';
+  if (a.id === 'help' && !cb.units.some(x => x.side === 'party' && x !== u && conscious(x))) return 'No hay ningún aliado que pueda aprovechar la ayuda.';
   // Ir atrás se permite aunque la vanguardia quede vacía (el autor 2026-11-10): sin nadie delante, te alcanzan igual.
   if (a.id.startsWith('potion:') && a.detail !== CURE && a.detail !== COLD && !isHeal(c, a) && cb.units.filter(x => x.side === 'party' && alive(x)).every(x => x.resPoison)) return 'No es necesario: todos resistís ya el veneno.';
   if (a.detail === COLD && cb.units.filter(x => x.side === 'party' && alive(x)).every(x => coldProof(g, x))) return 'No es necesario: todos resistís ya el frío.';
@@ -726,7 +804,8 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
   for (const w of weapons(c)) {
     const def = ITEMS[w.id];
     const s = weaponStat(c, w.id);
-    A.push({ id: `atk:${w.id}`, label: def.name, cost: 'action', target: def.weapon!.ranged ? 'enemy' : 'enemy-melee', detail: `+${s.toHit} · ${def.weapon!.dice}${s.dmgBonus >= 0 ? '+' : ''}${s.dmgBonus}` });
+    const m = masteryOf(c, w.id);
+    A.push({ id: `atk:${w.id}`, label: def.name, cost: 'action', target: def.weapon!.ranged ? 'enemy' : 'enemy-melee', detail: `+${s.toHit} · ${def.weapon!.dice}${s.dmgBonus >= 0 ? '+' : ''}${s.dmgBonus}${m ? ` · ${MASTERY_NAME[m]}` : ''}` });
   }
   if (c.cls === 'cleric') {
     A.push({ id: 'sacred_flame', label: 'Llama sagrada', cost: 'action', target: 'enemy', detail: `DES CD ${spellDc(c)} · ${c.level >= 5 ? '2d8' : '1d8'}` });
@@ -787,6 +866,7 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     if (d.kind === 'wand' && !d.web && (it.charges ?? 0) > 0) A.push({ id: `wand:${it.uid}`, label: 'Varita', cost: 'action', target: 'enemy', detail: `${it.charges} cargas` });
     if (d.kind === 'scroll' && c.cls === 'wizard') A.push({ id: `scroll:${it.uid}`, label: 'Pergamino de escudo', cost: 'action', target: 'none', detail: '+5 CA' });
   }
+  A.push({ id: 'help', label: 'Ayudar', cost: 'action', target: 'enemy-melee', detail: 'ventaja a un aliado' });
   A.push({ id: 'dodge', label: 'Esquivar', cost: 'action', target: 'none' });
   A.push({ id: 'row', label: u.row === 'front' ? 'Ir atrás' : 'Ir delante', cost: 'move', target: 'none' });
   A.push({ id: 'flee', label: 'Huir', cost: 'action', target: 'none' });
@@ -829,8 +909,10 @@ function extraAttack(g: Game, cb: Combat, u: Unit, c: Char, t: Unit, weapon: str
   const t2 = conscious(t) ? t : validTargets(cb, u, w.ranged ? 'ranged' : 'melee')[0];
   if (!t2) return;
   const s = weaponStat(c, weapon);
-  attack(g, cb, u, t2, { name: ITEMS[weapon].name, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus, type: w.type, ranged: !!w.ranged, sneak: !!(w.finesse || w.ranged) });
+  attack(g, cb, u, t2, { name: ITEMS[weapon].name, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus, type: w.type, ranged: !!w.ranged, sneak: !!(w.finesse || w.ranged), ...masteryOpts(c, weapon) });
 }
+
+const masteryOpts = (c: Char, weapon: string) => ({ mastery: masteryOf(c, weapon), masteryDc: 8 + abilMod(c, weaponStat(c, weapon).abil) + prof(c.level) });
 
 /** Ejecuta un paso de combate y pega a la última tirada los dados de daño o curación que se hayan tirado. */
 export function withDice(cb: Combat, run: () => void) {
@@ -852,6 +934,7 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
   const dst = t ?? u;
   const potion = a.id.startsWith('potion:') ? ITEMS[c.items.find(i => i.uid === a.id.slice(7))!.id] : undefined;
   if ((potion?.heal || a.id === 'lay') && dst.hp >= dst.maxHp) { say(cb, `${dst.name} tiene la vida llena: no hace falta curarle.`, 'info'); return; }
+  cb.reroll = undefined;
   if (a.cost === 'action') cb.acted = true;
   if (a.cost === 'bonus') cb.bonus = true;
   if (a.cost === 'move') cb.moved = true;
@@ -860,7 +943,7 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
     case 'atk': {
       const w = ITEMS[arg].weapon!;
       const s = weaponStat(c, arg);
-      attack(g, cb, u, t!, { name: ITEMS[arg].name, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus, type: w.type, ranged: !!w.ranged, sneak: !!(w.finesse || w.ranged) });
+      attack(g, cb, u, t!, { name: ITEMS[arg].name, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus, type: w.type, ranged: !!w.ranged, sneak: !!(w.finesse || w.ranged), ...masteryOpts(c, arg) });
       extraAttack(g, cb, u, c, t!, arg);
       break;
     }
@@ -993,12 +1076,11 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
     case 'second_wind': c.secondWind--; heal(cb, u, roll(g.rng, '1d10') + c.level); break;
     case 'surge': c.actionSurge--; cb.acted = false; say(cb, `${u.name} usa Oleada de acción.`, 'info'); break;
     case 'hide': {
-      // Como en el SRD: Sigilo (DES + pericia del pícaro) contra la Percepción pasiva del enemigo que mejor ve.
-      const pp = Math.max(...cb.units.filter(e => e.side === 'enemy' && conscious(e)).map(e => 10 + (MONSTERS[e.mon!].saves.wis ?? 0)));
-      const d20 = die(g.rng, 20), bonus = abilMod(c, 'dex') + prof(c.level) * 2, ok = d20 + bonus >= pp;
-      setRoll(cb, { d20, total: d20 + bonus, label: `Sigilo de ${u.name} contra Percepción ${pp}`, ok });
-      if (ok) { u.hidden = true; say(cb, `${u.name} se esconde: ventaja en su próximo ataque.`, 'info'); }
-      else say(cb, `${u.name} intenta esconderse, pero le ven.`, 'info');
+      // SRD 5.2.1: Sigilo (DES + pericia del pícaro) CD 15; el resultado es lo que tendrá que igualar la Percepción de quien le busque.
+      const d20 = die(g.rng, 20), total = d20 + abilMod(c, 'dex') + prof(c.level) * 2, ok = total >= 15;
+      setRoll(cb, { d20, total, label: `Sigilo de ${u.name} · CD 15`, ok });
+      if (ok) { u.hidden = total; say(cb, `${u.name} se esconde (Sigilo ${total}): ventaja en su próximo ataque.`, 'info'); }
+      else say(cb, `${u.name} intenta esconderse, pero no lo consigue (Sigilo ${total} contra CD 15).`, 'info');
       break;
     }
     case 'potion': {
@@ -1015,9 +1097,11 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       break;
     }
     case 'dodge': u.dodge = true; say(cb, `${u.name} se pone a la defensiva.`, 'info'); break;
+    case 'help': t!.helped = u.key; say(cb, `${u.name} distrae a ${t!.name}: el próximo ataque de un aliado contra él tendrá ventaja.`, 'info'); break;
     case 'row':
       u.row = u.row === 'front' ? 'back' : 'front';
       say(cb, `${u.name} pasa a la fila ${u.row === 'front' ? 'delantera' : 'trasera'}.`, 'info');
+      if (u.hidden && u.row === 'front') { u.hidden = undefined; say(cb, `${u.name} sale de su escondite.`, 'info'); }
       // Con las filas cambiadas, los enemigos vuelven a mirar quién queda delante y quién detrás (el autor 2026-11-10).
       for (const e of cb.units) if (e.side === 'enemy') e.plan = undefined;
       break;
@@ -1066,6 +1150,7 @@ export function enemyTurn(g: Game, cb: Combat) {
     endTurn(g, cb);
     return;
   }
+  if (u.prone) { u.prone = false; say(cb, `${u.name} se levanta del suelo.`, 'info'); }
   const m = MONSTERS[u.mon!];
   // Goblins malheridos huyen.
   if (m.ai === 'goblin' && u.hp < u.maxHp * 0.25 && rand(g.rng) < 0.5) {
@@ -1102,7 +1187,8 @@ export function enemyTurn(g: Game, cb: Combat) {
   }
   if (p.kind === 'magic') {
     // Orvane: rayos abrasadores mientras le queden, luego descarga arcana.
-    const t = cb.units.find(x => x.key === p.targets[0]);
+    let t = cb.units.find(x => x.key === p.targets[0]);
+    if (t?.hidden && !spot(g, cb, u, t)) t = chooseTarget(g, cb, u, cb.units.filter(x => x.side === 'party' && conscious(x) && !x.hidden), true);
     if (t) {
       if ((u.rays ?? 0) > 0) {
         u.rays!--;
@@ -1116,11 +1202,18 @@ export function enemyTurn(g: Game, cb: Combat) {
   const atks = m.reach ? [m.attacks[0]] : m.attacks.filter(a => (ranged ? a.ranged : !a.ranged && !a.save));
   if (!atks.length) { endTurn(g, cb); return; }
   let told = false;
+  const lost: string[] = [];
   for (let i = 0; i < p.targets.length; i++) {
     const pool = reach(cb, u, ranged);
     let t = cb.units.find(x => x.key === p.targets[i] && pool.includes(x) && conscious(x));
-    if (!t) t = chooseTarget(g, cb, u, pool, ranged);
+    if (!t) t = chooseTarget(g, cb, u, pool.filter(x => !lost.includes(x.key)), ranged);
     if (!t) break;
+    // Quien está escondido solo recibe el golpe si el enemigo le encuentra; si no, busca otro objetivo.
+    if (t.hidden && !spot(g, cb, u, t)) {
+      lost.push(t.key);
+      t = chooseTarget(g, cb, u, pool.filter(x => !lost.includes(x.key) && !x.hidden), ranged);
+      if (!t) continue;
+    }
     // Cuerpo a cuerpo contra la retaguardia: se explica por qué llega.
     if (!ranged && !told && t.row === 'back' && !frontHeld(cb, 'party')) {
       told = true;

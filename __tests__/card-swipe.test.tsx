@@ -65,7 +65,7 @@ test('la pestaña de ficha sigue al personaje y se conserva al volver a él', ()
   const modal = (hero: typeof a) => <CardModal char={hero} info={charInfo(hero)} onClose={() => {}} />;
   act(() => { r = ReactTestRenderer.create(modal(a)); });
   const tabs = () => r.root.findAll(n => n.props.accessibilityRole === 'tab' && typeof n.props.onPress === 'function');
-  const selected = () => tabs().filter(n => n.props.accessibilityState.selected).map(n => n.props.children.props.children);
+  const selected = () => tabs().filter(n => n.props.accessibilityState.selected).map(n => n.props.accessibilityLabel);
   act(() => { tabs()[2].props.onPress(); });
   expect(selected().join()).toContain('Inventario');
   act(() => { r.update(modal(b)); });
