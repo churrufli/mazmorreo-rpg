@@ -2429,6 +2429,7 @@
               "type": "encounter",
               "id": "m3_e04",
               "trigger": "seen",
+              "omen": "Oís chillidos agudos y el golpe de cajas contra la piedra: alguien descarga suministros más adelante.",
               "can_reinforce": [],
               "enemies": [
                 {
@@ -3722,6 +3723,7 @@
               "type": "encounter",
               "id": "m4_e05",
               "trigger": "enter",
+              "omen": "De la cámara siguiente sale un frío que corta la respiración. La escarcha cubre las paredes y algo inmenso se mueve sobre el oro.",
               "can_reinforce": [],
               "enemies": [
                 {
