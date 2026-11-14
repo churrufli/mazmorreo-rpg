@@ -179,12 +179,13 @@ export function visibleCells(g: Game, reveal = false): Set<string> {
 }
 
 /** Camino más corto por casillas conocidas y transitables (BFS). */
-export function findPath(g: Game, to: Hex, reveal = false): Hex[] | null {
+export function findPath(g: Game, to: Hex, reveal = false, viaTraps = false): Hex[] | null {
   const pass = passable(g, g.zone);
   const vis = visibleCells(g, reveal);
   const goal = hkey(to);
   if (!pass.has(goal) || !vis.has(goal)) return null;
   const doors = closedDoors(g);
+  const traps = viaTraps ? new Set<string>() : spottedTraps(g);
   const prev = new Map<string, string>();
   const q = [hkey(g.pos)];
   prev.set(q[0], '');
@@ -193,10 +194,11 @@ export function findPath(g: Game, to: Hex, reveal = false): Hex[] | null {
     if (k === goal) break;
     for (const n of neighbors(k.split(',').map(Number) as Hex)) {
       const nk = hkey(n);
-      if (!prev.has(nk) && pass.has(nk) && vis.has(nk) && (!doors.has(nk) || nk === goal)) { prev.set(nk, k); q.push(nk); }
+      if (!prev.has(nk) && pass.has(nk) && vis.has(nk) && ((!doors.has(nk) && !traps.has(nk)) || nk === goal)) { prev.set(nk, k); q.push(nk); }
     }
   }
-  if (!prev.has(goal)) return null;
+  // Si solo se llega pasando por una trampa vista, se va por ella (al pisarla se elige qué hacer).
+  if (!prev.has(goal)) return viaTraps || !traps.size ? null : findPath(g, to, reveal, true);
   const path: Hex[] = [];
   for (let k = goal; k && k !== hkey(g.pos); k = prev.get(k)!) path.unshift(k.split(',').map(Number) as Hex);
   return path;
@@ -208,10 +210,11 @@ export interface ShownRoll { d20: number; bonus: number; dc: number; ok: boolean
  * Camino hacia una casilla aún desconocida: va a la casilla conocida que más se le acerca.
  * Devuelve null si no hay forma de acercarse más.
  */
-export function pathToward(g: Game, goal: Hex, reveal = false): Hex[] | null {
+export function pathToward(g: Game, goal: Hex, reveal = false, viaTraps = false): Hex[] | null {
   const pass = passable(g, g.zone);
   const vis = visibleCells(g, reveal);
   const doors = closedDoors(g);
+  const traps = viaTraps ? new Set<string>() : spottedTraps(g);
   const prev = new Map<string, string>([[hkey(g.pos), '']]);
   const q = [hkey(g.pos)];
   let best = hkey(g.pos);
@@ -222,10 +225,10 @@ export function pathToward(g: Game, goal: Hex, reveal = false): Hex[] | null {
     if (d < bestD) { best = k; bestD = d; }
     for (const n of neighbors(k.split(',').map(Number) as Hex)) {
       const nk = hkey(n);
-      if (!prev.has(nk) && pass.has(nk) && vis.has(nk) && !doors.has(nk)) { prev.set(nk, k); q.push(nk); }
+      if (!prev.has(nk) && pass.has(nk) && vis.has(nk) && !doors.has(nk) && !traps.has(nk)) { prev.set(nk, k); q.push(nk); }
     }
   }
-  if (best === hkey(g.pos)) return null;
+  if (best === hkey(g.pos)) return viaTraps || !traps.size ? null : pathToward(g, goal, reveal, true);
   const path: Hex[] = [];
   for (let k = best; k && k !== hkey(g.pos); k = prev.get(k)!) path.unshift(k.split(',').map(Number) as Hex);
   return path;
@@ -238,6 +241,8 @@ export type Ev =
   | { kind: 'msg'; title: string; lines: string[]; table?: [string, string][]; intro?: string; bg?: ImgKey; img?: ImgKey; img2?: ImgKey; items?: ImgKey[]; portrait?: ImgKey; rolls?: ShownRoll[]; save?: boolean }
   | { kind: 'rest'; id: string; long: boolean; name: string; text: string }
   | { kind: 'scene'; id: string }
+  /** Trampa vista antes de pisarla: se elige quién la desactiva, pasar con cuidado o volver atrás. */
+  | { kind: 'trap'; id: string; name: string }
   /** Grupo lleno al unirse un aliado: hay que elegir quién vuelve a la posada. */
   | { kind: 'swap'; ally: string }
   | { kind: 'zone'; to: string }
@@ -249,6 +254,20 @@ const marksAt = (zone: string, k: string) => plan(zone).marks.filter(m => `${m.q
 const roomOf = (zone: string, idx: number) => zoneById(zone).rooms[idx];
 
 const bestPerception = (party: Char[]) => Math.max(...party.filter(c => !isDown(c)).map(passivePerception));
+/** Sin antorcha ni truco Luz (una casilla de visión) hay poca luz: desventaja en Percepción, −5 a la pasiva (SRD 5.2.1). */
+export const dimLight = (party: Char[]) => sightRadius(party) < 2;
+const DIM_TXT = ' − 5 por la poca luz';
+
+/** Casillas de trampas ya vistas y sin resolver: el camino las rodea salvo que sean el destino. */
+export function spottedTraps(g: Game): Set<string> {
+  return new Set(plan(g.zone).marks.filter(m => m.kind === 'trap' && g.spotted?.includes(m.id) && !g.done.includes(m.id)).map(m => `${m.q},${m.r}`));
+}
+
+/** Bonificador para desactivar una trampa (Destreza; +2 al pícaro con herramientas de ladrón) y si tira con ventaja (el pícaro). */
+export function disarmBonus(c: Char): { bonus: number; adv: boolean } {
+  const rogue = c.cls === 'rogue';
+  return { bonus: abilMod(c, 'dex') + (rogue && c.items.some(i => i.id === 'thieves_tools') ? 2 : 0), adv: rogue };
+}
 
 /** Se mueve una casilla y devuelve lo que ocurre, en orden. */
 /** Pisa una casilla. `free` (modo desarrollador) entra aunque haya un obstáculo cerrado. */
@@ -291,7 +310,7 @@ export function step(g: Game, to: Hex, free = false): Ev[] {
     if (g.done.includes(m.id)) continue;
     if (m.kind === 'scene' && sceneOn(g, m.id)) evs.push({ kind: 'scene', id: m.id });
     if (m.kind === 'lever') evs.push(...lever(g, m.id));
-    if (m.kind === 'trap') evs.push(trap(g, m.id));
+    if (m.kind === 'trap') evs.push(g.spotted?.includes(m.id) ? { kind: 'trap', id: m.id, name: contentById(m.id)!.c.name } : trap(g, m.id));
     if (m.kind === 'chest' && chestVisible(g, m.id)) {
       // Cofre tras un obstáculo (puente roto, telaraña, losa...): hace falta un objeto o, a veces, una tirada.
       const o = contentById(m.id)!.c.obstacle as Obstacle | undefined;
@@ -326,6 +345,7 @@ export function step(g: Game, to: Hex, free = false): Ev[] {
     }
   }
   if (k === keyCell(g.zone) && !g.done.includes(`${g.zone}_key`)) evs.push(findKey(g));
+  evs.push(...spotTraps(g, to), ...omens(g, to, roomIdx));
   // Encuentros "al entrar": se activan al pisar su casilla o una contigua.
   for (const m of plan(g.zone).marks) {
     if (m.kind !== 'encounter' || g.done.includes(m.id)) continue;
@@ -456,6 +476,7 @@ function enterRoom(g: Game, room: Room): Ev[] {
   const evs: Ev[] = [];
   if (room.id === CAPTURE.free) evs.push(...rescue(g, false));
   const adv = ADVS[advOf(g.zone)];
+  const dim = dimLight(g.party);
   const pp = bestPerception(g.party);
   for (const c of room.contents as Content[]) {
     // Aviso al entrar si nadie lleva lo que conviene (antídoto en el nido de arañas…).
@@ -465,11 +486,11 @@ function enterRoom(g: Game, room: Room): Ev[] {
       if (!has || c.text_ok) evs.push({ kind: 'msg', title: c.title, img: c.img, lines: [has ? c.text_ok : c.text] });
     }
     // Los secretos con pista se buscan con una prueba (una escena en el mapa), no con la percepción pasiva.
-    if (c.type === 'secret' && !CLUED.has(c.id) && !g.found.includes(c.id) && pp >= c.detect_dc) {
+    if (c.type === 'secret' && !CLUED.has(c.id) && !g.found.includes(c.id) && pp - (dim ? 5 : 0) >= c.detect_dc) {
       g.found.push(c.id);
       evs.push({ kind: 'msg', title: 'Secreto descubierto', img: 'losa_secreta', lines: [c.description,
         c.reveals?.startsWith('chest:') ? 'Dentro hay un cofre escondido: ya lo veis en el mapa.' : 'Se abre un pasadizo secreto: ya aparece en el mapa.',
-        `(Percepción pasiva ${pp} contra CD ${c.detect_dc})`] });
+        `(Percepción pasiva ${pp}${dim ? DIM_TXT : ''} contra CD ${c.detect_dc})`] });
       evs.push({ kind: 'look', id: c.id });
     }
     if (c.type === 'ally') {
@@ -742,34 +763,86 @@ function chestLeftovers(g: Game, id: string): Ev {
 /** Clave de una casilla para los objetos tirados en el suelo. */
 export const dropKey = (g: Game) => `${g.zone}:${hkey(g.pos)}`;
 
-function trap(g: Game, id: string): Ev {
+/**
+ * Trampas a una casilla del grupo: si la Percepción pasiva del más atento llega a la CD, se ven antes de pisarlas.
+ * La marcha se para, la trampa se dibuja y el camino la rodea; pisarla deja elegir qué hacer.
+ */
+function spotTraps(g: Game, to: Hex): Ev[] {
+  const evs: Ev[] = [];
+  const team = g.party.filter(c => !isDown(c));
+  const vis = visibleCells(g);
+  for (const m of plan(g.zone).marks) {
+    if (m.kind !== 'trap' || g.done.includes(m.id) || g.spotted?.includes(m.id) || hdist([m.q, m.r], to) !== 1 || !vis.has(`${m.q},${m.r}`)) continue;
+    const t = contentById(m.id)!.c;
+    const spotter = [...team].sort((a, b) => passivePerception(b) - passivePerception(a))[0];
+    const pp = passivePerception(spotter);
+    const dim = dimLight(g.party);
+    if (pp - (dim ? 5 : 0) < t.detect_dc) continue;
+    g.spotted = [...(g.spotted ?? []), m.id];
+    evs.push({ kind: 'msg', title: '¡Trampa a la vista!', img: ADVS[advOf(g.zone)].trapImg, lines: [
+      `${spotter.name} se fija en algo extraño justo delante: ${t.name}.`,
+      'La trampa queda marcada en el mapa. Podéis rodearla o pisar su casilla para intentar desactivarla.',
+      `(Percepción pasiva ${pp}${dim ? DIM_TXT : ''} contra CD ${t.detect_dc})`] });
+  }
+  return evs;
+}
+
+/** Presagio de un combate: se avisa una vez al llegar junto a su sala, antes de entrar, para poder prepararse. */
+function omens(g: Game, to: Hex, roomIdx: number): Ev[] {
+  const cells = cellMap(g.zone);
+  const evs: Ev[] = [];
+  for (const m of plan(g.zone).marks) {
+    if (m.kind !== 'encounter' || g.done.includes(m.id) || g.done.includes(`${m.id}_omen`)) continue;
+    const omen = (contentById(m.id)?.c as { omen?: string } | undefined)?.omen;
+    const ri = cells.get(`${m.q},${m.r}`);
+    if (!omen || ri === undefined || ri === roomIdx || g.done.includes(roomOf(g.zone, ri).id)) continue;
+    if (!neighbors(to).some(n => cells.get(hkey(n)) === ri)) continue;
+    g.done.push(`${m.id}_omen`);
+    evs.push({ kind: 'msg', title: 'Presagio', lines: [omen, 'Podéis seguir adelante o volver atrás a prepararos.'] });
+  }
+  return evs;
+}
+
+/**
+ * Trampa pisada. Sin `choice`, el más atento tira Percepción (con desventaja si hay poca luz) y, si la ve,
+ * el pícaro o el más diestro intenta desactivarla. Con `choice` (trampa ya vista): el id de quien la desactiva,
+ * o 'pass' para pasar con cuidado (salvación con ventaja).
+ */
+export function trap(g: Game, id: string, choice?: string): Ev {
   g.done.push(id);
   const t = contentById(id)!.c;
   const team = g.party.filter(c => !isDown(c));
-  // El más atento del grupo tira Percepción (d20 + su bonificador) contra la CD de la trampa.
-  const spotter = [...team].sort((a, b) => passivePerception(b) - passivePerception(a))[0];
-  const pd = die(g.rng, 20);
-  const pb = passivePerception(spotter) - 10;
-  const seen = pd + pb >= t.detect_dc;
-  const rolls: ShownRoll[] = [{ d20: pd, bonus: pb, dc: t.detect_dc, ok: seen, text: `Percepción de ${spotter.name}` }];
+  const rolls: ShownRoll[] = [];
   const lines: string[] = [];
-  const out = (): Ev => ({ kind: 'msg', title: '¡Trampa!', intro: 'Algo cruje bajo vuestros pies…', img: ADVS[advOf(g.zone)].trapImg, rolls, lines });
+  const out = (): Ev => ({ kind: 'msg', title: '¡Trampa!', intro: choice ? undefined : 'Algo cruje bajo vuestros pies…', img: ADVS[advOf(g.zone)].trapImg, rolls, lines });
+  let seen = !!choice;
+  if (!choice) {
+    // El más atento del grupo tira Percepción (d20 + su bonificador) contra la CD de la trampa.
+    const spotter = [...team].sort((a, b) => passivePerception(b) - passivePerception(a))[0];
+    const dim = dimLight(g.party);
+    const pd = dim ? Math.min(die(g.rng, 20), die(g.rng, 20)) : die(g.rng, 20);
+    const pb = passivePerception(spotter) - 10;
+    seen = pd + pb >= t.detect_dc;
+    rolls.push({ d20: pd, bonus: pb, dc: t.detect_dc, ok: seen, text: `Percepción de ${spotter.name}${dim ? ' (con desventaja por la poca luz)' : ''}` });
+  }
   let advSave = false;
   const rope = /foso|pozo|hoyo|lazo|sima|hund|tablon/i.test(`${t.name} ${t.description}`) && team.some(c => c.items.some(i => i.id === 'rope'));
-  if (seen) {
+  if (choice === 'pass') {
+    lines.push(`Pasáis con mucho cuidado junto a la trampa (${t.name}).`);
+    advSave = true;
+  } else if (seen) {
     const rogue = team.find(c => c.cls === 'rogue');
-    const who = rogue ?? [...team].sort((a, b) => abilMod(b, 'dex') - abilMod(a, 'dex'))[0];
-    const tools = who.items.some(i => i.id === 'thieves_tools');
-    const bonus = abilMod(who, 'dex') + (tools && who.cls === 'rogue' ? 2 : 0);
-    const d = rogue ? Math.max(die(g.rng, 20), die(g.rng, 20)) : die(g.rng, 20);
+    const who = team.find(c => c.id === choice) ?? rogue ?? [...team].sort((a, b) => abilMod(b, 'dex') - abilMod(a, 'dex'))[0];
+    const { bonus, adv } = disarmBonus(who);
+    const d = adv ? Math.max(die(g.rng, 20), die(g.rng, 20)) : die(g.rng, 20);
     const ok = d + bonus >= t.disarm_dc;
-    rolls.push({ d20: d, bonus, dc: t.disarm_dc, ok, text: `${who.name} intenta desactivarla${rogue ? ' (con ventaja)' : ''}` });
+    rolls.push({ d20: d, bonus, dc: t.disarm_dc, ok, text: `${who.name} intenta desactivarla${adv ? ' (con ventaja)' : ''}` });
     if (ok) {
-      lines.push(`Descubrís la trampa a tiempo: ${t.name}. ${who.name} la desactiva.`);
+      lines.push(choice ? `${who.name} desactiva la trampa: ${t.name}.` : `Descubrís la trampa a tiempo: ${t.name}. ${who.name} la desactiva.`);
       tally(g, { traps: 1 });
       return out();
     }
-    lines.push(`Descubrís la trampa (${t.name}), pero ${who.name} no logra desactivarla.`);
+    lines.push(choice ? `${who.name} no logra desactivarla (${t.name}) y salta.` : `Descubrís la trampa (${t.name}), pero ${who.name} no logra desactivarla.`);
     advSave = true;
   } else lines.push(t.description);
   // La sufre alguien de la vanguardia (quien va delante), al azar; no siempre el héroe.

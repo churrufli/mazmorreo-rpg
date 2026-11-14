@@ -1,7 +1,7 @@
 // Juega Hondaroca entera con un bot sencillo para comprobar que el motor no se rompe
 // con ninguna de las 16 combinaciones de héroe.
 import { newGame, Game } from './game';
-import { bossEncounter, closedDoors, enterZone, step, findPath, plan, doRest, Ev, hkey, visibleCells, passable } from './dungeon';
+import { bossEncounter, closedDoors, enterZone, step, findPath, plan, doRest, Ev, hkey, visibleCells, passable, trap } from './dungeon';
 import { startCombat, autoTurn, enemyTurn, actionsFor, targetsFor, perform, endTurn, current, Combat, hasUseful } from './combat';
 import { HERO_CLASSES, ITEMS, SPECIES, ClassId, SpeciesId } from '../data/srd';
 import { chooseFeat, FeatId, gainXp, longRest, MAX_ITEMS } from './rules';
@@ -118,6 +118,8 @@ function play(cls: ClassId, sp: SpeciesId, seed?: number, start = 'z1', xp = 0, 
         sendToInn(g, g.party.find(c => !c.isHero && c.id !== ev.ally)!);
       } else if (ev.kind === 'rest') log.push(...doRest(g, ev.id, ev.long));
       else if (ev.kind === 'zone') queue.push(...enterZone(g, ev.to));
+      // Trampa vista: la desactiva el pícaro o, si no hay, el más diestro.
+      else if (ev.kind === 'trap') trap(g, ev.id, (g.party.find(c => c.cls === 'rogue' && c.hp > 0) ?? g.party.filter(c => c.hp > 0).sort((a, b) => b.abil.dex - a.abil.dex)[0]).id);
       continue;
     }
     // Como haría un jugador, tira las armas repetidas que no usa para no llenar la mochila.

@@ -1418,6 +1418,7 @@
               "type": "encounter",
               "id": "z2_e02",
               "trigger": "seen",
+              "omen": "Un hilo pegajoso os roza la cara. Más adelante, algo grande se mueve despacio entre las sombras del techo.",
               "can_reinforce": [],
               "enemies": [
                 {
@@ -1822,6 +1823,7 @@
               "type": "encounter",
               "id": "z2_e06",
               "trigger": "seen",
+              "omen": "Más adelante oís una voz ronca que da órdenes en lengua goblin y el roce de una cimitarra contra la piedra.",
               "can_reinforce": [],
               "enemies": [
                 {
@@ -3707,6 +3709,7 @@
               "type": "encounter",
               "id": "z4_e01",
               "trigger": "seen",
+              "omen": "Tras el paso llega un murmullo de cánticos y un olor a aceite quemado. Alguien vigila esa cámara.",
               "can_reinforce": [
                 "z4_e02"
               ],
@@ -4296,6 +4299,7 @@
               "type": "encounter",
               "id": "z4_e04",
               "trigger": "seen",
+              "omen": "El aire se vuelve húmedo y caliente. De la cámara siguiente llega un silbido de vapor y la voz de Maese Orvane, que recita sin descanso.",
               "can_reinforce": [
                 "z4_e05"
               ],

@@ -23,6 +23,8 @@ export interface Game {
   done: string[];
   /** Secretos descubiertos. */
   found: string[];
+  /** Trampas vistas antes de pisarlas (aún sin resolver si no están en done). */
+  spotted?: string[];
   /** PG de enemigos de los que se huyó. */
   enemyHp: Record<string, number[]>;
   fled: string[];

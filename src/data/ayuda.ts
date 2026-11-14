@@ -91,6 +91,10 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Las salvaciones del enemigo dicen quién falla («Necrófago falla»).',
     'Al descubrir un secreto, el mapa se desplaza hasta él y lo ilumina antes de seguir, también si después hay combate.',
     'Pestañas de la ficha con iconos y botones de menú y pantalla completa más pequeños en la web.',
+    'Las trampas se pueden ver desde la casilla de al lado: la marcha se para, la trampa queda marcada y el camino la rodea. Al pisarla elegís quién la desactiva, pasar con cuidado o volver atrás.',
+    'Sin antorcha ni truco Luz hay poca luz: desventaja en Percepción para ver trampas y secretos.',
+    'Presagios: antes de entrar en la sala de algunos enemigos peligrosos y de los jefes, un aviso os deja volver a prepararos.',
+    'Por las casillas ya pisadas el grupo anda más deprisa.',
   ] },
   { version: 'v0.144', items: [
     'Vuelve la música original del juego, creada con Suno.',
