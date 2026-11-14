@@ -22,11 +22,21 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+      # La web lleva el número de la última APK publicada y, si hay cambios fusionados después, cuántos (v0.143+2).
+      - name: Version number
+        run: |
+          TAG=$(git describe --tags --abbrev=0 --match 'v0.*' 2>/dev/null || true)
+          if [ -n "$TAG" ]; then
+            echo "export const BUILD: number = ${TAG#v0.};" > src/version.ts
+            echo "export const CAMBIOS: number = $(git rev-list --count "$TAG"..HEAD);" > src/versionWeb.ts
+          fi
       - run: npm run web:build
       - uses: actions/upload-pages-artifact@v3
         with:
