@@ -753,7 +753,7 @@ function trap(g: Game, id: string): Ev {
   const seen = pd + pb >= t.detect_dc;
   const rolls: ShownRoll[] = [{ d20: pd, bonus: pb, dc: t.detect_dc, ok: seen, text: `Percepción de ${spotter.name}` }];
   const lines: string[] = [];
-  const out = (): Ev => ({ kind: 'msg', title: '¡Trampa!', intro: 'Algo cruje bajo vuestros pies…', img: 'trampa', rolls, lines });
+  const out = (): Ev => ({ kind: 'msg', title: '¡Trampa!', intro: 'Algo cruje bajo vuestros pies…', img: ADVS[advOf(g.zone)].trapImg, rolls, lines });
   let advSave = false;
   const rope = /foso|pozo|hoyo|lazo|sima|hund|tablon/i.test(`${t.name} ${t.description}`) && team.some(c => c.items.some(i => i.id === 'rope'));
   if (seen) {

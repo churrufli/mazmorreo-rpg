@@ -27,6 +27,9 @@ const REVIVE_COST = 50;
 /** El tendero paga la mitad; por los objetos mágicos (100 po o más), la cuarta parte: si no, sobra oro. */
 export const sellPrice = (value: number) => Math.floor(value / (value >= 100 ? 4 : 2));
 
+/** Lo que se ve el nombre del pueblo al llegar desde otro, antes del menú. */
+const ARRIVAL_MS = 3000;
+
 export function Town() {
   const { game, edit, leaveTown, travel } = useStore();
   const g = game!;
@@ -51,6 +54,13 @@ export function Town() {
   const [buying, setBuying] = useState<string>();
   const [asking, setAsking] = useState(false);
   const [talk, setTalk] = useState<{ id: string; n: number }>();
+  // Al llegar desde otro pueblo: primero el nombre sobre su ilustración y, tras tres segundos, el menú.
+  const [arrival, setArrival] = useState<string>();
+  useEffect(() => {
+    if (!arrival) return;
+    const t = setTimeout(() => setArrival(undefined), ARRIVAL_MS);
+    return () => clearTimeout(t);
+  }, [arrival]);
   const buyer = g.party.find(c => c.id === who) ?? g.party[0];
   const townId: TownId = g.town ?? 'valdescarcha';
   const town = TOWNS[townId];
@@ -98,6 +108,20 @@ export function Town() {
     </ScrollView>
   );
 
+
+  if (arrival) {
+    return (
+      <FadeIn key="arrival" from={0} duration={600} style={{ flex: 1 }}>
+        <Bg src={IMG[town.bg.menu]} dim={0.05}>
+          <Pressable testID="town-arrival" style={st.arrival} onPress={() => setArrival(undefined)} accessibilityRole="button" accessibilityLabel={`Llegasteis a ${arrival}. Toca para continuar.`}>
+            <FadeIn delay={400} duration={700} from={12} style={st.arrivalBox}>
+              <Text style={st.arrivalTxt}>{`Llegasteis a ${arrival}`}</Text>
+            </FadeIn>
+          </Pressable>
+        </Bg>
+      </FadeIn>
+    );
+  }
 
   return (
     // Al cambiar de lugar, la ilustración nueva entra con un fundido.
@@ -303,7 +327,7 @@ export function Town() {
             {(Object.keys(TOWNS) as TownId[]).filter(t => t !== townId).map(t => (
               <Btn key={t} label={`Viajar a ${TOWNS[t].name}`} disabled={!open(t)}
                 sub={open(t) ? `Pueblo de ${ADVS[TOWNS[t].adv].name}${dev && prevOf(t) ? ` · el grupo sube a nivel ${ADVS[prevOf(t)!].level}` : ''}` : lockText(t)}
-                onPress={() => { travel(t); setPlace('menu'); say(`Llegáis a ${TOWNS[t].name}.`); }} />
+                onPress={() => { travel(t); setPlace('menu'); say(''); setArrival(TOWNS[t].name); }} />
             ))}
           </Panel>
         ) : null}
@@ -382,20 +406,41 @@ function ItemRow({ img, name, desc, price, onPress, disabled }: { img: ImgKey; n
   );
 }
 
+/**
+ * Final de una aventura: distinto de la ventana de victoria de cada combate.
+ * Arriba, el nombre de la aventura completada; abajo, el grupo con su nivel,
+ * el desenlace y la recompensa.
+ */
 export function Victory() {
   const { toTown, game } = useStore();
   const ins = useSafeAreaInsets();
   const A = ADVS[advOf(game!.zone)];
+  const team = game!.party.filter(c => !c.dead);
   return (
-    <Bg src={IMG[A.victoryImg]} dim={0.2}>
-      <View style={{ flex: 1, justifyContent: 'flex-end', padding: 16, paddingBottom: ins.bottom + 20 }}>
+    <Bg src={IMG[A.victoryImg]} dim={0.1}>
+      <FadeIn style={{ ...st.endTop, paddingTop: ins.top + 18 }} duration={700}>
+        <Text style={st.endTitle}>¡Victoria!</Text>
+        <Text style={st.endKicker}>Aventura completada</Text>
+        <Text style={st.endName}>{A.name}</Text>
+        <View style={st.endRule} />
+      </FadeIn>
+      <View style={{ flex: 1 }} />
+      <FadeIn delay={600} duration={600} style={{ padding: 16, paddingBottom: ins.bottom + 20 }}>
+        <View style={st.endParty}>
+          {team.map(c => (
+            <View key={c.id} style={st.endHero}>
+              <Portrait img={c.img} size={54} />
+              <Text style={st.endHeroName} numberOfLines={1}>{c.name.split(' ')[0]}</Text>
+              <Text style={st.endHeroLvl}>{`Nivel ${c.level}`}</Text>
+            </View>
+          ))}
+        </View>
         <Panel>
-          <T h={2} style={{ textAlign: 'center' }}>¡Victoria!</T>
           <T>{A.victoryText}</T>
           <T>Todo el grupo llega al menos a nivel {A.level}.</T>
           <Btn label={`Volver a ${TOWNS[A.town].name}`} onPress={toTown} style={{ marginTop: 10 }} />
         </Panel>
-      </View>
+      </FadeIn>
     </Bg>
   );
 }
@@ -420,6 +465,18 @@ export function Defeat() {
 }
 
 const st = StyleSheet.create({
+  arrival: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: '22%' },
+  arrivalBox: { marginHorizontal: 16, backgroundColor: 'rgba(0,0,0,0.55)', borderRadius: 10, paddingHorizontal: 22, paddingVertical: 12, borderWidth: 1, borderColor: C.gold },
+  arrivalTxt: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 28, textAlign: 'center', textShadowColor: '#000', textShadowRadius: 6 },
+  endTop: { alignItems: 'center', paddingHorizontal: 16, paddingBottom: 14, backgroundColor: 'rgba(0,0,0,0.55)' },
+  endKicker: { fontFamily: F.title, color: C.gold, fontSize: 14, letterSpacing: 2, textTransform: 'uppercase', marginTop: 4 },
+  endTitle: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 34, textAlign: 'center', textShadowColor: '#000', textShadowRadius: 6 },
+  endName: { fontFamily: F.titleBold, color: C.text, fontSize: 20, textAlign: 'center', marginTop: 2 },
+  endRule: { width: 120, height: 2, backgroundColor: C.gold, marginTop: 8, borderRadius: 1 },
+  endParty: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', marginBottom: 8, gap: 6 },
+  endHero: { alignItems: 'center', width: 72, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 8, paddingVertical: 6 },
+  endHeroName: { fontFamily: F.textBold, color: C.text, fontSize: 13, marginTop: 3 },
+  endHeroLvl: { fontFamily: F.text, color: C.goldHi, fontSize: 12 },
   full: { fontFamily: F.textBold, color: '#e8796b', fontSize: 16, marginBottom: 6 },
   escort: { borderTopWidth: 1, borderColor: C.border, marginTop: 6, paddingTop: 4 },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 8, backgroundColor: 'rgba(0,0,0,0.6)' },

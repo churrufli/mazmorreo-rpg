@@ -38,6 +38,8 @@ export interface Adv {
   escortWhere?: string;
   /** Descanso del mapa (la imagen de su casilla). */
   restImg: ImgKey;
+  /** Ilustración de las trampas de la aventura (aviso al caer y casilla desactivada). */
+  trapImg: ImgKey;
 }
 
 const art = (bg: string, wall = bg): Art => ({
@@ -56,7 +58,7 @@ export const ADVS: Record<AdvId, Adv> = {
     allyImg: { brunna: 'ally_brunna', tiko: 'ally_tiko', edmund: 'ally_edmund', liss: 'ally_liss' },
     speakers: { brunna: 'Brunna', tiko: 'Tiko', edmund: 'Hermano Edmund', liss: 'Liss', orvane: 'Maese Orvane' },
     faces: { brunna: 'ally_brunna', tiko: 'ally_tiko', edmund: 'ally_edmund', liss: 'ally_liss', orvane: 'orvane' },
-    level: 3, restImg: 'punto_descanso',
+    level: 3, restImg: 'punto_descanso', trapImg: 'trampa',
   },
   corazon_hueco: {
     id: 'corazon_hueco', name: BD.dungeon.name, data: BD, town: 'vegahumbria', boss: 'Treant', sub: 'telmo',
@@ -71,6 +73,8 @@ export const ADVS: Record<AdvId, Adv> = {
     },
     faces: { maren: 'ally_maren', anselmo: 'ally_anselmo', ivelle: 'ally_ivelle', telmo: 'ally_telmo', ortiga: 'abuela_ortiga', corazon: 'corazon_hueco' },
     prev: 'hondaroca', level: 5, escortWhere: 'por la linde', restImg: 'campamento',
+    // Pendiente de arte propio (trampa del bosque): de momento, la de Hondaroca.
+    trapImg: 'trampa',
   },
   montana: {
     id: 'montana', name: MD.dungeon.name, data: MD, town: 'cumbrenieve', boss: 'Young White Dragon', sub: 'aldric',
@@ -83,6 +87,8 @@ export const ADVS: Record<AdvId, Adv> = {
     speakers: { ...Object.fromEntries(MD.allies.map(a => [a.id, a.name])), sabio: MD.sage.name, dragon: MD.boss.name },
     faces: { vurka: 'ally_vurka', durnok: 'ally_durnok', syrael: 'ally_syrael', aldric: 'ally_aldric', sabio: 'ally_telmo', dragon: 'dragon_blanco_joven' },
     prev: 'corazon_hueco', level: 6, escortWhere: 'por el paso nevado', restImg: 'hoguera_nieve',
+    // Pendiente de arte propio (trampa de la montaña): de momento, la de Hondaroca.
+    trapImg: 'trampa',
   },
 };
 

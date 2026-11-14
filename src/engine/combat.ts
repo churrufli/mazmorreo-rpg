@@ -87,7 +87,8 @@ export interface Roll { id: number; d20: number; total: number; label: string; o
   who?: string; save?: boolean;
   /** Ventaja (1) o desventaja (-1): se ven los dos d20 y el descartado sale apagado. */
   adv?: number; other?: number }
-export interface LogLine { t: string; c?: 'dmg' | 'heal' | 'info' | 'big' | 'miss' }
+/** Línea del registro: texto, tono, ronda y quién tenía el turno (para agrupar el registro completo). */
+export interface LogLine { t: string; c?: 'dmg' | 'heal' | 'info' | 'big' | 'miss'; r?: number; who?: string }
 
 export interface Combat {
   units: Unit[];
@@ -109,7 +110,8 @@ export interface Combat {
   log: LogLine[];
   roll?: Roll;
   /** Último efecto visual por carta (golpe, conjuro, crítico, curación). */
-  fx?: Record<string, { id: number; kind: FxKind }>;
+  /** Efecto en cada carta; `type` es el daño mágico (fuego, frío…) para su efecto propio. */
+  fx?: Record<string, { id: number; kind: FxKind; type?: DmgType }>;
   fxId?: number;
   /** Cifra de daño (o curación) sobre cada carta; los golpes del mismo paso se suman. */
   pops?: Record<string, { id: number; n: number; kind: 'dmg' | 'heal' | 'crit'; step: number }>;
@@ -160,9 +162,9 @@ const HUGE = ['Treant', 'Awakened Tree', 'Walking Tree'];
 const solo = (cb: Combat) => cb.units.filter(u => u.side === 'party').length === 1;
 
 const PHYSICAL: DmgType[] = ['cortante', 'perforante', 'contundente'];
-const fx = (cb: Combat, u: Unit, kind: FxKind) => {
+const fx = (cb: Combat, u: Unit, kind: FxKind, type?: DmgType) => {
   cb.fxId = (cb.fxId ?? 0) + 1;
-  cb.fx = { ...cb.fx, [u.key]: { id: cb.fxId, kind } };
+  cb.fx = { ...cb.fx, [u.key]: { id: cb.fxId, kind, ...(type && !PHYSICAL.includes(type) ? { type } : {}) } };
 };
 const pop = (cb: Combat, u: Unit, n: number, kind: 'dmg' | 'heal' | 'crit') => {
   if (n <= 0) return;
@@ -178,7 +180,7 @@ const pairOf = () => (lastPair ? { adv: lastPair.adv, other: lastPair.other } : 
 const setRoll = (cb: Combat, r: Omit<Roll, 'id'>) => { cb.roll = { id: (cb.roll?.id ?? 0) + 1, ...r }; };
 
 const say = (cb: Combat, t: string, c?: LogLine['c']) => {
-  cb.log.push({ t, c });
+  cb.log.push({ t, c, r: cb.round, who: cb.units.find(u => u.key === cb.order[cb.turn])?.name });
   if (cb.log.length > 60) cb.log.shift();
 };
 
@@ -236,7 +238,7 @@ function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: Dm
   if (target.mon === 'Treant' && type !== 'psíquico' && knotsUp(cb)) amount = Math.floor(amount / 2);
   if (target.side === 'party' && ((target.rage && PHYSICAL.includes(type)) || (type === 'frío' && coldProof(g, target)))) amount = Math.floor(amount / 2);
   target.lastHitBy = from.key;
-  fx(cb, target, crit ? 'crit' : PHYSICAL.includes(type) ? 'hit' : 'magic');
+  fx(cb, target, crit ? 'crit' : PHYSICAL.includes(type) ? 'hit' : 'magic', type);
   if (target.asleep) { target.asleep = false; say(cb, `${target.name} despierta.`, 'info'); }
   if (target.side === 'party' && target.hp <= 0) {
     target.deathF = (target.deathF ?? 0) + (crit ? 2 : 1);

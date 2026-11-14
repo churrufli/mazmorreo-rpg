@@ -380,7 +380,7 @@ export function Explore() {
                 );
               }
               if (m.kind === 'rest') img = restImg;
-              if (m.kind === 'trap') img = g.done.includes(m.id) ? 'trampa' : undefined;
+              if (m.kind === 'trap') img = g.done.includes(m.id) ? ADVS[advOf(g.zone)].trapImg : undefined;
               if (m.kind === 'gate') img = g.done.includes(m.id) ? undefined : 'celda_reja';
               if (m.kind === 'lever') img = 'palanca';
               // Escena por hacer: ficha redonda con su ilustración (o una losa si es la pista de un secreto).
