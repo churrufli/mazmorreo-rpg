@@ -40,5 +40,5 @@ const st = StyleSheet.create({
   sub: { fontFamily: F.italic, color: C.textDim, fontSize: 16, textAlign: 'center', marginBottom: 8 },
   opt: { borderTopWidth: 1, borderColor: '#ffffff18', paddingTop: 8, marginTop: 4 },
   name: { fontFamily: F.titleBold, color: C.gold, fontSize: 16 },
-  desc: { fontFamily: F.text, color: C.text, fontSize: 16, lineHeight: 21 },
+  desc: { fontFamily: F.rules, color: C.text, fontSize: 14.5, lineHeight: 21 },
 });

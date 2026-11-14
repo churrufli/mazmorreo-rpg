@@ -18,4 +18,7 @@ export const F = {
   text: 'CormorantGaramond-Medium',
   textBold: 'CormorantGaramond-Bold',
   italic: 'CormorantGaramond-Italic',
+  /** Registro, reglas y explicaciones: Inter, más legible en el móvil. Lore, diálogos y botones siguen con las de arriba. */
+  rules: 'Inter-Regular',
+  rulesBold: 'Inter-SemiBold',
 };
