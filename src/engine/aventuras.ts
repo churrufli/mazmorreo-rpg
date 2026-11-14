@@ -51,7 +51,7 @@ const MD = M as unknown as Design & { sage: { id: string; name: string } };
 export const ADVS: Record<AdvId, Adv> = {
   hondaroca: {
     id: 'hondaroca', name: H.dungeon.name, data: H, town: 'valdescarcha', boss: 'Orvane', sub: 'brunna',
-    intro: 'intro', victoryImg: 'victoria', defeatImg: 'derrota',
+    intro: 'intro', victoryImg: 'victoria_hondaroca', defeatImg: 'derrota',
     victoryText: H.boss.victory_reward, defeatText: 'Todo el grupo ha caído en la oscuridad de Hondaroca.',
     reward: { gold: 150 },
     art: { z1: art('mina'), z2: art('ruinas'), z3: art('cripta'), z4: art('monasterio') },
@@ -62,7 +62,7 @@ export const ADVS: Record<AdvId, Adv> = {
   },
   corazon_hueco: {
     id: 'corazon_hueco', name: BD.dungeon.name, data: BD, town: 'vegahumbria', boss: 'Treant', sub: 'telmo',
-    intro: 'intro_bosque', victoryImg: 'victoria_generica', defeatImg: 'derrota_generica',
+    intro: 'intro_bosque', victoryImg: 'victoria_corazon', defeatImg: 'derrota_generica',
     victoryText: 'El Corazón Hueco cae y sus raíces liberan a los desaparecidos. Los caminos vuelven a abrirse. Los cautivos despiertan y regresan a Vegaumbría. Sin Brezna, nadie volverá a alimentarse de ellos. Entre los restos encontráis 75 monedas de oro y la Astilla del Corazón.',
     defeatText: 'El Corazón Hueco derrota al grupo. Los desaparecidos siguen presos entre sus raíces.',
     reward: { gold: 75, item: 'heart_fragment' },
@@ -73,12 +73,11 @@ export const ADVS: Record<AdvId, Adv> = {
     },
     faces: { maren: 'ally_maren', anselmo: 'ally_anselmo', ivelle: 'ally_ivelle', telmo: 'ally_telmo', ortiga: 'abuela_ortiga', corazon: 'corazon_hueco' },
     prev: 'hondaroca', level: 5, escortWhere: 'por la linde', restImg: 'campamento',
-    // Pendiente de arte propio (trampa del bosque): de momento, la de Hondaroca.
-    trapImg: 'trampa',
+    trapImg: 'trampa_bosque',
   },
   montana: {
     id: 'montana', name: MD.dungeon.name, data: MD, town: 'cumbrenieve', boss: 'Young White Dragon', sub: 'aldric',
-    intro: 'intro_montana', victoryImg: 'victoria_generica', defeatImg: 'derrota_generica',
+    intro: 'intro_montana', victoryImg: 'victoria_montana', defeatImg: 'derrota_generica',
     victoryText: 'Vharzûl cae sobre su tesoro y el hielo de la cumbre empieza a crujir. El paso volverá a abrirse y Cumbrenieve no pagará más tributo. Encontráis 120 monedas de oro y el Sello del Deshielo.',
     defeatText: 'Todo el grupo ha caído en el hielo de la montaña.',
     reward: { gold: 120, item: 'relic_dwarf' },
@@ -87,8 +86,7 @@ export const ADVS: Record<AdvId, Adv> = {
     speakers: { ...Object.fromEntries(MD.allies.map(a => [a.id, a.name])), sabio: MD.sage.name, dragon: MD.boss.name },
     faces: { vurka: 'ally_vurka', durnok: 'ally_durnok', syrael: 'ally_syrael', aldric: 'ally_aldric', sabio: 'ally_telmo', dragon: 'dragon_blanco_joven' },
     prev: 'corazon_hueco', level: 6, escortWhere: 'por el paso nevado', restImg: 'hoguera_nieve',
-    // Pendiente de arte propio (trampa de la montaña): de momento, la de Hondaroca.
-    trapImg: 'trampa',
+    trapImg: 'trampa_montana',
   },
 };
 

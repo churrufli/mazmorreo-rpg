@@ -77,7 +77,8 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'El registro del combate se ordena por rondas y turnos, con un icono y un color para cada tipo de línea.',
     'Al tocar la cara de quien tiene el turno, su carta parpadea en blanco para que se note sobre el borde dorado.',
     'La carta ampliada enseña sus cifras e iconos al doble de tamaño. Las pestañas de la ficha tienen el texto más grande.',
-    'Pantalla nueva al terminar una aventura, con el grupo y su nivel.',
+    'Pantalla nueva al terminar cada aventura, con su propia ilustración: primero se ve la imagen y después el desenlace aparece poco a poco.',
+    'Las trampas del bosque y de la montaña tienen su propia ilustración.',
     'Al viajar a otro pueblo, primero se ve «Llegasteis a…» sobre su ilustración y después el menú.',
   ] },
   { version: 'v0.145', items: [

@@ -407,40 +407,58 @@ function ItemRow({ img, name, desc, price, onPress, disabled }: { img: ImgKey; n
 }
 
 /**
- * Final de una aventura: distinto de la ventana de victoria de cada combate.
- * Arriba, el nombre de la aventura completada; abajo, el grupo con su nivel,
- * el desenlace y la recompensa.
+ * Final de una aventura, distinto de la ventana de victoria de cada combate.
+ * Primero se deja ver la ilustración (como al llegar a un pueblo) y después
+ * el desenlace aparece letra a letra, como la narración del inicio.
  */
 export function Victory() {
   const { toTown, game } = useStore();
   const ins = useSafeAreaInsets();
   const A = ADVS[advOf(game!.zone)];
   const team = game!.party.filter(c => !c.dead);
+  const full = `${A.victoryText}\n\nTodo el grupo llega al menos a nivel ${A.level}.`;
+  const [shown, setShown] = useState(false);
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setShown(true), ARRIVAL_MS);
+    return () => clearTimeout(t);
+  }, []);
+  useEffect(() => {
+    if (!shown) return;
+    const t = setInterval(() => setN(x => (x >= full.length ? x : x + 1)), 22);
+    return () => clearInterval(t);
+  }, [shown, full]);
+  const done = n >= full.length;
+  const tap = () => (!shown ? setShown(true) : setN(full.length));
   return (
-    <Bg src={IMG[A.victoryImg]} dim={0.1}>
-      <FadeIn style={{ ...st.endTop, paddingTop: ins.top + 18 }} duration={700}>
-        <Text style={st.endTitle}>¡Victoria!</Text>
-        <Text style={st.endKicker}>Aventura completada</Text>
-        <Text style={st.endName}>{A.name}</Text>
-        <View style={st.endRule} />
-      </FadeIn>
-      <View style={{ flex: 1 }} />
-      <FadeIn delay={600} duration={600} style={{ padding: 16, paddingBottom: ins.bottom + 20 }}>
-        <View style={st.endParty}>
-          {team.map(c => (
-            <View key={c.id} style={st.endHero}>
-              <Portrait img={c.img} size={54} />
-              <Text style={st.endHeroName} numberOfLines={1}>{c.name.split(' ')[0]}</Text>
-              <Text style={st.endHeroLvl}>{`Nivel ${c.level}`}</Text>
+    <Bg src={IMG[A.victoryImg]} dim={0}>
+      <Pressable style={{ flex: 1 }} onPress={tap} disabled={shown && done} accessibilityLabel={shown ? 'Mostrar todo el texto' : 'Continuar'}>
+        <FadeIn style={{ ...st.endTop, paddingTop: ins.top + 12 }} duration={700}>
+          <Text style={st.endTitle}>¡Victoria!</Text>
+          <Text style={st.endKicker}>Aventura completada</Text>
+          <Text style={st.endName}>{A.name}</Text>
+        </FadeIn>
+        <View style={{ flex: 1 }} />
+        {shown ? (
+          <FadeIn duration={500} style={{ padding: 12, paddingBottom: ins.bottom + 16 }}>
+            <View style={st.endParty}>
+              {team.map(c => (
+                <View key={c.id} style={st.endHero}>
+                  <Portrait img={c.img} size={44} />
+                  <Text style={st.endHeroName} numberOfLines={1}>{c.name.split(' ')[0]}</Text>
+                  <Text style={st.endHeroLvl}>{`Nivel ${c.level}`}</Text>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-        <Panel>
-          <T>{A.victoryText}</T>
-          <T>Todo el grupo llega al menos a nivel {A.level}.</T>
-          <Btn label={`Volver a ${TOWNS[A.town].name}`} onPress={toTown} style={{ marginTop: 10 }} />
-        </Panel>
-      </FadeIn>
+            <Panel>
+              <T>{full.slice(0, n)}</T>
+              {done
+                ? <Btn label={`Volver a ${TOWNS[A.town].name}`} onPress={toTown} style={{ marginTop: 10 }} />
+                : <Text style={st.endHint}>Toca para acelerar</Text>}
+            </Panel>
+          </FadeIn>
+        ) : null}
+      </Pressable>
     </Bg>
   );
 }
@@ -468,13 +486,13 @@ const st = StyleSheet.create({
   arrival: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: '22%' },
   arrivalBox: { marginHorizontal: 16, backgroundColor: 'rgba(0,0,0,0.55)', borderRadius: 10, paddingHorizontal: 22, paddingVertical: 12, borderWidth: 1, borderColor: C.gold },
   arrivalTxt: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 28, textAlign: 'center', textShadowColor: '#000', textShadowRadius: 6 },
-  endTop: { alignItems: 'center', paddingHorizontal: 16, paddingBottom: 14, backgroundColor: 'rgba(0,0,0,0.55)' },
-  endKicker: { fontFamily: F.title, color: C.gold, fontSize: 14, letterSpacing: 2, textTransform: 'uppercase', marginTop: 4 },
+  endTop: { alignItems: 'center', paddingHorizontal: 16, paddingBottom: 10, backgroundColor: 'rgba(0,0,0,0.45)' },
+  endKicker: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 14, letterSpacing: 2, textTransform: 'uppercase', marginTop: 4, textShadowColor: '#000', textShadowRadius: 4 },
   endTitle: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 34, textAlign: 'center', textShadowColor: '#000', textShadowRadius: 6 },
   endName: { fontFamily: F.titleBold, color: C.text, fontSize: 20, textAlign: 'center', marginTop: 2 },
-  endRule: { width: 120, height: 2, backgroundColor: C.gold, marginTop: 8, borderRadius: 1 },
+  endHint: { fontFamily: F.italic, color: C.textDim, fontSize: 14, textAlign: 'right', marginTop: 6 },
   endParty: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', marginBottom: 8, gap: 6 },
-  endHero: { alignItems: 'center', width: 72, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 8, paddingVertical: 6 },
+  endHero: { alignItems: 'center', width: 64, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 8, paddingVertical: 6 },
   endHeroName: { fontFamily: F.textBold, color: C.text, fontSize: 13, marginTop: 3 },
   endHeroLvl: { fontFamily: F.text, color: C.goldHi, fontSize: 12 },
   full: { fontFamily: F.textBold, color: '#e8796b', fontSize: 16, marginBottom: 6 },
