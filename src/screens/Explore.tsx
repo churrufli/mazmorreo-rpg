@@ -12,7 +12,7 @@ import { hasPortraitFrame } from '../data/portraitFrames';
 import { SvgFaceImage } from '../ui/FaceImage';
 import { Escena } from '../ui/Escena';
 import { sceneById, sceneSpent } from '../engine/escenas';
-import { townRest, rereadAt, sceneOn, sceneFight, wonCell, useOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atRest, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, encounterById, hkey, passable, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
+import { townRest, rereadAt, sceneOn, sceneFight, wonCell, useOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atRest, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, encounterById, hkey, passable, disarmBonus, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
 import { ITEMS } from '../data/srd';
 import { MONSTERS } from '../data/srd';
@@ -20,7 +20,7 @@ import { Card, CardInfo, CardModal, charInfo } from '../ui/Card';
 import { Dialogue, FadeIn, Message } from '../ui/Overlays';
 import { Btn, Icon } from '../ui/kit';
 import { getDev } from '../storage';
-import { MAX_ITEMS, needsRest } from '../engine/rules';
+import { MAX_ITEMS, isDown, needsRest } from '../engine/rules';
 import { FeatPicker } from '../ui/FeatPicker';
 
 const S = 30; // radio del hexágono en píxeles
@@ -155,7 +155,7 @@ const PartyCard = memo(function PartyCard({ info, id, width, dead, onOpen }: { i
 }, (a, b) => a.width === b.width && a.dead === b.dead && JSON.stringify(a.info) === JSON.stringify(b.info));
 
 export function Explore() {
-  const { game, queue, walking, walkTo, walkStep, next, rest, edit, zoom, setZoom, goTown, drop, pickUp, sceneChoose, sceneLeave, swapOut, reread } = useStore();
+  const { game, queue, walking, walkTo, walkStep, next, rest, trapChoice, edit, zoom, setZoom, goTown, drop, pickUp, sceneChoose, sceneLeave, swapOut, reread } = useStore();
   const g = game!;
   const ins = useSafeAreaInsets();
   const win = useWindowDimensions();
@@ -200,11 +200,14 @@ export function Explore() {
   }, [g]);
   const rooms = useMemo(() => cellMap(g.zone), [g.zone]);
 
+  // Por casillas ya pisadas se anda más deprisa (volver por lo explorado); la marcha sigue parándose en cada evento.
+  const quick = useRef(false);
   useEffect(() => {
     if (!walking.length) return;
-    const t = setTimeout(walkStep, 190);
+    quick.current = g.visited.includes(hkey(walking[0]));
+    const t = setTimeout(walkStep, quick.current ? 90 : 190);
     return () => clearTimeout(t);
-  }, [walking, walkStep]);
+  }, [walking, walkStep]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Casillas que aparecen entre la niebla en este paso.
   const prevVis = useRef<{ zone: string; set: Set<string> } | undefined>(undefined);
@@ -260,8 +263,8 @@ export function Explore() {
     if (far) { hx.setValue(to.x); hy.setValue(to.y); pan.setValue({ x: 0, y: 0 }); dragged.current = false; return; }
     Animated.parallel([
       // En el hilo nativo: la cámara y la ficha se deslizan sin tirones aunque el mapa se esté redibujando.
-      Animated.timing(hx, { toValue: to.x, duration: 235, easing: Easing.linear, useNativeDriver: true }),
-      Animated.timing(hy, { toValue: to.y, duration: 235, easing: Easing.linear, useNativeDriver: true }),
+      Animated.timing(hx, { toValue: to.x, duration: quick.current ? 110 : 235, easing: Easing.linear, useNativeDriver: true }),
+      Animated.timing(hy, { toValue: to.y, duration: quick.current ? 110 : 235, easing: Easing.linear, useNativeDriver: true }),
       ...(dragged.current ? [] : [Animated.timing(pan, { toValue: { x: 0, y: 0 }, duration: 300, useNativeDriver: true })]),
     ]).start();
   }, [px, py, box]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -380,7 +383,7 @@ export function Explore() {
                 );
               }
               if (m.kind === 'rest') img = restImg;
-              if (m.kind === 'trap') img = g.done.includes(m.id) ? 'trampa' : undefined;
+              if (m.kind === 'trap') img = g.done.includes(m.id) || g.spotted?.includes(m.id) ? 'trampa' : undefined;
               if (m.kind === 'gate') img = g.done.includes(m.id) ? undefined : 'celda_reja';
               if (m.kind === 'lever') img = 'palanca';
               // Escena por hacer: ficha redonda con su ilustración (o una losa si es la pista de un secreto).
@@ -594,6 +597,16 @@ export function Explore() {
       ) : null}
       {/* Resultado de una escena: su ilustración de fondo, entera, en vez de una imagen pequeña recortada (el autor 2026-11-06). */}
       {head?.kind === 'msg' ? <Message key={`m${queue.length}:${head.title}:${head.lines[0]}`} {...head} {...(head.img?.startsWith('escena_') && !head.img2 ? { img: undefined, bg: head.img, low: true } : {})} onDone={next} /> : null}
+      {head?.kind === 'trap' ? (
+        <Message key={`t${head.id}`} title="¡Trampa!" img="trampa" lines={[`Estáis junto a la trampa: ${head.name}.`, 'Quien la desactive tira Destreza. Si falla, salta, pero con ventaja para esquivarla.']} onDone={() => undefined}>
+          {g.party.filter(c => !isDown(c)).map(c => {
+            const d = disarmBonus(c);
+            return <Btn key={c.id} small label={`Desactiva ${c.name}`} sub={`Destreza ${d.bonus >= 0 ? '+' : ''}${d.bonus}${d.adv ? ' · con ventaja' : ''}`} onPress={() => trapChoice(c.id)} />;
+          })}
+          <Btn small label="Pasar con cuidado" sub="Salvación con ventaja" onPress={() => trapChoice('pass')} />
+          <Btn small label="Volver atrás" onPress={() => trapChoice()} />
+        </Message>
+      ) : null}
       {head?.kind === 'rest' ? (
         <Message key={`r${head.id}`} title={head.name} img={restImg} lines={[head.text, head.long ? 'Descanso largo: recuperáis todos los PG y conjuros. Solo se puede usar una vez.' : 'Descanso corto: cada uno gasta dados de golpe para curarse. Solo se puede usar una vez.']}>
           {needsRest(g.party, head.long)

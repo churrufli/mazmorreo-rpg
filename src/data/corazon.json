@@ -1804,6 +1804,7 @@
               "type": "encounter",
               "id": "b2_e05",
               "trigger": "seen",
+              "omen": "El barro está removido a hozadas y huele a tierra fresca. Más adelante, un gruñido grave sale de la charca.",
               "can_reinforce": [],
               "enemies": [
                 {
@@ -2750,6 +2751,7 @@
               "type": "encounter",
               "id": "b3_e03",
               "trigger": "seen",
+              "omen": "Delante, el agua cruje como madera vieja, aunque no sopla el viento.",
               "can_reinforce": [],
               "enemies": [
                 {
@@ -4003,6 +4005,7 @@
               "type": "encounter",
               "id": "b4_e04",
               "trigger": "enter",
+              "omen": "Las raíces laten bajo vuestras botas. Delante, algo enorme respira despacio, como un bosque entero que soñara.",
               "can_reinforce": [],
               "enemies": [
                 {

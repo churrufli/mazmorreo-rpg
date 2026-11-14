@@ -4,7 +4,7 @@ import type { Ability, ClassId, SpeciesId } from './data/srd';
 import { clone, Game, newGame } from './engine/game';
 import { chooseOption, leaveScene, sceneSpent, spentMsg } from './engine/escenas';
 import { endAdventure, sendToInn } from './engine/posada';
-import { markReturn, react, atEntrance, atRest, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step } from './engine/dungeon';
+import { markReturn, react, atEntrance, atRest, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step, trap, logEvs } from './engine/dungeon';
 import { ADVS, ADV_LIST, AdvId, TOWNS, TownId, advOf, firstZone, wonAdv } from './engine/aventuras';
 import { ITEMS } from './data/srd';
 import { Action, actionsFor, autoTurn, Combat, devWin, endTurn, enemyTurn, perform, startCombat, withDice, useInspiration } from './engine/combat';
@@ -40,6 +40,8 @@ interface State {
   walkStep: () => void;
   next: () => void;
   rest: (accept: boolean) => void;
+  /** Trampa vista: quién la desactiva (id), 'pass' para pasar con cuidado o nada para volver atrás. */
+  trapChoice: (choice?: string) => void;
   act: (a: Action, target?: string) => void;
   endTurn: () => void;
   /** Repetir el último ataque fallado gastando la Inspiración heroica (o descartarlo). */
@@ -216,6 +218,17 @@ export const useStore = create<State>((set, get) => {
         const lines = doRest(g, ev.id, ev.long);
         return advance(g, [{ kind: 'msg', title: ev.long ? 'Descanso largo' : 'Descanso corto', lines }, ...q]);
       }, accept);
+    },
+    trapChoice: choice => {
+      const ev = get().queue[0];
+      if (ev?.kind !== 'trap') return;
+      mutate(g => {
+        const q = get().queue.slice(1);
+        if (!choice) { g.pos = g.prev; g.note = 'Volvéis atrás. La trampa sigue ahí.'; return advance(g, q); }
+        const out = trap(g, ev.id, choice);
+        logEvs(g, [out]);
+        return advance(g, [out, ...q]);
+      }, true);
     },
     act: (a, target) => mutate((g, cb) => { withDice(cb!, () => perform(g, cb!, a, target)); }),
     endTurn: () => mutate((g, cb) => { if (!cb!.result) endTurn(g, cb!); }),
