@@ -4307,14 +4307,14 @@
                 {
                   "srd_creature": "Steam Mephit",
                   "name": "Guardianes de vapor",
-                  "count": 2,
+                  "count": 3,
                   "row": "front",
                   "weapon": "Garras y aliento de vapor",
                   "drop_weapon": false
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 100
+              "xp_total": 150
             },
             {
               "type": "encounter",

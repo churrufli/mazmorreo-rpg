@@ -71,6 +71,16 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 ];
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
+  { version: 'v0.146', items: [
+    'Maese Orvane combate con un guardián de vapor más.',
+    'Efectos propios para cada daño mágico: llamas, escarcha, rayos, haces de luz, humo, burbujas y anillos de fuerza.',
+    'El registro del combate se ordena por rondas y turnos, con un icono y un color para cada tipo de línea.',
+    'Al tocar la cara de quien tiene el turno, su carta parpadea en blanco para que se note sobre el borde dorado.',
+    'La carta ampliada enseña sus cifras e iconos al doble de tamaño. Las pestañas de la ficha tienen el texto más grande.',
+    'Pantalla nueva al terminar cada aventura, con su propia ilustración: primero se ve la imagen y después el desenlace aparece poco a poco.',
+    'Las trampas del bosque y de la montaña tienen su propia ilustración.',
+    'Al viajar a otro pueblo, primero se ve «Llegasteis a…» sobre su ilustración y después el menú.',
+  ] },
   { version: 'v0.145', items: [
     'Combate más táctico con reglas del SRD 5.2.1: nueva acción Ayudar (ventaja para el siguiente ataque de un aliado) y Maestría de armas para guerrero, pícaro, paladín, bárbaro y explorador (Debilitar, Hostigar, Derribar y Empujar).',
     'La Inspiración heroica ya no se gasta sola: tras fallar un ataque, tú decides si repites el dado.',

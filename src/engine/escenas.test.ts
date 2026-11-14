@@ -287,3 +287,26 @@ test('superar con 20 aplica el resultado de éxito y revela el secreto del emble
   expect(g.done).toContain('z2_s02_pista');
   expect(g.found).toContain('z2_s02');
 });
+
+test('equilibrio: Orvane combate con su escolta de mefits, empiece el combate por donde empiece', () => {
+  const party = (allies: string[]) => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    g.zone = 'z4';
+    allies.forEach(a => g.party.push(createAlly(a, 1, 0, 'hondaroca')));
+    gainXp(g.party, 2700 * g.party.length);
+    return g;
+  };
+  const foes = (g: ReturnType<typeof newGame>, ids: string[]) => {
+    sizeEncounter(g, ids, true);
+    const all = ids.flatMap(id => enemiesOf(g, id));
+    const n = (c: string) => all.filter(e => e.srd_creature === c).reduce((k, e) => k + e.count, 0);
+    return { orvane: n('Orvane'), mefits: n('Steam Mephit') };
+  };
+  // Grupo completo: Orvane y tres mefits, entre por la sala o por su casilla.
+  expect(foes(party(['tiko', 'brunna', 'liss']), ['z4_e04', 'z4_e05'])).toEqual({ orvane: 1, mefits: 3 });
+  expect(foes(party(['tiko', 'brunna', 'liss']), ['z4_e05', 'z4_e04'])).toEqual({ orvane: 1, mefits: 3 });
+  // Un grupo pequeño recibe la misma escolta recortada en los dos casos.
+  const a = foes(party(['tiko']), ['z4_e04', 'z4_e05']);
+  expect(foes(party(['tiko']), ['z4_e05', 'z4_e04'])).toEqual(a);
+  expect(a.orvane).toBe(1);
+});

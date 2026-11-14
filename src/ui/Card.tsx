@@ -8,11 +8,12 @@ import { mdiBagPersonalOutline, mdiCardAccountDetailsOutline, mdiCheck, mdiStarS
 import { Portrait } from './Overlays';
 import { FACE } from '../data/caras';
 import type { FxKind } from '../engine/combat';
-import { ABIL_NAME, ABIL_SHORT, Ability, CLASSES, ITEMS, MONSTERS, SPECIES } from '../data/srd';
+import { ABIL_NAME, ABIL_SHORT, Ability, CLASSES, DmgType, ITEMS, MONSTERS, SPECIES } from '../data/srd';
 import { usableOutside } from '../engine/dungeon';
 import { Char, LEVEL_FEATURES, MAX_ITEMS, equipState, keeps, abilMod, armorClass, passivePerception, saveBonus, score } from '../engine/rules';
 import { XP_LEVELS } from '../data/srd';
 import { StateOrb, StateTag, STATES } from './estados';
+import { ElementFx, elementOf } from './efectos';
 import { slotsAt } from '../engine/rules';
 
 export interface CardInfo {
@@ -50,7 +51,7 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
   info: CardInfo; width: number; active?: boolean; target?: boolean; dim?: boolean; tag?: string; fxDelay?: number; fxKey?: string;
   /** Objetivo de una ayuda (curar, bendecir…): borde verde en vez de rojo. */
   help?: boolean;
-  onPress?: () => void; onLongPress?: () => void; fx?: { id: number; kind: FxKind }; full?: boolean;
+  onPress?: () => void; onLongPress?: () => void; fx?: { id: number; kind: FxKind; type?: DmgType }; full?: boolean;
   /** Cifra del daño o la curación que acaba de recibir: aparece un momento y se va. */
   pop?: { id: number; n: number; kind: 'dmg' | 'heal' | 'crit' };
   /** Lo que prepara un enemigo: icono de la acción y retratos de a quién apunta. */
@@ -61,14 +62,16 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
 }) {
   const w = width;
   const h = w * 1.5;
-  const fs = Math.max(9, Math.min(17, w * 0.11));
+  // En la carta ampliada (full) los textos e iconos pueden llegar al doble de tamaño.
+  const grow = full ? 2 : 1;
+  const fs = Math.max(9, Math.min(17 * grow, w * 0.11));
   const down = info.hp <= 0;
   // Hueco de la ilustración, medido sobre el marco v3 (512x768, sin placas): entra un poco bajo el borde.
   const ax = w * 0.03, ay = h * 0.013, aw = w * 0.94, ah = h * 0.974;
   // Franja de PG y CA dentro de la ilustración, abajo, sobre un degradado (como el nombre arriba): así los números
   // nunca tocan el borde de la carta. La placa del marco queda como adorno.
   const plateH = fs * 1.7, plateTop = h * 0.975 - plateH;
-  const orb = Math.max(12, Math.min(30, w * 0.2));
+  const orb = Math.max(12, Math.min(30 * grow, w * 0.2));
   const person = !!FACE[info.img] && !['corazon_hueco', 'dragon_blanco_joven'].includes(info.img);
   // Tamaño del nombre calculado (adjustsFontSizeToFit hacía temblar los nombres de cartas vecinas).
   const nameFs = Math.min(fs, (w * 0.84) / (info.name.length * 0.5), h * 0.075);
@@ -88,7 +91,8 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
     if (!fx) return;
     if (fxKey) { if (PLAYED.get(fxKey) === fx.id) return; PLAYED.set(fxKey, fx.id); }
     anim.setValue(0);
-    Animated.timing(anim, { toValue: 1, duration: 700, delay: fxDelay, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+    // Los daños mágicos con efecto propio duran algo más para que se aprecien.
+    Animated.timing(anim, { toValue: 1, duration: elementOf(fx.type) ? 950 : 700, delay: fxDelay, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
     if (fx.kind !== 'heal') {
       shake.setValue(0);
       Animated.sequence([Animated.delay(fxDelay), ...[6, -6, 4, -3, 0].map(v => Animated.timing(shake, { toValue: v, duration: 50, useNativeDriver: true }))]).start();
@@ -174,6 +178,7 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
             <Image source={IMG[FX_IMG[fx.kind]]} style={{ width: w * 0.8, height: w * 0.8 }} />
           </Animated.View>
         ) : null}
+        {fx?.type ? <ElementFx key={fx.id} type={fx.type} w={w} h={h} t={anim} uid={`${fxKey ?? info.name}_${fx.id}`} /> : null}
         {breaking ? (
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: crack.interpolate({ inputRange: [0, 1, 2], outputRange: [0, 1, 1] }) }]}>
             <Svg width={w} height={h} viewBox="0 0 100 150">
@@ -277,6 +282,9 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
   );
 }
 
+/** Tamaño del texto de las pestañas de la ficha; sus iconos miden lo mismo. */
+const TAB_FS = 16;
+
 const ABILS: Ability[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 const ABIL_ICON: Record<Ability, ImgKey> = {
   str: 'icono_fuerza', dex: 'icono_destreza', con: 'icono_constitucion', int: 'icono_inteligencia', wis: 'icono_sabiduria', cha: 'icono_carisma',
@@ -342,8 +350,8 @@ function Sheet({ c, party, onGive, onDrop, onUse, onFlip }: { c: Char; party?: C
     <View style={st.sheetTabs}>
       {([['ficha', 'Ficha', mdiCardAccountDetailsOutline], ['habilidades', 'Habilidades', mdiStarShooting], ['inventario', 'Inventario', mdiBagPersonalOutline]] as const).map(([id, label, icon]) => (
         <Pressable key={id} accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: tab === id }} onPress={() => changeTab(id)} style={[st.sheetTab, tab === id && st.sheetTabActive]}>
-          <Icon path={icon} size={16} color={tab === id ? C.goldHi : C.textDim} />
-          <Text style={[st.sheetTabText, tab === id && { color: C.goldHi }]}>{label}</Text>
+          <Icon path={icon} size={TAB_FS} color={tab === id ? C.goldHi : C.textDim} />
+          <Text style={[st.sheetTabText, tab === id && { color: C.goldHi }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{label}</Text>
         </Pressable>
       ))}
     </View>
@@ -554,9 +562,9 @@ const st = StyleSheet.create({
   backFace: { borderRadius: 10, overflow: 'hidden', borderWidth: 2, borderColor: C.gold },
   sheet: { flex: 1, backgroundColor: C.panel },
   sheetTabs: { flexDirection: 'row', backgroundColor: C.panel, borderBottomWidth: 1, borderColor: C.border },
-  sheetTab: { flex: 1, flexDirection: 'row', gap: 5, paddingVertical: 9, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderColor: 'transparent' },
+  sheetTab: { flex: 1, flexDirection: 'row', gap: 4, paddingHorizontal: 2, paddingVertical: 9, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderColor: 'transparent' },
   sheetTabActive: { borderColor: C.goldHi },
-  sheetTabText: { fontFamily: F.textBold, fontSize: 12, color: C.textDim },
+  sheetTabText: { fontFamily: F.textBold, fontSize: TAB_FS, color: C.textDim, flexShrink: 1 },
   sheetName: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 24, textAlign: 'center' },
   sheetSub: { fontFamily: F.italic, color: C.textDim, fontSize: 18, textAlign: 'center', marginBottom: 8 },
   row: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 6 },

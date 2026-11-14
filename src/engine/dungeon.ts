@@ -779,7 +779,7 @@ function spotTraps(g: Game, to: Hex): Ev[] {
     const dim = dimLight(g.party);
     if (pp - (dim ? 5 : 0) < t.detect_dc) continue;
     g.spotted = [...(g.spotted ?? []), m.id];
-    evs.push({ kind: 'msg', title: '¡Trampa a la vista!', img: 'trampa', lines: [
+    evs.push({ kind: 'msg', title: '¡Trampa a la vista!', img: ADVS[advOf(g.zone)].trapImg, lines: [
       `${spotter.name} se fija en algo extraño justo delante: ${t.name}.`,
       'La trampa queda marcada en el mapa. Podéis rodearla o pisar su casilla para intentar desactivarla.',
       `(Percepción pasiva ${pp}${dim ? DIM_TXT : ''} contra CD ${t.detect_dc})`] });
@@ -814,7 +814,7 @@ export function trap(g: Game, id: string, choice?: string): Ev {
   const team = g.party.filter(c => !isDown(c));
   const rolls: ShownRoll[] = [];
   const lines: string[] = [];
-  const out = (): Ev => ({ kind: 'msg', title: '¡Trampa!', intro: choice ? undefined : 'Algo cruje bajo vuestros pies…', img: 'trampa', rolls, lines });
+  const out = (): Ev => ({ kind: 'msg', title: '¡Trampa!', intro: choice ? undefined : 'Algo cruje bajo vuestros pies…', img: ADVS[advOf(g.zone)].trapImg, rolls, lines });
   let seen = !!choice;
   if (!choice) {
     // El más atento del grupo tira Percepción (d20 + su bonificador) contra la CD de la trampa.

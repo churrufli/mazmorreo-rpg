@@ -311,7 +311,7 @@ export function Combat() {
           const isT = targets.includes(u.key);
           return (
             <Animated.View testID={`combat-unit-${u.key}`} key={u.key} ref={(r: View | null) => { cardRefs.current[u.key] = r; }} collapsable={false} style={{ marginHorizontal: 3, zIndex: lungeKey === u.key ? 5 : 0, transform: lungeKey === u.key ? [...lunge.getTranslateTransform(), { rotate: rot }] : [] }}>
-              {flash?.key === u.key ? <Blink key={flash.n} /> : null}
+              {flash?.key === u.key ? <Blink key={flash.n} onActive={u.key === me.key && !cb.result} /> : null}
               <Card
                 info={info(u)}
                 minTouchSize={44}
@@ -479,7 +479,7 @@ export function Combat() {
       {banner && !cb.result ? <RoundBanner key={banner.round} round={banner.round} delay={banner.delay} onEnd={() => setBanner(b => (b?.round === banner.round ? undefined : b))} /> : null}
       {endBanner && !endShown ? <RoundBanner key="fin" text={endBanner.text} delay={endBanner.delay} hold={END_MS - 900} /> : null}
       {!ready ? <EncounterIntro cb={cb} onDone={() => setReady(true)} /> : null}
-      {showLog ? <LogModal title="Registro del combate" lines={cb.log.map(line => line.t)} onClose={() => setShowLog(false)} /> : null}
+      {showLog ? <LogModal title="Registro del combate" lines={cb.log.map(line => line.t)} combat={cb.log} onClose={() => setShowLog(false)} /> : null}
       {help ? <CombatHelp onClose={() => setHelp(false)} /> : null}
       {opts ? <Settings onClose={() => setOpts(false)} /> : null}
       {askFlee && fleeAct && !cb.result ? (
@@ -642,21 +642,25 @@ function RoundBanner({ round, text, delay = 0, hold = 0, onEnd }: { round?: numb
   );
 }
 
-/** Borde dorado que parpadea alrededor de una carta. */
-function Blink() {
+/**
+ * Borde que parpadea alrededor de una carta. Sobre la carta activa, que ya
+ * lleva un borde dorado grueso y está algo ampliada, el parpadeo es blanco y
+ * queda por fuera para que se note.
+ */
+function Blink({ onActive }: { onActive?: boolean }) {
   const o = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const pulse = Animated.sequence([Animated.timing(o, { toValue: 1, duration: 180, useNativeDriver: true }), Animated.timing(o, { toValue: 0.15, duration: 180, useNativeDriver: true })]);
     Animated.sequence([pulse, pulse, pulse, Animated.timing(o, { toValue: 0, duration: 200, useNativeDriver: true })]).start();
   }, [o]);
-  return <Animated.View pointerEvents="none" style={[st.blink, { opacity: o }]} />;
+  return <Animated.View pointerEvents="none" style={[st.blink, onActive && st.blinkActive, { opacity: o }]} />;
 }
 
 // Lo que se ve el cartel del final del combate antes de la ventana de victoria o derrota.
 const END_MS = 1500;
 // Lo que tarda un ataque en llegar: el golpe y su efecto en la carta se ven justo entonces.
 const IMPACT = 300;
-const SPELL_COLOR: Partial<Record<DmgType, string>> = { fuego: '#ff8a3d', 'frío': '#8fd8ff', radiante: '#ffe08a', fuerza: '#c49bff', necrótico: '#9ad17a', 'trueno': '#d0e4ff' };
+const SPELL_COLOR: Partial<Record<DmgType, string>> = { fuego: '#ff8a3d', 'frío': '#8fd8ff', radiante: '#ffe08a', fuerza: '#c49bff', necrótico: '#9ad17a', 'trueno': '#d0e4ff', 'relámpago': '#bcd6ff', veneno: '#a6e05a', 'ácido': '#c8e64a', 'psíquico': '#ff8ad8' };
 
 /** Flecha o destello mágico que viaja de una carta a otra. */
 function Projectile({ x, y, dx, dy, kind, color, t }: { x: number; y: number; dx: number; dy: number; kind: 'arrow' | 'magic'; color: string; t: Animated.Value }) {
@@ -759,6 +763,7 @@ const st = StyleSheet.create({
   stripTitle: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 20 },
   stripImg: { width: 40, height: 40 },
   blink: { position: 'absolute', left: -3, right: -3, top: -3, bottom: -3, borderRadius: 10, borderWidth: 3, borderColor: C.goldHi, zIndex: 3 },
+  blinkActive: { left: -7, right: -7, top: -7, bottom: -7, borderRadius: 12, borderColor: '#ffffff', zIndex: 6 },
   stripCost: { fontFamily: F.text, color: C.textDim, fontSize: 14 },
   stripTxt: { fontFamily: F.text, color: C.text, fontSize: 15, lineHeight: 19, marginTop: 2 },
   stripAsk: { fontFamily: F.italic, color: C.goldHi, fontSize: 15, marginTop: 4 },

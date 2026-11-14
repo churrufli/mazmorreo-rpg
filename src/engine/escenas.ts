@@ -185,7 +185,12 @@ const BUDGET: Record<number, [number, number]> = { 1: [75, 100], 2: [150, 200], 
  * Los jefes son únicos, no se rellenan sus combates y nunca se multiplica una amenaza épica.
  */
 export function sizeEncounter(g: Game, ids: string[], boss: boolean) {
-  const id = ids[0];
+  // El ajuste se hace sobre el primer grupo con acompañantes: si el combate
+  // empieza al pisar la casilla del jefe, el primero es el jefe solo y no
+  // se podría recortar a su escolta.
+  const ref0 = contentById(ids[0]);
+  const boss0 = ref0 ? ADVS[advOf(ref0.zone)].boss : undefined;
+  const id = ids.find(x => (encounterById(x)?.enemies ?? []).some((e: any) => e.srd_creature !== boss0)) ?? ids[0];
   if (g.encSize?.[id] !== undefined || g.enemyHp[id]) return;
   const team = g.party.filter(c => !c.dead);
   // Hondaroca empieza con el héroe solo: un único enemigo por combate,
