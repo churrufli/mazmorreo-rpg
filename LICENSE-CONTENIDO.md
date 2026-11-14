@@ -7,7 +7,7 @@ Mazmorreo separa el **código** del **contenido**. El código va con la licencia
 | Ilustraciones, iconos del juego, logotipo y capturas | `assets/`, `docs/capturas/`, `docs/arte/`, iconos de `android/app/src/main/res/mipmap-*` | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es) |
 | Historia, escenas, diálogos, charlas y textos de ayuda | `src/data/*.json`, `src/data/ayuda.ts`, `narrativa/`, `docs/` | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es) |
 | Reglas y estadísticas tomadas del SRD 5.2.1 | `src/data/srd.ts` y reglas del motor | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode), de Wizards of the Coast. Ver [NOTICE.md](NOTICE.md) |
-| Tipografías Cinzel y Cormorant Garamond | `android/app/src/main/assets/fonts/` | SIL Open Font License 1.1 (textos junto a las fuentes) |
+| Tipografías Cinzel, Cormorant Garamond e Inter | `android/app/src/main/assets/fonts/` | SIL Open Font License 1.1 (textos junto a las fuentes) |
 | Iconos de interfaz (`@mdi/js`) | dependencia npm | Apache 2.0 (Pictogrammers) |
 | Música (`mus_*`) | `android/app/src/main/res/raw/` | **Excluida de estas licencias.** Hecha con Suno: solo uso no comercial dentro de Mazmorreo, citando a Suno. Ver [CREDITS.md](CREDITS.md) |
 | Ambientes y efectos de sonido | `android/app/src/main/res/raw/` | CC0 o CC BY de sus autores, archivo por archivo en [CREDITS.md](CREDITS.md) |

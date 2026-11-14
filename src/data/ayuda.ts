@@ -51,7 +51,7 @@ export const COMO_FUNCIONA: { icon: string; title: string; text: string[] }[] = 
 /** Guía del combate: las zonas de la pantalla (numeradas en el esquema) y las reglas básicas. */
 export const ZONAS_COMBATE: { title: string; text: string }[] = [
   { title: 'Enemigos', text: 'Sus cartas, en dos filas rotuladas (vanguardia y retaguardia). En tu turno, toca un enemigo para atacarle con tu arma.' },
-  { title: 'Registro', text: 'De quién es el turno y lo que le queda: ● acción, ◆ acción adicional, ⇅ movimiento (se apagan al gastarlos) y los espacios de conjuro. Debajo, todo lo que pasa; al elegir una acción, aquí sale su explicación. El icono (i) abre esta guía.' },
+  { title: 'Registro', text: 'De quién es el turno y lo que le queda, cada símbolo con su nombre: ● acción, ◆ acción adicional, ⇅ movimiento (se tachan al gastarlos) y los espacios de conjuro. Debajo, todo lo que pasa; al elegir una acción, aquí sale su explicación. El icono (i) abre esta guía.' },
   { title: 'Tu grupo', text: 'La carta iluminada es la que actúa. Para cambiar de fila usa el botón IR ATRÁS / IR DELANTE.' },
   { title: 'Acciones', text: 'Tres categorías: ATACAR, HABILIDADES y OBJETOS. Cada botón lleva el símbolo de lo que gasta. Los apagados se pueden tocar para saber por qué no sirven ahora.' },
   { title: 'Esquivar, cambiar de fila y terminar turno', text: 'Siempre abajo. Si ya no queda nada útil que hacer, el turno acaba solo. HUIR está arriba, junto al engranaje, y pide confirmación.' },
@@ -80,6 +80,8 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Pantalla nueva al terminar cada aventura, con su propia ilustración: primero se ve la imagen y después el desenlace aparece poco a poco.',
     'Las trampas del bosque y de la montaña tienen su propia ilustración.',
     'Al viajar a otro pueblo, primero se ve «Llegasteis a…» sobre su ilustración y después el menú.',
+    'Letra Inter, más legible, en el registro, las reglas y las explicaciones. La narración, los diálogos, los títulos y los botones conservan su letra.',
+    'En el combate, los símbolos de lo que queda del turno llevan su nombre al lado: Acción, Acción adicional y Movimiento, en todas las pantallas.',
   ] },
   { version: 'v0.145', items: [
     'Combate más táctico con reglas del SRD 5.2.1: nueva acción Ayudar (ventaja para el siguiente ataque de un aliado) y Maestría de armas para guerrero, pícaro, paladín, bárbaro y explorador (Debilitar, Hostigar, Derribar y Empujar).',

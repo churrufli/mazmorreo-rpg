@@ -23,9 +23,11 @@ import { slotsLeft } from '../engine/rules';
 import { ACTION_HELP as DESC } from '../data/actionHelp';
 import { AYUDA_COMBATE, GESTOS_COMBATE, ZONAS_COMBATE } from '../data/ayuda';
 
-const COST: Record<Action['cost'], string> = { action: 'Acción', bonus: 'Adicional', move: 'Movimiento', free: 'Sin acción' };
+const COST: Record<Action['cost'], string> = { action: 'Acción', bonus: 'Acción adicional', move: 'Movimiento', free: 'Sin acción' };
 /** El mismo símbolo en el indicador del turno y en cada botón: qué gasta. */
 const COST_ICON: Record<Action['cost'], string> = { action: mdiCircle, bonus: mdiRhombus, move: mdiSwapVertical, free: mdiLightningBolt };
+/** Lo que se gasta en cada turno, con el nombre que acompaña a su símbolo en la cabecera del registro. */
+export const BUDGET = [['action', 'Acción'], ['bonus', 'Acción adicional'], ['move', 'Movimiento']] as const;
 const CATEGORY_HELP: Record<string, string> = {
   attack: 'Armas y ataques. Cada opción indica su coste y su tirada. Tocar directamente un enemigo le ataca con un arma que le alcance; mantén pulsada su carta para ver su ficha sin atacar.',
   skills: 'Rasgos y conjuros disponibles. Con un único objetivo se usan al tocarlos; con varios, eliges la carta. Mantén pulsado un botón para leer qué hace sin usarlo.',
@@ -280,16 +282,20 @@ export function Combat() {
     return { icon, faces };
   };
 
-  // Lo que queda del turno, con los mismos símbolos que llevan los botones (en pantallas estrechas, solo símbolos).
+  // Lo que queda del turno, con los mismos símbolos que llevan los botones y su nombre al lado, en una línea propia.
   const budget = !auto && !cb.result && me.side === 'party' ? (
     <View testID="combat-budget" style={st.budget}>
-      {([['action', 'Acción', cb.acted], ['bonus', 'Adicional', cb.bonus], ['move', 'Mover', cb.moved]] as const).map(([k, label, used]) => (
-        <View key={k} style={[st.budgetItem, used && { opacity: 0.3 }]} accessible accessibilityLabel={`${label}: ${used ? 'gastada' : 'disponible'}`}>
-          <Icon path={COST_ICON[k]} size={12} color={used ? C.textDim : C.goldHi} /><Text testID={`budget-${k}`} style={st.budgetTxt}>{used ? '0' : '1'}</Text>
-          {width >= 380 ? <Text style={[st.budgetTxt, used && { textDecorationLine: 'line-through' }]}>{label}</Text> : null}
-        </View>
-      ))}
-      {slots !== undefined ? <Text style={st.budgetTxt} accessibilityLabel={`Espacios de conjuro: ${slots}`}>{width >= 380 ? 'Conjuros ' : '✦'}{slots}</Text> : null}
+      {BUDGET.map(([k, label]) => {
+        const used = { action: cb.acted, bonus: cb.bonus, move: cb.moved }[k];
+        return (
+          <View key={k} style={[st.budgetItem, used && { opacity: 0.35 }]} accessible accessibilityLabel={`${label}: ${used ? 'gastada' : 'disponible'}`}>
+            <Icon path={COST_ICON[k]} size={12} color={used ? C.textDim : C.goldHi} />
+            <Text style={[st.budgetTxt, used && { textDecorationLine: 'line-through' }]}>{label}</Text>
+            <Text testID={`budget-${k}`} style={st.budgetTxt}>{used ? '0' : '1'}</Text>
+          </View>
+        );
+      })}
+      {slots !== undefined ? <Text style={st.budgetTxt} accessibilityLabel={`Espacios de conjuro: ${slots}`}>{`Conjuros ${slots}`}</Text> : null}
     </View>
   ) : null;
 
@@ -380,17 +386,17 @@ export function Combat() {
         </View>
         {renderRow('enemy', 'back')}
         {renderRow('enemy', 'front')}
-        <View style={st.log} onLayout={e => setLogH(e.nativeEvent.layout.height)}>
+        <View style={[st.log, height < 700 && { paddingVertical: 3 }]} onLayout={e => setLogH(e.nativeEvent.layout.height)}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text accessibilityLiveRegion="polite" style={[st.round, { flex: 1 }, !!sel && { color: C.goldHi }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{!sel ? `Turno de ${me.name}`
               : `${sel.label}: ${targetFeedback ?? `toca ${sel.target === 'ally' ? 'un aliado' : 'un objetivo'}`}`}</Text>
-            {!sel ? budget : null}
             <Pressable onPress={() => setShowLog(true)} accessibilityRole="button" accessibilityLabel="Registro del combate" style={{ padding: 4 }}><Icon path={mdiScriptTextOutline} size={20} /></Pressable>
             {sel && !tip ? <Pressable accessibilityRole="button" accessibilityLabel="CANCELAR ACCIÓN" onPress={close} hitSlop={8} style={{ padding: 5, minHeight: 28, justifyContent: 'center' }}><Text style={st.devText}>CANCELAR</Text></Pressable> : null}
             <Pressable onPress={() => setHelp(true)} accessibilityRole="button" accessibilityLabel="Cómo funciona el combate" hitSlop={12}>
               <Icon path={mdiInformationOutline} size={20} />
             </Pressable>
           </View>
+          {!sel ? budget : null}
           {cb.goal ? (
             <View style={st.goal}>
               <Icon path={mdiBullseyeArrow} size={16} color={cb.goal.status === 'ok' ? '#7fcf8f' : cb.goal.status === 'fail' ? C.textDim : C.goldHi} />
@@ -399,8 +405,8 @@ export function Combat() {
               </Text>
             </View>
           ) : null}
-          {/* Desliza para ver todo el registro del combate. */}
-          <ScrollView ref={logRef} style={{ height: height < 700 ? 28 : 52, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
+          {/* Desliza para ver todo el registro del combate. En pantallas bajas, una línea menos cuando se ve lo que queda del turno. */}
+          <ScrollView ref={logRef} style={{ height: height < 700 ? (budget && !sel ? 17 : 28) : 52, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
             {cb.log.map((l, i) => (
               <Text key={i} style={[st.logLine, l.c === 'dmg' && { color: '#e8796b' }, l.c === 'heal' && { color: '#7fcf8f' }, l.c === 'big' && { color: C.goldHi }, l.c === 'miss' && { color: C.textDim }]}>{l.t}</Text>
             ))}
@@ -731,9 +737,9 @@ const st = StyleSheet.create({
   fleeBtn: { flexDirection: 'row', alignItems: 'center', gap: 2, borderWidth: 1, borderColor: C.border, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 4, marginLeft: 4 },
   fleeTxt: { fontFamily: F.titleBold, color: C.text, fontSize: 11 },
   confirmBg: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center' },
-  budget: { flexDirection: 'row', alignItems: 'center', gap: 8, marginRight: 8 },
-  budgetItem: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  budgetTxt: { fontFamily: F.textBold, color: C.text, fontSize: 11 },
+  budget: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 12 },
+  budgetItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  budgetTxt: { fontFamily: F.rulesBold, color: C.text, fontSize: 11, lineHeight: 13 },
   actionGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 4, paddingHorizontal: 2, paddingVertical: 2 },
   gridBtn: { width: '49.4%', flexGrow: 0, flexShrink: 0, minWidth: 0, marginHorizontal: 0, marginVertical: 0 },
   log: { backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 6, padding: 6, marginVertical: 4 },
@@ -742,7 +748,7 @@ const st = StyleSheet.create({
   goalIntro: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#000a', borderColor: C.gold, borderWidth: 1, borderRadius: 6, padding: 8 },
   goalIntroTxt: { flex: 1, fontFamily: F.textBold, color: C.goldHi, fontSize: 15, lineHeight: 19 },
   round: { fontFamily: F.titleBold, color: C.gold, fontSize: 12 },
-  logLine: { fontFamily: F.text, color: C.text, fontSize: 14, lineHeight: 17 },
+  logLine: { fontFamily: F.rules, color: C.text, fontSize: 12.5, lineHeight: 17 },
   actions: { backgroundColor: 'rgba(10,9,7,0.92)', paddingTop: 6, paddingHorizontal: 6, borderTopWidth: 1, borderColor: C.border },
   btns: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
   actionFamily: { borderWidth: 1, borderColor: '#6e5431', borderRadius: 3, padding: 2, marginBottom: 2 },
@@ -764,10 +770,10 @@ const st = StyleSheet.create({
   stripImg: { width: 40, height: 40 },
   blink: { position: 'absolute', left: -3, right: -3, top: -3, bottom: -3, borderRadius: 10, borderWidth: 3, borderColor: C.goldHi, zIndex: 3 },
   blinkActive: { left: -7, right: -7, top: -7, bottom: -7, borderRadius: 12, borderColor: '#ffffff', zIndex: 6 },
-  stripCost: { fontFamily: F.text, color: C.textDim, fontSize: 14 },
-  stripTxt: { fontFamily: F.text, color: C.text, fontSize: 15, lineHeight: 19, marginTop: 2 },
+  stripCost: { fontFamily: F.rules, color: C.textDim, fontSize: 12 },
+  stripTxt: { fontFamily: F.rules, color: C.text, fontSize: 13.5, lineHeight: 19, marginTop: 2 },
   stripAsk: { fontFamily: F.italic, color: C.goldHi, fontSize: 15, marginTop: 4 },
-  stripOff: { fontFamily: F.textBold, color: '#e8796b', fontSize: 15, marginTop: 4 },
+  stripOff: { fontFamily: F.rulesBold, color: '#e8796b', fontSize: 13.5, marginTop: 4 },
   stripBtns: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 6, marginTop: 6 },
   stripClose: { minHeight: 40, paddingHorizontal: 14, justifyContent: 'center', borderWidth: 1, borderColor: C.border, borderRadius: 6 },
   stripCloseTxt: { fontFamily: F.titleBold, color: C.text, fontSize: 13 },

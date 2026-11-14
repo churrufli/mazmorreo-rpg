@@ -3,6 +3,8 @@ html,body,#root{height:100%;min-height:100%;margin:0;background:#14100e}*{box-si
 @font-face{font-family:Cinzel-Bold;src:url('../android/app/src/main/assets/fonts/Cinzel-Bold.ttf') format('truetype');font-weight:bold;font-display:swap}
 @font-face{font-family:CormorantGaramond-Medium;src:url('../android/app/src/main/assets/fonts/CormorantGaramond-Medium.ttf') format('truetype');font-display:swap}
 @font-face{font-family:CormorantGaramond-Bold;src:url('../android/app/src/main/assets/fonts/CormorantGaramond-Bold.ttf') format('truetype');font-weight:bold;font-display:swap}
+@font-face{font-family:Inter-Regular;src:url('../android/app/src/main/assets/fonts/Inter-Regular.ttf') format('truetype');font-display:swap}
+@font-face{font-family:Inter-SemiBold;src:url('../android/app/src/main/assets/fonts/Inter-SemiBold.ttf') format('truetype');font-weight:600;font-display:swap}
 @font-face{font-family:CormorantGaramond-Italic;src:url('../android/app/src/main/assets/fonts/CormorantGaramond-Italic.ttf') format('truetype');font-style:italic;font-display:swap}
 #root{height:100dvh}button,[role=button]{touch-action:manipulation}input{font-family:inherit}
 

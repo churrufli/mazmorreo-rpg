@@ -8,6 +8,7 @@
 
 - **Cinzel**, de The Cinzel Project Authors ([NDISCOVER/Cinzel](https://github.com/NDISCOVER/Cinzel)). SIL Open Font License 1.1.
 - **Cormorant Garamond**, de The Cormorant Project Authors ([CatharsisFonts/Cormorant](https://github.com/CatharsisFonts/Cormorant)). SIL Open Font License 1.1.
+- **Inter**, de The Inter Project Authors ([rsms/inter](https://github.com/rsms/inter)), versión 4.1. SIL Open Font License 1.1.
 
 ## Iconos
 

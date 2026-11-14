@@ -52,14 +52,22 @@ test('recorre título, creación, exploración y combate sin romperse', async ()
   expect(texts(r)).toContain('Iniciativa');
   await act(async () => { r.root.findByProps({ accessibilityLabel: '¡A luchar!' }).props.onPress(); });
   // Juega el combate desde la interfaz de la tienda.
+  let budgetSeen = false;
   for (let i = 0; i < 300 && S().combat && !S().combat!.result; i++) {
     const { game, combat } = S();
     if (autoTurn(combat!)) { await act(async () => { jest.advanceTimersByTime(1500); }); continue; }
+    if (!budgetSeen) {
+      // Cada símbolo de lo que queda del turno lleva su nombre al lado, en cualquier anchura.
+      const budget = JSON.stringify(r.root.findByProps({ testID: 'combat-budget' }).findAllByType(require('react-native').Text).map(t => t.props.children));
+      for (const l of ['Acción', 'Acción adicional', 'Movimiento']) expect(budget).toContain(`"${l}"`);
+      budgetSeen = true;
+    }
     const a = actionsFor(game!, combat!).find(x => x.target.startsWith('enemy') && targetsFor(combat!, x).length);
     await act(async () => { if (a) S().act(a, targetsFor(combat!, a)[0].key); });
     await act(async () => { if (S().combat && !S().combat!.result) S().endTurn(); });
   }
   expect(S().combat?.result).toBeDefined();
+  expect(budgetSeen).toBe(true);
   await act(async () => { S().closeCombat(); });
   // Tras ganar vuelve al mapa; tras perder, pantalla de derrota.
   expect(['game', 'defeat']).toContain(S().screen);

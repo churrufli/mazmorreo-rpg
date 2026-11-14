@@ -211,7 +211,7 @@ const st = StyleSheet.create({
   tema: { marginBottom: 12 },
   temaHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
   temaTitle: { fontFamily: F.title, color: C.gold, fontSize: 17, marginBottom: 4 },
-  parrafo: { fontFamily: F.text, color: C.text, fontSize: 16, lineHeight: 22, marginBottom: 6 },
+  parrafo: { fontFamily: F.rules, color: C.text, fontSize: 14.5, lineHeight: 22, marginBottom: 6 },
   dev: { marginTop: 14, borderTopWidth: 1, borderColor: C.border, paddingTop: 10 },
   devTitle: { fontFamily: F.title, color: C.gold, fontSize: 16, textAlign: 'center' },
   clave: { fontFamily: F.text, color: C.text, borderColor: C.gold, borderWidth: 1, borderRadius: 4, padding: 8, marginTop: 6, textAlign: 'center', fontSize: 18 },
