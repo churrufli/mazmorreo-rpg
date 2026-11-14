@@ -16,6 +16,7 @@ import { ADVS, TOWNS } from '../engine/aventuras';
 import { Dialogue, FadeIn, MiniDie } from '../ui/Overlays';
 import { COLABORAR, Settings } from '../ui/Settings';
 import { BUILD } from '../version';
+import { CAMBIOS } from '../versionWeb';
 
 /** Motas de luz que suben despacio, como polvo o ascuas. */
 function Particles({ n = 24, h }: { n?: number; h?: number }) {
@@ -81,7 +82,7 @@ export function Title() {
         <Btn label="Ajustes" onPress={() => setOpts(true)} />
         {/* Mazmorreo es abierto: lleva a la guía para colaborar en GitHub. */}
         <Btn small label="Participa en el proyecto" onPress={() => Linking.openURL(COLABORAR)} />
-        <Text style={st.version}>{BUILD ? `v0.${BUILD} · ` : ''}Versión de prueba · Tres aventuras</Text>
+        <Text style={st.version}>{BUILD ? `v0.${BUILD}${CAMBIOS ? `+${CAMBIOS}` : ''} · ` : ''}Versión de prueba · Tres aventuras</Text>
       </FadeIn>
       {opts ? <Settings onClose={() => setOpts(false)} /> : null}
     </Bg>

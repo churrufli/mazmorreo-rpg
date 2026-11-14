@@ -7,6 +7,7 @@ import { Btn } from './kit';
 import { VOL_DEF, refresh, sfx } from '../sonido';
 import * as storage from '../storage';
 import { BUILD } from '../version';
+import { CAMBIOS } from '../versionWeb';
 import { COMO_FUNCIONA, CREDITOS, NOVEDADES } from '../data/ayuda';
 
 const RELEASES = 'https://api.github.com/repos/churrufli/mazmorreo-rpg/releases?per_page=10';
@@ -72,7 +73,7 @@ export function Settings({ onClose }: { onClose: () => void }) {
               <Enlace label="Novedades" onPress={() => setView('novedades')} />
               <Enlace label="Créditos" onPress={() => setView('creditos')} />
               <Enlace label="Participa en el proyecto" onPress={() => Linking.openURL(COLABORAR)} />
-              <Text style={st.version}>Versión {BUILD ? `v0.${BUILD}` : 'de desarrollo'}</Text>
+              <Text style={st.version}>Versión {BUILD ? `v0.${BUILD}${CAMBIOS ? `+${CAMBIOS}` : ''}` : 'de desarrollo'}</Text>
               <Btn small label="Buscar actualizaciones" onPress={check} />
               <Btn small label="Descargar última actualización" onPress={() => Linking.openURL(RELEASES_PAGE)} />
               {upd ? <Text style={st.note}>{upd.text}</Text> : null}
