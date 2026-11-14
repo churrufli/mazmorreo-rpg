@@ -6,6 +6,8 @@ import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Bar, Btn, Crop, Icon } from './kit';
 import { mdiBagPersonalOutline, mdiCardAccountDetailsOutline, mdiCheck, mdiStarShooting } from '@mdi/js';
 import { Portrait } from './Overlays';
+import { OptionsButton } from './Settings';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FACE } from '../data/caras';
 import type { FxKind } from '../engine/combat';
 import { ABIL_NAME, ABIL_SHORT, Ability, CLASSES, DmgType, ITEMS, MONSTERS, SPECIES } from '../data/srd';
@@ -230,6 +232,7 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
   const pop = useRef(new Animated.Value(0)).current;
   const [back, setBack] = useState(false);
   const { width, height } = useWindowDimensions();
+  const ins = useSafeAreaInsets();
   useEffect(() => {
     Animated.timing(rot, { toValue: back ? 1 : 0, duration: 380, useNativeDriver: true }).start();
   }, [back, rot]);
@@ -250,6 +253,8 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
     <Modal transparent animationType="fade" onRequestClose={onClose}>
       <View style={st.modalBg}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Cerrar" />
+        {/* La ficha tapa la pantalla: también lleva el botón de opciones. */}
+        <OptionsButton style={{ position: 'absolute', top: ins.top + 8, right: 12, padding: 6 }} />
         <Animated.View nativeID="character-card-flip" {...swipe.panHandlers} style={{ width: W, height: W * 1.5, transform: [{ scale }] }}>
           <Animated.View style={[st.face, { transform: [{ perspective: 1000 }, { rotateY: front }] }]} pointerEvents={back ? 'none' : 'auto'}>
             <Card info={info} width={W} full intent={intent} onPress={() => setBack(true)} />

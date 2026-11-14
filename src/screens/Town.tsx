@@ -20,6 +20,7 @@ import { pendingNotes, useOutside } from '../engine/dungeon';
 import { MAX_PARTY, finishTalk, nextTalk, short, talkLines, talksDone } from '../engine/posada';
 import { Dialogue } from '../ui/Overlays';
 import { Galeria } from './Galeria';
+import { OptionsButton } from '../ui/Settings';
 
 type Place = 'menu' | 'tienda' | 'templo' | 'posada' | 'puerta' | 'diario' | 'galeria';
 const HEAL_COST = 10;
@@ -132,6 +133,7 @@ export function Town() {
         <View style={st.topRight}>
           <Text style={st.gold}>{dev ? '∞' : g.gold} po</Text>
           {place !== 'menu' ? <Btn small label="Volver" onPress={() => { setPlace('menu'); say(''); }} /> : null}
+          <OptionsButton />
         </View>
       </View>
       {/* El templo deja ver la ilustración arriba; en el resto, la imagen se ve un segundo y luego aparece el contenido a pantalla completa. */}

@@ -44,6 +44,12 @@ class MainActivity : ReactActivity() {
     awake()
   }
 
+  // Salir con Atrás manda la app al fondo sin desactivar el Atrás de React Native.
+  // Si no, al volver a la app el botón Atrás ya no llegaba al juego y no salía ningún aviso.
+  override fun invokeDefaultOnBackPressed() {
+    moveTaskToBack(true)
+  }
+
   /**
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
