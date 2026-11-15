@@ -2,13 +2,23 @@
 // y aviso de la aventura siguiente.
 import CH from '../data/charlas.json';
 import type { AdvId } from './aventuras';
-import { ADV_LIST, wonAdv } from './aventuras';
+import { ADVS, ADV_LIST, wonAdv } from './aventuras';
 import { DialogueLine, handOver } from './dungeon';
 import type { Game } from './game';
 import type { Char } from './rules';
 
 /** Héroe y hasta tres aliados. */
 export const MAX_PARTY = 4;
+/**
+ * Compañeros que pueden salir del pueblo hacia esa aventura. Con la aventura a medias depende de la zona
+ * en la que se dejó: la 1.ª permite uno, la 2.ª dos y de la 3.ª en adelante tres.
+ */
+export function allyCap(g: Game, adv: AdvId): number {
+  const back = g.backs?.[adv];
+  if (!back) return MAX_PARTY - 1;
+  const n = ADVS[adv].data.zones.findIndex(z => z.id === back.zone) + 1;
+  return n > 0 ? Math.min(MAX_PARTY - 1, n) : MAX_PARTY - 1;
+}
 /** Nombre corto sin tratamiento: «Hermano Edmund» → «Edmund». */
 export const short = (c: Char) => c.name.replace(/^(Hermano|Hermana|Dama|Maese) /, '').split(' ')[0];
 

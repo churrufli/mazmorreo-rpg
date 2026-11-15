@@ -267,7 +267,7 @@ function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: Dm
   }
   const spare = goalOpen(cb, 'spare');
   if (spare && target.side === 'enemy' && goalUnits(cb, spare.who!).includes(target)) {
-    if (target.hp > 0 && target.hp < target.maxHp / 2) { target.fled = true; target.plan = undefined; say(cb, `${target.name} se rinde.`, 'big'); goalDone(cb, true); return; }
+    if (target.hp > 0 && target.hp <= target.maxHp / 2) { target.fled = true; target.plan = undefined; say(cb, `${target.name} se rinde.`, 'big'); goalDone(cb, true); return; }
     if (target.hp <= 0) goalDone(cb, false);
   }
   if (target.hp > 0) return;

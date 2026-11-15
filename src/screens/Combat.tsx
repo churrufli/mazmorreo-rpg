@@ -498,11 +498,13 @@ export function Combat() {
             </Panel>
         </View>
       ) : null}
-      {sheet ? (
-        sheet.side === 'party'
-          ? <CardModal char={g.party.find(c => c.id === sheet.charId)} town={TOWNS[ADVS[advOf(g.zone)].town].name} info={info(cb.units.find(u => u.key === sheet.key)!)} onClose={() => setSheet(undefined)} />
-          : <CardModal monster={sheet.mon} info={info(cb.units.find(u => u.key === sheet.key)!)} intent={intentOf(cb.units.find(u => u.key === sheet.key)!)} onClose={() => setSheet(undefined)} />
-      ) : null}
+      {sheet ? (() => {
+        const others = cb.units.filter(u => u.key !== sheet.key).map(u => ({ key: u.key, info: info(u) }));
+        const pick = (key: string) => setSheet(cb.units.find(u => u.key === key));
+        return sheet.side === 'party'
+          ? <CardModal key={sheet.key} char={g.party.find(c => c.id === sheet.charId)} town={TOWNS[ADVS[advOf(g.zone)].town].name} info={info(cb.units.find(u => u.key === sheet.key)!)} others={others} onPick={pick} onClose={() => setSheet(undefined)} />
+          : <CardModal key={sheet.key} monster={sheet.mon} info={info(cb.units.find(u => u.key === sheet.key)!)} intent={intentOf(cb.units.find(u => u.key === sheet.key)!)} others={others} onPick={pick} onClose={() => setSheet(undefined)} />;
+      })() : null}
     </Bg>
   );
 }
@@ -576,12 +578,12 @@ function EncounterIntro({ cb, onDone }: { cb: ReturnType<typeof useStore.getStat
   const scale = v.interpolate({ inputRange: [0, 1], outputRange: [2.4, 1] });
   const order = cb.order.map(k => cb.units.find(u => u.key === k)!).filter(u => !u.dead);
   const foes = cb.units.filter(u => u.side === 'enemy');
-  const kinds = new Map<string, number>();
-  for (const f of foes) { const n = MONSTERS[f.mon!].name; kinds.set(n, (kinds.get(n) ?? 0) + 1); }
+  const names = foes.map(f => MONSTERS[f.mon!].name);
+  const foeList = names.length > 1 ? `${names.slice(0, -1).join(', ')} y ${names[names.length - 1]}` : names[0];
   return (
     <View style={st.introBg}>
       <Animated.Text style={[st.introTitle, { opacity: v, transform: [{ scale }] }]}>¡Combate!</Animated.Text>
-      <FadeIn delay={500}><Text style={st.introSub}>{foes.length === 1 ? foes[0].name : `${foes.length} enemigos: ${[...kinds].map(([n, k]) => `${k} × ${n}`).join(', ')}`}</Text></FadeIn>
+      <FadeIn delay={500}><Text style={st.introSub}>{foeList}</Text></FadeIn>
       {cb.goal ? (
         <FadeIn delay={700} style={{ width: '86%', marginBottom: 10 }}>
           <View style={st.goalIntro}>

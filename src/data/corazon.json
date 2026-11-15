@@ -3673,7 +3673,7 @@
               "img": "escena_altar_herido",
               "decision": true,
               "after": "b4_e02",
-              "text": "La dríade que acabáis de vencer yace herida ante un altar partido. Savia dorada corre por la grieta de la piedra.",
+              "text": "La dríade se desvanece entre hojas y savia dorada, y deja ante vosotros un altar partido. La savia sigue corriendo por la grieta de la piedra.",
               "question": "¿Qué hacéis ante el altar?",
               "options": [
                 {
@@ -3700,7 +3700,7 @@
                 {
                   "label": "No tocar el altar",
                   "ok": {
-                    "text": "Dejáis a la dríade y el altar sin tocar. Seguís adelante."
+                    "text": "Dejáis el altar sin tocar. Seguís adelante."
                   }
                 }
               ]
@@ -3872,6 +3872,23 @@
             {
               "type": "dialogue",
               "id": "b4_d02",
+              "if_unmet": {
+                "who": "ortiga",
+                "lines": [
+                  {
+                    "speaker": "narrator",
+                    "text": "Una anciana de pelo blanco os espera junto a la puerta de raíces. Lleva un cesto de hierbas y un chal cubierto de musgo."
+                  },
+                  {
+                    "speaker": "hero",
+                    "text": "Te llaman abuela Brezna. Los que han vuelto del bosque hablan de ti."
+                  },
+                  {
+                    "speaker": "ortiga",
+                    "text": "Hablan de una anciana amable. Ya no hace falta fingir."
+                  }
+                ]
+              },
               "lines": [
                 {
                   "speaker": "ortiga",
