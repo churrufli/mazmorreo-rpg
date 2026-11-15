@@ -1222,7 +1222,8 @@ export function enemyTurn(g: Game, cb: Combat) {
       say(cb, `No queda nadie delante: ${u.name} llega hasta ${t.name}.`, 'info');
     }
     const a = atks[i % atks.length];
-    const hit = attack(g, cb, u, t, toOpts(a));
+    // Maltrecho (la mitad de sus PG o menos): algunos monstruos hacen menos daño (SRD 5.2.1).
+    const hit = attack(g, cb, u, t, toOpts(a.bloodied && u.hp <= u.maxHp / 2 ? { ...a, dice: a.bloodied } : a));
     if (hit && a.paralyze && conscious(t) && !t.paralyzed && !saveRoll(g, cb, t, 'con', a.paralyze.dc, 'Constitución')) {
       t.paralyzed = true;
       say(cb, `${t.name} queda paralizado.`, 'big');

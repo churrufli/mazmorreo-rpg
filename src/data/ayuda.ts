@@ -83,6 +83,10 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Letra Inter, más legible, en el registro, las reglas y las explicaciones. La narración, los diálogos, los títulos y los botones conservan su letra.',
     'En el combate, los símbolos de lo que queda del turno llevan su nombre al lado: Acción, Acción adicional y Movimiento, en todas las pantallas.',
     'Cada tirada de combate enseña su cuenta completa: dado, modificador y total contra la CA o la CD («13 + 3 = 16»).',
+    'Ajustes tiene un apartado de Privacidad y cookies: qué guarda el juego, dónde y qué sale del dispositivo.',
+    'Si camináis sin antorcha ni truco Luz, alguien del grupo lo comenta una vez por aventura y os recuerda que la tienda del pueblo las vende.',
+    'El primer punto de descanso de la partida se ofrece aunque solo paséis por encima. Los demás, como hasta ahora, solo si os detenéis en él.',
+    'Fichas más fieles al SRD 5.2.1: el sectario solo lleva su hoz ritual, el enjambre de murciélagos muerde menos cuando está maltrecho y el jefe goblin tiene Carisma +0.',
   ] },
   { version: 'v0.145', items: [
     'Combate más táctico con reglas del SRD 5.2.1: nueva acción Ayudar (ventaja para el siguiente ataque de un aliado) y Maestría de armas para guerrero, pícaro, paladín, bárbaro y explorador (Debilitar, Hostigar, Derribar y Empujar).',
@@ -335,6 +339,16 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Ajustes con sonido, música, versión y búsqueda de actualizaciones.',
     'Ataques animados: los personajes se lanzan contra el enemigo y los disparos vuelan.',
   ] },
+];
+
+/** Aviso de privacidad y cookies (Ajustes): qué se guarda, dónde y qué sale del dispositivo. */
+export const PRIVACIDAD: string[] = [
+  'Mazmorreo no pide registro ni recoge datos personales. No tiene publicidad, analítica ni seguimiento, y no envía las partidas a ningún servidor.',
+  'Qué se guarda: las partidas de los tres archivos y el nombre que les pongas, el sonido, la música, los volúmenes y la vibración, el zoom del mapa, el modo desarrollador y qué explicaciones de combate has visto ya.',
+  'Dónde se guarda: solo en tu dispositivo. En Android, en el almacenamiento interno de la aplicación, sin cifrar y fuera de las copias de seguridad de Google. En la web, en el almacenamiento local del navegador (localStorage) de este sitio. Nada de esto sale del dispositivo.',
+  'Cookies: el juego no usa cookies. El almacenamiento local solo sirve para guardar la partida y los ajustes, así que no hace falta aceptar nada. Cada partida se borra con la papelera de su archivo; para borrarlo todo, borra los datos del sitio en el navegador o los de la aplicación en Android.',
+  'Conexiones a internet: el juego solo se conecta a GitHub cuando pulsas «Buscar actualizaciones» o abres un enlace al proyecto. La web está alojada en GitHub Pages, que, como cualquier servidor, recibe la dirección IP de quien la visita. Más información en la política de privacidad de GitHub (https://docs.github.com/es/site-policy/privacy-policies/github-general-privacy-statement).',
+  'Permisos en Android: internet (solo para buscar actualizaciones) y vibración.',
 ];
 
 export const CREDITOS: string[] = [

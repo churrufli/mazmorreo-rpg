@@ -3719,7 +3719,7 @@
                   "name": "Acólitos de Orvane",
                   "count": 3,
                   "row": "front",
-                  "weapon": "Daga",
+                  "weapon": "Hoz ritual",
                   "drop_weapon": true
                 },
                 {
@@ -3727,7 +3727,7 @@
                   "name": "Acólito arquero",
                   "count": 1,
                   "row": "back",
-                  "weapon": "Ballesta ligera",
+                  "weapon": "Hoz ritual",
                   "drop_weapon": true
                 }
               ],
@@ -4112,7 +4112,7 @@
                   "name": "Devotos de Orvane",
                   "count": 3,
                   "row": "front",
-                  "weapon": "Daga",
+                  "weapon": "Hoz ritual",
                   "drop_weapon": true
                 },
                 {
@@ -4120,7 +4120,7 @@
                   "name": "Devoto de retaguardia",
                   "count": 1,
                   "row": "back",
-                  "weapon": "Ballesta ligera",
+                  "weapon": "Hoz ritual",
                   "drop_weapon": true
                 }
               ],

@@ -34,6 +34,10 @@ export interface Game {
   goals?: Record<string, 'ok' | 'fail'>;
   /** Se puede hacer un descanso largo en la posada (se gana al terminar una zona). */
   restReady?: boolean;
+  /** Ya se ha ofrecido alguna vez un punto de descanso del mapa (el primero salta aunque solo se pase por encima). */
+  restSeen?: boolean;
+  /** Aventuras en las que el grupo ya ha comentado que le falta una antorcha. */
+  darkTip?: AdvId[];
   /** Personajes con los que ya se ha hablado (su primera intervención sale a pantalla completa). */
   met?: string[];
   won: boolean;
