@@ -1,6 +1,6 @@
 // Exploración del plano hexagonal: niebla, movimiento y lo que pasa al pisar cada casilla.
 import P from '../data/plano.json';
-import { ADVS, ADV_LIST, Design, advOf, speaker } from './aventuras';
+import { ADVS, ADV_LIST, Design, TOWNS, advOf, speaker } from './aventuras';
 import type { ImgKey } from '../assets';
 import { DESIGN_ITEM, ITEMS } from '../data/srd';
 import { die, pick, roll } from './rng';
@@ -346,6 +346,8 @@ export function step(g: Game, to: Hex, free = false): Ev[] {
   }
   if (k === keyCell(g.zone) && !g.done.includes(`${g.zone}_key`)) evs.push(findKey(g));
   evs.push(...spotTraps(g, to), ...omens(g, to, roomIdx));
+  // Sin luz, la primera vez en cada aventura alguien comenta que hace falta una antorcha y dónde comprarla.
+  if (!evs.length && !free) { const tip = darkTip(g); if (tip) evs.push(tip); }
   // Encuentros "al entrar": se activan al pisar su casilla o una contigua.
   for (const m of plan(g.zone).marks) {
     if (m.kind !== 'encounter' || g.done.includes(m.id)) continue;
@@ -1105,6 +1107,18 @@ export function react(g: Game, why: 'hurt' | 'clear' | 'close'): Ev | undefined 
   const allies = awake.filter(c => !c.isHero);
   const who = allies.length ? pick(g.rng, allies) : awake[0];
   return { kind: 'dialogue', lines: [{ speaker: who.isHero ? 'hero' : who.id, text: pick(g.rng, REACT[why === 'close' && g.party.some(c => c.dead) ? 'closeDead' : why]) }] };
+}
+
+/** Comentario de un personaje cuando el grupo camina con poca luz (una vez por aventura). */
+function darkTip(g: Game): Ev | undefined {
+  const adv = advOf(g.zone);
+  if (g.place !== 'dungeon' || !dimLight(g.party) || g.darkTip?.includes(adv)) return undefined;
+  const awake = g.party.filter(c => !isDown(c));
+  if (!awake.length) return undefined;
+  g.darkTip = [...(g.darkTip ?? []), adv];
+  const who = awake.find(c => !c.isHero) ?? awake[0];
+  const town = TOWNS[ADVS[adv].town].name;
+  return { kind: 'dialogue', lines: [{ speaker: who.isHero ? 'hero' : who.id, text: `Con tan poca luz apenas vemos dónde pisamos. Nos haría falta una antorcha: en la tienda de ${town} las venden.` }] };
 }
 
 // ---------- Escenas en el mapa, reja y regresos ----------

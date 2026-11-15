@@ -229,6 +229,8 @@ export interface MonsterAttack {
   /** Salvación en vez de tirada de ataque (ataca a una fila entera). */
   save?: { abil: Ability; dc: number; half: boolean; area?: boolean; recharge?: number };
   paralyze?: { dc: number };
+  /** Daño cuando el monstruo está maltrecho (la mitad de sus PG o menos), como el enjambre de murciélagos. */
+  bloodied?: string;
 }
 
 export interface MonsterDef {
@@ -285,7 +287,7 @@ export const MONSTERS: Record<string, MonsterDef> = {
       { name: 'Cimitarra', bonus: 4, dice: '1d6+2', type: 'cortante' },
       { name: 'Arco corto', bonus: 4, dice: '1d6+2', type: 'perforante', ranged: true },
     ],
-    saves: { ...goblinSaves, str: 0 },
+    saves: { ...goblinSaves, str: 0, cha: 0 },
   },
   'Giant Spider': {
     name: 'Araña gigante', img: 'arana_gigante', ac: 14, hp: 26, dexMod: 3, xp: 200, ai: 'beast',
@@ -295,7 +297,7 @@ export const MONSTERS: Record<string, MonsterDef> = {
   'Swarm of Bats': {
     name: 'Enjambre de murciélagos', img: 'enjambre_murcielagos', ac: 12, hp: 11, dexMod: 2, xp: 50, ai: 'beast',
     resist: ['contundente', 'perforante', 'cortante'],
-    attacks: [{ name: 'Mordiscos', bonus: 4, dice: '2d4', type: 'perforante' }],
+    attacks: [{ name: 'Mordiscos', bonus: 4, dice: '2d4', type: 'perforante', bloodied: '1d4' }],
     saves: { str: -3, dex: 2, con: 0, int: -4, wis: 1, cha: -3 },
   },
   Skeleton: {
@@ -325,8 +327,8 @@ export const MONSTERS: Record<string, MonsterDef> = {
   Cultist: {
     name: 'Cultista', img: 'cultista', ac: 12, hp: 9, dexMod: 1, xp: 25, ai: 'cultist',
     attacks: [
-      { name: 'Daga', bonus: 3, dice: '1d4+1', type: 'perforante', extra: { dice: '1', type: 'necrótico' } },
-      { name: 'Ballesta ligera', bonus: 3, dice: '1d8+1', type: 'perforante', ranged: true },
+      // SRD 5.2.1: el sectario solo lleva la hoz ritual.
+      { name: 'Hoz ritual', bonus: 3, dice: '1d4+1', type: 'cortante', extra: { dice: '1', type: 'necrótico' } },
     ],
     saves: { str: 0, dex: 1, con: 0, int: 0, wis: 2, cha: 0 },
   },

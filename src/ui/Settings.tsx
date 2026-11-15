@@ -8,7 +8,7 @@ import { VOL_DEF, refresh, sfx } from '../sonido';
 import * as storage from '../storage';
 import { BUILD } from '../version';
 import { CAMBIOS } from '../versionWeb';
-import { COMO_FUNCIONA, CREDITOS, NOVEDADES } from '../data/ayuda';
+import { COMO_FUNCIONA, CREDITOS, NOVEDADES, PRIVACIDAD } from '../data/ayuda';
 
 const RELEASES = 'https://api.github.com/repos/churrufli/mazmorreo-rpg/releases?per_page=10';
 const RELEASES_PAGE = 'https://github.com/churrufli/mazmorreo-rpg/releases';
@@ -30,7 +30,7 @@ export function OptionsButton({ style, size = 24 }: { style?: StyleProp<ViewStyl
   );
 }
 
-type Vista = 'main' | 'como' | 'novedades' | 'creditos';
+type Vista = 'main' | 'como' | 'novedades' | 'creditos' | 'privacidad';
 
 /** Ajustes: sonido y música, ayuda (cómo funciona, novedades, créditos), versión, actualizaciones y modo desarrollador. */
 export function Settings({ onClose }: { onClose: () => void }) {
@@ -85,6 +85,7 @@ export function Settings({ onClose }: { onClose: () => void }) {
               <Enlace label="Cómo funciona" onPress={() => setView('como')} />
               <Enlace label="Novedades" onPress={() => setView('novedades')} />
               <Enlace label="Créditos" onPress={() => setView('creditos')} />
+              <Enlace label="Privacidad y cookies" onPress={() => setView('privacidad')} />
               <Enlace label="Participa en el proyecto" onPress={() => Linking.openURL(COLABORAR)} />
               <Text style={st.version}>Versión {BUILD ? `v0.${BUILD}${CAMBIOS ? `+${CAMBIOS}` : ''}` : 'de desarrollo'}</Text>
               <Btn small label="Buscar actualizaciones" onPress={check} />
@@ -142,6 +143,14 @@ export function Settings({ onClose }: { onClose: () => void }) {
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={st.title}>Créditos</Text>
               {CREDITOS.map((p, i) => <Text key={i} style={st.parrafo}>{p}</Text>)}
+              <Btn label="Volver" onPress={() => setView('main')} />
+            </ScrollView>
+          ) : null}
+
+          {view === 'privacidad' ? (
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={st.title}>Privacidad y cookies</Text>
+              {PRIVACIDAD.map((p, i) => <Text key={i} style={st.parrafo}>{p}</Text>)}
               <Btn label="Volver" onPress={() => setView('main')} />
             </ScrollView>
           ) : null}

@@ -196,9 +196,11 @@ export const useStore = create<State>((set, get) => {
       mutate(g => {
         const goal0 = get().goal;
         // La escalera de la entrada solo devuelve a la zona anterior si era el destino, no al pasar por encima.
-        // Igual con los puntos de descanso: solo se ofrecen si es la casilla de destino.
+        // Igual con los puntos de descanso: solo se ofrecen si es la casilla de destino,
+        // salvo el primero de la partida, que se ofrece aunque solo se pase por encima.
         const dest = !rest.length && (!goal0 || hkey(goal0) === hkey(h));
-        const evs = step(g, h).filter(e => (e.kind !== 'back' && e.kind !== 'rest') || dest);
+        const evs = step(g, h).filter(e => e.kind === 'back' ? dest : e.kind === 'rest' ? dest || !g.restSeen : true);
+        if (evs.some(e => e.kind === 'rest')) g.restSeen = true;
         // Abrir un cofre o coger la llave guarda la partida: no se pierde aunque caiga el grupo después.
         if (evs.some(e => e.kind === 'msg' && e.save)) storage.save(g);
         if (evs.length) return { walking: [], goal: undefined, ...advance(g, evs) };
