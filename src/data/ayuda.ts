@@ -82,6 +82,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Al viajar a otro pueblo, primero se ve «Llegasteis a…» sobre su ilustración y después el menú.',
     'Letra Inter, más legible, en el registro, las reglas y las explicaciones. La narración, los diálogos, los títulos y los botones conservan su letra.',
     'En el combate, los símbolos de lo que queda del turno llevan su nombre al lado: Acción, Acción adicional y Movimiento, en todas las pantallas.',
+    'Cada tirada de combate enseña su cuenta completa: dado, modificador y total contra la CA o la CD («13 + 3 = 16»).',
   ] },
   { version: 'v0.145', items: [
     'Combate más táctico con reglas del SRD 5.2.1: nueva acción Ayudar (ventaja para el siguiente ataque de un aliado) y Maestría de armas para guerrero, pícaro, paladín, bárbaro y explorador (Debilitar, Hostigar, Derribar y Empujar).',

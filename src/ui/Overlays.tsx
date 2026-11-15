@@ -308,6 +308,12 @@ const resultOf = (r: Roll) => r.save && r.who ? `${r.who} ${r.ok ? 'la supera' :
   : r.who ? `${r.who} ${r.ok ? 'le encuentra' : 'no le encuentra'}`
   : r.enemy ? (r.ok ? 'Acierta' : 'Falla') : r.ok ? 'Éxito' : 'Fallo';
 
+/** La cuenta de la tirada: «13 + 3 = 16», o solo el dado si no hay modificador. */
+const calcOf = (r: Roll) => {
+  const b = r.total - r.d20;
+  return b ? `${r.d20} ${b > 0 ? '+' : '−'} ${Math.abs(b)} = ${r.total}` : `${r.total}`;
+};
+
 /** Dado de veinte caras animado para las tiradas importantes. */
 /** Lo que tarda en irse de la pantalla una tirada (giro, pausa y fundido). */
 export const rollMs = (r: Roll) => (r.enemy ? 320 : 500) + (r.enemy ? 900 : 650) + (r.dice ? 700 : 0) + 250;
@@ -359,7 +365,7 @@ export function D20({ roll }: { roll?: Roll }) {
           </View>
           {shown.adv ? <Text style={[st.d20Label, { color: shown.adv > 0 ? '#7fcf8f' : '#e8796b', marginTop: 2 }]}>{shown.adv > 0 ? 'Ventaja' : 'Desventaja'}</Text> : null}
           <Text style={st.d20Label}>{shown.label}</Text>
-          <Text style={[st.d20Total, { color: fin === NAT1 ? '#e0485e' : fin }, !rolling && shown.d20 === 20 && st.critGlow]}>{shown.crit ? '¡CRÍTICO! ' : ''}{shown.total} · {resultOf(shown)}</Text>
+          <Text style={[st.d20Total, { color: fin === NAT1 ? '#e0485e' : fin }, !rolling && shown.d20 === 20 && st.critGlow]}>{shown.crit ? '¡CRÍTICO! ' : ''}{calcOf(shown)} · {resultOf(shown)}</Text>
         </>
       ) : null}
       {shown.dice ? (

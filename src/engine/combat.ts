@@ -465,8 +465,8 @@ function masteryHit(g: Game, cb: Combat, a: Unit, t: Unit, m: Mastery, dc: numbe
   if (m === 'topple' && !huge && !t.prone) {
     // Salvación de Constitución sin dado grande en pantalla: el d20 que se ve es el del ataque.
     const d20 = die(g.rng, 20), total = d20 + (MONSTERS[t.mon!]?.saves.con ?? 0);
-    if (total >= dc) say(cb, `Derribar: ${t.name} resiste (Constitución ${total} contra CD ${dc}).`, 'miss');
-    else { t.prone = true; say(cb, `Derribar: ${t.name} cae al suelo (Constitución ${total} contra CD ${dc}).`, 'big'); }
+    if (total >= dc) say(cb, `Derribar: ${t.name} resiste (Constitución ${d20}${total - d20 >= 0 ? '+' : ''}${total - d20} = ${total} contra CD ${dc}).`, 'miss');
+    else { t.prone = true; say(cb, `Derribar: ${t.name} cae al suelo (Constitución ${d20}${total - d20 >= 0 ? '+' : ''}${total - d20} = ${total} contra CD ${dc}).`, 'big'); }
   }
   if (m === 'push' && !huge && t.side === 'enemy' && t.row === 'front' && rowSpace(cb, 'enemy', 'back')) {
     t.row = 'back';
@@ -505,7 +505,7 @@ function saveRoll(g: Game, cb: Combat, t: Unit, abil: Ability, dc: number, label
   const d20 = rollD20(g, adv, isHalfling(g, t));
   const ok = d20 + bonus >= dc;
   setRoll(cb, { d20, total: d20 + bonus, label: `Salvación de ${label} de ${t.name} · CD ${dc}`, ok, enemy: t.side === 'enemy', who: t.name, save: true, ...pairOf() });
-  say(cb, `Salvación de ${label} de ${t.name}: ${d20 + bonus} contra CD ${dc}. ${ok ? `${t.name} la supera` : `${t.name} falla`}.`, ok ? 'miss' : undefined);
+  say(cb, `Salvación de ${label} de ${t.name}: ${d20}${bonus >= 0 ? '+' : ''}${bonus} = ${d20 + bonus} contra CD ${dc}. ${ok ? `${t.name} la supera` : `${t.name} falla`}.`, ok ? 'miss' : undefined);
   return ok;
 }
 
