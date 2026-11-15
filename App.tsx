@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { AppState, StatusBar, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { AppState, Platform, StatusBar, View } from 'react-native';
 import { SafeAreaInsetsContext, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BackHandler, ToastAndroid } from './src/platform';
+import { BackHandler } from './src/platform';
 import { C } from './src/theme';
 import { useStore } from './src/store';
 import { Create, Intro, Slots, Title } from './src/screens/Menu';
@@ -10,6 +10,7 @@ import { Combat } from './src/screens/Combat';
 import { Defeat, Town, Victory } from './src/screens/Town';
 import { FadeIn, Message } from './src/ui/Overlays';
 import { Btn } from './src/ui/kit';
+import { OptionsButton } from './src/ui/Settings';
 import * as storage from './src/storage';
 import { startSound } from './src/sonido';
 
@@ -19,7 +20,11 @@ startSound();
 let lastTouch = Date.now();
 const IDLE_MS = 3 * 60 * 1000;
 
+/** Pantallas que ya tienen su propio botón de ajustes (título, mapa, combate y pueblo). */
+const OWN_GEAR = new Set<string>(['title', 'game']);
+
 function Router() {
+  const ins = useSafeAreaInsets();
   const screen = useStore(s => s.screen);
   const game = useStore(s => s.game);
   const combat = useStore(s => s.combat);
@@ -37,15 +42,14 @@ function Router() {
     }, 5000);
     return () => clearInterval(t);
   }, [playing]);
-  const lastBack = useRef(0);
+  const [askQuit, setAskQuit] = useState(false);
   const inAdventure = screen === 'game' || screen === 'intro';
-  // Botón Atrás de Android: en el título hay que pulsarlo dos veces para salir; en una aventura pregunta antes de salir.
+  // Botón Atrás de Android: en el título pregunta antes de cerrar el juego; en una aventura pregunta antes de salir.
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (screen === 'title') {
-        if (Date.now() - lastBack.current < 2000) return false;
-        lastBack.current = Date.now();
-        ToastAndroid.show('Pulsa otra vez Atrás para salir', ToastAndroid.SHORT);
+        if (Platform.OS === 'web') return false;
+        setAskQuit(a => !a);
         return true;
       }
       if (inAdventure) setAskExit(a => !a);
@@ -82,6 +86,14 @@ function Router() {
           <Btn primary label="Seguir jugando" onPress={() => setAskExit(false)} />
         </Message>
       ) : null}
+      {askQuit && screen === 'title' ? (
+        <Message title="¿Quieres salir de Mazmorreo?" lines={['Las partidas guardadas se conservan.']}>
+          <Btn label="Salir" onPress={() => { setAskQuit(false); BackHandler.exitApp(); }} />
+          <Btn primary label="Seguir jugando" onPress={() => setAskQuit(false)} />
+        </Message>
+      ) : null}
+      {/* Pantallas sin rueda de ajustes propia: el botón de opciones flota arriba a la derecha. */}
+      {OWN_GEAR.has(screen) ? null : <OptionsButton style={{ position: 'absolute', top: ins.top + 8, right: 12, padding: 6, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.55)' }} />}
     </>
   );
 }

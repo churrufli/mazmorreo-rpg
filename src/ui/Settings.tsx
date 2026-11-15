@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react';
-import { Linking, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { Linking, Modal, PanResponder, Pressable, ScrollView, StyleProp, StyleSheet, Switch, Text, TextInput, View, ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { mdiChevronRight } from '@mdi/js';
+import { mdiChevronRight, mdiCogOutline } from '@mdi/js';
 import { C, F } from '../theme';
-import { Btn } from './kit';
+import { Btn, Icon } from './kit';
 import { VOL_DEF, refresh, sfx } from '../sonido';
 import * as storage from '../storage';
 import { BUILD } from '../version';
@@ -16,6 +16,19 @@ const RELEASES_PAGE = 'https://github.com/churrufli/mazmorreo-rpg/releases';
 export const COLABORAR = 'https://github.com/churrufli/mazmorreo-rpg/blob/master/CONTRIBUTING.md';
 const CLAVE_DEV = '12345678';
 const tagNum = (t: string) => Number(t.replace(/^v0\./, '')) || 0;
+
+/** Botón de ajustes (rueda dentada) que abre el panel de opciones: tiene que estar en todas las pantallas. */
+export function OptionsButton({ style, size = 24 }: { style?: StyleProp<ViewStyle>; size?: number }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Pressable onPress={() => setOpen(true)} accessibilityRole="button" accessibilityLabel="Ajustes" hitSlop={10} style={style}>
+        <Icon path={mdiCogOutline} size={size} />
+      </Pressable>
+      {open ? <Settings onClose={() => setOpen(false)} /> : null}
+    </>
+  );
+}
 
 type Vista = 'main' | 'como' | 'novedades' | 'creditos';
 
