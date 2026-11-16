@@ -9,6 +9,7 @@ import * as storage from '../storage';
 import { BUILD } from '../version';
 import { CAMBIOS } from '../versionWeb';
 import { COMO_FUNCIONA, CREDITOS, NOVEDADES, PRIVACIDAD } from '../data/ayuda';
+import { FxMode, setFx, useFxMode } from './movimiento';
 
 const RELEASES = 'https://api.github.com/repos/churrufli/mazmorreo-rpg/releases?per_page=10';
 const RELEASES_PAGE = 'https://github.com/churrufli/mazmorreo-rpg/releases';
@@ -86,6 +87,7 @@ export function Settings({ onClose }: { onClose: () => void }) {
               <Row label="Vibración" value={vibra} onChange={toggle('vibra', setVibra)} />
               <Row label="Combate pausado" value={pausado} onChange={toggle('pausado', setPausado)} />
               <Text style={st.note}>Combate pausado: los enemigos esperan a que se vea cada dado. Apagado, sus turnos pasan más rápido.</Text>
+              <Efectos />
               <Enlace label="Cómo funciona" onPress={() => setView('como')} />
               <Enlace label="Novedades" onPress={() => setView('novedades')} />
               <Enlace label="Créditos" onPress={() => setView('creditos')} />
@@ -212,6 +214,27 @@ function Barra({ label, k, onDrag }: { label: string; k: keyof typeof VOL_DEF; o
   );
 }
 
+const FX_OPTS: [FxMode, string][] = [['full', 'Completos'], ['reduced', 'Reducidos'], ['off', 'Mínimos']];
+
+/** Efectos visuales: no toca el sonido ni el ritmo del combate. */
+function Efectos() {
+  const m = useFxMode();
+  return (
+    <>
+      <Text style={st.volTitle}>Efectos visuales</Text>
+      <View style={st.seg} accessibilityRole="radiogroup">
+        {FX_OPTS.map(([k, label]) => (
+          <Pressable key={k} onPress={() => { setFx(k); sfx('click_soft', 0.5); }} accessibilityRole="radio" accessibilityLabel={`Efectos ${label.toLowerCase()}`} accessibilityState={{ selected: m === k }}
+            style={({ pressed }) => [st.segBtn, m === k && st.segOn, pressed && { opacity: 0.8 }]}>
+            <Text style={[st.segTxt, m === k && { color: '#1a130b' }]}>{label}</Text>
+          </Pressable>
+        ))}
+      </View>
+      <Text style={st.note}>Reducidos: sin sacudidas, partículas ni destellos. Mínimos: solo lo necesario para seguir la acción. Si no eliges, se respeta «reducir movimiento» del sistema.</Text>
+    </>
+  );
+}
+
 function Enlace({ label, onPress }: { label: string; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label} style={st.row}>
@@ -228,6 +251,10 @@ const st = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 6, minHeight: 48 },
   label: { fontFamily: F.textBold, color: C.text, fontSize: 18 },
   volTitle: { fontFamily: F.title, color: C.gold, fontSize: 16, textAlign: 'center', marginTop: 6 },
+  seg: { flexDirection: 'row', gap: 6, marginTop: 6 },
+  segBtn: { flex: 1, minHeight: 44, borderWidth: 1, borderColor: C.gold, borderRadius: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.35)' },
+  segOn: { backgroundColor: C.goldHi, borderColor: C.goldHi },
+  segTxt: { fontFamily: F.textBold, color: C.text, fontSize: 16 },
   barBox: { flex: 1, height: 40, justifyContent: 'center', marginHorizontal: 8 },
   barTrack: { height: 8, borderRadius: 4, backgroundColor: C.border, overflow: 'hidden' },
   barFill: { height: 8, backgroundColor: C.gold },

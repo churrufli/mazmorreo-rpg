@@ -12,6 +12,8 @@ import { Bg, Btn, Panel } from './kit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { zoneArt } from '../engine/dungeon';
 import { getDev } from '../storage';
+import { FadeIn } from './Overlays';
+import { DUR } from './movimiento';
 
 const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
 
@@ -36,20 +38,22 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
     <View style={StyleSheet.absoluteFill}>
       <Bg src={IMG[s.img ?? g.zoneBg ?? zoneArt(g.zone).combat]} dim={0.15}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end', padding: 12, paddingBottom: ins.bottom + 12, paddingTop: ins.top + 40 }}>
+      {/* El cuadro sube al aparecer y su contenido cambia con un fundido corto (pregunta ↔ quién lo intenta). */}
+      <FadeIn key={id} from={18} duration={DUR.panel + 80}>
       <Panel style={st.panel}>
           <Text style={st.title}>{s.title}</Text>
           <View style={st.rule} />
           {o?.attr ? (
-            <View>
+            <FadeIn key={`ask${ask}`} from={6} duration={DUR.panel}>
               <Text style={st.line}>{o.label}: prueba de {ABIL_NAME[o.attr]} (CD {o.dc}). ¿Quién lo intenta?</Text>
               {g.party.filter(c => !isDown(c)).sort((a, b) => testBonus(b, o.attr!) - testBonus(a, o.attr!)).map(c => (
                 <Btn key={c.id} small label={`${c.name} (${sign(testBonus(c, o.attr!))})`} sub={`≈ ${testChance(c, o.attr!, o.dc ?? 10)} % de lograrlo`} onPress={() => { setAsk(undefined); onChoose(ask!, c.id); }} />
               ))}
               {getDev() ? <Btn small label="Superar (20)" onPress={() => { const index = ask!; const best = bestFor(g, o.attr!); setAsk(undefined); onChoose(index, best?.id, true); }} /> : null}
               <Btn small label="Volver" onPress={() => setAsk(undefined)} />
-            </View>
+            </FadeIn>
           ) : (
-            <View>
+            <FadeIn key="opts" from={ask === undefined ? 0 : 6} duration={DUR.panel}>
               <Text style={st.line}>{s.text}</Text>
               {s.question ? <Text style={[st.line, st.q]}>{s.question}</Text> : null}
               {ordered.map(({ op, i }) => {
@@ -66,9 +70,10 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
                 return <Btn key={i} small label={op.label} sub={sub} off={!open} onPress={() => (!open ? undefined : op.attr ? setAsk(i) : onChoose(i))} />;
               })}
               <Btn small label={s.decision ? 'Ahora no' : 'Dejarlo para luego'} onPress={onLeave} />
-            </View>
+            </FadeIn>
           )}
       </Panel>
+      </FadeIn>
       </ScrollView>
       </Bg>
     </View>

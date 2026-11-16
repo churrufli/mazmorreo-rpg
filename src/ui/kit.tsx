@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Image, ImageSourcePropType, Pressable, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle, useWindowDimensions } from 'react-native';
-import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, ImageSourcePropType, Pressable, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle, useWindowDimensions } from 'react-native';
+import Svg, { Defs, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
 import { C, F } from '../theme';
 import { IMG, ImgKey } from '../assets';
 import { FACE } from '../data/caras';
 import { buttonLabelLayout } from './buttonLabel';
 import { sfx } from '../sonido';
+import { DUR, EASE, fxOn } from './movimiento';
 
 /** Fondo a pantalla completa: se amplía sin deformarse hasta llegar a todos los bordes (el autor 2026-11-02). */
 export function Bg({ src, dim = 0.35, children, style }: { src: ImageSourcePropType; dim?: number; children?: React.ReactNode; style?: ViewStyle }) {
@@ -121,8 +122,13 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, st
   const room = box ? box.width - textInset : 1;
   const halves = split2(caption);
   const fs2 = combatTone ? combatFont : Math.max(9, Math.min(small ? 11.5 : 14, room / (Math.max(halves[0].length, halves[1].length) * 0.64)));
+  // Respuesta al tocar: un brillo cálido que se enciende al instante y se apaga suave al soltar.
+  const glow = useRef(new Animated.Value(0)).current;
+  const lightTo = (v: number, ms: number) => { if (fxOn()) Animated.timing(glow, { toValue: v, duration: ms, easing: EASE.out, useNativeDriver: true }).start(); };
   return (
     <Pressable
+      onPressIn={() => lightTo(1, DUR.press)}
+      onPressOut={() => lightTo(0, DUR.release)}
       onPress={onPress && (e => { if (combatTone && ((e.nativeEvent as unknown as { detail?: number }).detail ?? 0) > 1) return; sfx(off ? 'error' : 'click_soft', 0.5); onPress(); })}
       onLongPress={onLongPress}
       delayLongPress={350}
@@ -149,6 +155,17 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, st
               {(onInfo || onLongPress) && !dim ? <Path d={`M${box.width - c - 7} 1.5H${box.width - c}L${box.width - 1.5} ${c + 7}V${c + 14}Z`} fill={edge} /> : null}
             </Svg>
           ) : null}
+          {box && !dim ? <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: glow }]}>
+            <Svg width={box.width} height={box.height}>
+              <Defs>
+                <RadialGradient id={`btnGlow${primary && !combatTone ? 1 : 0}`} cx="50%" cy="50%" rx="60%" ry="80%">
+                  <Stop offset="0" stopColor="#ffe2a0" stopOpacity={primary && !combatTone ? 0.45 : 0.28} />
+                  <Stop offset="1" stopColor="#ffe2a0" stopOpacity={0} />
+                </RadialGradient>
+              </Defs>
+              <Path d={oct(1.5, 1.5, box.width - 3, box.height - 3, c - 0.6)} fill={`url(#btnGlow${primary && !combatTone ? 1 : 0})`} stroke="#ffe6a0" strokeOpacity={0.7} strokeWidth={1.2} />
+            </Svg>
+          </Animated.View> : null}
           {showIcon ? <View pointerEvents="none" style={{ position: 'absolute', left: 10, top: 0, bottom: 0, justifyContent: 'center' }}><Icon path={icon!} size={18} color={ink} /></View> : null}
           {combatTone ? <Text testID="combat-button-label" style={[s.btnText, { color: ink, fontSize: labelLayout ? labelLayout.fontSize / fontScale : combatFont, lineHeight: (labelLayout ? labelLayout.fontSize / fontScale : combatFont) * 1.18, letterSpacing: 0, textAlign: 'center', width: '100%' }]} numberOfLines={2} ellipsizeMode="clip">{labelLayout?.lines.join('\n') ?? caption}</Text> : two
             ? <Text style={[s.btnText, { color: ink, fontSize: fs2, lineHeight: fs2 * 1.18, letterSpacing: 0, textAlign: 'center' }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={combatTone ? 1 : 0.75}>{halves[1] ? `${halves[0]}\n${halves[1]}` : caption}</Text>
@@ -182,11 +199,38 @@ export function Icon({ path, size = 20, color = C.gold, outline }: { path: strin
   );
 }
 
-export function Bar({ value, max, color = C.heal, height = 5 }: { value: number; max: number; color?: string; height?: number }) {
+/**
+ * Barra de vida. Al recibir daño, la barra baja enseguida y deja un rastro claro que se recoge después;
+ * al curarse, crece despacio sobre un rastro verde. `delay`: espera al impacto antes de moverse.
+ */
+export function Bar({ value, max, color = C.heal, height = 5, delay = 0 }: { value: number; max: number; color?: string; height?: number; delay?: number }) {
   const pct = Math.max(0, Math.min(1, value / Math.max(1, max)));
+  const front = useRef(new Animated.Value(pct)).current;
+  const trail = useRef(new Animated.Value(pct)).current;
+  const prev = useRef(pct);
+  const [heal, setHeal] = useState(false);
+  useEffect(() => {
+    const was = prev.current;
+    prev.current = pct;
+    if (was === pct) return;
+    front.stopAnimation();
+    trail.stopAnimation();
+    if (!fxOn()) { front.setValue(pct); trail.setValue(pct); return; }
+    const up = pct > was;
+    setHeal(up);
+    if (up) {
+      trail.setValue(pct);
+      Animated.timing(front, { toValue: pct, duration: DUR.bar, delay, easing: EASE.out, useNativeDriver: false }).start();
+    } else {
+      Animated.timing(front, { toValue: pct, duration: 140, delay, easing: EASE.out, useNativeDriver: false }).start();
+      Animated.timing(trail, { toValue: pct, duration: DUR.bar, delay: delay + DUR.barLag, easing: EASE.inOut, useNativeDriver: false }).start();
+    }
+  }, [pct]); // eslint-disable-line react-hooks/exhaustive-deps
+  const wOf = (v: Animated.Value) => v.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'], extrapolate: 'clamp' });
   return (
     <View style={{ height, backgroundColor: '#000a', borderRadius: height, overflow: 'hidden' }}>
-      <View style={{ width: `${pct * 100}%`, height, backgroundColor: pct < 0.3 ? C.damage : color }} />
+      <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: wOf(trail), height, backgroundColor: heal ? '#a8e6b4' : '#f0d9a0', opacity: 0.85 }} />
+      <Animated.View style={{ width: wOf(front), height, backgroundColor: pct < 0.3 ? C.damage : color }} />
     </View>
   );
 }

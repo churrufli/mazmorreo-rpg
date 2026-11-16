@@ -19,6 +19,7 @@ import { MONSTERS } from '../data/srd';
 import { Card, CardInfo, CardModal, charInfo } from '../ui/Card';
 import { Dialogue, FadeIn, Message } from '../ui/Overlays';
 import { Btn, Icon } from '../ui/kit';
+import { fxFull } from '../ui/movimiento';
 import { getDev } from '../storage';
 import { MAX_ITEMS, isDown, needsRest } from '../engine/rules';
 import { FeatPicker } from '../ui/FeatPicker';
@@ -246,6 +247,8 @@ export function Explore() {
   const hy = useRef(new Animated.Value(Y(py))).current;
   const scale = useRef(new Animated.Value(zoom)).current;
   const pan = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  // Cada paso, la ficha del grupo se levanta un poco y vuelve a posarse (solo con efectos completos).
+  const bob = useRef(new Animated.Value(0)).current;
   const lastPos = useRef({ x: X(px), y: Y(py) });
   // Si el jugador ha arrastrado el mapa, la cámara respeta ese desplazamiento mientras el grupo camina;
   // vuelve a centrarse en el héroe con la siguiente orden de movimiento.
@@ -261,6 +264,7 @@ export function Explore() {
     const far = Math.hypot(to.x - lastPos.current.x, to.y - lastPos.current.y) > S * 4;
     lastPos.current = to;
     if (far) { hx.setValue(to.x); hy.setValue(to.y); pan.setValue({ x: 0, y: 0 }); dragged.current = false; return; }
+    if (fxFull()) { bob.setValue(0); Animated.timing(bob, { toValue: 1, duration: quick.current ? 110 : 235, easing: Easing.linear, useNativeDriver: true }).start(); }
     Animated.parallel([
       // En el hilo nativo: la cámara y la ficha se deslizan sin tirones aunque el mapa se esté redibujando.
       Animated.timing(hx, { toValue: to.x, duration: quick.current ? 110 : 235, easing: Easing.linear, useNativeDriver: true }),
@@ -515,7 +519,7 @@ export function Explore() {
             })}
           </Svg> : null}
           {/* El personaje: la misma ficha que los aliados (fondo, encuadre y aro dorado). */}
-          <Animated.View pointerEvents="none" style={[st.token, { transform: [{ translateX: Animated.add(hx, -S) }, { translateY: Animated.add(hy, -S) }] }]}>
+          <Animated.View pointerEvents="none" style={[st.token, { transform: [{ translateX: Animated.add(hx, -S) }, { translateY: Animated.add(Animated.add(hy, -S), bob.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -S * 0.12, 0] })) }, { scale: bob.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 1.05, 1] }) }] }]}>
             <Svg width={S * 2} height={S * 2}>
               <Defs><ClipPath id="heroTok"><Circle cx={0} cy={0} r={S * 0.78} /></ClipPath></Defs>
               <G x={S} y={S}>

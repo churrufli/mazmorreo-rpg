@@ -73,6 +73,12 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
   { version: 'v0.146', items: [
+    'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',
+    'Cada daño mágico se reconoce: el ácido salpica y gotea, el veneno sube en vapores, el necrótico trae sombras, el psíquico ondula y el trueno estalla en ondas.',
+    'La barra de vida baja con un rastro y crece al curarse; los estados aparecen y se van con su animación, y las cartas caídas se oscurecen poco a poco.',
+    'Las cartas enemigas sueltan esquirlas al romperse (más en los jefes) y la victoria se presenta con rayos de luz y la subida de nivel destacada.',
+    'Botones que se iluminan al tocarlos, escenas que entran con un fundido, oro que sube o baja en el pueblo y la ficha del grupo que se posa al andar por el mapa.',
+    'Ajustes: «Efectos visuales» completos, reducidos o mínimos. Sin elegir, se respeta «reducir movimiento» del sistema.',
     'Algunos objetivos de combate dejan huella en la aventura: un vigía que escapa da la alarma, una dríade rendida os ayuda contra el Corazón Hueco y un kobold que avisa a Vharzûl le trae refuerzos. Quien rescatéis puede volver a aparecer.',
     'Las decisiones que traen o quitan enemigos se notan también con grupos pequeños.',
     'Las vías de los aliados siguen sin tirada, pero ya no son siempre las mejores: otra opción con riesgo da algo más.',

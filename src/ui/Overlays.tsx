@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import Svg, { Circle, Polygon, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Line, Polygon, Text as SvgText } from 'react-native-svg';
 import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
 import { Bg, Btn, Panel } from './kit';
@@ -9,6 +9,7 @@ import type { DialogueLine, ShownRoll } from '../engine/dungeon';
 import type { Roll } from '../engine/combat';
 import { speaker } from '../engine/aventuras';
 import { dado } from '../sonido';
+import { DUR, EASE, fxFull, fxOn } from './movimiento';
 
 /** Retrato: recorte de la cara de la ilustración de la carta. */
 export function Portrait({ img, size = 64 }: { img: ImgKey; size?: number }) {
@@ -160,8 +161,17 @@ function RollBadge({ r }: { r: ShownRoll }) {
   const calc = `${r.d20} ${r.bonus >= 0 ? '+' : '−'} ${Math.abs(r.bonus)} = ${total} contra CD ${r.dc}`;
   const res = r.ok ? 'Éxito' : 'Fallo';
   const long = calc.length + res.length + 3 > 30;
+  // Al pararse el dado: el éxito se ilumina en verde y el fallo da un respingo, sin retrasar el texto.
+  const fb = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (rolling || !fxOn()) return;
+    fb.setValue(0);
+    Animated.timing(fb, { toValue: 1, duration: 420, easing: EASE.out, useNativeDriver: true }).start();
+  }, [rolling]); // eslint-disable-line react-hooks/exhaustive-deps
+  const jolt = !r.ok && fxFull() ? fb.interpolate({ inputRange: [0, 0.15, 0.3, 0.45, 0.6, 1], outputRange: [0, -5, 4, -2, 1, 0] }) : 0;
   return (
-    <View style={st.rollRow}>
+    <Animated.View style={[st.rollRow, { transform: [{ translateX: jolt }] }]}>
+      {!rolling && fxOn() ? <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 6, borderWidth: 1.5, borderColor: r.ok ? '#7fcf8f' : '#e0483a', backgroundColor: r.ok ? 'rgba(95,191,114,0.14)' : 'rgba(224,72,58,0.12)', opacity: fb.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0, 1, r.ok ? 0.55 : 0.3] }) }]} /> : null}
       <Animated.View style={{ transform: tumble(spin) }}>
         <DieShape size={52} color={col} value={face} edge={4} ink={col} />
       </Animated.View>
@@ -172,7 +182,7 @@ function RollBadge({ r }: { r: ShownRoll }) {
           ? <Text style={[st.rollRes, st.rollResLong, { color: tc }]}>{calc}{'\n'}{res}</Text>
           : <Text style={[st.rollRes, { color: tc }]}>{calc} · {res}</Text>}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -241,6 +251,8 @@ export function Dialogue({ lines, hero, onDone, met, onMeet }: {
 export interface MessageProps {
   title: string; lines: string[]; table?: [string, string][]; intro?: string; img?: ImgKey; img2?: ImgKey; items?: ImgKey[]; portrait?: ImgKey; rolls?: ShownRoll[];
   bg?: ImgKey; onDone?: () => void; children?: React.ReactNode;
+  /** Victoria: rayos de luz tras el cuadro, título con un golpe de escala y las líneas apareciendo en cascada. */
+  celebrate?: boolean;
   /** Con fondo: el cuadro abajo, para ver la ilustración entera (resultado de una escena). */
   low?: boolean;
 }
@@ -249,7 +261,7 @@ export interface MessageProps {
  * Ventana de aviso con entrada animada. Va mostrando por pasos: la imagen (el cofre se abre),
  * cada tirada con su dado y al final el texto y los botones. Tocarla enseña todo de golpe.
  */
-export function Message({ title, lines, table, intro, img, img2, items, portrait, rolls = [], bg, low, onDone, children }: MessageProps) {
+export function Message({ title, lines, table, intro, img, img2, items, portrait, rolls = [], bg, low, onDone, children, celebrate }: MessageProps) {
   const pop = useRef(new Animated.Value(0)).current;
   const steps = (img2 ? 1 : 0) + rolls.length + 1;
   // Sin pasos animados (victoria, avisos) el texto sale desde el principio, sin esperar a ningún temporizador.
@@ -265,23 +277,27 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
   const rollsShown = rolls.slice(0, Math.max(0, k - (img2 ? 1 : 0)));
   const done = k >= steps;
   const scale = pop.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] });
+  // Las líneas del final entran en cascada (muy rápida: el texto se puede leer enseguida).
+  const step = fxOn() ? 70 : 0;
   const panel = (
     <Animated.View style={{ width: '88%', opacity: pop, transform: [{ scale }] }}>
+      {celebrate && fxOn() ? <Rays /> : null}
       <Pressable onPress={() => setK(steps)} accessibilityLabel={title}>
         <Panel style={st.msgPanel}>
           {portrait ? <View style={{ alignSelf: 'center', marginBottom: 6 }}><Portrait img={portrait} size={84} /></View> : null}
           {img ? (
             <View style={st.msgImgBox}>
               {opened ? <FadeIn from={0}><Image source={IMG[img2!]} style={st.msgImg} /></FadeIn> : <Image source={IMG[img]} style={st.msgImg} />}
+              {opened && fxFull() ? <Glints size={110} /> : null}
             </View>
           ) : null}
-          <Text style={st.msgTitle}>{title}</Text>
+          {celebrate ? <TitlePunch><Text style={[st.msgTitle, st.winTitle]}>{title}</Text></TitlePunch> : <Text style={st.msgTitle}>{title}</Text>}
           <View style={st.rule} />
           {intro ? <Text style={[st.msgLine, { fontFamily: F.italic }]}>{intro}</Text> : null}
           {rollsShown.map((r, i) => <FadeIn key={i}><RollBadge r={r} /></FadeIn>)}
           {done ? (
             <View>
-              {items?.length ? <View style={st.items}>{items.map((it, i) => <Image key={i} source={IMG[it]} style={st.itemImg} />)}</View> : null}
+              {items?.length ? <View style={st.items}>{items.map((it, i) => <PopIn key={i} delay={i * 90}><Image source={IMG[it]} style={st.itemImg} /></PopIn>)}</View> : null}
               {table?.map(([k, v]) => (
                 <View key={k} style={st.tRow}>
                   <Text style={st.tKey}>{k}</Text>
@@ -290,8 +306,8 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
               ))}
               {table?.length ? <View style={{ height: 8 }} /> : null}
               {lines.map((l, i) => /sube a nivel/.test(l)
-                ? <Text key={i} style={st.levelUp}>{l}</Text>
-                : <Text key={i} style={[st.msgLine, /^Objetivo cumplido/.test(l) && st.goalOk, /^Objetivo fallado/.test(l) && st.goalKo]}>{l}</Text>)}
+                ? <FadeIn key={i} delay={i * step} from={6} duration={DUR.panel}><LevelUp text={l} /></FadeIn>
+                : <FadeIn key={i} delay={i * step} from={6} duration={DUR.panel}><Text style={[st.msgLine, /^Objetivo cumplido/.test(l) && st.goalOk, /^Objetivo fallado/.test(l) && st.goalKo]}>{l}</Text></FadeIn>)}
               {children ?? <Btn primary label="Continuar" onPress={onDone} />}
             </View>
           ) : null}
@@ -301,6 +317,77 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
   );
   if (bg) return <View style={StyleSheet.absoluteFill}><Bg src={IMG[bg]} dim={low ? 0.15 : 0.3}><View style={[st.center0, low && { justifyContent: 'flex-end', paddingBottom: 40 }]}>{panel}</View></Bg></View>;
   return <View style={st.center}>{panel}</View>;
+}
+
+/** Aparece creciendo con un rebote corto (objetos ganados, recompensas). */
+export function PopIn({ children, delay = 0, skip, from = 0.4 }: { children: React.ReactNode; delay?: number; skip?: boolean; from?: number }) {
+  const v = useRef(new Animated.Value(skip || !fxOn() ? 1 : 0)).current;
+  useEffect(() => {
+    if (skip || !fxOn()) return;
+    const a = Animated.sequence([Animated.delay(delay), Animated.spring(v, { toValue: 1, friction: 5, tension: 150, useNativeDriver: true })]);
+    a.start();
+    return () => a.stop();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return <Animated.View style={{ opacity: from < 0.6 ? v.interpolate({ inputRange: [0, 0.3], outputRange: [0, 1], extrapolate: 'clamp' }) : 1, transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [from, 1] }) }] }}>{children}</Animated.View>;
+}
+
+/** Título de la victoria: entra un poco grande y se asienta. */
+function TitlePunch({ children }: { children: React.ReactNode }) {
+  const v = useRef(new Animated.Value(fxOn() ? 0 : 1)).current;
+  useEffect(() => { if (fxOn()) Animated.timing(v, { toValue: 1, duration: 520, delay: 120, easing: EASE.settle, useNativeDriver: true }).start(); }, [v]);
+  return <Animated.View style={{ opacity: v.interpolate({ inputRange: [0, 0.3], outputRange: [0, 1], extrapolate: 'clamp' }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1.5, 1] }) }] }}>{children}</Animated.View>;
+}
+
+/** Rayos de luz detrás del cuadro de victoria: se abren, giran un poco una sola vez y se quedan tenues. */
+function Rays() {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => { Animated.timing(v, { toValue: 1, duration: 1600, easing: EASE.out, useNativeDriver: true }).start(); }, [v]);
+  const S = 520;
+  return (
+    <Animated.View pointerEvents="none" style={{ position: 'absolute', alignSelf: 'center', top: '50%', width: S, height: S, marginTop: -S / 2,
+      opacity: v.interpolate({ inputRange: [0, 0.25, 1], outputRange: [0, fxFull() ? 0.5 : 0.3, 0.22] }),
+      transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }, { rotate: v.interpolate({ inputRange: [0, 1], outputRange: ['-12deg', fxFull() ? '10deg' : '-12deg'] }) }] }}>
+      <Svg width={S} height={S} viewBox="0 0 100 100">
+        {Array.from({ length: 14 }, (_, i) => {
+          const a = (i / 14) * Math.PI * 2;
+          return <Polygon key={i} points={`50,50 ${50 + Math.cos(a - 0.07) * 50},${50 + Math.sin(a - 0.07) * 50} ${50 + Math.cos(a + 0.07) * 50},${50 + Math.sin(a + 0.07) * 50}`} fill={i % 2 ? '#e0b56e' : '#fff1c4'} />;
+        })}
+      </Svg>
+    </Animated.View>
+  );
+}
+
+/** Destellos dorados que saltan una vez alrededor de un objeto (cofre que se abre). */
+function Glints({ size }: { size: number }) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => { Animated.timing(v, { toValue: 1, duration: 700, easing: EASE.out, useNativeDriver: true }).start(); }, [v]);
+  const c = size / 2;
+  return (
+    <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: size, height: size,
+      opacity: v.interpolate({ inputRange: [0, 0.15, 1], outputRange: [0, 1, 0] }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1.35] }) }] }}>
+      <Svg width={size} height={size}>
+        {Array.from({ length: 10 }, (_, i) => {
+          const a = (i / 10) * Math.PI * 2, r0 = size * 0.32, r1 = size * (i % 2 ? 0.42 : 0.48);
+          return <Line key={i} x1={c + Math.cos(a) * r0} y1={c + Math.sin(a) * r0} x2={c + Math.cos(a) * r1} y2={c + Math.sin(a) * r1} stroke={i % 3 ? '#ffe39a' : '#fff7dc'} strokeWidth={2} strokeLinecap="round" />;
+        })}
+      </Svg>
+    </Animated.View>
+  );
+}
+
+/** Subida de nivel: el recuadro dorado se enciende una vez, con un brillo que lo recorre. */
+function LevelUp({ text }: { text: string }) {
+  const v = useRef(new Animated.Value(fxOn() ? 0 : 1)).current;
+  const [w, setW] = useState(0);
+  useEffect(() => { if (fxOn()) Animated.timing(v, { toValue: 1, duration: 900, delay: 200, easing: EASE.inOut, useNativeDriver: true }).start(); }, [v]);
+  return (
+    <View style={[st.levelUp, { overflow: 'hidden' }]} onLayout={e => setW(e.nativeEvent.layout.width)}>
+      {w && fxFull() ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 0, bottom: 0, width: 36, backgroundColor: 'rgba(255,240,200,0.35)',
+        transform: [{ translateX: v.interpolate({ inputRange: [0, 1], outputRange: [-40, w + 10] }) }, { skewX: '-20deg' }] }} /> : null}
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#e0b56e', opacity: v.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 0.22, 0.06] }) }]} />
+      <Text style={st.levelUpTxt}>{text}</Text>
+    </View>
+  );
 }
 
 /** Qué pasa con la tirada, dicho de quien tira cuando no es el grupo: «Necrófago falla» (el autor 2026-11-13). */
@@ -399,7 +486,9 @@ const st = StyleSheet.create({
   goalOk: { color: '#7fcf8f', fontFamily: F.textBold },
   goalKo: { color: C.textDim },
   rollResLong: { fontSize: 14, lineHeight: 18, textAlign: 'center' },
-  levelUp: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 19, textAlign: 'center', marginVertical: 8, padding: 8, borderWidth: 1, borderColor: C.gold, borderRadius: 6, backgroundColor: '#e0b56e18' },
+  levelUp: { marginVertical: 8, padding: 8, borderWidth: 1, borderColor: C.gold, borderRadius: 6, backgroundColor: '#e0b56e18' },
+  levelUpTxt: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 19, textAlign: 'center' },
+  winTitle: { fontSize: 28, textShadowColor: '#e0b56e', textShadowRadius: 12 },
   items: { flexDirection: 'row', justifyContent: 'center', marginBottom: 6 },
   itemImg: { width: 56, height: 56, marginHorizontal: 6 },
   msgLine: { fontFamily: F.text, color: C.text, fontSize: 17, lineHeight: 23, marginBottom: 6 },

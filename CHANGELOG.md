@@ -2,6 +2,14 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 16 de noviembre de 2026 — Efectos visuales y animaciones
+
+- **Lenguaje común de animación** en `src/ui/movimiento.ts`: duraciones, curvas y nivel de efectos (completos, reducidos o mínimos) con ajuste persistente y respeto a «reducir movimiento» del sistema.
+- **Combate**: tajos, chispas y destello en los golpes físicos; críticos con doble tajo dorado; sacudida mayor con golpes fuertes; «Fallo» y esquiva al fallar; peso en la embestida y estela en flechas y conjuros; efectos propios para ácido, veneno, necrótico, psíquico y trueno.
+- **Cartas**: halo del turno, elevación animada, barra de vida con rastro, estados que entran y salen, velo al caer y esquirlas al romperse (más en los jefes).
+- **Interfaz**: brillo al pulsar botones, victoria con rayos y subida de nivel destacada, objetos que aparecen con rebote, tiradas de escena que se iluminan o dan un respingo, oro animado en el pueblo y paso de la ficha en el mapa.
+- Solo capa visual: sin cambios en el motor, las reglas, las aventuras ni la duración de los turnos.
+
 ## 16 de noviembre de 2026 — Decisiones que dejan huella
 
 - **Objetivos de combate con consecuencias** (`okFx` / `failFx` en `objetivos.ts`): el vigía del pozo (z1_e06) da la alarma y la prisión (z2_e01) espera con refuerzos; rendir a la dríade (b4_e02) quita un árbol despertado al Corazón Hueco; si el kobold del tributo (m4_e03) da la voz, Vharzûl tiene un kobold más; el resinero rescatado (b2_e08) abre una vía nueva en la caja de los resineros (`if` en las opciones de escena).
