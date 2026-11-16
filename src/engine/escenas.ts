@@ -32,7 +32,10 @@ export interface Effect {
   /** PG que recupera cada uno del grupo que siga en pie. */
   heal?: number;
 }
-export interface SceneOpt { label: string; attr?: Ability; dc?: number; needs?: string; /** Oro que se paga al elegirla. */ cost?: number; ok: Effect; fail?: Effect }
+export interface SceneOpt { label: string; attr?: Ability; dc?: number; needs?: string; /** Oro que se paga al elegirla. */ cost?: number;
+  /** Vía propia de un aliado: solo sale si va en el grupo y en pie, y sale bien sin tirada. Nunca es la única forma de avanzar. */
+  ally?: string;
+  ok: Effect; fail?: Effect }
 export interface Scene {
   id: string; title: string; img?: ImgKey; text: string; question?: string;
   /** Decisión: se elige una sola vez. Prueba: al fallar se cierra esa vía y quedan las otras. */
@@ -62,7 +65,14 @@ export function inspire(g: Game, c: Char): boolean {
 }
 
 const has = (g: Game, item: string) => g.party.some(c => !c.dead && c.items.some(i => i.id === item));
-export const optionOpen = (g: Game, s: Scene, i: number) => !sceneState(g, s.id).closed.includes(i) && (!s.options[i].needs || has(g, s.options[i].needs!)) && g.gold >= (s.options[i].cost ?? 0);
+/** ¿Va ese aliado en el grupo y puede actuar? */
+export const allyHere = (g: Game, id: string) => g.party.some(c => c.id === id && !isDown(c));
+/** Las vías de un aliado que no va en el grupo no se enseñan. */
+export const optionShown = (g: Game, s: Scene, i: number) => !s.options[i].ally || allyHere(g, s.options[i].ally!);
+export const optionOpen = (g: Game, s: Scene, i: number) => optionShown(g, s, i) && !sceneState(g, s.id).closed.includes(i) && (!s.options[i].needs || has(g, s.options[i].needs!)) && g.gold >= (s.options[i].cost ?? 0);
+
+/** Probabilidad (en %) de superar una prueba de escena con ese personaje: d20 + bonificador contra la CD. */
+export const testChance = (c: Char, a: Ability, dc: number) => Math.max(0, Math.min(100, (21 - (dc - testBonus(c, a))) * 5));
 
 /** Aplica un efecto y devuelve las líneas que lo cuentan y el combate que empiece, si hay. */
 /** Sala en la que está el grupo ahora. */
@@ -240,7 +250,7 @@ export function chooseOption(g: Game, id: string, i: number, charId?: string, fo
   const s = sceneById(id)!;
   const o = s.options[i];
   const st: { closed: number[]; said?: string[]; fight?: string } = { closed: [...sceneState(g, id).closed] };
-  const who = g.party.find(c => c.id === charId) ?? (o.attr ? bestFor(g, o.attr) : undefined);
+  const who = g.party.find(c => c.id === (charId ?? o.ally)) ?? (o.attr ? bestFor(g, o.attr) : undefined);
   const rolls: ShownRoll[] = [];
   const found0 = g.found.length;
   let ok = true;
@@ -272,7 +282,7 @@ export function chooseOption(g: Game, id: string, i: number, charId?: string, fo
       else r.lines.push(RETRY);
     }
   }
-  const lines = [`${o.label}${who && o.attr ? ` (${who.name})` : ''}.`, ...(o.cost ? [`Pagáis ${o.cost} monedas de oro.`] : []), ...(rolls.length ? [ok ? '¡Lo consigue!' : 'No lo consigue: esa vía queda cerrada.'] : []), ...r.lines];
+  const lines = [`${o.label}${who && (o.attr || o.ally) ? ` (${who.name})` : ''}.`, ...(o.cost ? [`Pagáis ${o.cost} monedas de oro.`] : []), ...(rolls.length ? [ok ? '¡Lo consigue!' : 'No lo consigue: esa vía queda cerrada.'] : []), ...r.lines];
   // Lo que pasó se guarda para poder releerlo al volver a pisar la casilla.
   if (finished) st.said = lines;
   if (r.fight) st.fight = r.fight;

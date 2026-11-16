@@ -2,7 +2,7 @@
 // Todo son funciones puras sobre el estado de la partida (se muta una copia).
 import { canInspire, enemiesOf, inspire, maxFoesFor, sizeEncounter } from './escenas';
 import type { ImgKey } from '../assets';
-import { Ability, CLASSES, DmgType, ITEMS, MONSTERS, MonsterAttack } from '../data/srd';
+import { ABIL_NAME, Ability, CLASSES, DmgType, ITEMS, MONSTERS, MonsterAttack } from '../data/srd';
 import B from '../data/corazon.json';
 import { die, pick, rand, roll, tray } from './rng';
 import {
@@ -284,6 +284,7 @@ function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: Dm
   else {
     Object.assign(target, { deathS: 0, deathF: 0, stable: false });
     say(cb, `${target.name} cae inconsciente.`, 'big');
+    if (goalOpen(cb, 'nodown')) goalDone(cb, false);
     if (canHeal(g, target)) say(cb, `¡${target.name} ha caído! Cúralo antes de que falle tres tiradas de salvación.`, 'big');
   }
 }
@@ -300,6 +301,10 @@ function kill(cb: Combat, u: Unit) {
   u.dead = true;
   u.hp = 0;
   say(cb, u.side === 'enemy' ? `${u.name} cae derrotado.` : `${u.name} ha muerto.`, 'big');
+  // Objetivo «primero»: se decide con el primer enemigo que cae.
+  const first = goalOpen(cb, 'first');
+  if (first && u.side === 'enemy') goalDone(cb, goalUnits(cb, first.who!).includes(u));
+  if (u.side === 'party' && goalOpen(cb, 'nodown')) goalDone(cb, false);
   // Al caer el Corazón Hueco se secan sus raíces: nudos y arbustos caen con él.
   if (u.mon === 'Treant') for (const e of cb.units) if (e.side === 'enemy' && alive(e) && e !== u) { e.dead = true; e.hp = 0; }
   // Al caer Vharzûl, los kobolds que quedan huyen.
@@ -381,31 +386,46 @@ interface AtkOpts { name: string; toHit: number; dice: string; bonus: number; ty
   /** Repetición con Inspiración heroica: la misma ventaja o desventaja, sin volver a gastar estados. */
   rerollAdv?: number }
 
+/** Un enemigo grande en la vanguardia cubre a su tirador de detrás: media cobertura, +2 a la CA (SRD). */
+const coverOf = (cb: Combat, a: Unit, t: Unit) =>
+  a.side === 'party' && t.side === 'enemy' && t.row === 'back' && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.plan?.guard) ? 2 : 0;
+
+/** Motivos de ventaja y de desventaja de un ataque, sin gastar nada: los usan la tirada y la previsión. */
+function advFor(cb: Combat, a: Unit, t: Unit, ranged: boolean): { up: string[]; down: string[] } {
+  const up: string[] = [], down: string[] = [];
+  if (t.dodge) down.push('esquiva');
+  if (ranged && a.row === 'front' && frontHeld(cb, t.side) && t.side !== a.side) down.push('cuerpo a cuerpo');
+  if (t.guided) up.push('Saeta guía');
+  if (t.restrained) up.push('objetivo apresado');
+  if (a.restrained) down.push('apresado');
+  if (a.poisoned) down.push('envenenado');
+  if (a.hidden) up.push('escondido');
+  if (t.asleep || t.paralyzed || t.hp <= 0) up.push('objetivo indefenso');
+  if (a.mon && MONSTERS[a.mon].packTactics && cb.units.some(u => u !== a && u.side === a.side && conscious(u) && u.row === 'front')) up.push('en manada');
+  if (a.side === 'party' && t.helped && t.helped !== a.key) up.push('Ayudar');
+  if (a.sapped) down.push('debilitado');
+  if (a.vex && a.vex === t.key) up.push('Hostigar');
+  if (t.prone) { if (ranged) down.push('derribado'); else up.push('objetivo derribado'); }
+  if (a.prone) down.push('en el suelo');
+  return { up, down };
+}
+
 /** Tirada de ataque completa. Devuelve si impactó. */
 function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   swing(cb, a, t, !o.ranged ? 'melee' : o.spell ? 'magic' : 'arrow', o.type);
-  const notes: string[] = [];
   // Como en el SRD: si hay al menos una fuente de ventaja y una de desventaja, se anulan (no se suman).
-  let up = 0, down = 0;
+  const why = o.rerollAdv === undefined ? advFor(cb, a, t, o.ranged) : { up: [], down: [] };
   if (o.rerollAdv === undefined) {
-    if (t.dodge) down++;
-    if (o.ranged && a.row === 'front' && frontHeld(cb, t.side) && t.side !== a.side) { down++; notes.push('cuerpo a cuerpo'); }
-    if (t.guided) { up++; t.guided = false; }
-    if (t.restrained) up++;
-    if (a.restrained) down++;
-    if (a.poisoned) down++;
-    if (a.hidden) { up++; a.hidden = undefined; }
-    if (t.asleep || t.paralyzed || t.hp <= 0) up++;
-    if (a.mon && MONSTERS[a.mon].packTactics && cb.units.some(u => u !== a && u.side === a.side && conscious(u) && u.row === 'front')) up++;
-    if (a.side === 'party' && t.helped && t.helped !== a.key) { up++; t.helped = undefined; }
-    if (a.sapped) { down++; notes.push('debilitado'); a.sapped = undefined; }
-    if (a.vex && a.vex === t.key) { up++; a.vex = undefined; }
-    if (t.prone) { if (o.ranged) { down++; notes.push('derribado'); } else up++; }
-    if (a.prone) { down++; notes.push('en el suelo'); }
+    // Lo que se gasta con este ataque.
+    t.guided = false;
+    a.hidden = undefined;
+    if (a.side === 'party' && t.helped && t.helped !== a.key) t.helped = undefined;
+    a.sapped = undefined;
+    if (a.vex === t.key) a.vex = undefined;
   }
-  const adv = o.rerollAdv ?? (up && down ? 0 : up ? 1 : down ? -1 : 0);
-  // Un enemigo grande en la vanguardia cubre a su tirador de detrás: media cobertura, +2 a la CA (SRD).
-  const cover = a.side === 'party' && t.side === 'enemy' && t.row === 'back' && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.plan?.guard) ? 2 : 0;
+  const { up, down } = why;
+  const adv = o.rerollAdv ?? (up.length && down.length ? 0 : up.length ? 1 : down.length ? -1 : 0);
+  const cover = coverOf(cb, a, t);
   let d20 = rollD20(g, adv, isHalfling(g, a));
   const bless = a.bless ? die(g.rng, 4) : 0;
   let total = d20 + o.toHit + bless;
@@ -421,7 +441,9 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     else if ((t.shieldSlots ?? 0) > 0) { t.shieldSlots!--; t.shield = true; hit = false; say(cb, `${t.name} lanza Escudo (+5 CA).`, 'info'); }
   }
   setRoll(cb, { d20, total, label: a.side === 'party' ? `${o.name} contra CA ${ac}` : `${a.name}: ${o.name} contra CA ${ac}`, ok: hit, crit, enemy: a.side === 'enemy', ...pairOf() });
-  const advTxt = (adv > 0 ? ' con ventaja' : adv < 0 ? ` con desventaja${notes.length ? ` (${notes.join(', ')})` : ''}` : '') + (cover ? ' (media cobertura: +2 CA)' : '');
+  // Se dice siempre por qué: así se aprende qué táctica ha funcionado.
+  const advTxt = (adv > 0 ? ` con ventaja${up.length ? ` (${up.join(', ')})` : ''}` : adv < 0 ? ` con desventaja${down.length ? ` (${down.join(', ')})` : ''}`
+    : up.length && down.length ? ` sin ventaja ni desventaja (${up[0]} contra ${down[0]})` : '') + (cover ? ' (media cobertura: +2 CA)' : '');
   if (!hit) {
     say(cb, `${a.name} usa ${o.name}${advTxt}: ${d20}+${o.toHit + bless} = ${total}. Falla.`, 'miss');
     // Inspiración heroica: el jugador decide si repite el dado (SRD 5.2.1); se ofrece al acabar la acción.
@@ -530,7 +552,10 @@ export function startCombat(g: Game, encounterId: string): Combat {
   // Sin refuerzos de grupos vecinos (el autor 2026-11-06): cada grupo lucha solo.
   cb.pending = [];
   const goal = GOALS.find(x => cb.encounters.includes(x.enc) && !g.goals?.[x.enc]);
-  if (goal) { cb.goal = { g: goal, status: 'open' }; say(cb, `Objetivo: ${goal.text}`, 'big'); }
+  // «Primero» pide que haya alguien más a quien dejar para después; «que no caiga nadie», compañeros a los que cuidar.
+  const foes = cb.units.filter(x => x.side === 'enemy');
+  const fits = goal && !(goal.kind === 'first' && foes.every(x => goalUnits(cb, goal.who!).includes(x))) && !(goal.kind === 'nodown' && solo(cb));
+  if (goal && fits) { cb.goal = { g: goal, status: 'open' }; say(cb, `Objetivo: ${goal.text}`, 'big'); }
   for (const u of cb.units) {
     // Dote Alerta: suma el bonificador de competencia a la iniciativa.
     const dex = u.side === 'party' ? abilMod(charOf(g, u), 'dex') + (charOf(g, u).feats?.includes('alert') ? prof(charOf(g, u).level) : 0) : MONSTERS[u.mon!].dexMod;
@@ -684,7 +709,7 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
     msgs.push(why);
     cb.endLine = lastEvent?.replace(/[.!¡]+$/g, '') ?? why;
     const open = cb.goal?.status === 'open' ? cb.goal.g : undefined;
-    if (open) goalDone(cb, open.kind === 'noflee' || (open.kind === 'win' && cb.round < (open.by ?? 99)));
+    if (open) goalDone(cb, open.kind === 'noflee' || open.kind === 'nodown' || (open.kind === 'win' && cb.round < (open.by ?? 99)));
     let xp = cb.bonusXp ?? 0, gold = 0;
     for (const id of cb.encounters) {
       const e = encounterById(id)!;
@@ -899,6 +924,56 @@ export function targetsFor(cb: Combat, a: Action): Unit[] {
   return [];
 }
 
+/** Previsión de una acción contra un objetivo: probabilidad aproximada de que salga bien y por qué. */
+export interface Preview { pct: number; adv: number; why: string[]; /** Depende de la salvación del objetivo, no de una tirada de ataque. */ save?: boolean }
+
+/**
+ * Calcula, sin tirar ni gastar nada, lo fácil que es acertar con una acción a un objetivo. Usa las mismas reglas
+ * que la tirada real (ventaja, cobertura, CA); no cuenta las reacciones del enemigo ni Bendecir.
+ */
+export function preview(g: Game, cb: Combat, a: Action, t: Unit): Preview | undefined {
+  const u = current(cb);
+  if (u.side !== 'party' || t.side !== 'enemy') return undefined;
+  const c = charOf(g, u);
+  const [kind, arg] = a.id.split(':');
+  const m = MONSTERS[t.mon!];
+  // Conjuros y objetos que piden salvación: la probabilidad de que el objetivo la falle.
+  const saveOf: Record<string, [Ability, number]> = {
+    sacred_flame: ['dex', spellDc(c)], fireball: ['dex', spellDc(c)], sleep: ['wis', spellDc(c)],
+    throw: ['dex', 8 + abilMod(c, 'dex') + 2], web: ['dex', 13],
+  };
+  if (saveOf[kind]) {
+    const [abil, dc] = saveOf[kind];
+    const item = kind === 'throw' ? ITEMS[c.items.find(i => i.uid === arg)?.id ?? ''] : undefined;
+    if (kind === 'sleep' && m.noSleep) return { pct: 0, adv: 0, why: ['no puede dormir'], save: true };
+    if (item?.thrown?.undeadOnly && m.ai !== 'undead') return { pct: 0, adv: 0, why: ['no es un no muerto'], save: true };
+    const need = dc - (m.saves[abil] ?? 0);
+    return { pct: Math.round(Math.max(0, Math.min(20, need - 1)) * 5), adv: 0, why: [`salvación de ${ABIL_NAME[abil]} CD ${dc}`], save: true };
+  }
+  if (kind === 'magic_missile' || kind === 'wand') return { pct: t.shield ? 0 : 100, adv: 0, why: ['impacta siempre'] };
+  const spell = ['guiding_bolt', 'spiritual', 'fire_bolt', 'ray_frost', 'scorching'].includes(kind);
+  if (kind !== 'atk' && !spell) return undefined;
+  const w = kind === 'atk' ? ITEMS[arg]?.weapon : undefined;
+  if (kind === 'atk' && !w) return undefined;
+  const ranged = spell || !!w!.ranged;
+  const toHit = spell ? spellAttack(c) : weaponStat(c, arg).toHit;
+  const { up, down } = advFor(cb, u, t, ranged);
+  const adv = up.length && down.length ? 0 : up.length ? 1 : down.length ? -1 : 0;
+  const cover = coverOf(cb, u, t);
+  const ac = t.ac + (t.shield ? 5 : 0) + cover;
+  const champ = c.cls === 'fighter' && c.level >= 3 && !spell;
+  const helpless = !ranged && (t.paralyzed || t.asleep);
+  let hits = 0;
+  for (let d = 2; d <= 20; d++) if (d === 20 || (champ && d === 19) || helpless || d + toHit >= ac) hits++;
+  const one = hits / 20;
+  const p = adv > 0 ? 1 - (1 - one) ** 2 : adv < 0 ? one ** 2 : one;
+  const why = [
+    ...(adv > 0 ? [`ventaja: ${up.join(', ')}`] : adv < 0 ? [`desventaja: ${down.join(', ')}`] : up.length ? ['ventaja y desventaja se anulan'] : []),
+    ...(cover ? ['media cobertura: +2 CA'] : []),
+  ];
+  return { pct: Math.round(p * 100), adv, why };
+}
+
 function spendSlot(c: Char): boolean {
   if (c.slots[0] > 0) { c.slots[0]--; return true; }
   if (c.slots[1] > 0) { c.slots[1]--; return true; }
@@ -1107,7 +1182,16 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       say(cb, `${u.name} pasa a la fila ${u.row === 'front' ? 'delantera' : 'trasera'}.`, 'info');
       if (u.hidden && u.row === 'front') { u.hidden = undefined; say(cb, `${u.name} sale de su escondite.`, 'info'); }
       // Con las filas cambiadas, los enemigos vuelven a mirar quién queda delante y quién detrás (el autor 2026-11-10).
-      for (const e of cb.units) if (e.side === 'enemy') e.plan = undefined;
+      {
+        const before = new Map(cb.units.filter(e => e.side === 'enemy' && e.plan).map(e => [e.key, e.plan!.targets.join()]));
+        for (const e of cb.units) if (e.side === 'enemy') e.plan = undefined;
+        planAll(g, cb);
+        // Se cuenta quién cambia de objetivo: así se ve que moverse ha servido.
+        for (const e of cb.units.filter(x => x.side === 'enemy' && x.plan && before.has(x.key) && before.get(x.key) !== x.plan.targets.join())) {
+          const names = [...new Set(e.plan!.targets)].map(k => cb.units.find(x => x.key === k)?.name).filter(Boolean);
+          if (names.length) say(cb, `${e.name} cambia de objetivo: ahora va a por ${names.join(' y ')}.`, 'big');
+        }
+      }
       break;
     case 'flee':
       finish(g, cb, 'fled');

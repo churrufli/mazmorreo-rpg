@@ -2,6 +2,14 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 16 de noviembre de 2026 — Más decisiones tácticas
+
+- **12 objetivos opcionales nuevos** sin reloj: «que el primero en caer sea…» y «que no caiga nadie del grupo». Premios con objetos tácticos (red, fuego de alquimista, agua bendita, vial de ácido, poción de resistencia al frío).
+- **Previsión de la tirada** al elegir objetivo y en la explicación de cada ataque: probabilidad aproximada con las mismas reglas del SRD 5.2.1 (CA, bonificador, ventaja, desventaja, cobertura), sin tocar los dados.
+- El registro explica cada ventaja o desventaja y avisa cuando un enemigo cambia de objetivo porque el grupo ha cambiado de fila.
+- **13 vías de aliados** en escenas de las tres aventuras: solo aparecen si ese aliado va en el grupo; nunca son la única solución.
+- Probabilidad aproximada en las pruebas de las escenas y ajuste «Combate pausado».
+
 ## 6 de noviembre de 2026 — Narrativa independiente del mapa (PR #13)
 
 - Revisión de **83 introducciones de escenas** de las tres aventuras: Hondaroca (30), El Corazón Hueco (27) y El Invierno del Dragón (26).

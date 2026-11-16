@@ -954,6 +954,14 @@
                   "fail": {
                     "text": "No das con ello por ahí."
                   }
+                },
+                {
+                  "ally": "maren",
+                  "label": "Dejar que Maren siga el rastro",
+                  "ok": {
+                    "text": "Maren conoce estas muescas desde niña. Os lleva directos al escondite de los leñadores.",
+                    "reveal": "b1_s02"
+                  }
                 }
               ]
             },
@@ -2227,6 +2235,14 @@
                   "ok": {
                     "text": "El leñador se aleja con su hacha, aún mirando las marcas."
                   }
+                },
+                {
+                  "ally": "telmo",
+                  "label": "Dejar que Corvalen descifre las marcas",
+                  "ok": {
+                    "text": "Corvalen compara las muescas con sus notas. Son marcas de resineros y señalan un paso hacia una charca apartada.",
+                    "reveal": "b2_s01"
+                  }
                 }
               ]
             },
@@ -3053,6 +3069,14 @@
                   "ok": {
                     "text": "Dejáis la semilla en su lugar y seguís adelante."
                   }
+                },
+                {
+                  "ally": "anselmo",
+                  "label": "Dejar que Ismerel bendiga la ofrenda",
+                  "ok": {
+                    "text": "Ismerel alza su farol sobre la semilla. La luz señala un cofre oculto bajo la losa.",
+                    "reveal": "b3_s01"
+                  }
                 }
               ]
             }
@@ -3771,6 +3795,14 @@
                   "label": "No tocar el altar",
                   "ok": {
                     "text": "Dejáis el altar sin tocar. Seguís adelante."
+                  }
+                },
+                {
+                  "ally": "ivelle",
+                  "label": "Dejar que Ivelle pronuncie el juramento",
+                  "ok": {
+                    "text": "Ivelle recita el juramento de su orden ante el altar. La savia se retira y deja ver una entrada oculta.",
+                    "reveal": "b4_s01"
                   }
                 }
               ]

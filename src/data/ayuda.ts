@@ -15,7 +15,8 @@ export const COMO_FUNCIONA: { icon: string; title: string; text: string[] }[] = 
     'Abre ATACAR, HABILIDADES u OBJETOS y elige una opción. ESQUIVAR queda junto a TERMINAR TURNO; cambiar de fila usa IR ATRÁS / IR DELANTE. ATACAR siempre muestra las armas, aunque solo lleves una. Mantén pulsado un botón (o toca su pestaña dorada) para ver su explicación sin usarlo. HUIR queda arriba y pide confirmación; si ya has gastado la acción, te explica por qué no puedes huir. Si no queda nada útil, incluido cambiar de fila, el turno acaba solo.',
     'El registro ampliado permite revisar lo ocurrido. La ayuda, las fichas, el registro y las explicaciones detienen el avance automático mientras los lees. Las pestañas doradas permiten consultar sin ejecutar.',
     'Sobre cada enemigo, un icono dice lo que prepara (espada, arco, magia, fuego o escudo si cubre a un tirador) y los retratos redondos, a quién apunta.',
-    'Algunos combates tienen un objetivo opcional (arriba del registro). Si lo cumples, hay premio; si no, ganas igual.',
+    'Algunos combates tienen un objetivo opcional (arriba del registro): vencer a tiempo, derribar primero a alguien o que no caiga nadie. Si lo cumples, hay premio; si no, ganas igual.',
+    'Al elegir objetivo, cada enemigo enseña la probabilidad aproximada de impactar. Es una ayuda: la tirada sigue siendo la del dado.',
   ] },
   { icon: mdiBedOutline, title: 'Descanso', text: [
     'Los puntos de descanso permiten un descanso corto (gastando dados de golpe) o largo (todo el grupo recupera PG y conjuros). Cada punto se usa una vez.',
@@ -72,6 +73,13 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
   { version: 'v0.146', items: [
+    'Objetivos nuevos en combate que no van contra el reloj: que el primero en caer sea el tirador, el necrófago o la bruja, o que no caiga nadie del grupo. Sus premios son objetos para luchar de otra forma: red, fuego de alquimista, agua bendita, vial de ácido…',
+    'Al elegir objetivo, cada enemigo enseña la probabilidad aproximada de impactar (▲ con ventaja, ▼ con desventaja). Mantén pulsado un ataque para ver la de todos y por qué.',
+    'El registro dice el motivo de cada ventaja o desventaja: «con ventaja (objetivo derribado)», «con desventaja (debilitado)».',
+    'Si cambias de fila y un enemigo cambia de objetivo, el registro lo destaca.',
+    'Algunas escenas tienen una vía propia de un aliado (Brunna, Tiko, Edmund, Liss, Maren, Corvalen, Ismerel, Ivelle, Durnok, Tavin, Syrael, Vurka): solo sale si va en el grupo y no necesita tirada.',
+    'Las pruebas de las escenas enseñan la probabilidad aproximada de lograrlas con cada personaje.',
+    'Ajustes: «Combate pausado». Apagado, los turnos de los enemigos pasan más rápido.',
     'Maese Orvane combate con un guardián de vapor más.',
     'Efectos propios para cada daño mágico: llamas, escarcha, rayos, haces de luz, humo, burbujas y anillos de fuerza.',
     'El registro del combate se ordena por rondas y turnos, con un icono y un color para cada tipo de línea.',

@@ -854,6 +854,14 @@
                     "text": "La madera cede y te obliga a retroceder.",
                     "damage": "1d4"
                   }
+                },
+                {
+                  "ally": "brunna",
+                  "label": "Dejar que Brunna calce las vigas",
+                  "ok": {
+                    "text": "Brunna calza las vigas como en las galerías de su cuadrilla y saca la bolsa sin que cruja nada.",
+                    "item": "potion_healing"
+                  }
                 }
               ],
               "fallback": {
@@ -2000,6 +2008,14 @@
                   "ok": {
                     "text": "El goblin desaparece entre las balanzas."
                   }
+                },
+                {
+                  "ally": "tiko",
+                  "label": "Dejar que Tiko le hable en su idioma",
+                  "ok": {
+                    "text": "Tiko regatea con el goblin entre risas y le cambia el libro por una baratija. El registro marca un conducto oculto.",
+                    "reveal": "z2_s01"
+                  }
                 }
               ]
             },
@@ -2743,6 +2759,14 @@
                   "fail": {
                     "text": "Una piedra rueda y la ofrenda se pierde entre las grietas."
                   }
+                },
+                {
+                  "ally": "brunna",
+                  "label": "Dejar que Brunna lea la piedra",
+                  "ok": {
+                    "text": "Brunna golpea las losas con el mango del pico y aparta la que cede sin derrumbar las demás. Recuperáis las piezas de oro.",
+                    "gold": 7
+                  }
                 }
               ],
               "fallback": {
@@ -3285,6 +3309,14 @@
                     "text": "El escriba se retira. Unos guardianes surgen entre las lápidas.",
                     "add": "z3_e06",
                     "fight": "z3_e06"
+                  }
+                },
+                {
+                  "ally": "edmund",
+                  "label": "Dejar que Edmund rece por los nombres",
+                  "ok": {
+                    "text": "El hermano Edmund recita la oración de su orden. El escriba inclina la cabeza y os muestra una entrada lateral hacia el sepulcro real.",
+                    "reveal": "z3_s01"
                   }
                 }
               ]
@@ -3879,6 +3911,14 @@
                   },
                   "fail": {
                     "text": "Los reflejos se confunden en el agua."
+                  }
+                },
+                {
+                  "ally": "liss",
+                  "label": "Dejar que Liss lea el cristal",
+                  "ok": {
+                    "text": "Liss reconoce el cristal: Orvane escondía aquí sus reservas. Sabe dónde está el cofre.",
+                    "reveal": "z4_s01"
                   }
                 }
               ]
