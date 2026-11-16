@@ -1,5 +1,7 @@
 // Cambios pedidos por el autor el 2026-11-16: compañeros según la zona, roca junto a la reja y personajes del mapa.
 import { newGame } from './game';
+import { newItem } from './rules';
+import { actionsFor, current, enemyTurn, startCombat, withDice } from './combat';
 import { allyCap } from './posada';
 import { blockedCells, neighbors, npcSpots, plan } from './dungeon';
 
@@ -29,5 +31,20 @@ describe('personajes del mapa', () => {
     const g = newGame(1, 'Prueba', 'fighter', 'human');
     g.zone = 'm1';
     expect(npcSpots(g).some(s => s.img === 'ally_telmo')).toBe(true);
+  });
+});
+
+describe('agua bendita', () => {
+  const holy = (enc: string) => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    g.party[0].items.push(newItem('holy_water'));
+    const cb = startCombat(g, enc);
+    // Si abre un enemigo, se pasan sus turnos hasta que le toque al héroe.
+    for (let i = 0; i < 20 && current(cb).side === 'enemy' && !cb.result; i++) withDice(cb, () => enemyTurn(g, cb));
+    return actionsFor(g, cb).some(a => a.id.startsWith('throw:'));
+  };
+  it('sale solo si hay algún no muerto en el combate', () => {
+    expect(holy('z1_e01')).toBe(false);
+    expect(holy('z3_e02')).toBe(true);
   });
 });

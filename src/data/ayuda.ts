@@ -90,6 +90,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'El combate empieza nombrando a los enemigos en vez de contarlos («Goblin, Goblin y Rata gigante»).',
     'Al volver a la posada a mitad de una aventura, el máximo de compañeros depende de la zona: uno en la primera, dos en la segunda y tres de la tercera en adelante.',
     'Los personajes que esperan en el mapa para hablar (la abuela Brezna, el sabio de la montaña) enseñan su icono.',
+    'El agua bendita solo aparece en el menú de combate si hay algún no muerto.',
     'Bosque profundo: la roca ya no tapa la entrada del pasadizo que abre la palanca.',
     'La dríade se rinde al llegar a la mitad de sus PG (antes hacía falta bajar de ella) y se desvanece al terminar. Si llegáis a Brezna sin haber hablado antes con la abuela, antes se os presenta.',
     'La pantalla del final de la aventura suena con la música del pueblo. En la web, el botón Atrás del navegador pregunta antes de salir de la aventura.',
