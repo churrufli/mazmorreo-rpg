@@ -471,7 +471,7 @@ export function Explore() {
                 </G>
               );
             })}
-            {/* La abuela Brezna: aro de plata donde os espera para hablar. */}
+            {/* Personajes no jugadores (Brezna, el sabio): aro de plata donde os esperan para hablar. */}
             {npcSpots(g).map(a => {
               if (!vis.has(a.cell)) return null;
               const [x, y] = center(...(a.cell.split(',').map(Number) as [number, number]));
@@ -623,9 +623,12 @@ export function Explore() {
 
       {sheetChar ? (
         <CardModal
+          key={sheetChar.id}
           char={sheetChar}
           info={charInfo(sheetChar)}
           party={g.party}
+          others={g.party.filter(c => c.id !== sheetChar.id).map(c => ({ key: c.id, info: charInfo(c) }))}
+          onPick={setSheet}
           onClose={() => setSheet(undefined)}
           town={townName}
           onDrop={uid => { drop(sheetChar.id, uid); setSheet(undefined); }}

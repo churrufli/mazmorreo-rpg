@@ -3,7 +3,7 @@ import type { ImgKey } from './assets';
 import type { Ability, ClassId, SpeciesId } from './data/srd';
 import { clone, Game, newGame } from './engine/game';
 import { chooseOption, leaveScene, sceneSpent, spentMsg } from './engine/escenas';
-import { endAdventure, sendToInn } from './engine/posada';
+import { allyCap, endAdventure, sendToInn } from './engine/posada';
 import { markReturn, react, atEntrance, atRest, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step, trap, logEvs } from './engine/dungeon';
 import { ADVS, ADV_LIST, AdvId, TOWNS, TownId, advOf, firstZone, wonAdv } from './engine/aventuras';
 import { ITEMS } from './data/srd';
@@ -98,7 +98,9 @@ function leaveFor(g: Game, adv: AdvId, escort?: string) {
   // Al empezar el bosque o la montaña solo va un compañero de otra aventura, el que escolta (el autor 2026-11-06).
   const firstStart = !!ADVS[adv].prev && ![...g.party, ...(g.bench ?? [])].some(c => c.adv === adv);
   // Si no, los elegidos en la posada (hasta tres); si nunca se eligió, los aliados de la aventura.
-  const goes = (c: Char) => c.isHero || c.id === escort || (!firstStart && (g.chosen ? g.chosen.includes(c.id) : (c.adv ?? 'hondaroca') === adv));
+  const cap = allyCap(g, adv);
+  const picked = firstStart ? [] : g.party.filter(c => !c.isHero && c.id !== escort && (g.chosen ? g.chosen.includes(c.id) : (c.adv ?? 'hondaroca') === adv)).slice(0, cap).map(c => c.id);
+  const goes = (c: Char) => c.isHero || c.id === escort || picked.includes(c.id);
   g.bench = [...(g.bench ?? []), ...g.party.filter(c => !goes(c))];
   g.party = g.party.filter(goes);
 }

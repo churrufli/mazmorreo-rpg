@@ -15,6 +15,15 @@ window.addEventListener('pagehide', saveProgress);
 document.addEventListener('visibilitychange', () => { if (document.hidden) saveProgress(); });
 function WebGame() {
   const screen = useStore(s => s.screen);
+  // Atrás del navegador en plena aventura: avisa antes de salir en vez de abandonar la página.
+  const inAdventure = screen === 'game' || screen === 'intro';
+  React.useEffect(() => {
+    if (!inAdventure) return;
+    history.pushState({ mazmorreo: true }, '');
+    const onPop = () => { history.pushState({ mazmorreo: true }, ''); window.dispatchEvent(new Event('mazmorreo:back')); };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [inAdventure]);
   return <><App topInset={36} />{screen !== 'title' && <button className="web-back" aria-label="Volver al menú" title="Volver al menú" onClick={() => window.dispatchEvent(new Event('mazmorreo:back'))}><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d={mdiMenu} /></svg></button>}</>;
 }
 

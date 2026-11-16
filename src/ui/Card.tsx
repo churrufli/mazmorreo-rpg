@@ -6,8 +6,6 @@ import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Bar, Btn, Crop, Icon } from './kit';
 import { mdiBagPersonalOutline, mdiCardAccountDetailsOutline, mdiCheck, mdiStarShooting } from '@mdi/js';
 import { Portrait } from './Overlays';
-import { OptionsButton } from './Settings';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FACE } from '../data/caras';
 import type { FxKind } from '../engine/combat';
 import { ABIL_NAME, ABIL_SHORT, Ability, CLASSES, DmgType, ITEMS, MONSTERS, SPECIES } from '../data/srd';
@@ -76,7 +74,7 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
   const orb = Math.max(12, Math.min(30 * grow, w * 0.2));
   const person = !!FACE[info.img] && !['corazon_hueco', 'dragon_blanco_joven'].includes(info.img);
   // Tamaño del nombre calculado (adjustsFontSizeToFit hacía temblar los nombres de cartas vecinas).
-  const nameFs = Math.min(fs, (w * 0.84) / (info.name.length * 0.5), h * 0.075);
+  const nameFs = Math.min(full ? fs * 0.62 : fs, (w * 0.84) / (info.name.length * 0.5), h * 0.075);
   const anim = useRef(new Animated.Value(1)).current;
   const shake = useRef(new Animated.Value(0)).current;
   const turnGlow = useRef(new Animated.Value(0)).current;
@@ -220,7 +218,9 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
 }
 
 /** Carta en grande: tocar la ilustración la gira a la ficha; tocar la ficha (fuera de los objetos) vuelve. */
-export function CardModal({ char, monster, info, onClose, party, onGive, onDrop, onUse, town = 'Valdescarcha', intent }: {
+export function CardModal({ char, monster, info, onClose, party, onGive, onDrop, onUse, town = 'Valdescarcha', intent, others, onPick }: {
+  /** Las demás cartas (en pequeño, abajo): tocar una amplía esa sin cerrar esta. */
+  others?: { key: string; info: CardInfo }[]; onPick?: (key: string) => void;
   char?: Char; monster?: string; info: CardInfo; onClose: () => void; intent?: { icon: string; faces: ImgKey[] }; party?: Char[]; onGive?: (uid: string, to: string) => void;
   /** Dejar el objeto en el suelo de la casilla del mapa. */
   onDrop?: (uid: string) => void;
@@ -232,7 +232,6 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
   const pop = useRef(new Animated.Value(0)).current;
   const [back, setBack] = useState(false);
   const { width, height } = useWindowDimensions();
-  const ins = useSafeAreaInsets();
   useEffect(() => {
     Animated.timing(rot, { toValue: back ? 1 : 0, duration: 380, useNativeDriver: true }).start();
   }, [back, rot]);
@@ -248,13 +247,14 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
     },
   }), []);
   const sts = info.states ?? [];
-  const W = Math.min(width - 24, (height - 150 - sts.length * 46) / 1.5);
+  const strip = others && others.length > 0 && onPick ? others : undefined;
+  const miniW = strip ? Math.min(52, (width - 24 - (strip.length - 1) * 6) / strip.length) : 0;
+  const stripH = strip ? miniW * 1.5 + 14 : 0;
+  const W = Math.min(width - 24, (height - 150 - stripH - sts.length * 46) / 1.5);
   return (
     <Modal transparent animationType="fade" onRequestClose={onClose}>
       <View style={st.modalBg}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Cerrar" />
-        {/* La ficha tapa la pantalla: también lleva el botón de opciones. */}
-        <OptionsButton style={{ position: 'absolute', top: ins.top + 8, right: 12, padding: 6 }} />
         <Animated.View nativeID="character-card-flip" {...swipe.panHandlers} style={{ width: W, height: W * 1.5, transform: [{ scale }] }}>
           <Animated.View style={[st.face, { transform: [{ perspective: 1000 }, { rotateY: front }] }]} pointerEvents={back ? 'none' : 'auto'}>
             <Card info={info} width={W} full intent={intent} onPress={() => setBack(true)} />
@@ -282,6 +282,15 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
           <Btn small label={back ? 'Ver carta' : 'Ver ficha'} onPress={() => setBack(!back)} />
           <Btn small label="Cerrar" onPress={onClose} />
         </View>
+        {strip ? (
+          <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10, gap: 6 }}>
+            {strip.map(o => (
+              <Pressable key={o.key} onPress={() => onPick!(o.key)} accessibilityLabel={`Ver la carta de ${o.info.name}`}>
+                <Card info={o.info} width={miniW} />
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
       </View>
     </Modal>
   );

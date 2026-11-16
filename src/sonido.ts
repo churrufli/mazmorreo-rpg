@@ -106,7 +106,8 @@ export function refresh() {
   } else if (st.screen === 'intro') {
     // Imagen de entrada de la aventura: ya suena la música de su primera zona (el autor 2026-11-06).
     track = (st.intro?.adv ?? 'hondaroca') === 'hondaroca' ? 'mus_minas' : 'mus_bosque';
-  } else if (st.screen !== 'victory' && st.screen !== 'defeat') track = 'mus_principal';
+  } else if (st.screen === 'victory') track = 'mus_pueblo'; // Final de la aventura: suena la música del pueblo.
+  else if (st.screen !== 'defeat') track = 'mus_principal';
   loop(!away && musicOn() && level('musica') > 0 ? track : undefined, mus, MUSIC * level('musica'));
   const ambName = inDungeon && musicOn() && level('ambiente') > 0 ? (forest(g!) ? 'amb_forest_day' : AMBIENCE[g!.zone] ?? 'amb_lava_cave') : undefined;
   loop(ambName, amb, (st.combat ? AMB_COMBAT : AMB) * level('ambiente'));

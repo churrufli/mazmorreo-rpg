@@ -92,9 +92,12 @@ export function blockedCells(zone: string): Set<string> {
   };
   const base = [reach(new Set(), false), reach(new Set(), true)];
   const blocked = new Set<string>();
+  // Junto a una reja con palanca no se cierra el paso con decorado (si se llega a esa casilla sin abrirla): al abrirla, la roca seguiría tapando la entrada del pasadizo.
+  const levered = new Set(p.marks.filter(m => m.kind === 'lever').map(m => (contentById(m.id)?.c as any)?.gate));
+  const byGate = new Set(p.marks.filter(m => m.kind === 'gate' && levered.has(m.id) && advOf(zone) !== 'hondaroca').flatMap(m => neighbors([m.q, m.r]).map(hkey)).filter(k => base[0].has(k)));
   for (const m of p.marks.filter(m => isObstacle(m) && !bridgedWater(zone, m))) {
     const k = `${m.q},${m.r}`;
-    if (k === hkey(p.start) || p.marks.some(o => !isObstacle(o) && o.kind !== 'prop' && `${o.q},${o.r}` === k)) continue;
+    if (byGate.has(k) || k === hkey(p.start) || p.marks.some(o => !isObstacle(o) && o.kind !== 'prop' && `${o.q},${o.r}` === k)) continue;
     const trial = new Set([...blocked, k]);
     const keeps = [false, true].every((s, i) => { const r = reach(trial, s); return [...base[i]].every(c => trial.has(c) || r.has(c)); });
     if (keeps) blocked.add(k);
@@ -523,6 +526,9 @@ function enterRoom(g: Game, room: Room): Ev[] {
     if (c.type === 'dialogue') {
       // Comentarios de un aliado de otra aventura: solo si va en el grupo.
       if (c.only && !g.party.some(p => p.id === c.only && !p.dead)) continue;
+      // Si aún no se ha hablado con ese personaje (se llegó por otro camino), antes se le presenta.
+      const unmet = (c as any).if_unmet as { who: string; lines: DialogueLine[] } | undefined;
+      if (unmet && !g.diary?.some(d => d.s === unmet.who)) evs.push({ kind: 'dialogue', lines: unmet.lines });
       evs.push({ kind: 'dialogue', lines: c.lines });
       // Regalo de quien habla si nadie lleva ya algo que sirva (la abuela da un antídoto antes de las arañas).
       const gift = c.gift as { item: string; unless: string[]; text: string } | undefined;
@@ -628,20 +634,26 @@ export function pendingAllies(g: Game): { cell: string; img: ImgKey; id: string 
   return out;
 }
 
-/** La abuela Brezna espera en el mapa (aro de plata) en cada sala donde habla, hasta que se llega a ella. */
+/** Personajes no jugadores de las aventuras (no son aliados): la abuela Brezna y el sabio de la montaña. */
+const NPCS = ['ortiga', 'sabio'];
+
+/** Cada personaje no jugador espera en el mapa (aro de plata) en la sala donde habla, hasta que se llega a él. */
 export function npcSpots(g: Game): { cell: string; img: ImgKey; id: string }[] {
   const p = plan(g.zone);
   const taken = new Set(p.marks.map(m => `${m.q},${m.r}`));
   const out: { cell: string; img: ImgKey; id: string }[] = [];
   zoneById(g.zone).rooms.forEach((room, idx) => {
-    const d = (room.contents as Content[]).find(x => x.type === 'dialogue' && x.lines.some((l: any) => l.speaker === 'ortiga'));
+    const d = (room.contents as Content[]).find(x => x.type === 'dialogue' && x.lines.some((l: any) => NPCS.includes(l.speaker)));
     if (!d || g.done.includes(room.id)) return;
+    const who = (d as any).lines.find((l: any) => NPCS.includes(l.speaker)).speaker as string;
+    const face = ADVS[advOf(g.zone)].faces[who];
+    if (!face) return;
     const cells = p.cells.filter(([, , i]) => i === idx);
     if (!cells.length) return;
     const mq = cells.reduce((s, x) => s + x[0], 0) / cells.length, mr = cells.reduce((s, x) => s + x[1], 0) / cells.length;
     const free = cells.filter(([q, r]) => !taken.has(`${q},${r}`) && !blockedCells(g.zone).has(`${q},${r}`));
     const best = (free.length ? free : cells).reduce((a, b) => hdist([a[0], a[1]], [mq, mr]) <= hdist([b[0], b[1]], [mq, mr]) ? a : b);
-    out.push({ cell: `${best[0]},${best[1]}`, img: 'abuela_ortiga', id: d.id });
+    out.push({ cell: `${best[0]},${best[1]}`, img: face, id: d.id });
   });
   return out;
 }

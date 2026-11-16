@@ -267,7 +267,7 @@ function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: Dm
   }
   const spare = goalOpen(cb, 'spare');
   if (spare && target.side === 'enemy' && goalUnits(cb, spare.who!).includes(target)) {
-    if (target.hp > 0 && target.hp < target.maxHp / 2) { target.fled = true; target.plan = undefined; say(cb, `${target.name} se rinde.`, 'big'); goalDone(cb, true); return; }
+    if (target.hp > 0 && target.hp <= target.maxHp / 2) { target.fled = true; target.plan = undefined; say(cb, `${target.name} se rinde.`, 'big'); goalDone(cb, true); return; }
     if (target.hp <= 0) goalDone(cb, false);
   }
   if (target.hp > 0) return;
@@ -863,6 +863,8 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     const short = SHORT[it.id] ?? d.name;
     const name = n > 1 ? `${short} ×${n}` : short;
     if (d.kind === 'potion' && (d.heal || d.resistPoison || d.curePoison || d.resistCold)) A.push({ id: `potion:${it.uid}`, label: name, cost: 'bonus', target: 'ally', detail: d.heal ?? (d.curePoison ? CURE : d.resistCold ? COLD : 'resiste veneno') });
+    // El agua bendita solo sale si hay algún no muerto en pie.
+    if (d.kind === 'throw' && d.thrown?.undeadOnly && !cb.units.some(x => x.side === 'enemy' && alive(x) && MONSTERS[x.mon!]?.ai === 'undead')) continue;
     if (d.kind === 'throw') A.push({ id: `throw:${it.uid}`, label: name, cost: 'action', target: 'enemy', detail: d.thrown!.dice ?? 'apresa' });
     if (d.web && (it.charges ?? 0) > 0 && CLASSES[c.cls].spell) A.push({ id: `web:${it.uid}`, label: 'Varita de telarañas', cost: 'action', target: 'enemy', detail: `una fila · ${it.charges} cargas` });
     if (d.kind === 'wand' && !d.web && (it.charges ?? 0) > 0) A.push({ id: `wand:${it.uid}`, label: 'Varita', cost: 'action', target: 'enemy', detail: `${it.charges} cargas` });

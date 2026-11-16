@@ -17,7 +17,7 @@ import { FaceImage } from '../ui/FaceImage';
 import { FadeIn, Portrait } from '../ui/Overlays';
 import { ADV_LIST, ADVS, MEJORES, TOWNS, TownId, advOf, speaker, wonAdv } from '../engine/aventuras';
 import { pendingNotes, useOutside } from '../engine/dungeon';
-import { MAX_PARTY, finishTalk, nextTalk, short, talkLines, talksDone } from '../engine/posada';
+import { allyCap, finishTalk, nextTalk, short, talkLines, talksDone } from '../engine/posada';
 import { Dialogue } from '../ui/Overlays';
 import { Galeria } from './Galeria';
 import { OptionsButton } from '../ui/Settings';
@@ -89,7 +89,8 @@ export function Town() {
   const escorts = firstStart ? living.filter(c => !c.isHero && (c.adv ?? 'hondaroca') !== town.adv) : [];
   // Compañeros para la próxima salida: los elegidos en la posada o, si no se eligió nunca, los de esta aventura.
   const allies = g.party.filter(c => !c.isHero);
-  const going = firstStart ? [] : g.chosen ? allies.filter(c => g.chosen!.includes(c.id)) : allies.filter(c => (c.adv ?? 'hondaroca') === town.adv);
+  const cap = allyCap(g, town.adv);
+  const going = firstStart ? [] : (g.chosen ? allies.filter(c => g.chosen!.includes(c.id)) : allies.filter(c => (c.adv ?? 'hondaroca') === town.adv)).slice(0, cap);
   const go2 = () => (escorts.length ? setAsking(true) : (setPlace('menu'), leaveTown()));
   // Barra común para tienda y baúl: tocar otro personaje lo selecciona; repetir toque abre su ficha.
   const renderPartyBar = () => (
@@ -300,14 +301,14 @@ export function Town() {
             {allies.length ? (
               <View>
                 <Text style={st.h}>Compañeros para la próxima salida</Text>
-                <Text style={st.itemDesc}>{firstStart ? `Al empezar ${adv.name} solo os acompaña uno: lo eliges al salir hacia la mazmorra. Los demás esperan aquí y suben de nivel con el grupo.` : `Elige hasta ${MAX_PARTY - 1}. Los demás esperan aquí y suben de nivel con el grupo.`}</Text>
+                <Text style={st.itemDesc}>{firstStart ? `Al empezar ${adv.name} solo os acompaña uno: lo eliges al salir hacia la mazmorra. Los demás esperan aquí y suben de nivel con el grupo.` : `Elige hasta ${cap}${cap < 3 ? ` (en esta zona de ${adv.name} no caben más)` : ''}. Los demás esperan aquí y suben de nivel con el grupo.`}</Text>
                 {firstStart ? null : allies.map(c => {
                   const on = going.includes(c);
                   return <Btn key={c.id} small primary={on} label={`${on ? '✓ ' : ''}${c.name}`} sub={`${CLASSES[c.cls].name} · nivel ${c.level}${c.inspired ? ' · Inspiración heroica' : ''}`}
                     onPress={() => edit(gg => {
                       const cur = gg.chosen ?? going.map(x => x.id);
-                      gg.chosen = on ? cur.filter(x => x !== c.id) : cur.length < MAX_PARTY - 1 ? [...cur, c.id] : cur;
-                      if (!on && cur.length >= MAX_PARTY - 1) say(`Ya van ${MAX_PARTY - 1}: quita a alguien antes.`);
+                      gg.chosen = on ? cur.filter(x => x !== c.id) : cur.length < cap ? [...cur, c.id] : cur;
+                      if (!on && cur.length >= cap) say(`Ya van ${cap}: quita a alguien antes.`);
                     }, true)} />;
                 })}
                 <Text style={st.h}>Charlas</Text>
@@ -337,7 +338,7 @@ export function Town() {
         </FadeIn>
       </ScrollView>
       {sheet ? (
-        <CardModal char={g.party.find(c => c.id === sheet)} info={charInfo(g.party.find(c => c.id === sheet)!)} party={g.party} town={town.name} onClose={() => setSheet(undefined)}
+        <CardModal key={sheet} char={g.party.find(c => c.id === sheet)} info={charInfo(g.party.find(c => c.id === sheet)!)} party={g.party} others={g.party.filter(c => c.id !== sheet).map(c => ({ key: c.id, info: charInfo(c) }))} onPick={setSheet} town={town.name} onClose={() => setSheet(undefined)}
           onUse={(uid, to) => { let t = ''; edit(gg => { t = useOutside(gg, sheet, uid, to); }, true); say(t); }}
           onGive={(uid, to) => edit(gg => {
             const from = gg.party.find(c => c.id === sheet)!;
