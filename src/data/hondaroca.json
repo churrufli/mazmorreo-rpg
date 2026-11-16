@@ -60,9 +60,9 @@
               "can_reinforce": [],
               "enemies": [
                 {
-                  "srd_creature": "Giant Rat",
+                  "srd_creature": "Rat",
                   "name": "Rata de la entrada",
-                  "count": 1,
+                  "count": 2,
                   "row": "front",
                   "weapon": "Mordisco",
                   "drop_weapon": false
@@ -258,7 +258,15 @@
                 {
                   "srd_creature": "Giant Rat",
                   "name": "Rata del almacén",
-                  "count": 2,
+                  "count": 1,
+                  "row": "front",
+                  "weapon": "Mordisco",
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Spider",
+                  "name": "Araña del almacén",
+                  "count": 1,
                   "row": "front",
                   "weapon": "Mordisco",
                   "drop_weapon": false
@@ -594,9 +602,9 @@
             {
               "type": "rest_point",
               "id": "z1_rest1",
-              "rest": "short",
+              "rest": "long",
               "name": "Campamento de los mineros",
-              "description": "La hoguera conserva brasas bajo la ceniza. El lugar está protegido y permite realizar un descanso corto."
+              "description": "La hoguera conserva brasas bajo la ceniza. El lugar está protegido y permite pasar aquí la noche."
             },
             {
               "type": "encounter",
@@ -940,7 +948,14 @@
                 {
                   "srd_creature": "Giant Rat",
                   "name": "Rata del agua negra",
-                  "count": 2,
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Scorpion",
+                  "name": "Escorpión del agua negra",
+                  "count": 1,
                   "row": "front",
                   "drop_weapon": false
                 }
@@ -1026,8 +1041,8 @@
               "gold_drop": 0,
               "enemies": [
                 {
-                  "srd_creature": "Giant Rat",
-                  "name": "Rata del banco",
+                  "srd_creature": "Giant Fire Beetle",
+                  "name": "Escarabajo del banco",
                   "count": 1,
                   "row": "front",
                   "drop_weapon": false
@@ -1093,6 +1108,13 @@
                 {
                   "srd_creature": "Goblin Warrior",
                   "name": "Goblin rebuscador",
+                  "count": 1,
+                  "row": "front",
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Bat",
+                  "name": "Murciélago del pozo",
                   "count": 1,
                   "row": "front",
                   "drop_weapon": false

@@ -1,4 +1,4 @@
-import { roll, die } from './rng';
+import { roll, die, SEEDED } from './rng';
 
 test('roll respeta los límites', () => {
   const r = { seed: 42 };
@@ -17,4 +17,15 @@ test('roll respeta los límites', () => {
 test('misma semilla, mismas tiradas', () => {
   const a = { seed: 7 }, b = { seed: 7 };
   expect([roll(a, '1d20'), roll(a, '1d20')]).toEqual([roll(b, '1d20'), roll(b, '1d20')]);
+});
+
+test('en el juego las tiradas no dependen de la semilla', () => {
+  SEEDED.on = false;
+  try {
+    const a = Array.from({ length: 20 }, () => die({ seed: 1 }, 20));
+    const b = Array.from({ length: 20 }, () => die({ seed: 1 }, 20));
+    expect(a).not.toEqual(b);
+  } finally {
+    SEEDED.on = true;
+  }
 });

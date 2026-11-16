@@ -264,6 +264,47 @@ export const MONSTERS: Record<string, MonsterDef> = {
     attacks: [{ name: 'Mordisco', bonus: 5, dice: '1d4+3', type: 'perforante' }],
     saves: { str: -2, dex: 3, con: 0, int: -4, wis: 0, cha: -3 },
   },
+  // Criaturas de valor de desafío 0 del SRD 5.2.1 para la primera zona de Hondaroca (el autor 2026-11-16).
+  Rat: {
+    name: 'Rata', img: 'rata', ac: 10, hp: 1, dexMod: 0, xp: 10, ai: 'beast',
+    attacks: [{ name: 'Mordisco', bonus: 2, dice: '1', type: 'perforante' }],
+    saves: { str: -4, dex: 0, con: -1, int: -4, wis: 0, cha: -3 },
+  },
+  Bat: {
+    name: 'Murciélago', img: 'murcielago', ac: 12, hp: 1, dexMod: 2, xp: 10, ai: 'beast',
+    attacks: [{ name: 'Mordisco', bonus: 4, dice: '1', type: 'perforante' }],
+    saves: { str: -4, dex: 2, con: -1, int: -4, wis: 1, cha: -3 },
+  },
+  Spider: {
+    name: 'Araña', img: 'arana', ac: 12, hp: 1, dexMod: 2, xp: 10, ai: 'beast',
+    attacks: [{ name: 'Mordisco', bonus: 4, dice: '1', type: 'perforante', extra: { dice: '1d4', type: 'veneno' } }],
+    saves: { str: -4, dex: 2, con: -1, int: -5, wis: 0, cha: -4 },
+  },
+  'Giant Fire Beetle': {
+    name: 'Escarabajo de fuego gigante', img: 'escarabajo_fuego', ac: 13, hp: 4, dexMod: 0, xp: 10, ai: 'beast', resist: ['fuego'],
+    attacks: [{ name: 'Mordisco', bonus: 1, dice: '1', type: 'fuego' }],
+    saves: { str: -1, dex: 0, con: 1, int: -5, wis: -2, cha: -4 },
+  },
+  Scorpion: {
+    name: 'Escorpión', img: 'escorpion', ac: 11, hp: 1, dexMod: 0, xp: 10, ai: 'beast',
+    attacks: [{ name: 'Aguijón', bonus: 2, dice: '1', type: 'perforante', extra: { dice: '1d6', type: 'veneno' } }],
+    saves: { str: -4, dex: 0, con: -1, int: -5, wis: -1, cha: -4 },
+  },
+  Lizard: {
+    name: 'Lagarto', img: 'lagarto', ac: 10, hp: 2, dexMod: 0, xp: 10, ai: 'beast',
+    attacks: [{ name: 'Mordisco', bonus: 2, dice: '1', type: 'perforante' }],
+    saves: { str: -4, dex: 0, con: 0, int: -5, wis: -1, cha: -4 },
+  },
+  // No ataca: solo chilla (en el SRD avisa a quien esté cerca).
+  Shrieker: {
+    name: 'Hongo chillón', img: 'hongo_chillon', ac: 5, hp: 13, dexMod: -5, xp: 0, ai: 'beast', noSleep: true,
+    attacks: [], saves: { str: -5, dex: -5, con: 0, int: -5, wis: -4, cha: -5 },
+  },
+  Commoner: {
+    name: 'Plebeyo', img: 'plebeyo', ac: 10, hp: 4, dexMod: 0, xp: 10, ai: 'goblin',
+    attacks: [{ name: 'Garrote', bonus: 2, dice: '1d4', type: 'contundente' }],
+    saves: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 },
+  },
   'Goblin Warrior': {
     name: 'Goblin', img: 'goblin_espada', ac: 15, hp: 10, dexMod: 2, xp: 50, ai: 'goblin',
     attacks: [

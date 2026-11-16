@@ -96,6 +96,10 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'La dríade se rinde al llegar a la mitad de sus PG (antes hacía falta bajar de ella) y se desvanece al terminar. Si llegáis a Brezna sin haber hablado antes con la abuela, antes se os presenta.',
     'La pantalla del final de la aventura suena con la música del pueblo. En la web, el botón Atrás del navegador pregunta antes de salir de la aventura.',
     'Fichas más fieles al SRD 5.2.1: el sectario solo lleva su hoz ritual, el enjambre de murciélagos muerde menos cuando está maltrecho y el jefe goblin tiene Carisma +0.',
+    'Hondaroca es más llevadera al empezar solo: el héroe lleva una poción de curación y el campamento de los mineros permite un descanso largo.',
+    'Tras perder un combate volvéis al último guardado con todos los PG y una poción de curación más para el héroe (seguís perdiendo un 10 % del oro).',
+    'Las tiradas son aleatorias de verdad: ya no dependen de ninguna semilla guardada en la partida, así que cargar una partida no repite los mismos dados.',
+    'Enemigos nuevos del SRD, mucho más débiles: rata, murciélago, araña, escarabajo de fuego gigante, escorpión, lagarto, hongo chillón y plebeyo. Algunos sustituyen a ratas gigantes en la primera zona de Hondaroca.',
   ] },
   { version: 'v0.145', items: [
     'Combate más táctico con reglas del SRD 5.2.1: nueva acción Ayudar (ventaja para el siguiente ataque de un aliado) y Maestría de armas para guerrero, pícaro, paladín, bárbaro y explorador (Debilitar, Hostigar, Derribar y Empujar).',

@@ -1,7 +1,7 @@
 import type { ImgKey } from '../assets';
 import type { Ability, ClassId, SpeciesId } from '../data/srd';
 import type { Rng } from './rng';
-import { Char, Item, createHero } from './rules';
+import { Char, Item, MAX_ITEMS, createHero, newItem } from './rules';
 import type { Hex } from './dungeon';
 import type { AdvId, TownId } from './aventuras';
 
@@ -100,11 +100,27 @@ export interface Game {
 }
 
 export function newGame(slot: number, name: string, cls: ClassId, species: SpeciesId, abil?: Record<Ability, number>, img?: ImgKey): Game {
+  // El héroe empieza solo a nivel 1: lleva una poción de curación para la primera zona (el autor 2026-11-16).
+  const hero = createHero(name, cls, species, abil, img);
+  hero.items.push(newItem('potion_healing'));
   return {
     slot, savedAt: Date.now(), rng: { seed: (Date.now() % 2147483647) | 0 }, place: 'dungeon', zone: 'z1',
-    pos: [0, 0], prev: [0, 0], visited: [], party: [createHero(name, cls, species, abil, img)], gold: 0, done: [], found: [],
+    pos: [0, 0], prev: [0, 0], visited: [], party: [hero], gold: 0, done: [], found: [],
     enemyHp: {}, fled: [], won: false, log: [],
   };
+}
+
+/**
+ * Tras una derrota se vuelve al último guardado: se pierde el 10 % del oro, pero el grupo vuelve con
+ * todos sus PG y el héroe con una poción de curación más (el autor 2026-11-16). Si su mochila está
+ * llena, la poción va al baúl de la posada.
+ */
+export function afterDefeat(g: Game) {
+  g.gold -= Math.floor(g.gold * 0.1);
+  for (const c of g.party) if (!c.dead) Object.assign(c, { hp: c.maxHp, stable: false, deathS: 0, deathF: 0 });
+  const hero = g.party.find(c => c.isHero) ?? g.party[0];
+  if (hero.items.length < MAX_ITEMS) hero.items.push(newItem('potion_healing'));
+  else g.chest = [...(g.chest ?? []), newItem('potion_healing')];
 }
 
 export const clone = <T,>(x: T): T => JSON.parse(JSON.stringify(x));

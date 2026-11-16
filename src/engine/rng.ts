@@ -1,7 +1,19 @@
-// Dados con semilla (mulberry32): la semilla vive en la partida, así un fallo se puede repetir.
+// En el juego, cada tirada es aleatoria de verdad: no depende de ninguna semilla (el autor 2026-11-16).
+// Solo los tests usan la semilla de la partida (mulberry32), para que sus resultados se puedan repetir.
 export type Rng = { seed: number };
 
+/** Lo activa jest.setup.js: con él, las tiradas salen de la semilla. */
+export const SEEDED = { on: false };
+
+declare const crypto: { getRandomValues?: (a: Uint32Array) => Uint32Array } | undefined;
+
+function trueRandom(): number {
+  if (typeof crypto !== 'undefined' && crypto?.getRandomValues) return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296;
+  return Math.random();
+}
+
 export function rand(r: Rng): number {
+  if (!SEEDED.on) return trueRandom();
   let t = (r.seed = (r.seed + 0x6d2b79f5) | 0);
   t = Math.imul(t ^ (t >>> 15), t | 1);
   t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
