@@ -177,44 +177,41 @@
               "type": "scene",
               "id": "z1_p01",
               "title": "La viga que cede",
-              "text": "Entre las vigas del túnel, unas piedras sueltas han atrapado una bolsa de suministros. La madera cruje al acercarte.",
-              "question": "¿Cómo recuperas la bolsa sin provocar un derrumbe?",
+              "text": "Entre las vigas del túnel, unas piedras sueltas han atrapado una bolsa de suministros de los mineros. Asoman unas monedas y un rollo de cuerda. La madera cruje al acercarte.",
+              "question": "¿Os arriesgáis a sacar la bolsa entera?",
               "options": [
                 {
-                  "label": "Apartar las piedras y calzar la viga",
+                  "label": "Coger solo lo que asoma",
+                  "ok": {
+                    "text": "Sacas un par de monedas sin tocar la viga. La cuerda se queda bajo las piedras.",
+                    "gold": 2
+                  }
+                },
+                {
+                  "label": "Calzar la viga y sacar la bolsa entera",
                   "attr": "str",
                   "dc": 11,
                   "ok": {
-                    "text": "Aseguras la viga y rescatas la bolsa: dentro hay un par de monedas.",
-                    "gold": 2
+                    "text": "Calzas la viga y sacas la bolsa entera: unas monedas y una cuerda de minero. Con ella se podría bajar a un pozo.",
+                    "gold": 2,
+                    "item": "rope"
                   },
                   "fail": {
-                    "text": "La madera cae sobre tu brazo cuando intentas moverla.",
+                    "text": "La viga cede sobre tu brazo y tienes que soltarla.",
                     "damage": "1d4"
                   }
                 },
                 {
-                  "label": "Deslizarse entre las vigas",
-                  "attr": "dex",
-                  "dc": 12,
-                  "ok": {
-                    "text": "Alcanzas la bolsa sin tocar la viga. Entre sus pliegues hay unas monedas.",
-                    "gold": 2
-                  },
-                  "fail": {
-                    "text": "Los cascotes se desplazan y te obligan a retirarte."
-                  }
-                },
-                {
-                  "label": "Examinar los apoyos de madera",
+                  "label": "Buscar la piedra que sostiene el resto",
                   "attr": "int",
-                  "dc": 11,
+                  "dc": 13,
                   "ok": {
-                    "text": "Afianzas la cuña y extraes la bolsa. Conserva unas monedas.",
-                    "gold": 2
+                    "text": "Retiras la piedra justa y la bolsa sale entera: unas monedas y una cuerda de minero. Con ella se podría bajar a un pozo.",
+                    "gold": 2,
+                    "item": "rope"
                   },
                   "fail": {
-                    "text": "La cuña se parte y los escombros quedan inestables."
+                    "text": "No das con la piedra buena. Mejor no tocar más."
                   }
                 }
               ],
@@ -818,12 +815,13 @@
               "question": "¿Cómo recuperas la bolsa?",
               "options": [
                 {
-                  "label": "Levantar la madera más pesada",
+                  "label": "Levantar la madera y mirar debajo",
                   "attr": "str",
                   "dc": 12,
                   "ok": {
-                    "text": "Levantas la madera y liberas la bolsa de suministros.",
-                    "item": "potion_healing"
+                    "text": "Levantas la madera y liberas la bolsa. Debajo había caído también el monedero de un minero.",
+                    "item": "potion_healing",
+                    "gold": 4
                   },
                   "fail": {
                     "text": "La madera cede y te obliga a retroceder.",
@@ -1991,12 +1989,13 @@
                   }
                 },
                 {
-                  "label": "Arrebatárselo",
+                  "label": "Arrebatarle el libro y la bolsa",
                   "attr": "dex",
                   "dc": 13,
                   "ok": {
-                    "text": "Le quitáis el libro y encontráis la ubicación de un conducto oculto.",
-                    "reveal": "z2_s01"
+                    "text": "Le quitáis el libro y la bolsa del cinto. El registro marca un conducto oculto.",
+                    "reveal": "z2_s01",
+                    "gold": 8
                   },
                   "fail": {
                     "text": "El goblin escapa dando voces. Sus compañeros estarán prevenidos.",
@@ -2401,6 +2400,12 @@
       ],
       "pending": [
         {
+          "id": "z2_j00",
+          "from": "z1_alarma",
+          "until": "z2_e01",
+          "text": "El vigía del pozo dio la alarma: en la prisión os esperan con refuerzos."
+        },
+        {
           "id": "z2_j01",
           "from": "z2_r01",
           "until": "z2_b01",
@@ -2724,12 +2729,12 @@
               "question": "¿Cómo recuperáis lo que hay debajo?",
               "options": [
                 {
-                  "label": "Apartar las piedras más pesadas",
+                  "label": "Apartar todas las piedras",
                   "attr": "str",
                   "dc": 14,
                   "ok": {
-                    "text": "Liberáis la ofrenda: contiene pequeñas piezas funerarias de oro.",
-                    "gold": 7
+                    "text": "Apartáis toda la losa: además de la ofrenda aparece un segundo cofrecillo funerario.",
+                    "gold": 14
                   },
                   "fail": {
                     "text": "Las piedras se os vienen encima.",
@@ -3288,8 +3293,9 @@
                   "attr": "cha",
                   "dc": 13,
                   "ok": {
-                    "text": "El escriba acepta vuestra promesa. Os muestra una antigua entrada lateral hacia el sepulcro real.",
-                    "reveal": "z3_s01"
+                    "text": "El escriba acepta vuestra promesa y os bendice. Os muestra una antigua entrada lateral hacia el sepulcro real.",
+                    "reveal": "z3_s01",
+                    "heal": 4
                   },
                   "fail": {
                     "text": "El escriba se desvanece sin creeros."

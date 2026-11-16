@@ -4,7 +4,7 @@ import type { ImgKey } from '../assets';
 import { ABIL_NAME, Ability, ITEMS, MONSTERS } from '../data/srd';
 import { GOALS } from '../data/objetivos';
 import { ADVS, advOf } from './aventuras';
-import { logEvs, contentById, dropKey, encounterById, rolledEnemies, Ev, giveItem, ShownRoll } from './dungeon';
+import { logEvs, reached, contentById, dropKey, encounterById, rolledEnemies, Ev, giveItem, ShownRoll } from './dungeon';
 import type { Game } from './game';
 import { die, roll } from './rng';
 import { Char, abilMod, isDown, newItem } from './rules';
@@ -35,6 +35,8 @@ export interface Effect {
 export interface SceneOpt { label: string; attr?: Ability; dc?: number; needs?: string; /** Oro que se paga al elegirla. */ cost?: number;
   /** Vía propia de un aliado: solo sale si va en el grupo y en pie, y sale bien sin tirada. Nunca es la única forma de avanzar. */
   ally?: string;
+  /** Vía que solo sale si ya pasó algo antes (un objetivo cumplido, una marca, una sala vista): consecuencia de otra decisión. */
+  if?: string;
   ok: Effect; fail?: Effect }
 export interface Scene {
   id: string; title: string; img?: ImgKey; text: string; question?: string;
@@ -68,7 +70,7 @@ const has = (g: Game, item: string) => g.party.some(c => !c.dead && c.items.some
 /** ¿Va ese aliado en el grupo y puede actuar? */
 export const allyHere = (g: Game, id: string) => g.party.some(c => c.id === id && !isDown(c));
 /** Las vías de un aliado que no va en el grupo no se enseñan. */
-export const optionShown = (g: Game, s: Scene, i: number) => !s.options[i].ally || allyHere(g, s.options[i].ally!);
+export const optionShown = (g: Game, s: Scene, i: number) => (!s.options[i].ally || allyHere(g, s.options[i].ally!)) && (!s.options[i].if || reached(g, s.options[i].if!));
 export const optionOpen = (g: Game, s: Scene, i: number) => optionShown(g, s, i) && !sceneState(g, s.id).closed.includes(i) && (!s.options[i].needs || has(g, s.options[i].needs!)) && g.gold >= (s.options[i].cost ?? 0);
 
 /** Probabilidad (en %) de superar una prueba de escena con ese personaje: d20 + bonificador contra la CD. */
@@ -125,10 +127,14 @@ export function applyEffect(g: Game, e: Effect, who?: Char): { lines: string[]; 
   return { lines, items, fight };
 }
 
-/** Aplica cambios por decisiones y ajuste de grupo sin duplicar jefes ni saturar las filas. */
-export function enemiesOf(g: Game, id: string): any[] {
+/**
+ * Aplica cambios por decisiones y ajuste de grupo sin duplicar jefes ni saturar las filas.
+ * Primero se ajusta al tamaño del grupo y después se suman o restan las decisiones (escenas y objetivos):
+ * así un refuerzo o una baja se notan siempre, también con grupos pequeños. Sin «withMods», solo el ajuste.
+ */
+export function enemiesOf(g: Game, id: string, withMods = true): any[] {
   const base: any[] = rolledEnemies(g, id);
-  const mod = g.encMod?.[id] ?? 0, size = g.encSize?.[id] ?? 0;
+  const mod = withMods ? g.encMod?.[id] ?? 0 : 0, size = g.encSize?.[id] ?? 0;
   const weak = !!g.weak?.includes(id);
   if (!mod && !size && !weak) return base;
 
@@ -154,7 +160,8 @@ export function enemiesOf(g: Game, id: string): any[] {
   // Se añaden esbirros del tipo más débil, no una copia del primer enemigo
   // (que en varios encuentros es precisamente el jefe).
   const add = (n: number) => {
-    const minion = list.filter(e => e.count > 0 && !isBoss(e) && xpOf(e) > 0)
+    // También vale un tipo que el ajuste al grupo dejó a cero (la escolta del jefe con el héroe solo).
+    const minion = list.filter(e => !isBoss(e) && xpOf(e) > 0)
       .sort((x, y) => xpOf(x) - xpOf(y))[0];
     if (!minion || n <= 0) return;
     // Un refuerzo elegido por una escena conserva su efecto aunque la primera
@@ -175,10 +182,13 @@ export function enemiesOf(g: Game, id: string): any[] {
       }
     }
   };
-  if (mod > 0) add(mod);
-  for (let k = 0; k < -mod; k++) take(0);
   if (size > 0) add(size);
   for (let k = 0; k < -size; k++) take(1);
+  // Héroe solo en la zona 1: un único enemigo por combate, también si una decisión trae refuerzos.
+  if (mod > 0 && !weak) add(mod);
+  // Una baja deja al menos un enemigo si el combate ya está ajustado (si no, el combate desaparece al aplicarla).
+  const sized = g.encSize?.[id] !== undefined;
+  for (let k = 0; k < -mod; k++) take(sized ? 1 : 0);
   return list.filter(e => e.count > 0);
 }
 
@@ -208,18 +218,16 @@ export function sizeEncounter(g: Game, ids: string[], boss: boolean) {
   if (team.length === 1 && contentById(id)?.zone === 'z1') {
     g.encSize = { ...g.encSize, [id]: 0 };
     g.weak = [...(g.weak ?? []), id];
-    const n = enemiesOf(g, id).reduce((m, e) => m + e.count, 0);
+    const n = enemiesOf(g, id, false).reduce((m, e) => m + e.count, 0);
     g.encSize[id] = -(n - 1);
     return;
   }
   const lvl = Math.max(1, Math.min(8, Math.round(team.reduce((n, c) => n + c.level, 0) / Math.max(1, team.length))));
   const target = (boss ? BUDGET[lvl][0] : LOW[lvl]) * team.length;
-  // Las decisiones que añaden un enemigo tienen consecuencias reales:
-  // su refuerzo no se borra inmediatamente por el límite automático.
-  const extraFromChoices = ids.reduce((n, x) => n + Math.max(0, g.encMod?.[x] ?? 0), 0);
-  const cap = maxFoesFor(team.length) + extraFromChoices;
+  // Las decisiones que añaden o quitan un enemigo no cuentan aquí: se aplican encima (ver enemiesOf).
+  const cap = maxFoesFor(team.length);
   const xpOf = (e: any) => MONSTERS[e.srd_creature]?.xp ?? 0;
-  const all = () => ids.flatMap(x => enemiesOf(g, x));
+  const all = () => ids.flatMap(x => enemiesOf(g, x, false));
   const total = () => all().reduce((n, e) => n + xpOf(e) * e.count, 0);
   const count = () => all().reduce((n, e) => n + e.count, 0);
   const ref = contentById(id);
@@ -229,7 +237,7 @@ export function sizeEncounter(g: Game, ids: string[], boss: boolean) {
   // No se añaden criaturas a los jefes. En combates normales solo se permite
   // un esbirro adicional y siempre que quepa en su fila (máximo tres).
   if (!boss) {
-    const candidate = enemiesOf(g, id).filter(e => e.srd_creature !== bossType && xpOf(e) > 0)
+    const candidate = enemiesOf(g, id, false).filter(e => e.srd_creature !== bossType && xpOf(e) > 0)
       .sort((x, y) => xpOf(x) - xpOf(y))[0];
     if (candidate && count() < cap && total() + xpOf(candidate) <= target &&
         all().filter(e => e.row === candidate.row).reduce((n, e) => n + e.count, 0) < 3) {

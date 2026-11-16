@@ -1158,7 +1158,7 @@ export function markReturn(g: Game) {
   if (!g.flags?.includes(f)) g.flags = [...(g.flags ?? []), f];
 }
 
-const reached = (g: Game, id: string) => g.done.includes(id) || g.found.includes(id) || !!g.flags?.includes(id);
+export const reached = (g: Game, id: string) => g.done.includes(id) || g.found.includes(id) || !!g.flags?.includes(id);
 
 /** ¿Está disponible la escena? Las de regreso piden haber vuelto a la zona y lo que digan after y before. */
 export function sceneOn(g: Game, id: string): boolean {

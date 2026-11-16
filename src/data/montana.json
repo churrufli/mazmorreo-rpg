@@ -1230,7 +1230,13 @@
                   "count": 1,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Hippogriff",
+                      "name": "Hipogrifo del collado"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 0,
@@ -1505,13 +1511,7 @@
                   "count": 1,
                   "row": "back",
                   "weapon": null,
-                  "drop_weapon": false,
-                  "alt": [
-                    {
-                      "srd_creature": "Hippogriff",
-                      "name": "Hipogrifo del nido"
-                    }
-                  ]
+                  "drop_weapon": false
                 }
               ],
               "gold_drop": 3,
@@ -2869,12 +2869,13 @@
                   }
                 },
                 {
-                  "label": "Sostener la losa a pulso",
+                  "label": "Sostener la losa y registrar el hueco",
                   "attr": "str",
                   "dc": 14,
                   "ok": {
-                    "text": "Sostenéis la losa mientras recuperáis el paquete.",
-                    "item": "potion_healing"
+                    "text": "Sostenéis la losa mientras recuperáis el paquete. En el hueco hay también unas monedas enanas.",
+                    "item": "potion_healing",
+                    "gold": 6
                   },
                   "fail": {
                     "text": "La piedra se mueve bruscamente y os obliga a retroceder.",
@@ -2950,11 +2951,13 @@
                   }
                 },
                 {
-                  "label": "Forzarla de inmediato",
+                  "label": "Forzarla y vaciar el cajón",
                   "attr": "str",
                   "dc": 14,
                   "ok": {
-                    "text": "La tubería se descongela, pero un chorro de vapor vuelca el cajón y las monedas caen por una rejilla."
+                    "text": "El cajón revienta con el vapor: recogéis más monedas de las que cabían, pero el chorro quema a quien la forzó.",
+                    "gold": 16,
+                    "damage": "1d6"
                   },
                   "fail": {
                     "text": "La válvula sigue helada."
@@ -4069,12 +4072,13 @@
                   }
                 },
                 {
-                  "label": "Calcular las ráfagas entre las paredes",
+                  "label": "Calcular las ráfagas y vaciar el nicho",
                   "attr": "int",
                   "dc": 14,
                   "ok": {
-                    "text": "Los destellos permiten anticipar una ráfaga y sacar una poción del nicho.",
-                    "item": "potion_healing"
+                    "text": "Anticipáis la ráfaga y vaciáis el nicho: una poción y unas monedas de los emisarios.",
+                    "item": "potion_healing",
+                    "gold": 8
                   },
                   "fail": {
                     "text": "Los destellos os engañan.",

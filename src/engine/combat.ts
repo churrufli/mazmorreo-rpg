@@ -1,6 +1,6 @@
 // Combate por turnos al estilo D&D 5e 2024, con dos filas por bando.
 // Todo son funciones puras sobre el estado de la partida (se muta una copia).
-import { canInspire, enemiesOf, inspire, maxFoesFor, sizeEncounter } from './escenas';
+import { applyEffect, canInspire, enemiesOf, inspire, maxFoesFor, sizeEncounter } from './escenas';
 import type { ImgKey } from '../assets';
 import { ABIL_NAME, Ability, CLASSES, DmgType, ITEMS, MONSTERS, MonsterAttack } from '../data/srd';
 import B from '../data/corazon.json';
@@ -577,7 +577,7 @@ function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean 
   for (const e of enemiesOf(g, id)) for (let i = 0; i < e.count; i++, n++) {
     const m = MONSTERS[e.srd_creature];
     if (!m) continue;
-    const hp = saved ? saved[n] : m.hp;
+    const hp = saved?.[n] ?? m.hp;
     if (hp <= 0) continue;
     list.push({
       key: `e_${id}_${n}`, side: 'enemy', mon: e.srd_creature, name: e.count > 1 ? `${e.name} ${i + 1}` : e.name,
@@ -764,6 +764,9 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
         }
         if (G.gold) msgs.push(`Premio: ${G.gold} monedas de oro.`);
       } else msgs.push(`Objetivo fallado: ${G.text.replace(/\.$/, '')}.`);
+      // Lo que cambia más adelante en la aventura por haberlo cumplido o fallado.
+      const fx = cb.goal.status === 'ok' ? G.okFx : G.failFx;
+      if (fx) msgs.push(...applyEffect(g, fx).lines);
     }
     if (floor.length) msgs.push(`No cabe en las mochilas y queda en el suelo: ${floor.join(', ')}.`);
   } else if (result === 'fled') {

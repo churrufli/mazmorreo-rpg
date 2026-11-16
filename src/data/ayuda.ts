@@ -73,6 +73,11 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
   { version: 'v0.146', items: [
+    'Algunos objetivos de combate dejan huella en la aventura: un vigía que escapa da la alarma, una dríade rendida os ayuda contra el Corazón Hueco y un kobold que avisa a Vharzûl le trae refuerzos. Quien rescatéis puede volver a aparecer.',
+    'Las decisiones que traen o quitan enemigos se notan también con grupos pequeños.',
+    'Las vías de los aliados siguen sin tirada, pero ya no son siempre las mejores: otra opción con riesgo da algo más.',
+    'En la mina, la bolsa atrapada entre las vigas se puede coger a medias sin riesgo o sacar entera, con una cuerda que sirve para bajar al pozo.',
+    'Variantes más equilibradas: la serpiente constrictora gigante ya no sustituye al jabalí gigante, y el hipogrifo pasa de la arpía al oso pardo, de daño parecido.',
     'Objetivos nuevos en combate que no van contra el reloj: que el primero en caer sea el tirador, el necrófago o la bruja, o que no caiga nadie del grupo. Sus premios son objetos para luchar de otra forma: red, fuego de alquimista, agua bendita, vial de ácido…',
     'Al elegir objetivo, cada enemigo enseña la probabilidad aproximada de impactar (▲ con ventaja, ▼ con desventaja). Mantén pulsado un ataque para ver la de todos y por qué.',
     'El registro dice el motivo de cada ventaja o desventaja: «con ventaja (objetivo derribado)», «con desventaja (debilitado)».',
