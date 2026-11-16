@@ -250,7 +250,7 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
   const strip = others && others.length > 0 && onPick ? others : undefined;
   const miniW = strip ? Math.min(52, (width - 24 - (strip.length - 1) * 6) / strip.length) : 0;
   const stripH = strip ? miniW * 1.5 + 14 : 0;
-  const W = Math.min(width - 24, (height - 150 - stripH - sts.length * 46) / 1.5);
+  const W = Math.min(width - 24, (height - 135 - stripH - sts.length * 46) / 1.5);
   return (
     <Modal transparent animationType="fade" onRequestClose={onClose}>
       <View style={st.modalBg}>
@@ -278,9 +278,9 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
           </View>
         ) : null}
         {info.dead ? <Text style={[st.deadNote, { width: W }]}>{`${info.name} ha muerto. Solo el templo de ${town} puede devolverle la vida. Para volver al pueblo, usa el último punto de descanso del mapa.`}</Text> : null}
-        <View style={{ flexDirection: 'row', marginTop: 10 }}>
-          <Btn small label={back ? 'Ver carta' : 'Ver ficha'} onPress={() => setBack(!back)} />
-          <Btn small label="Cerrar" onPress={onClose} />
+        <View style={{ flexDirection: 'row', marginTop: 4 }}>
+          <Btn small style={st.modalBtn} label={back ? 'Ver carta' : 'Ver ficha'} onPress={() => setBack(!back)} />
+          <Btn small style={st.modalBtn} label="Cerrar" onPress={onClose} />
         </View>
         {strip ? (
           <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10, gap: 6 }}>
@@ -571,7 +571,8 @@ const st = StyleSheet.create({
   tag: { position: 'absolute', alignSelf: 'center', textAlign: 'center', fontFamily: F.titleBold, color: C.goldHi, fontSize: 11, backgroundColor: '#000a', paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 },
   deadNote: { color: C.textDim, textAlign: 'center', fontFamily: F.text, fontSize: 14, marginTop: 8, paddingHorizontal: 6 },
   downTxt: { position: 'absolute', top: '40%', alignSelf: 'center', maxWidth: '90%', textAlign: 'center', fontFamily: F.titleBold, color: C.damage, fontSize: 14 },
-  modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', alignItems: 'center', justifyContent: 'center' },
+  modalBtn: { minHeight: 32, paddingVertical: 2, paddingHorizontal: 10, marginVertical: 2 },
+  modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 28 },
   face: { position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden' },
   backFace: { borderRadius: 10, overflow: 'hidden', borderWidth: 2, borderColor: C.gold },
   sheet: { flex: 1, backgroundColor: C.panel },
