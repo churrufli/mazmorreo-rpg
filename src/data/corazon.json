@@ -1874,10 +1874,6 @@
                     {
                       "srd_creature": "Giant Elk",
                       "name": "Alce gigante"
-                    },
-                    {
-                      "srd_creature": "Giant Constrictor Snake",
-                      "name": "Serpiente constrictora gigante"
                     }
                   ]
                 }
@@ -2009,6 +2005,15 @@
               "text": "Un cofre descansa sobre tablones entre los árboles. Una resina amarillenta cubre la madera y desprende vapores irritantes.",
               "question": "¿Qué hacéis con la caja?",
               "options": [
+                {
+                  "if": "b2_resinero",
+                  "label": "Que el resinero que salvasteis abra la caja",
+                  "ok": {
+                    "text": "El resinero que sacasteis del capullo conoce la resina: la retira sin quemarse. Dentro hay monedas y el símbolo de un refugio oculto.",
+                    "gold": 6,
+                    "reveal": "b2_s02"
+                  }
+                },
                 {
                   "label": "Cruzar por los tablones",
                   "attr": "dex",
@@ -2215,8 +2220,9 @@
                   "attr": "wis",
                   "dc": 12,
                   "ok": {
-                    "text": "Comparáis las muescas con las huellas del suelo. El leñador os muestra un paso hacia una charca apartada.",
-                    "reveal": "b2_s01"
+                    "text": "Comparáis las muescas con las huellas del suelo. Agradecido, el leñador os da un antídoto de resina y os muestra un paso hacia una charca apartada.",
+                    "reveal": "b2_s01",
+                    "item": "antidote"
                   },
                   "fail": {
                     "text": "Las marcas no os permiten distinguir un camino seguro."
@@ -3048,8 +3054,9 @@
                   "attr": "cha",
                   "dc": 13,
                   "ok": {
-                    "text": "La semilla brilla al oír vuestra promesa. Su luz señala un cofre oculto bajo la losa.",
-                    "reveal": "b3_s01"
+                    "text": "La semilla brilla al oír vuestra promesa. Su calor alivia vuestras heridas y su luz señala un cofre oculto bajo la losa.",
+                    "reveal": "b3_s01",
+                    "heal": 3
                   },
                   "fail": {
                     "text": "La semilla permanece inmóvil sobre la losa."
@@ -3775,8 +3782,9 @@
                   "attr": "int",
                   "dc": 13,
                   "ok": {
-                    "text": "Apartáis la savia y descubrís una abertura oculta tras el altar.",
-                    "reveal": "b4_s01"
+                    "text": "Apartáis la savia: entre la inscripción hay monedas antiguas incrustadas y, detrás, una abertura oculta.",
+                    "reveal": "b4_s01",
+                    "gold": 8
                   },
                   "fail": {
                     "text": "La savia se endurece de golpe. Al otro lado de la grieta, un arbusto cobra vida y espera.",

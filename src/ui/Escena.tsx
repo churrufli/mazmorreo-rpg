@@ -25,7 +25,8 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
   // Las alternativas narrativas conservan su orden relativo.
   // Las vías de un aliado van primero cuando está en el grupo; si no va, no se enseñan.
   const ordered = s.options.map((op, i) => ({ op, i })).filter(({ i }) => optionShown(g, s, i)).sort((a, b) => {
-    if (a.op.ally || b.op.ally) return a.op.ally ? (b.op.ally ? 0 : -1) : 1;
+    const special = (op: typeof a.op) => !!(op.ally || op.if);
+    if (special(a.op) || special(b.op)) return special(a.op) ? (special(b.op) ? 0 : -1) : 1;
     if (!a.op.attr || !b.op.attr) return 0;
     const chance = (op: typeof a.op) => Math.max(0, Math.min(20, 21 + (bestFor(g, op.attr!) ? testBonus(bestFor(g, op.attr!)!, op.attr!) : -20) - (op.dc ?? 10)));
     return chance(b.op) - chance(a.op);
@@ -58,6 +59,7 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
                 const ally = op.ally ? g.party.find(c => c.id === op.ally) : undefined;
                 const sub = shut ? 'Ya lo intentasteis: esta vía está cerrada'
                   : ally ? `Se encarga ${ally.name.split(' ')[0]}: sin tirada`
+                  : op.if && !op.attr ? 'Por lo que hicisteis antes: sin tirada'
                   : !open && op.needs && !g.party.some(c => !c.dead && c.items.some(it => it.id === op.needs)) ? `Hace falta: ${ITEMS[op.needs]?.name ?? op.needs}`
                   : op.cost ? `Cuesta ${op.cost} po${g.gold < op.cost ? ' (no os llega)' : ''}`
                   : op.attr && best ? `${ABIL_NAME[op.attr]} CD ${op.dc} · mejor: ${best.name.split(' ')[0]} (${sign(testBonus(best, op.attr))}, ≈ ${testChance(best, op.attr, op.dc ?? 10)} %)` : undefined;

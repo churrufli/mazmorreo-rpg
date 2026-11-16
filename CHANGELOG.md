@@ -2,6 +2,14 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 16 de noviembre de 2026 — Decisiones que dejan huella
+
+- **Objetivos de combate con consecuencias** (`okFx` / `failFx` en `objetivos.ts`): el vigía del pozo (z1_e06) da la alarma y la prisión (z2_e01) espera con refuerzos; rendir a la dríade (b4_e02) quita un árbol despertado al Corazón Hueco; si el kobold del tributo (m4_e03) da la voz, Vharzûl tiene un kobold más; el resinero rescatado (b2_e08) abre una vía nueva en la caja de los resineros (`if` en las opciones de escena).
+- Las decisiones que añaden o quitan enemigos se aplican después del ajuste al grupo, así que se notan con cualquier tamaño de grupo (salvo el héroe solo en la zona 1, que sigue con un único enemigo).
+- **Vías de aliados equilibradas** en 10 escenas: siguen siendo seguras, pero otra vía con tirada da algo más.
+- **La viga que cede** (z1_p01): opción segura con poco premio u opción arriesgada con una cuerda que abre el arcón del pozo.
+- **Variantes revisadas** por amenaza (PG × daño por asalto): fuera la serpiente constrictora gigante del jabalí gigante (×4) y el hipogrifo pasa de la arpía (×2) al oso pardo de la montaña.
+
 ## 16 de noviembre de 2026 — Más decisiones tácticas
 
 - **12 objetivos opcionales nuevos** sin reloj: «que el primero en caer sea…» y «que no caiga nadie del grupo». Premios con objetos tácticos (red, fuego de alquimista, agua bendita, vial de ácido, poción de resistencia al frío).
