@@ -285,9 +285,8 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
         {strip ? (
           <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10, gap: 6 }}>
             {strip.map(o => (
-              <Pressable key={o.key} onPress={() => onPick!(o.key)} accessibilityLabel={`Ver la carta de ${o.info.name}`}>
-                <Card info={o.info} width={miniW} />
-              </Pressable>
+              // El toque va a la propia carta: un Pressable de fuera no lo recibe porque la carta lo captura antes.
+              <Card key={o.key} info={o.info} width={miniW} onPress={() => onPick!(o.key)} />
             ))}
           </View>
         ) : null}
