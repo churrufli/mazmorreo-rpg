@@ -87,6 +87,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Si camináis sin antorcha ni truco Luz, alguien del grupo lo comenta una vez por aventura y os recuerda que la tienda del pueblo las vende.',
     'El primer punto de descanso de la partida se ofrece aunque solo paséis por encima. Los demás, como hasta ahora, solo si os detenéis en él.',
     'Carta ampliada: el nombre es más pequeño, sin botón de opciones, y debajo salen las demás cartas para saltar de una a otra sin cerrarla. También en combate, con los enemigos.',
+    'La carta ampliada sube en la pantalla y sus botones son más pequeños. En combate, las cartas de abajo son las del mismo bando, en el orden del campo de batalla.',
     'El combate empieza nombrando a los enemigos en vez de contarlos («Goblin, Goblin y Rata gigante»).',
     'Al volver a la posada a mitad de una aventura, el máximo de compañeros depende de la zona: uno en la primera, dos en la segunda y tres de la tercera en adelante.',
     'Los personajes que esperan en el mapa para hablar (la abuela Brezna, el sabio de la montaña) enseñan su icono.',

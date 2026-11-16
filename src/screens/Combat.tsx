@@ -499,7 +499,9 @@ export function Combat() {
         </View>
       ) : null}
       {sheet ? (() => {
-        const others = cb.units.filter(u => u.key !== sheet.key).map(u => ({ key: u.key, info: info(u) }));
+        // En el orden del campo de batalla, de arriba abajo y de izquierda a derecha.
+        const order = [...rowOf('enemy', 'back'), ...rowOf('enemy', 'front'), ...rowOf('party', 'front'), ...rowOf('party', 'back')];
+        const others = order.filter(u => u.key !== sheet.key && u.side === sheet.side).map(u => ({ key: u.key, info: info(u) }));
         const pick = (key: string) => setSheet(cb.units.find(u => u.key === key));
         return sheet.side === 'party'
           ? <CardModal key={sheet.key} char={g.party.find(c => c.id === sheet.charId)} town={TOWNS[ADVS[advOf(g.zone)].town].name} info={info(cb.units.find(u => u.key === sheet.key)!)} others={others} onPick={pick} onClose={() => setSheet(undefined)} />
