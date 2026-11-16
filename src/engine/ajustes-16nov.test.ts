@@ -37,6 +37,8 @@ describe('personajes del mapa', () => {
 describe('agua bendita', () => {
   const holy = (enc: string) => {
     const g = newGame(1, 'Prueba', 'fighter', 'human');
+    // Semilla fija: con la de la hora, a veces los enemigos tumban al héroe antes de su turno.
+    g.rng.seed = 7919;
     g.party[0].items.push(newItem('holy_water'));
     const cb = startCombat(g, enc);
     // Si abre un enemigo, se pasan sus turnos hasta que le toque al héroe.
