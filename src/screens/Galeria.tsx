@@ -22,7 +22,7 @@ function picsOf(g: Game, adv: AdvId): { title: string; pics: Pic[] }[] {
   for (const z of A.data.zones) for (const r of z.rooms) for (const c of r.contents as any[]) {
     if (c.type !== 'encounter') continue;
     const fought = g.done.includes(c.id) || g.fled.includes(c.id);
-    for (const e of c.enemies) {
+    for (const e of c.enemies.flatMap((x: any) => [x, ...(x.alt ?? [])])) {
       const m = MONSTERS[e.srd_creature];
       if (!m) continue;
       const prev = foes.find(f => f.img === m.img);

@@ -1,6 +1,6 @@
 import type { ImgKey } from '../assets';
 import type { Ability, ClassId, SpeciesId } from '../data/srd';
-import type { Rng } from './rng';
+import { Rng, rand } from './rng';
 import { Char, Item, MAX_ITEMS, createHero, newItem } from './rules';
 import type { Hex } from './dungeon';
 import type { AdvId, TownId } from './aventuras';
@@ -11,6 +11,8 @@ export interface Game {
   /** Tiempo jugado (solo con el juego abierto y delante), en milisegundos. */
   playMs?: number;
   rng: Rng;
+  /** Semilla fija de la partida para elegir las variantes de enemigos (alt en las aventuras). */
+  variant?: number;
   place: 'dungeon' | 'town';
   zone: string;
   zoneBg?: ImgKey;
@@ -104,7 +106,7 @@ export function newGame(slot: number, name: string, cls: ClassId, species: Speci
   const hero = createHero(name, cls, species, abil, img);
   hero.items.push(newItem('potion_healing'));
   return {
-    slot, savedAt: Date.now(), rng: { seed: (Date.now() % 2147483647) | 0 }, place: 'dungeon', zone: 'z1',
+    slot, savedAt: Date.now(), rng: { seed: (Date.now() % 2147483647) | 0 }, variant: Math.floor(rand({ seed: Date.now() | 0 }) * 2147483647), place: 'dungeon', zone: 'z1',
     pos: [0, 0], prev: [0, 0], visited: [], party: [hero], gold: 0, done: [], found: [],
     enemyHp: {}, fled: [], won: false, log: [],
   };

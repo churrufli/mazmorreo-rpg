@@ -100,6 +100,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Tras perder un combate volvéis al último guardado con todos los PG y una poción de curación más para el héroe (seguís perdiendo un 10 % del oro).',
     'Las tiradas son aleatorias de verdad: ya no dependen de ninguna semilla guardada en la partida, así que cargar una partida no repite los mismos dados.',
     'Enemigos nuevos del SRD, mucho más débiles: rata, murciélago, araña, escarabajo de fuego gigante, escorpión, lagarto, hongo chillón y plebeyo. Algunos sustituyen a ratas gigantes en la primera zona de Hondaroca.',
+    'Más variedad de enemigos: en cada partida, algunos encuentros salen con otra criatura del SRD del mismo valor de desafío. En el bosque: búho, serpiente venenosa, mastín, duende, pantera, jabalí, águila gigante, alce gigante, serpiente constrictora gigante y mantícora. En la montaña: cabra, halcón, comadreja gigante, murciélago gigante, cabra gigante, hipogrifo, oso polar, tigre dientes de sable, gárgola y tumulario.',
   ] },
   { version: 'v0.145', items: [
     'Combate más táctico con reglas del SRD 5.2.1: nueva acción Ayudar (ventaja para el siguiente ataque de un aliado) y Maestría de armas para guerrero, pícaro, paladín, bárbaro y explorador (Debilitar, Hostigar, Derribar y Empujar).',

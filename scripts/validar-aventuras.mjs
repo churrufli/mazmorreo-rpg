@@ -35,6 +35,7 @@ for (const file of files) {
           else for (const enemy of item.enemies) {
             if (!Number.isInteger(enemy.count) || enemy.count < 1) fail(item.id, 'Cantidad de enemigos inválida');
             if (!enemy.srd_creature) fail(item.id, 'Enemigo sin criatura de referencia');
+            for (const alt of enemy.alt ?? []) if (!alt.srd_creature || !alt.name) fail(item.id, 'Variante de enemigo sin criatura o sin nombre');
           }
           if (!Number.isFinite(item.xp_total) || item.xp_total < 0) fail(item.id, 'PX inválidos');
           if (!Array.isArray(item.can_reinforce)) fail(item.id, 'can_reinforce debe ser una lista');

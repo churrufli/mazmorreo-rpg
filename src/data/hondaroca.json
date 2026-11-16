@@ -65,7 +65,13 @@
                   "count": 2,
                   "row": "front",
                   "weapon": "Mordisco",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Lizard",
+                      "name": "Lagarto de la entrada"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 0,
@@ -269,7 +275,13 @@
                   "count": 1,
                   "row": "front",
                   "weapon": "Mordisco",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Commoner",
+                      "name": "Ladronzuelo del almacén"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 0,
@@ -957,7 +969,13 @@
                   "name": "Escorpión del agua negra",
                   "count": 1,
                   "row": "front",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Shrieker",
+                      "name": "Hongo chillón del agua negra"
+                    }
+                  ]
                 }
               ],
               "xp_total": 45
