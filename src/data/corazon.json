@@ -89,7 +89,13 @@
                   "count": 1,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Panther",
+                      "name": "Pantera famélica"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 0,
@@ -609,7 +615,13 @@
                   "count": 1,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Boar",
+                      "name": "Jabalí atraído por el alboroto"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 0,
@@ -1000,7 +1012,13 @@
                   "name": "Lobo del cubil",
                   "count": 2,
                   "row": "front",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Boar",
+                      "name": "Jabalí del cubil"
+                    }
+                  ]
                 }
               ],
               "xp_total": 100
@@ -1065,7 +1083,13 @@
                   "name": "Bandido escondido",
                   "count": 2,
                   "row": "front",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Mastiff",
+                      "name": "Mastín de los bandidos"
+                    }
+                  ]
                 }
               ],
               "xp_total": 50
@@ -1194,7 +1218,7 @@
         {
           "id": "b2_r02",
           "name": "Tronco partido",
-          "description": "Una bestia olfatea una mochila abandonada.",
+          "description": "Una bestia rebusca en una mochila abandonada.",
           "kind": "room",
           "size_hexes": 5,
           "shape": "corridor",
@@ -1229,7 +1253,13 @@
                   "count": 1,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Giant Eagle",
+                      "name": "Águila gigante"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 0,
@@ -1310,7 +1340,13 @@
                   "count": 3,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Owl",
+                      "name": "Búho del zarzal"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 0,
@@ -1375,7 +1411,13 @@
                   "name": "Lobo de la maleza",
                   "count": 2,
                   "row": "front",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Panther",
+                      "name": "Pantera de la maleza"
+                    }
+                  ]
                 }
               ],
               "xp_total": 0
@@ -1589,7 +1631,13 @@
                   "count": 1,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Manticore",
+                      "name": "Mantícora"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 0,
@@ -1767,7 +1815,7 @@
         {
           "id": "b2_r07",
           "name": "Charca de barro",
-          "description": "Un jabalí enorme levanta tierra con los colmillos.",
+          "description": "Algo enorme remueve el barro de la charca.",
           "kind": "room",
           "size_hexes": 12,
           "shape": "round",
@@ -1813,7 +1861,17 @@
                   "count": 1,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Giant Elk",
+                      "name": "Alce gigante"
+                    },
+                    {
+                      "srd_creature": "Giant Constrictor Snake",
+                      "name": "Serpiente constrictora gigante"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 0,
@@ -2222,7 +2280,13 @@
                   "name": "Lobo de la orilla",
                   "count": 2,
                   "row": "front",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Sprite",
+                      "name": "Duende de la orilla"
+                    }
+                  ]
                 }
               ],
               "xp_total": 100
@@ -3075,7 +3139,13 @@
                   "name": "Bandido extraviado",
                   "count": 2,
                   "row": "front",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Venomous Snake",
+                      "name": "Serpiente de los juncos"
+                    }
+                  ]
                 }
               ],
               "xp_total": 0

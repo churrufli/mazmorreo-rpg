@@ -289,7 +289,13 @@
                   "count": 2,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Giant Weasel",
+                      "name": "Comadreja de las nieves"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 2,
@@ -817,7 +823,13 @@
                   "name": "Lobo alertado",
                   "count": 1,
                   "row": "front",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Giant Bat",
+                      "name": "Murciélago gigante"
+                    }
+                  ]
                 }
               ],
               "xp_total": 50
@@ -1089,7 +1101,13 @@
                   "count": 1,
                   "row": "back",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Giant Goat",
+                      "name": "Cabra gigante"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 1,
@@ -1479,7 +1497,13 @@
                   "count": 1,
                   "row": "back",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Hippogriff",
+                      "name": "Hipogrifo del nido"
+                    }
+                  ]
                 }
               ],
               "gold_drop": 3,
@@ -1775,7 +1799,13 @@
                   "name": "Kobold de las trampas",
                   "count": 2,
                   "row": "front",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Hawk",
+                      "name": "Halcón de las jaulas"
+                    }
+                  ]
                 }
               ],
               "xp_total": 50
@@ -1961,7 +1991,13 @@
                   "name": "Kobold saqueador",
                   "count": 2,
                   "row": "front",
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Goat",
+                      "name": "Cabra de carga"
+                    }
+                  ]
                 }
               ],
               "xp_total": 50
@@ -2726,7 +2762,21 @@
                   "count": 1,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Polar Bear",
+                      "name": "Oso polar"
+                    },
+                    {
+                      "srd_creature": "Saber-Toothed Tiger",
+                      "name": "Tigre dientes de sable"
+                    },
+                    {
+                      "srd_creature": "Gargoyle",
+                      "name": "Gárgola del portón"
+                    }
+                  ]
                 },
                 {
                   "srd_creature": "Zombie",
@@ -3271,7 +3321,13 @@
                   "count": 1,
                   "row": "front",
                   "weapon": null,
-                  "drop_weapon": false
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Wight",
+                      "name": "Tumulario del lago"
+                    }
+                  ]
                 },
                 {
                   "srd_creature": "Ice Mephit",

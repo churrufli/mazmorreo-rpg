@@ -41,6 +41,23 @@ export const encounterById = (id: string) => {
   return c?.type === 'encounter' ? (c as Content & { enemies: any[]; xp_total: number; gold_drop: number; can_reinforce: string[]; trigger: string }) : undefined;
 };
 
+/**
+ * Enemigos de un encuentro con sus variantes (alt) ya elegidas: cada partida saca una de ellas o la
+ * original, y siempre la misma para ese encuentro (más variedad entre partidas, el autor 2026-11-16).
+ */
+export function rolledEnemies(g: Game, id: string): any[] {
+  const base: any[] = encounterById(id)?.enemies ?? [];
+  if (!base.some(e => e.alt)) return base;
+  return base.map((e, i) => {
+    if (!e.alt) return e;
+    let h = (g.variant ?? 0) | 0;
+    for (const ch of `${id}:${i}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+    const k = (h >>> 0) % (e.alt.length + 1);
+    const { alt, ...rest } = e;
+    return k ? { ...rest, weapon: undefined, ...alt[k - 1] } : rest;
+  });
+}
+
 /** Encuentro del jefe final de la aventura de esa zona. */
 export const bossEncounter = (zone: string) =>
   CONTENTS.find(x => advOf(x.zone) === advOf(zone) && x.c.type === 'encounter' && x.c.enemies.some((e: any) => e.srd_creature === ADVS[advOf(zone)].boss))!.c.id as string;
@@ -409,7 +426,7 @@ function wonHere(g: Game, k: string): string[] {
     // Solo los que cayeron; las partidas antiguas no lo apuntaban y se dan todos por caídos.
     const fell = g.fallen?.[m.id];
     out.push(...(fell ? Object.entries(fell).map(([name, n]) => (n > 1 ? `${name} ×${n}` : name))
-      : (encounterById(m.id)?.enemies ?? []).map((e: any) => (e.count > 1 ? `${e.name} ×${e.count}` : e.name))));
+      : rolledEnemies(g, m.id).map((e: any) => (e.count > 1 ? `${e.name} ×${e.count}` : e.name))));
   }
   return out;
 }

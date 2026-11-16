@@ -12,7 +12,7 @@ import { hasPortraitFrame } from '../data/portraitFrames';
 import { SvgFaceImage } from '../ui/FaceImage';
 import { Escena } from '../ui/Escena';
 import { sceneById, sceneSpent } from '../engine/escenas';
-import { townRest, rereadAt, sceneOn, sceneFight, wonCell, useOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atRest, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, encounterById, hkey, passable, disarmBonus, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
+import { townRest, rereadAt, sceneOn, sceneFight, wonCell, useOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atRest, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, encounterById, hkey, rolledEnemies, passable, disarmBonus, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
 import { ITEMS } from '../data/srd';
 import { MONSTERS } from '../data/srd';
@@ -394,7 +394,7 @@ export function Explore() {
                 if (fled) return (
                   <G key={i} x={X(x)} y={Y(y)}>
                     <Circle r={S * 0.82} fill="#300" />
-                    <SvgFaceImage img={MONSTERS[encounterById(fled)!.enemies[0].srd_creature].img as ImgKey} radius={S * 0.78} clipPath="url(#tok)" />
+                    <SvgFaceImage img={MONSTERS[rolledEnemies(g, fled)[0].srd_creature].img as ImgKey} radius={S * 0.78} clipPath="url(#tok)" />
                     <Ring img="aro_enemigo" r={S} />
                   </G>
                 );
@@ -414,8 +414,7 @@ export function Explore() {
                 );
               }
               if (m.kind === 'encounter') {
-                const e = encounterById(m.id)!;
-                const mon = MONSTERS[e.enemies[0].srd_creature];
+                const mon = MONSTERS[rolledEnemies(g, m.id)[0].srd_creature];
                 const boss = bossEncounter(g.zone) === m.id;
                 // Vencidos: se quedan en el mapa en blanco y negro (al pisar la casilla se dice quién cayó allí).
                 const won = g.done.includes(m.id);

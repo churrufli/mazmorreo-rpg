@@ -480,6 +480,110 @@ Object.assign(MONSTERS, {
     name: 'El Corazón Hueco', img: 'corazon_hueco', ac: 15, hp: 80, dexMod: 0, xp: 0, ai: 'beast', multi: 2, noSleep: true, reach: true,
     attacks: [{ name: 'Raíz', bonus: 5, dice: '1d6+3', type: 'contundente' }], saves: { str: 6, dex: -1, con: 5, int: 1, wis: 3, cha: 1 },
   },
+  // Criaturas del SRD 5.2.1 con el mismo VD que las de cada aventura, para dar variedad (el autor 2026-11-16).
+  // Bosque.
+  Owl: {
+    name: 'Búho', img: 'buho', ac: 11, hp: 1, dexMod: 1, xp: 10, ai: 'beast',
+    attacks: [{ name: 'Garras', bonus: 3, dice: '1', type: 'cortante' }], saves: { str: -4, dex: 1, con: -1, int: -4, wis: 1, cha: -2 },
+  },
+  'Venomous Snake': {
+    name: 'Serpiente venenosa', img: 'serpiente_venenosa', ac: 12, hp: 5, dexMod: 2, xp: 25, ai: 'beast',
+    attacks: [{ name: 'Mordisco', bonus: 4, dice: '1d4+2', type: 'perforante', extra: { dice: '1d6', type: 'veneno' } }],
+    saves: { str: -4, dex: 2, con: 0, int: -5, wis: 0, cha: -4 },
+  },
+  Mastiff: {
+    name: 'Mastín', img: 'mastin', ac: 12, hp: 5, dexMod: 2, xp: 25, ai: 'beast',
+    attacks: [{ name: 'Mordisco', bonus: 3, dice: '1d6+1', type: 'perforante' }], saves: { str: 1, dex: 2, con: 1, int: -4, wis: 3, cha: -2 },
+  },
+  Sprite: {
+    name: 'Duende', img: 'duende', ac: 15, hp: 10, dexMod: 4, xp: 50, ai: 'goblin',
+    attacks: [
+      { name: 'Espada aguja', bonus: 6, dice: '1d4+4', type: 'perforante' },
+      { name: 'Arco encantador', bonus: 6, dice: '1', type: 'perforante', ranged: true },
+    ],
+    saves: { str: -4, dex: 4, con: 0, int: 2, wis: 1, cha: 0 },
+  },
+  Panther: {
+    name: 'Pantera', img: 'pantera', ac: 13, hp: 13, dexMod: 3, xp: 50, ai: 'beast',
+    attacks: [{ name: 'Desgarro', bonus: 5, dice: '1d6+3', type: 'cortante' }], saves: { str: 2, dex: 3, con: 0, int: -4, wis: 2, cha: -2 },
+  },
+  Boar: {
+    name: 'Jabalí', img: 'jabali', ac: 11, hp: 13, dexMod: 0, xp: 50, ai: 'beast',
+    attacks: [{ name: 'Colmillos', bonus: 3, dice: '1d6+1', type: 'perforante' }], saves: { str: 1, dex: 0, con: 2, int: -4, wis: -1, cha: -3 },
+  },
+  // Constreñir es una salvación de Fuerza CD 14 en el SRD; aquí va como segundo golpe para no atacar a toda la fila.
+  'Giant Constrictor Snake': {
+    name: 'Serpiente constrictora gigante', img: 'serpiente_constrictora', ac: 12, hp: 60, dexMod: 2, xp: 450, ai: 'beast', multi: 2,
+    attacks: [
+      { name: 'Mordisco', bonus: 6, dice: '2d6+4', type: 'perforante' },
+      { name: 'Constreñir', bonus: 6, dice: '2d8+4', type: 'contundente' },
+    ],
+    saves: { str: 4, dex: 2, con: 1, int: -5, wis: 0, cha: -4 },
+  },
+  'Giant Eagle': {
+    name: 'Águila gigante', img: 'aguila_gigante', ac: 13, hp: 26, dexMod: 3, xp: 200, ai: 'beast', multi: 2, resist: ['necrótico', 'radiante'],
+    attacks: [{ name: 'Desgarro', bonus: 5, dice: '1d4+3', type: 'cortante', extra: { dice: '1d6', type: 'radiante' } }],
+    saves: { str: 3, dex: 3, con: 1, int: -1, wis: 2, cha: 0 },
+  },
+  'Giant Elk': {
+    name: 'Alce gigante', img: 'alce_gigante', ac: 14, hp: 42, dexMod: 4, xp: 450, ai: 'beast', resist: ['necrótico', 'radiante'],
+    attacks: [{ name: 'Embestir', bonus: 6, dice: '2d6+4', type: 'contundente', extra: { dice: '2d4', type: 'radiante' } }],
+    saves: { str: 6, dex: 6, con: 2, int: -2, wis: 2, cha: 0 },
+  },
+  Manticore: {
+    name: 'Mantícora', img: 'manticora', ac: 14, hp: 68, dexMod: 3, xp: 700, ai: 'beast', multi: 3,
+    attacks: [
+      { name: 'Desgarro', bonus: 5, dice: '1d8+3', type: 'cortante' },
+      { name: 'Púas de cola', bonus: 5, dice: '1d8+3', type: 'perforante', ranged: true },
+    ],
+    saves: { str: 3, dex: 3, con: 3, int: -2, wis: 1, cha: -1 },
+  },
+  // Montaña.
+  Goat: {
+    name: 'Cabra', img: 'cabra', ac: 10, hp: 4, dexMod: 0, xp: 10, ai: 'beast',
+    attacks: [{ name: 'Embestir', bonus: 2, dice: '1', type: 'contundente' }], saves: { str: 2, dex: 0, con: 0, int: -4, wis: 0, cha: -3 },
+  },
+  Hawk: {
+    name: 'Halcón', img: 'halcon', ac: 13, hp: 1, dexMod: 3, xp: 10, ai: 'beast',
+    attacks: [{ name: 'Garras', bonus: 5, dice: '1', type: 'cortante' }], saves: { str: -3, dex: 3, con: -1, int: -4, wis: 2, cha: -2 },
+  },
+  'Giant Weasel': {
+    name: 'Comadreja gigante', img: 'comadreja_gigante', ac: 13, hp: 9, dexMod: 3, xp: 25, ai: 'beast',
+    attacks: [{ name: 'Mordisco', bonus: 5, dice: '1d4+3', type: 'perforante' }], saves: { str: 0, dex: 3, con: 0, int: -3, wis: 1, cha: -3 },
+  },
+  'Giant Bat': {
+    name: 'Murciélago gigante', img: 'murcielago_gigante', ac: 13, hp: 22, dexMod: 3, xp: 50, ai: 'beast',
+    attacks: [{ name: 'Mordisco', bonus: 5, dice: '1d6+3', type: 'perforante' }], saves: { str: 2, dex: 3, con: 0, int: -4, wis: 1, cha: -2 },
+  },
+  'Giant Goat': {
+    name: 'Cabra gigante', img: 'cabra_gigante', ac: 11, hp: 19, dexMod: 1, xp: 100, ai: 'beast',
+    attacks: [{ name: 'Embestir', bonus: 5, dice: '1d6+3', type: 'contundente' }], saves: { str: 5, dex: 1, con: 1, int: -4, wis: 1, cha: -2 },
+  },
+  Hippogriff: {
+    name: 'Hipogrifo', img: 'hipogrifo', ac: 11, hp: 26, dexMod: 1, xp: 200, ai: 'beast', multi: 2,
+    attacks: [{ name: 'Desgarro', bonus: 5, dice: '1d8+3', type: 'cortante' }], saves: { str: 3, dex: 1, con: 1, int: -4, wis: 1, cha: -1 },
+  },
+  'Polar Bear': {
+    name: 'Oso polar', img: 'oso_polar', ac: 12, hp: 42, dexMod: 2, xp: 450, ai: 'beast', multi: 2, resist: ['frío'],
+    attacks: [{ name: 'Desgarro', bonus: 7, dice: '1d8+5', type: 'cortante' }], saves: { str: 5, dex: 2, con: 3, int: -4, wis: 1, cha: -2 },
+  },
+  'Saber-Toothed Tiger': {
+    name: 'Tigre dientes de sable', img: 'tigre_dientes_sable', ac: 13, hp: 52, dexMod: 3, xp: 450, ai: 'beast', multi: 2,
+    attacks: [{ name: 'Desgarro', bonus: 6, dice: '2d6+4', type: 'cortante' }], saves: { str: 6, dex: 5, con: 2, int: -4, wis: 1, cha: -1 },
+  },
+  Gargoyle: {
+    name: 'Gárgola', img: 'gargola', ac: 15, hp: 67, dexMod: 0, xp: 450, ai: 'beast', multi: 2, immune: ['veneno'],
+    attacks: [{ name: 'Garra', bonus: 4, dice: '2d4+2', type: 'cortante' }], saves: { str: 2, dex: 0, con: 3, int: -2, wis: 0, cha: -2 },
+  },
+  Wight: {
+    name: 'Tumulario', img: 'tumulario', ac: 14, hp: 82, dexMod: 2, xp: 700, ai: 'undead', noSleep: true, multi: 2,
+    resist: ['necrótico'], immune: ['veneno'],
+    attacks: [
+      { name: 'Espada necrótica', bonus: 4, dice: '1d8+2', type: 'cortante', extra: { dice: '1d8', type: 'necrótico' } },
+      { name: 'Arco necrótico', bonus: 4, dice: '1d8+2', type: 'perforante', ranged: true, extra: { dice: '1d8', type: 'necrótico' } },
+    ],
+    saves: { str: 2, dex: 2, con: 3, int: 0, wis: 1, cha: 2 },
+  },
   // El Invierno del Dragón
   Kobold: {
     name: 'Kobold', img: 'kobold', ac: 12, hp: 5, dexMod: 2, xp: 25, ai: 'goblin', packTactics: true,

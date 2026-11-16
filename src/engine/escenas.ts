@@ -4,7 +4,7 @@ import type { ImgKey } from '../assets';
 import { ABIL_NAME, Ability, ITEMS, MONSTERS } from '../data/srd';
 import { GOALS } from '../data/objetivos';
 import { ADVS, advOf } from './aventuras';
-import { logEvs, contentById, dropKey, encounterById, Ev, giveItem, ShownRoll } from './dungeon';
+import { logEvs, contentById, dropKey, encounterById, rolledEnemies, Ev, giveItem, ShownRoll } from './dungeon';
 import type { Game } from './game';
 import { die, roll } from './rng';
 import { Char, abilMod, isDown, newItem } from './rules';
@@ -117,7 +117,7 @@ export function applyEffect(g: Game, e: Effect, who?: Char): { lines: string[]; 
 
 /** Aplica cambios por decisiones y ajuste de grupo sin duplicar jefes ni saturar las filas. */
 export function enemiesOf(g: Game, id: string): any[] {
-  const base: any[] = encounterById(id)?.enemies ?? [];
+  const base: any[] = rolledEnemies(g, id);
   const mod = g.encMod?.[id] ?? 0, size = g.encSize?.[id] ?? 0;
   const weak = !!g.weak?.includes(id);
   if (!mod && !size && !weak) return base;
