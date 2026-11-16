@@ -776,6 +776,14 @@
                     "text": "La ventisca te deja exhausto.",
                     "damage": "1d4"
                   }
+                },
+                {
+                  "ally": "aldric",
+                  "label": "Dejar que Tavin tantee la nieve",
+                  "ok": {
+                    "text": "Tavin lee las huellas medio borradas y saca la bolsa sin hundirse. Dentro hay cuatro monedas.",
+                    "gold": 4
+                  }
                 }
               ],
               "fallback": {
@@ -2872,6 +2880,14 @@
                     "text": "La piedra se mueve bruscamente y os obliga a retroceder.",
                     "damage": "1d4"
                   }
+                },
+                {
+                  "ally": "vurka",
+                  "label": "Dejar que Vurka sostenga la losa",
+                  "ok": {
+                    "text": "Vurka sostiene la losa con los dientes apretados mientras sacáis el paquete.",
+                    "item": "potion_healing"
+                  }
                 }
               ],
               "fallback": {
@@ -2948,6 +2964,14 @@
                   "label": "No tocar el mecanismo",
                   "ok": {
                     "text": "Lo dejáis como está."
+                  }
+                },
+                {
+                  "ally": "durnok",
+                  "label": "Dejar que Durnok ajuste la válvula",
+                  "ok": {
+                    "text": "Durnok conoce estas válvulas: gira la rueda pequeña antes que la grande. El cajón queda libre y encontráis monedas.",
+                    "gold": 9
                   }
                 }
               ]
@@ -4055,6 +4079,14 @@
                   "fail": {
                     "text": "Los destellos os engañan.",
                     "damage": "1d4"
+                  }
+                },
+                {
+                  "ally": "syrael",
+                  "label": "Dejar que Syrael calme el aire",
+                  "ok": {
+                    "text": "Syrael escucha el pulso del glaciar y os avisa del instante de calma. Recuperáis el frasco del nicho.",
+                    "item": "potion_healing"
                   }
                 }
               ],

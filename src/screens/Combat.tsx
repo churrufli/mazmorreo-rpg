@@ -4,14 +4,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG } from '../assets';
 import { C, F } from '../theme';
 import { useStore } from '../store';
-import { Action, MASTERY_NAME, Unit, actionsFor, autoTurn, current, hasUseful, masteryOf, targetsFor } from '../engine/combat';
+import { Action, MASTERY_NAME, Unit, actionsFor, autoTurn, current, hasUseful, masteryOf, preview, targetsFor } from '../engine/combat';
 import { Card, CardInfo, CardModal, resetFx, slotsOf } from '../ui/Card';
 import { statesOf } from '../ui/estados';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
 import { LogModal } from '../ui/LogModal';
 import { Bg, Btn } from '../ui/kit';
 import { FaceImage } from '../ui/FaceImage';
-import { getDev, markAction, seenAction } from '../storage';
+import { getDev, getFlag, markAction, seenAction } from '../storage';
 import { D20, FadeIn, Message, MiniDie, rollMs } from '../ui/Overlays';
 import { CLASSES, DmgType, ITEMS, MONSTERS } from '../data/srd';
 import { Settings } from '../ui/Settings';
@@ -143,7 +143,9 @@ export function Combat() {
 
   useEffect(() => {
     if (!auto || !ready || paused) return;
-    const t = setTimeout(enemyStep, Math.max(rollLeft(), me.side === 'enemy' ? 1400 : 700));
+    // Ritmo ágil (Ajustes): los enemigos no esperan a que se vaya el dado, solo a que se lea.
+    const fast = !getFlag('pausado');
+    const t = setTimeout(enemyStep, fast ? Math.max(Math.min(rollLeft(), 700), me.side === 'enemy' ? 650 : 400) : Math.max(rollLeft(), me.side === 'enemy' ? 1400 : 700));
     return () => clearTimeout(t);
   }, [auto, ready, paused, cb, enemyStep, me.side]);
 
@@ -216,7 +218,15 @@ export function Combat() {
     close();
     endTurn();
   };
-  const explain = (a: Action) => { setSel(undefined); setTip({ title: a.label.toLocaleUpperCase('es-ES'), text: descOf(a) ?? '', a }); };
+  // Probabilidad aproximada contra cada objetivo, con las mismas reglas que la tirada (no la cambia).
+  const odds = (a: Action) => {
+    if (a.off || (a.target !== 'enemy' && a.target !== 'enemy-melee')) return '';
+    const rows = targetsFor(cb, a).map(t => ({ t, p: preview(g, cb, a, t) })).filter(x => x.p);
+    if (!rows.length) return '';
+    const verb = rows[0].p!.save ? 'Probabilidad de que falle la salvación' : 'Probabilidad aproximada de impactar';
+    return `\n\n${verb}:\n${rows.map(({ t, p }) => `· ${t.name}: ${p!.pct} %${p!.why.length ? ` (${p!.why.join('; ')})` : ''}`).join('\n')}`;
+  };
+  const explain = (a: Action) => { setSel(undefined); setTip({ title: a.label.toLocaleUpperCase('es-ES'), text: (descOf(a) ?? '') + odds(a), a }); };
   // Imagen del objeto del que depende la acción (arma, poción, arrojadizo, varita o pergamino).
   const imgOf = (a: Action) => {
     const [k, arg] = a.id.split(':');
@@ -322,6 +332,7 @@ export function Combat() {
                 info={info(u)}
                 minTouchSize={44}
                 selecting={!!pending}
+                tag={isT && pending && u.side === 'enemy' ? (() => { const p = preview(g, cb, pending, u); return p ? `${p.pct} %${p.adv > 0 ? ' ▲' : p.adv < 0 ? ' ▼' : ''}` : undefined; })() : undefined}
                 interactionHint={!auto && u.side === 'enemy' ? 'Toca para atacar si hay un arma disponible que le alcance. Mantén pulsado para consultar la ficha sin atacar.' : 'Toca para consultar la ficha.'}
                 width={cardW}
                 active={u.key === me.key && !cb.result}

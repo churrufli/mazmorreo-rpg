@@ -39,6 +39,8 @@ export function Settings({ onClose }: { onClose: () => void }) {
   const [music, setMusic] = useState(storage.getFlag('music'));
   const [dev, setDev] = useState(storage.getDev());
   const [vibra, setVibra] = useState(storage.getFlag('vibra'));
+  // Combate pausado: los turnos enemigos esperan a que se vea cada dado entero. Apagado, van más rápido.
+  const [pausado, setPausado] = useState(storage.getFlag('pausado'));
   // Mientras se arrastra una barra de volumen, el panel no se desplaza (si no, se queda con el dedo).
   const [scroll, setScroll] = useState(true);
   const [pidiendo, setPidiendo] = useState(false);
@@ -82,6 +84,8 @@ export function Settings({ onClose }: { onClose: () => void }) {
               <Barra label="Efectos" k="efectos" onDrag={d => setScroll(!d)} />
               <Text style={st.note}>Sonido: efectos de combate, del mapa y de los botones. Música: la de la pantalla principal, el pueblo, cada aventura y los combates, y el ambiente de cada zona.</Text>
               <Row label="Vibración" value={vibra} onChange={toggle('vibra', setVibra)} />
+              <Row label="Combate pausado" value={pausado} onChange={toggle('pausado', setPausado)} />
+              <Text style={st.note}>Combate pausado: los enemigos esperan a que se vea cada dado. Apagado, sus turnos pasan más rápido.</Text>
               <Enlace label="Cómo funciona" onPress={() => setView('como')} />
               <Enlace label="Novedades" onPress={() => setView('novedades')} />
               <Enlace label="Créditos" onPress={() => setView('creditos')} />
