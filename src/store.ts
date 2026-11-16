@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { ImgKey } from './assets';
 import type { Ability, ClassId, SpeciesId } from './data/srd';
-import { clone, Game, newGame } from './engine/game';
+import { afterDefeat, clone, Game, newGame } from './engine/game';
 import { chooseOption, leaveScene, sceneSpent, spentMsg } from './engine/escenas';
 import { allyCap, endAdventure, sendToInn } from './engine/posada';
 import { markReturn, react, atEntrance, atRest, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step, trap, logEvs } from './engine/dungeon';
@@ -242,9 +242,9 @@ export const useStore = create<State>((set, get) => {
       const cb = get().combat;
       if (!cb?.result) return;
       if (cb.result === 'lose') {
-        // Una derrota devuelve al último guardado con una penalización moderada del 10 % del oro.
+        // Una derrota devuelve al último guardado: 10 % menos de oro, PG llenos y una poción más.
         const last = storage.load(get().game!.slot);
-        if (last) { last.gold -= Math.floor(last.gold * 0.10); storage.save(last); }
+        if (last) { afterDefeat(last); storage.save(last); }
         set({ screen: 'defeat' });
         return;
       }

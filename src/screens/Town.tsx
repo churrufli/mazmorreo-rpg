@@ -476,7 +476,7 @@ export function Defeat() {
         <Panel>
           <T h={2} style={{ textAlign: 'center' }}>Derrota</T>
           <T>{A.defeatText}</T>
-          <T>Al volver al último guardado perdéis una cuarta parte del oro.</T>
+          <T>Al volver al último guardado perdéis un 10 % del oro, pero recuperáis todos los PG y el héroe lleva una poción de curación más.</T>
           <Btn label="Cargar el último guardado" onPress={() => loadSlot(game!.slot)} style={{ marginTop: 10 }} />
           <Btn label="Menú principal" onPress={() => go('title')} />
         </Panel>
