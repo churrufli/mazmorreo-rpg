@@ -98,6 +98,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Fichas más fieles al SRD 5.2.1: el sectario solo lleva su hoz ritual, el enjambre de murciélagos muerde menos cuando está maltrecho y el jefe goblin tiene Carisma +0.',
     'Hondaroca es más llevadera al empezar solo: el héroe lleva una poción de curación y el campamento de los mineros permite un descanso largo.',
     'Tras perder un combate volvéis al último guardado con todos los PG y una poción de curación más para el héroe (seguís perdiendo un 10 % del oro).',
+    'Las tiradas son aleatorias de verdad: ya no dependen de ninguna semilla guardada en la partida, así que cargar una partida no repite los mismos dados.',
     'Enemigos nuevos del SRD, mucho más débiles: rata, murciélago, araña, escarabajo de fuego gigante, escorpión, lagarto, hongo chillón y plebeyo. Algunos sustituyen a ratas gigantes en la primera zona de Hondaroca.',
   ] },
   { version: 'v0.145', items: [
