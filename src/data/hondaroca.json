@@ -594,9 +594,9 @@
             {
               "type": "rest_point",
               "id": "z1_rest1",
-              "rest": "short",
+              "rest": "long",
               "name": "Campamento de los mineros",
-              "description": "La hoguera conserva brasas bajo la ceniza. El lugar está protegido y permite realizar un descanso corto."
+              "description": "La hoguera conserva brasas bajo la ceniza. El lugar está protegido y permite pasar aquí la noche."
             },
             {
               "type": "encounter",
