@@ -2,6 +2,11 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 17 de noviembre de 2026 — Imágenes definitivas de los elementos dinámicos
+
+- Incorporadas las 11 imágenes de escombros, puerta, verja, palanca y barrera (`din_<tipo>_<estado>.webp`). Sustituyen a los marcadores provisionales; los estados sin imagen siguen con el suyo.
+- La conversión (`scripts/convertir-dinamicos.py`) no recorta ni recentra, para que los estados de un elemento conserven el mismo encuadre.
+
 ## 17 de noviembre de 2026 — Elementos dinámicos en los mapas
 
 - **Sistema genérico** (`src/engine/elementos.ts`): elementos con estados que cambian por escenas, mecanismos o acontecimientos y que de verdad abren o cierran el paso. Se guardan con la partida; las partidas anteriores que ya habían pasado por esas casillas los encuentran abiertos.
