@@ -25,3 +25,7 @@ export const getDev = () => get('opt:dev') === 'on';
 export const setDev = (on: boolean) => set('opt:dev', on ? 'on' : 'off');
 export const seenAction = (k: string) => get('seen:' + k) === '1';
 export const markAction = (k: string) => set('seen:' + k, '1');
+
+/** Efectos visuales: completos, reducidos o desactivados. Sin valor guardado, se sigue la preferencia del sistema. */
+export const getFxMode = () => get('opt:efectos') ?? undefined;
+export const setFxMode = (v: string) => set('opt:efectos', v);

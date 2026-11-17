@@ -47,3 +47,7 @@ export const setDev = (on: boolean) => kv.set('opt:dev', on ? 'on' : 'off');
 /** Acciones de combate cuya explicación ya ha visto cada personaje (la primera vez sale sola). */
 export const seenAction = (k: string) => kv.getString(`seen:${k}`) === '1';
 export const markAction = (k: string) => kv.set(`seen:${k}`, '1');
+
+/** Efectos visuales: completos, reducidos o desactivados. Sin valor guardado, se sigue la preferencia del sistema. */
+export const getFxMode = () => kv.getString('opt:efectos') ?? undefined;
+export const setFxMode = (v: string) => kv.set('opt:efectos', v);

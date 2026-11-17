@@ -17,10 +17,14 @@ import { Dialogue, FadeIn, MiniDie } from '../ui/Overlays';
 import { COLABORAR, Settings } from '../ui/Settings';
 import { BUILD } from '../version';
 import { CAMBIOS } from '../versionWeb';
+import { useFxMode } from '../ui/movimiento';
 
 /** Motas de luz que suben despacio, como polvo o ascuas. */
-function Particles({ n = 24, h }: { n?: number; h?: number }) {
+function Particles({ n: n0 = 24, h }: { n?: number; h?: number }) {
   const win = useWindowDimensions();
+  // Menos motas con efectos reducidos y ninguna con los mínimos.
+  const fx = useFxMode();
+  const n = fx === 'full' ? n0 : fx === 'reduced' ? Math.round(n0 / 3) : 0;
   const width = win.width, height = h ?? win.height;
   // Cada mota empieza ya a mitad de su recorrido: desde el primer momento hay motas por toda la pantalla.
   const motes = useMemo(() => Array.from({ length: n }, () => {

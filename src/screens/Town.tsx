@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
@@ -14,7 +14,8 @@ import { CLASSES } from '../data/srd';
 import * as storage from '../storage';
 import { Card, CardModal, charInfo } from '../ui/Card';
 import { FaceImage } from '../ui/FaceImage';
-import { FadeIn, Portrait } from '../ui/Overlays';
+import { FadeIn, PopIn, Portrait } from '../ui/Overlays';
+import { EASE, fxOn } from '../ui/movimiento';
 import { ADV_LIST, ADVS, MEJORES, TOWNS, TownId, advOf, speaker, wonAdv } from '../engine/aventuras';
 import { pendingNotes, useOutside } from '../engine/dungeon';
 import { allyCap, finishTalk, nextTalk, short, talkLines, talksDone } from '../engine/posada';
@@ -132,7 +133,7 @@ export function Town() {
       <View style={[st.top, { paddingTop: ins.top + 8 }]}>
         <Text style={st.title}>{place === 'menu' ? town.name : place === 'galeria' ? 'Galería' : place[0].toUpperCase() + place.slice(1)}</Text>
         <View style={st.topRight}>
-          <Text style={st.gold}>{dev ? '∞' : g.gold} po</Text>
+          {dev ? <Text style={st.gold}>∞ po</Text> : <GoldCount n={g.gold} />}
           {place !== 'menu' ? <Btn small label="Volver" onPress={() => { setPlace('menu'); say(''); }} /> : null}
           <OptionsButton />
         </View>
@@ -275,7 +276,7 @@ export function Town() {
                 const it = buyer.items[i];
                 return <Pressable key={i} onPress={() => { if (it) { setBagSel(it.uid); setChestSel(undefined); } }}
                   style={{ width: 56, height: 56, borderWidth: 1.5, borderRadius: 6, borderColor: it?.uid === bagSel ? C.gold : C.border, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' }}>
-                  {it ? <Image source={IMG[ITEMS[it.id].img]} style={{ width: 48, height: 48 }} /> : null}
+                  {it ? <PopIn key={it.uid}><Image source={IMG[ITEMS[it.id].img]} style={{ width: 48, height: 48 }} /></PopIn> : null}
                 </Pressable>;
               })}
             </View>
@@ -285,7 +286,7 @@ export function Town() {
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginBottom: 8 }}>
               {(g.chest ?? []).map(it => <Pressable key={it.uid} onPress={() => { setChestSel(it.uid); setBagSel(undefined); }}
                 style={{ width: 56, height: 56, borderWidth: 1.5, borderRadius: 6, borderColor: chestSel === it.uid ? C.gold : C.border, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' }}>
-                <Image source={IMG[ITEMS[it.id].img]} style={{ width: 48, height: 48 }} />
+                <PopIn><Image source={IMG[ITEMS[it.id].img]} style={{ width: 48, height: 48 }} /></PopIn>
               </Pressable>)}
             </View>
             {(g.chest ?? []).find(i => i.uid === chestSel) ? <>
@@ -506,6 +507,7 @@ const st = StyleSheet.create({
   topRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   title: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 22 },
   gold: { fontFamily: F.textBold, color: C.gold, fontSize: 18 },
+  goldDelta: { position: 'absolute', right: 0, top: 0, fontFamily: F.textBold, fontSize: 16, textShadowColor: '#000', textShadowRadius: 4 },
   note: { fontFamily: F.italic, color: C.goldHi, fontSize: 16, textAlign: 'center', marginBottom: 6, backgroundColor: 'rgba(0,0,0,0.6)', padding: 6, borderRadius: 6 },
   h: { fontFamily: F.title, color: C.gold, fontSize: 15, marginTop: 8, marginBottom: 4 },
   partyRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 6 },
@@ -518,3 +520,32 @@ const st = StyleSheet.create({
   price: { fontFamily: F.textBold, color: C.gold, fontSize: 15, marginLeft: 6 },
   confirm: { paddingVertical: 8, borderBottomWidth: 1, borderColor: '#3a2e22', gap: 6 },
 });
+
+/** Oro del grupo: al cambiar, la cifra se ilumina y flota lo ganado o gastado. */
+function GoldCount({ n }: { n: number }) {
+  const prev = useRef(n);
+  const v = useRef(new Animated.Value(1)).current;
+  const [delta, setDelta] = useState<{ d: number; k: number }>();
+  useEffect(() => {
+    const d = n - prev.current;
+    prev.current = n;
+    if (!d || !fxOn()) return;
+    setDelta(x => ({ d, k: (x?.k ?? 0) + 1 }));
+    v.setValue(0);
+    Animated.timing(v, { toValue: 1, duration: 900, easing: EASE.out, useNativeDriver: true }).start();
+    const t = setTimeout(() => setDelta(undefined), 950);
+    return () => clearTimeout(t);
+  }, [n]); // eslint-disable-line react-hooks/exhaustive-deps
+  const gain = (delta?.d ?? 0) > 0;
+  return (
+    <View>
+      <Animated.Text style={[st.gold, { transform: [{ scale: v.interpolate({ inputRange: [0, 0.15, 1], outputRange: [1, 1.18, 1] }) }] }]}>{n} po</Animated.Text>
+      {delta ? (
+        <Animated.Text pointerEvents="none" style={[st.goldDelta, { color: gain ? '#ffe08a' : '#e8796b',
+          opacity: v.interpolate({ inputRange: [0, 0.1, 0.7, 1], outputRange: [0, 1, 1, 0] }),
+          transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [0, gain ? -18 : 14] }) }] }]}>{gain ? '+' : '−'}{Math.abs(delta.d)}</Animated.Text>
+      ) : null}
+    </View>
+  );
+}
+

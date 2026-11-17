@@ -11,6 +11,7 @@ import { ADVS, TOWNS, advOf } from '../engine/aventuras';
 import { LogModal } from '../ui/LogModal';
 import { Bg, Btn } from '../ui/kit';
 import { FaceImage } from '../ui/FaceImage';
+import { fxFull } from '../ui/movimiento';
 import { getDev, getFlag, markAction, seenAction } from '../storage';
 import { D20, FadeIn, Message, MiniDie, rollMs } from '../ui/Overlays';
 import { CLASSES, DmgType, ITEMS, MONSTERS } from '../data/srd';
@@ -88,6 +89,11 @@ export function Combat() {
   const lunge = useRef(new Animated.ValueXY()).current;
   const fly = useRef(new Animated.Value(0)).current;
   const tilt = useRef(new Animated.Value(0)).current;
+  // Peso de la embestida: la carta se encoge al tomar impulso y se ensancha al golpear.
+  const punch = useRef(new Animated.Value(1)).current;
+  // Ataques fallados: el objetivo no recibe efecto. Se compara con el último efecto visto de cada carta.
+  const fxSeen = useRef<Record<string, number | undefined>>(Object.fromEntries(Object.entries(cb.fx ?? {}).map(([k, v]) => [k, v.id])));
+  const [misses, setMisses] = useState<Record<string, number>>({});
   const rot = tilt.interpolate({ inputRange: [-1, 1], outputRange: ['-18deg', '18deg'] });
   const [lungeKey, setLungeKey] = useState<string>();
   const [shot, setShot] = useState<{ x: number; y: number; dx: number; dy: number; kind: 'arrow' | 'magic'; color: string }>();
@@ -98,6 +104,7 @@ export function Combat() {
     const a = sw && cardRefs.current[sw.from], b = sw && cardRefs.current[sw.to], root = rootRef.current;
     if (!sw || !a || !b || !root || playedSwing.current === sw.id) return;
     playedSwing.current = sw.id;
+    if (cb.fx?.[sw.to]?.id === fxSeen.current[sw.to] && cb.log.slice(-3).some(l => l.c === 'miss')) setMisses(m => ({ ...m, [sw.to]: sw.id }));
     root.measureInWindow((rx, ry) => a.measureInWindow((ax, ay, aw, ah) => b.measureInWindow((bx, by, bw, bh) => {
       const dx = bx + bw / 2 - (ax + aw / 2), dy = by + bh / 2 - (ay + ah / 2);
       if (sw.kind === 'melee') {
@@ -118,6 +125,11 @@ export function Combat() {
             Animated.timing(tilt, { toValue: side, duration: IMPACT - 120, easing: Easing.in(Easing.quad), useNativeDriver: true }),
             Animated.timing(tilt, { toValue: 0, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }),
           ]),
+          Animated.sequence([
+            Animated.timing(punch, { toValue: fxFull() ? 0.95 : 1, duration: 120, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+            Animated.timing(punch, { toValue: fxFull() ? 1.07 : 1, duration: IMPACT - 120, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+            Animated.timing(punch, { toValue: 1, duration: 220, easing: Easing.out(Easing.back(1.6)), useNativeDriver: true }),
+          ]),
         ]).start(() => setLungeKey(undefined));
       } else {
         setShot({ x: ax + aw / 2 - rx, y: ay + ah / 2 - ry, dx, dy, kind: sw.kind, color: SPELL_COLOR[sw.type] ?? '#b48cff' });
@@ -126,6 +138,7 @@ export function Combat() {
       }
     })));
   }, [cb.swing?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { fxSeen.current = Object.fromEntries(Object.entries(cb.fx ?? {}).map(([k, v]) => [k, v.id])); }, [cb.fxId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cuándo se quita de la pantalla la última tirada: los carteles esperan a que se vea entera.
   const rollEnd = useRef(0);
@@ -326,7 +339,7 @@ export function Combat() {
         {us.map(u => {
           const isT = targets.includes(u.key);
           return (
-            <Animated.View testID={`combat-unit-${u.key}`} key={u.key} ref={(r: View | null) => { cardRefs.current[u.key] = r; }} collapsable={false} style={{ marginHorizontal: 3, zIndex: lungeKey === u.key ? 5 : 0, transform: lungeKey === u.key ? [...lunge.getTranslateTransform(), { rotate: rot }] : [] }}>
+            <Animated.View testID={`combat-unit-${u.key}`} key={u.key} ref={(r: View | null) => { cardRefs.current[u.key] = r; }} collapsable={false} style={{ marginHorizontal: 3, zIndex: lungeKey === u.key ? 5 : 0, transform: lungeKey === u.key ? [...lunge.getTranslateTransform(), { rotate: rot }, { scale: punch }] : [] }}>
               {flash?.key === u.key ? <Blink key={flash.n} onActive={u.key === me.key && !cb.result} /> : null}
               <Card
                 info={info(u)}
@@ -341,6 +354,8 @@ export function Combat() {
                 dim={u.dead || (!!pending && !pending.off && pending.target !== 'none' && !isT)}
                 fx={cb.fx?.[u.key]}
                 pop={cb.pops?.[u.key]}
+                miss={misses[u.key]}
+                boss={u.side === 'enemy' && u.mon === ADVS[advOf(g.zone)].boss}
                 intent={intentOf(u)}
                 fxKey={u.key}
                 fxDelay={IMPACT}
@@ -490,6 +505,7 @@ export function Combat() {
           title={cb.result === 'win' ? 'Victoria' : cb.result === 'fled' ? 'Huida' : 'Derrota'}
           bg={cb.result === 'win' ? 'victoria' : cb.result === 'lose' ? 'derrota' : undefined}
           lines={cb.summary ?? []}
+          celebrate={cb.result === 'win'}
           onDone={closeCombat}
         />
       ) : null}
@@ -690,7 +706,19 @@ function Projectile({ x, y, dx, dy, kind, color, t }: { x: number; y: number; dx
   const tx = t.interpolate({ inputRange: [0, 1], outputRange: [0, dx] });
   const ty = t.interpolate({ inputRange: [0, 1], outputRange: [0, dy] });
   const scale = kind === 'magic' ? t.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1.3] }) : 1;
+  // Estela: dos copias tenues que siguen al proyectil un poco por detrás (solo con efectos completos).
+  const ghost = (lag: number, o: number) => (
+    <Animated.View key={lag} pointerEvents="none" style={{ position: 'absolute', left: x - S / 2, top: y - S / 2, width: S, height: S,
+      opacity: t.interpolate({ inputRange: [0, lag, lag + 0.05, 1], outputRange: [0, 0, o, o * 0.6], extrapolate: 'clamp' }),
+      transform: [{ translateX: t.interpolate({ inputRange: [0, lag, 1], outputRange: [0, 0, dx * (1 - lag)], extrapolate: 'clamp' }) }, { translateY: t.interpolate({ inputRange: [0, lag, 1], outputRange: [0, 0, dy * (1 - lag)], extrapolate: 'clamp' }) }, { rotate: angle }, { scale: kind === 'magic' ? 0.85 : 1 }] }}>
+      <Svg width={S} height={S} viewBox="0 0 36 36">
+        {kind === 'arrow' ? <Line x1="4" y1="18" x2="30" y2="18" stroke="#f4ede0" strokeWidth="1.2" /> : <Circle cx="18" cy="18" r="8" fill={color} />}
+      </Svg>
+    </Animated.View>
+  );
   return (
+    <>
+    {fxFull() ? [ghost(0.12, 0.35), ghost(0.24, 0.18)] : null}
     <Animated.View pointerEvents="none" style={{ position: 'absolute', left: x - S / 2, top: y - S / 2, width: S, height: S, transform: [{ translateX: tx }, { translateY: ty }, { rotate: angle }, { scale }] }}>
       <Svg width={S} height={S} viewBox="0 0 36 36">
         {kind === 'arrow' ? (
@@ -708,6 +736,7 @@ function Projectile({ x, y, dx, dy, kind, color, t }: { x: number; y: number; dx
         )}
       </Svg>
     </Animated.View>
+    </>
   );
 }
 

@@ -5,7 +5,7 @@ import { C, F } from '../theme';
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Bar, Btn, Crop, Icon } from './kit';
 import { mdiBagPersonalOutline, mdiCardAccountDetailsOutline, mdiCheck, mdiStarShooting } from '@mdi/js';
-import { Portrait } from './Overlays';
+import { PopIn, Portrait } from './Overlays';
 import { FACE } from '../data/caras';
 import type { FxKind } from '../engine/combat';
 import { ABIL_NAME, ABIL_SHORT, Ability, CLASSES, DmgType, ITEMS, MONSTERS, SPECIES } from '../data/srd';
@@ -13,7 +13,8 @@ import { usableOutside } from '../engine/dungeon';
 import { Char, LEVEL_FEATURES, MAX_ITEMS, equipState, keeps, abilMod, armorClass, passivePerception, saveBonus, score } from '../engine/rules';
 import { XP_LEVELS } from '../data/srd';
 import { StateOrb, StateTag, STATES } from './estados';
-import { ElementFx, elementOf } from './efectos';
+import { ElementFx, FlashFx, GOOD_STATES, HealFx, ImpactFx, ShardsFx, StateFx, elementOf } from './efectos';
+import { DUR, EASE, fxFull, fxOn, useFxMode } from './movimiento';
 import { slotsAt } from '../engine/rules';
 
 export interface CardInfo {
@@ -47,7 +48,11 @@ export const resetFx = () => PLAYED.clear();
  * Carta: ilustración bajo el marco, nombre en la franja de arriba y PG/CA en la de abajo.
  * Los personajes se ven de la cabeza a la cintura; con full, la ilustración entera.
  */
-export function Card({ info, width, active, target, help, dim, onPress, onLongPress, tag, fx, fxKey, fxDelay = 0, full, onBroken, pop, intent, minTouchSize = 0, selecting, interactionHint }: {
+export function Card({ info, width, active, target, help, dim, onPress, onLongPress, tag, fx, fxKey, fxDelay = 0, full, onBroken, pop, intent, minTouchSize = 0, selecting, interactionHint, miss, boss }: {
+  /** Un ataque contra esta carta acaba de fallar: se aparta y sale «Fallo». */
+  miss?: number;
+  /** Jefe: al romperse, más esquirlas y una onda. */
+  boss?: boolean;
   info: CardInfo; width: number; active?: boolean; target?: boolean; dim?: boolean; tag?: string; fxDelay?: number; fxKey?: string;
   /** Objetivo de una ayuda (curar, bendecir…): borde verde en vez de rojo. */
   help?: boolean;
@@ -78,26 +83,81 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
   const anim = useRef(new Animated.Value(1)).current;
   const shake = useRef(new Animated.Value(0)).current;
   const turnGlow = useRef(new Animated.Value(0)).current;
+  const fxm = useFxMode();
   useEffect(() => {
     if (!active) { turnGlow.stopAnimation(); turnGlow.setValue(0); return; }
+    // Con efectos reducidos el borde se queda encendido, sin latir.
+    if (fxm !== 'full') { turnGlow.setValue(1); return; }
     const pulse = Animated.loop(Animated.sequence([
-      Animated.timing(turnGlow, { toValue: 1, duration: 850, useNativeDriver: false }),
-      Animated.timing(turnGlow, { toValue: 0, duration: 850, useNativeDriver: false }),
+      Animated.timing(turnGlow, { toValue: 1, duration: 850, easing: EASE.inOut, useNativeDriver: true }),
+      Animated.timing(turnGlow, { toValue: 0, duration: 850, easing: EASE.inOut, useNativeDriver: true }),
     ]));
     pulse.start();
     return () => pulse.stop();
-  }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [active, fxm]); // eslint-disable-line react-hooks/exhaustive-deps
+  // La carta del turno se eleva un poco; los objetivos válidos, apenas. El cambio se anima en vez de saltar.
+  const liftTo = active ? 1.06 : (target || help) && !down ? 1.025 : 1;
+  const lift = useRef(new Animated.Value(liftTo)).current;
+  useEffect(() => {
+    if (!fxOn()) { lift.setValue(liftTo); return; }
+    const a = Animated.spring(lift, { toValue: liftTo, friction: 7, tension: 140, useNativeDriver: true });
+    a.start();
+    return () => a.stop();
+  }, [liftTo]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!fx) return;
     if (fxKey) { if (PLAYED.get(fxKey) === fx.id) return; PLAYED.set(fxKey, fx.id); }
     anim.setValue(0);
     // Los daños mágicos con efecto propio duran algo más para que se aprecien.
-    Animated.timing(anim, { toValue: 1, duration: elementOf(fx.type) ? 950 : 700, delay: fxDelay, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
-    if (fx.kind !== 'heal') {
+    Animated.timing(anim, { toValue: 1, duration: elementOf(fx.type) && fxOn() ? 950 : 700, delay: fxDelay, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+    if (fx.kind !== 'heal' && fxFull()) {
+      // Los golpes fuertes (crítico o un cuarto de la vida de una vez) sacuden algo más, siempre en menos de un tercio de segundo.
       shake.setValue(0);
-      Animated.sequence([Animated.delay(fxDelay), ...[6, -6, 4, -3, 0].map(v => Animated.timing(shake, { toValue: v, duration: 50, useNativeDriver: true }))]).start();
+      const steps = isStrong(fx, pop, info.maxHp) ? [10, -9, 6, -4, 2, 0] : [6, -6, 4, -3, 0];
+      Animated.sequence([Animated.delay(fxDelay), ...steps.map(v => Animated.timing(shake, { toValue: v * Math.min(1.4, w / 80), duration: 48, useNativeDriver: true }))]).start();
     }
   }, [fx?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Ataque fallado: la carta se aparta un instante y sale «Fallo» en gris.
+  const missV = useRef(new Animated.Value(0)).current;
+  const [missShown, setMissShown] = useState<number>();
+  useEffect(() => {
+    if (!miss) return;
+    if (fxKey) { if (PLAYED.get(`${fxKey}:miss`) === miss) return; PLAYED.set(`${fxKey}:miss`, miss); }
+    setMissShown(miss);
+    missV.setValue(0);
+    Animated.timing(missV, { toValue: 1, duration: 900, delay: fxDelay, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+    const t = setTimeout(() => setMissShown(undefined), fxDelay + 950);
+    return () => clearTimeout(t);
+  }, [miss]); // eslint-disable-line react-hooks/exhaustive-deps
+  const dodgeX = missV.interpolate({ inputRange: [0, 0.12, 0.35, 1], outputRange: [0, -w * 0.09, 0, 0], extrapolate: 'clamp' });
+  // Estados que llegan o se van: los nuevos aparecen con un aro (dorado si ayudan) y los que se van se desvanecen.
+  const stateKeys = (info.states ?? []).map(t => t.key).join(',');
+  const prevStates = useRef(info.states ?? []);
+  const stV = useRef(new Animated.Value(0)).current;
+  const [stFx, setStFx] = useState<{ n: number; good: boolean }>();
+  const [leaving, setLeaving] = useState<StateTag[]>([]);
+  const [arrived, setArrived] = useState<string[]>([]);
+  useEffect(() => {
+    const before = prevStates.current, now = info.states ?? [];
+    prevStates.current = now;
+    if (!fxOn()) return;
+    const added = now.filter(t => !before.some(b => b.key === t.key));
+    const gone = before.filter(b => !now.some(t => t.key === b.key) && b.key !== 'death');
+    if (added.length) {
+      setArrived(added.map(t => t.key));
+      setStFx(f => ({ n: (f?.n ?? 0) + 1, good: added.every(t => GOOD_STATES.has(t.key)) }));
+      stV.setValue(0);
+      Animated.timing(stV, { toValue: 1, duration: DUR.state * 2, easing: EASE.out, useNativeDriver: true }).start();
+    }
+    if (gone.length) setLeaving(gone);
+    const t = setTimeout(() => { setLeaving([]); setArrived([]); }, DUR.state * 2);
+    return () => clearTimeout(t);
+  }, [stateKeys]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Caer o morir oscurece la carta poco a poco, no de golpe.
+  const downV = useRef(new Animated.Value(down ? 1 : 0)).current;
+  useEffect(() => {
+    Animated.timing(downV, { toValue: down ? 1 : 0, duration: fxOn() ? 450 : 0, delay: down ? fxDelay : 0, easing: EASE.out, useNativeDriver: true }).start();
+  }, [down]); // eslint-disable-line react-hooks/exhaustive-deps
   const popV = useRef(new Animated.Value(0)).current;
   // Sin cifra al montar: al cambiar de fila la carta se vuelve a montar y no debe repetir la del turno anterior.
   const [popShown, setPopShown] = useState<typeof pop>();
@@ -131,8 +191,11 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
   const fxOpacity = anim.interpolate({ inputRange: [0, 0.15, 0.6, 1], outputRange: [0, 1, 0.9, 0] });
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} delayLongPress={350} style={minTouchSize ? { width: Math.max(w, minTouchSize), height: Math.max(h, minTouchSize), alignItems: 'center', justifyContent: 'center' } : undefined} accessibilityHint={selecting ? target || help ? 'Objetivo válido: toca para seleccionarlo.' : 'No es un objetivo válido para esta acción.' : interactionHint ?? 'Toca para ver la ficha.'} accessibilityLabel={`${info.name}, ${info.hp} de ${info.maxHp} puntos de golpe, CA ${info.ac}${selecting && (target || help) ? ', objetivo válido' : ''}`}>
-      <Animated.View style={[st.card, { width: w, height: h, transform: [{ translateX: shake }, { scale: active ? 1.06 : 1 }] }, (dim || down) && !breaking && { opacity: 0.45 },
-        breaking && { opacity: crack.interpolate({ inputRange: [0, 1, 2], outputRange: [1, 1, 0] }), transform: [{ scale: crack.interpolate({ inputRange: [0, 1, 2], outputRange: [1, 1, 0.8] }) }, { rotate: crack.interpolate({ inputRange: [0, 1, 2], outputRange: ['0deg', '0deg', '8deg'] }) }] }]}>
+      <View style={{ width: w, height: h }}>
+      <Animated.View style={[st.card, { width: w, height: h, transform: [{ translateX: Animated.add(shake, dodgeX) }, { scale: lift }] }, (dim || down) && !breaking && { opacity: info.dead ? 0.45 : down ? 0.62 : 0.45 },
+        breaking && { opacity: crack.interpolate({ inputRange: [0, 1, 2], outputRange: [1, 1, 0] }), transform: [{ scale: crack.interpolate({ inputRange: [0, 1, 1.15, 2], outputRange: [1, 1, 1.04, 0.8] }) }, { rotate: crack.interpolate({ inputRange: [0, 1, 2], outputRange: ['0deg', '0deg', '8deg'] }) }] }]}>
+        {/* Turno activo: borde dorado que late y un halo interior suave que no tapa la ilustración. */}
+        {active ? <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFillObject, { borderRadius: 8, borderWidth: Math.max(5, w * 0.07), borderColor: 'rgba(255,214,130,0.28)', opacity: turnGlow, zIndex: 3 }]} /> : null}
         {active ? <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFillObject, { borderRadius: 8, borderWidth: 3, borderColor: C.goldHi, opacity: turnGlow.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }), zIndex: 3 }]} /> : null}
         <View style={{ position: 'absolute', left: ax, top: ay }}>
           {person
@@ -155,12 +218,17 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
         {/* Estados abajo de la ilustración, sin tapar la cara: una esfera con su icono por estado. */}
         {info.states?.length ? (
           <View pointerEvents="none" style={[st.orbs, { left: ax, width: aw, top: plateTop - orb - h * 0.012 }]}>
-            {info.states.slice(0, 4).map(t => <StateOrb key={t.key + t.label} k={t.key} size={orb} />)}
+            {info.states.slice(0, 4).map(t => arrived.includes(t.key) ? <OrbIn key={t.key + t.label} k={t.key} size={orb} /> : <StateOrb key={t.key + t.label} k={t.key} size={orb} />)}
+            {leaving.slice(0, 2).map(t => <OrbOut key={`out${t.key}`} k={t.key} size={orb} />)}
+          </View>
+        ) : leaving.length ? (
+          <View pointerEvents="none" style={[st.orbs, { left: ax, width: aw, top: plateTop - orb - h * 0.012 }]}>
+            {leaving.slice(0, 2).map(t => <OrbOut key={`out${t.key}`} k={t.key} size={orb} />)}
           </View>
         ) : null}
         {/* Barra de vida justo encima de la placa. */}
         <View style={{ position: 'absolute', left: ax + 1, width: aw - 2, top: plateTop - (w < 100 ? 4 : 6) }}>
-          <Bar value={info.hp} max={info.maxHp} height={w < 100 ? 3 : 5} />
+          <Bar value={info.hp} max={info.maxHp} height={w < 100 ? 3 : 5} delay={fxDelay} />
         </View>
         <View style={[st.band, st.stats, { top: plateTop, height: plateH, left: ax + w * 0.03, right: w - ax - aw + w * 0.03 }]}>
           <View style={st.stat}>
@@ -173,12 +241,17 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
             <Text style={[st.statTxt, { fontSize: fs, lineHeight: fs * 1.5, height: fs * 1.5 }]}>{info.ac}</Text>
           </View>
         </View>
-        {fx ? (
+        {/* Caído o muerto: un velo que se va oscureciendo (rojizo si aún puede salvarse). */}
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: info.dead ? 'rgba(0,0,0,0.55)' : 'rgba(50,6,6,0.4)', opacity: downV }]} />
+        {stFx && fxOn() ? <StateFx key={stFx.n} w={w} h={h} t={stV} good={stFx.good} /> : null}
+        {fx && fxFull() && fx.kind !== 'heal' ? <FlashFx key={`fl${fx.id}`} t={anim} crit={fx.kind === 'crit'} /> : null}
+        {fx && fxOn() ? (
           <Animated.View pointerEvents="none" style={{ position: 'absolute', left: w * 0.1, top: h * 0.2, opacity: fxOpacity, transform: [{ scale: fxScale }] }}>
             <Image source={IMG[FX_IMG[fx.kind]]} style={{ width: w * 0.8, height: w * 0.8 }} />
           </Animated.View>
         ) : null}
-        {fx?.type ? <ElementFx key={fx.id} type={fx.type} w={w} h={h} t={anim} uid={`${fxKey ?? info.name}_${fx.id}`} /> : null}
+        {fx?.kind === 'heal' && fxOn() ? <HealFx key={`h${fx.id}`} w={w} h={h} t={anim} uid={`${fxKey ?? info.name}_${fx.id}`} /> : null}
+        {fx?.type && fxOn() ? <ElementFx key={fx.id} type={fx.type} w={w} h={h} t={anim} uid={`${fxKey ?? info.name}_${fx.id}`} /> : null}
         {breaking ? (
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: crack.interpolate({ inputRange: [0, 1, 2], outputRange: [0, 1, 1] }) }]}>
             <Svg width={w} height={h} viewBox="0 0 100 150">
@@ -201,6 +274,13 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
             </Animated.View>
           );
         })() : null}
+        {missShown ? (
+          <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: h * 0.2, alignItems: 'center',
+            opacity: missV.interpolate({ inputRange: [0, 0.1, 0.7, 1], outputRange: [0, 1, 1, 0] }),
+            transform: [{ translateY: missV.interpolate({ inputRange: [0, 1], outputRange: [6, -h * 0.08] }) }] }}>
+            <Text style={[st.missTxt, { fontSize: Math.max(12, w * 0.15) }]}>Fallo</Text>
+          </Animated.View>
+        ) : null}
         {tag ? <Text style={[st.tag, { top: h * 0.12, width: w - 12 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{tag}</Text> : null}
         {down ? <Text style={[st.downTxt, { fontSize: Math.max(14, w * 0.14) }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{info.dead ? 'MUERTO' : 'CAÍDO'}</Text> : null}
         {intent ? (
@@ -213,8 +293,30 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
         {/* El borde va encima: si fuese de la propia carta, el marco (w x h) quedaría recortado a la derecha y abajo. */}
         <View pointerEvents="none" style={[st.edge, active && st.active, target && st.target, help && st.help]} />
       </Animated.View>
+      {/* Chispas y esquirlas por fuera de la carta: no tapan la ilustración ni los números. */}
+      {fx && fx.kind !== 'heal' && fx.kind !== 'magic' && fxFull() ? <ImpactFx key={`i${fx.id}`} w={w} h={h} t={anim} crit={fx.kind === 'crit'} strong={isStrong(fx, pop, info.maxHp)} /> : null}
+      {breaking && fxFull() ? <ShardsFx w={w} h={h} v={crack} boss={boss} /> : null}
+      </View>
     </Pressable>
   );
+}
+
+/** Golpe fuerte: crítico o al menos un cuarto de la vida máxima de una vez. */
+const isStrong = (fx: { kind: FxKind }, pop: { n: number; kind: string } | undefined, maxHp: number) =>
+  fx.kind === 'crit' || (!!pop && pop.kind !== 'heal' && pop.n >= maxHp * 0.25);
+
+/** Esfera de un estado que acaba de llegar: crece con un pequeño rebote. */
+function OrbIn({ k, size }: { k: StateTag['key']; size: number }) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => { Animated.spring(v, { toValue: 1, friction: 5, tension: 170, useNativeDriver: true }).start(); }, [v]);
+  return <Animated.View style={{ opacity: v.interpolate({ inputRange: [0, 0.4], outputRange: [0, 1], extrapolate: 'clamp' }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1] }) }] }}><StateOrb k={k} size={size} /></Animated.View>;
+}
+
+/** Esfera de un estado que se acaba: se hincha un poco y se desvanece. */
+function OrbOut({ k, size }: { k: StateTag['key']; size: number }) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => { Animated.timing(v, { toValue: 1, duration: DUR.state * 2, easing: EASE.out, useNativeDriver: true }).start(); }, [v]);
+  return <Animated.View style={{ opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.9, 0] }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1.5] }) }] }}><StateOrb k={k} size={size} /></Animated.View>;
 }
 
 /** Carta en grande: tocar la ilustración la gira a la ficha; tocar la ficha (fuera de los objetos) vuelve. */
@@ -399,7 +501,8 @@ function Sheet({ c, party, onGive, onDrop, onUse, onFlip }: { c: Char; party?: C
           const item = c.items[i];
           return (
             <Pressable key={i} style={[st.slot, item && equipState(c, item)?.on && st.slotOn, item && sel === item.uid && st.slotSel]} onPress={() => item && setSel(item.uid === sel ? undefined : item.uid)}>
-              {item ? <Image source={IMG[ITEMS[item.id].img]} style={{ width: 48, height: 48 }} /> : null}
+              {/* Al seleccionarlo, el objeto da un pequeño salto; la marca de equipado aparece con rebote. */}
+              {item ? <PopIn key={`${item.uid}:${sel === item.uid}`} skip={sel !== item.uid} from={0.82}><Image source={IMG[ITEMS[item.id].img]} style={{ width: 48, height: 48 }} /></PopIn> : null}
               {item && equipState(c, item)?.on ? <View style={st.onMark}><Icon path={mdiCheck} size={12} color={C.bg} /></View> : null}
             </Pressable>
           );
@@ -569,6 +672,7 @@ const st = StyleSheet.create({
   orbs: { position: 'absolute', flexDirection: 'row', justifyContent: 'center', gap: 2 },
   tag: { position: 'absolute', alignSelf: 'center', textAlign: 'center', fontFamily: F.titleBold, color: C.goldHi, fontSize: 11, backgroundColor: '#000a', paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 },
   deadNote: { color: C.textDim, textAlign: 'center', fontFamily: F.text, fontSize: 14, marginTop: 8, paddingHorizontal: 6 },
+  missTxt: { fontFamily: F.titleBold, color: '#d8d2c4', letterSpacing: 1, textShadowColor: '#000', textShadowRadius: 5 },
   downTxt: { position: 'absolute', top: '40%', alignSelf: 'center', maxWidth: '90%', textAlign: 'center', fontFamily: F.titleBold, color: C.damage, fontSize: 14 },
   modalBtn: { flex: 1, minHeight: 32, paddingVertical: 2, paddingHorizontal: 10, marginVertical: 2 },
   modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', alignItems: 'center', justifyContent: 'center' },
