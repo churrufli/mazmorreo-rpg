@@ -300,7 +300,7 @@ describe('portal (tipo preparado para el futuro)', () => {
 
 describe('el bot completa las aventuras resolviendo los elementos', () => {
   afterAll(() => { BUMP.on = false; });
-  const runs: [string, string, number, string][] = [['z1', 'fighter', 0, ''], ['b1', 'cleric', 2700, ''], ['m1', 'rogue', 6500, 'maren']];
+  const runs: [string, string, number, string][] = [['z1', 'fighter', 0, ''], ['b1', 'cleric', 300, ''], ['m1', 'rogue', 900, 'maren']];
   test.each(runs)('%s con %s', (start, cls, xp, escort) => {
     BUMP.on = true;
     BUMP.bumps = 0;
@@ -310,7 +310,7 @@ describe('el bot completa las aventuras resolviendo los elementos', () => {
   test('topa con los elementos que encuentra', () => {
     BUMP.on = true;
     BUMP.bumps = 0;
-    for (const cls of HERO_CLASSES.slice(0, 2)) play(cls, 'human', 3, 'm1', 6500, 'asi', 'maren');
+    for (const cls of HERO_CLASSES.slice(0, 2)) play(cls, 'human', 3, 'm1', 900, 'asi', 'maren');
     expect(BUMP.bumps).toBeGreaterThan(0);
   });
 });

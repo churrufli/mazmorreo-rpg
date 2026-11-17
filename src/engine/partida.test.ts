@@ -187,17 +187,17 @@ test.each(combos)('%s %s puede jugar Hondaroca sin errores', (cls, sp) => {
   expect(h.level).toBeGreaterThanOrEqual(1);
 });
 
-// El bosque: el héroe llega con unos 2700 PX (nivel 4), como al terminar Hondaroca.
+// El bosque: el héroe llega con 300 PX (nivel 2), como al terminar Hondaroca.
 test.each(HERO_CLASSES)('%s puede jugar El Corazón Hueco sin errores', cls => {
-  const r = play(cls, 'human', 7, 'b1', 2700);
+  const r = play(cls, 'human', 7, 'b1', 300);
   expect(['win', 'lose']).toContain(r.result);
   console.log(`bosque ${cls}: ${r.result} en ${r.g.zone}, grupo ${r.g.party.map(c => `${c.name} N${c.level}`).join(', ')} — ${r.log.join(' ')}`);
 });
 
-// La montaña: el héroe llega a nivel 5 (hito al terminar el bosque) con un compañero del bosque por el paso nevado.
+// La montaña: el héroe llega a nivel 3 (hito al terminar el bosque) con un compañero del bosque por el paso nevado.
 test.each(HERO_CLASSES)('%s puede jugar El Invierno del Dragón sin errores', cls => {
-  const r = play(cls, 'human', 7, 'm1', 6500, 'asi', 'maren');
+  const r = play(cls, 'human', 7, 'm1', 900, 'asi', 'maren');
   expect(['win', 'lose']).toContain(r.result);
-  expect(r.g.party[0].level).toBeGreaterThanOrEqual(5);
+  expect(r.g.party[0].level).toBeGreaterThanOrEqual(3);
   console.log(`montaña ${cls}: ${r.result} en ${r.g.zone}, grupo ${r.g.party.map(c => `${c.name} N${c.level}`).join(', ')} — ${r.log.join(' ')}`);
 });

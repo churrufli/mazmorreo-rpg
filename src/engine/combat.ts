@@ -10,6 +10,7 @@ import {
 } from './rules';
 import { prof } from '../data/srd';
 import type { Game } from './game';
+import { ADVS, advOf } from './aventuras';
 import { bossEncounter, dropKey, encounterById, encounterCell, encounterGroup, tally } from './dungeon';
 import { GOALS, Goal } from '../data/objetivos';
 
@@ -740,8 +741,10 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
     // Héroe solo: tras cada victoria recupera el aliento (ajuste de equilibrio de la zona 1).
     g.gold += gold;
     const alive0 = g.party.filter(c => !c.dead).length;
+    const adv = ADVS[advOf(g.zone)];
+    xp = Math.round(xp * (adv.xpScale ?? 1));
     tally(g, { kills: cb.units.filter(u => u.side === 'enemy' && u.dead).length, gold, xp: alive0 ? Math.floor(xp / alive0) : 0 });
-    msgs.push(...gainXp(g.party, xp));
+    msgs.push(...gainXp(g.party, xp, adv.level));
     if (gold) msgs.push(`Botín: ${gold} monedas de oro.`);
     const got = new Map<string, number>();
     const floor: string[] = [];

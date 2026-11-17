@@ -10,7 +10,7 @@
       "order": 1,
       "name": "Paso nevado",
       "description": "Una senda de piedra se pierde bajo ventiscas y pinos escarchados.",
-      "expected_party_level": 5,
+      "expected_party_level": 3,
       "entry_dialogue": [
         {
           "speaker": "sabio",
@@ -1054,7 +1054,7 @@
       "order": 2,
       "name": "Bosque de pinos helado",
       "description": "Un bosque oscuro de ramas negras y nieve profunda.",
-      "expected_party_level": 5,
+      "expected_party_level": 3,
       "entry_dialogue": [
         {
           "speaker": "narrator",
@@ -1681,18 +1681,10 @@
                   "row": "front",
                   "weapon": null,
                   "drop_weapon": false
-                },
-                {
-                  "srd_creature": "Ice Mephit",
-                  "name": "Mefit de hielo",
-                  "count": 1,
-                  "row": "back",
-                  "weapon": null,
-                  "drop_weapon": false
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 300
+              "xp_total": 200
             },
             {
               "type": "dialogue",
@@ -2054,7 +2046,7 @@
       "order": 3,
       "name": "Fortaleza enana abandonada",
       "description": "Salones de piedra, forjas apagadas y estatuas cubiertas de escarcha.",
-      "expected_party_level": 5,
+      "expected_party_level": 4,
       "entry_dialogue": [
         {
           "speaker": "narrator",
@@ -2785,18 +2777,10 @@
                       "name": "Gárgola del portón"
                     }
                   ]
-                },
-                {
-                  "srd_creature": "Zombie",
-                  "name": "Zombi escarchado",
-                  "count": 1,
-                  "row": "front",
-                  "weapon": null,
-                  "drop_weapon": false
                 }
               ],
               "gold_drop": 3,
-              "xp_total": 750
+              "xp_total": 450
             },
             {
               "type": "dialogue",
@@ -3183,7 +3167,7 @@
       "order": 4,
       "name": "Cueva del glaciar",
       "description": "Túneles de hielo azul, un lago congelado y la cámara del tesoro.",
-      "expected_party_level": 5,
+      "expected_party_level": 4,
       "entry_dialogue": [
         {
           "speaker": "narrator",
@@ -3391,18 +3375,10 @@
                       "name": "Tumulario del lago"
                     }
                   ]
-                },
-                {
-                  "srd_creature": "Ice Mephit",
-                  "name": "Mefit de hielo",
-                  "count": 1,
-                  "row": "back",
-                  "weapon": null,
-                  "drop_weapon": false
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 800
+              "xp_total": 700
             }
           ]
         },
@@ -3854,14 +3830,6 @@
                   "drop_weapon": false
                 },
                 {
-                  "srd_creature": "White Dragon Wyrmling",
-                  "name": "Cría de dragón blanco",
-                  "count": 1,
-                  "row": "front",
-                  "weapon": null,
-                  "drop_weapon": false
-                },
-                {
                   "srd_creature": "Kobold",
                   "name": "Kobold del tributo",
                   "count": 2,
@@ -3871,7 +3839,7 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 2800
+              "xp_total": 2350
             },
             {
               "type": "chest",
@@ -4288,10 +4256,10 @@
     "id": "dragon",
     "name": "Vharzûl, el Invierno Vivo",
     "based_on": "Young White Dragon",
-    "adjustments": "Versión de encuentro adaptada, NO bloque de estadísticas SRD sin cambios. CA 16, 110 PG, velocidad 40 pies y vuelo 80 pies; ataque de mordisco +7 (2d10+4 perforante y 1d6 frío), dos ataques de garra +7 (2d6+4 cortante) en lugar de la multiataque original; usa solo mordisco + una garra por turno. Aliento helado: línea de 30 pies (adaptada a objetivos de cartas: hasta 3 personajes, prioriza si alcanza 2 o más), salvación CON CD 15, 6d8 frío, mitad si supera. Lo usa en ronda 2 y después en rondas 5, 8, 11... (cada 3 rondas), nunca fuera de esa cadencia. En las rondas sin aliento ataca a la vanguardia; mientras haya enemigos en vanguardia, el dragón de retaguardia solo emplea el aliento o ataques permitidos por la interfaz de cartas, sin atacar cuerpo a cuerpo desde atrás. Cuando su vanguardia desaparece, avanza a vanguardia al inicio de su siguiente turno. No hay acciones legendarias ni de guarida. Refuerzos kobold: 1 kobold en vanguardia al inicio de rondas 3 y 6, solo si hay hueco; no aparecen más después de la ronda 6. Al caer el dragón, los kobolds restantes huyen. Las cifras de daño y CD son ajustes deliberados al jefe, no las estadísticas íntegras del SRD.",
+    "adjustments": "Versión de encuentro adaptada, NO bloque de estadísticas SRD sin cambios, para cuatro personajes de nivel 4 (2026-11-17). CA 16, 85 PG, velocidad 40 pies y vuelo 80 pies; ataque de mordisco +6 (2d10+3 perforante y 1d6 frío), dos ataques de garra +6 (2d6+3 cortante) en lugar de la multiataque original; usa solo mordisco + una garra por turno. Aliento helado: línea de 30 pies (adaptada a objetivos de cartas: hasta 3 personajes, prioriza si alcanza 2 o más), salvación CON CD 14, 5d8 frío, mitad si supera. Lo usa en ronda 2 y después en rondas 5, 8, 11... (cada 3 rondas), nunca fuera de esa cadencia. En las rondas sin aliento ataca a la vanguardia; mientras haya enemigos en vanguardia, el dragón de retaguardia solo emplea el aliento o ataques permitidos por la interfaz de cartas, sin atacar cuerpo a cuerpo desde atrás. Cuando su vanguardia desaparece, avanza a vanguardia al inicio de su siguiente turno. No hay acciones legendarias ni de guarida. Refuerzos kobold: 1 kobold en vanguardia al inicio de rondas 3 y 6, solo si hay hueco; no aparecen más después de la ronda 6. Al caer el dragón, los kobolds restantes huyen. Las cifras de daño y CD son ajustes deliberados al jefe, no las estadísticas íntegras del SRD.",
     "minions": {
-      "based_on": "Kobold|White Dragon Wyrmling",
-      "effect": "Inicio: 1 cría de dragón blanco y 2 kobolds en vanguardia (3 plazas). La cría mantiene su bloque SRD; no se añaden más crías. Al comienzo de las rondas 3 y 6 llega 1 kobold si hay espacio en la vanguardia; si no, se omite ese refuerzo. Máximo 6 enemigos simultáneos y 3 por fila."
+      "based_on": "Kobold",
+      "effect": "Inicio: 2 kobolds en vanguardia (desde 2026-11-17 sin la cría de dragón blanco, para el grupo de nivel 4). Al comienzo de las rondas 3 y 6 llega 1 kobold si hay espacio en la vanguardia; si no, se omite ese refuerzo. Máximo 6 enemigos simultáneos y 3 por fila."
     },
     "room_id": "m4_r08",
     "pre_boss_dialogue": [
@@ -4446,5 +4414,5 @@
     },
     "nota": "Cumbrenieve vende ropa de abrigo y provisiones. Iconos nuevos pendientes: hide_armor, spear, cold_resistance_potion."
   },
-  "balance_notes": "Todos los personajes conservan nivel 5 hasta terminar la aventura: el motor debe diferir la subida aunque el PX alcance el umbral de nivel 6, y entonces aplicar el nivel 6 al finalizar. PX indicados por encuentro son PX de monstruos según VD (sin multiplicadores) y se dividen entre los miembros presentes. Zona 1 tiene solo dos miembros y encuentros de uno o dos enemigos; el lobo invernal (VD 3) es un pico de dificultad evitable, tras un descanso corto y con opción de huida. No se emplean oso lechuza, ogro ni espectro: elevarían demasiado la dificultad o la volatilidad; el yeti (VD 3) aparece solo y puede evitarse o combatirse tras descansar. En zona 4 se reduce la fuerza del dragón joven y se limita el aliento; la cría y dos kobolds hacen que el jefe siga siendo difícil, por lo que conviene probarlo con composiciones de clases distintas. No se añaden encuentros aleatorios ni regeneración al retroceder; enemigos heridos permanecen. Las trampas usan Percepción del mejor personaje, desactivación y salvación visibles. El sabio solo aparece en z1_d01 y z2_d01, además de las líneas introductorias de la zona 1, nunca como aliado. El compañero antiguo sale al entrar Vurka o Aldric en z2_r02. Aldric sustituye al aliado por defecto solo cuando la clase del héroe coincide con Barbarian en z2, Cleric en z3 o Wizard en z4; no se sustituye por coincidencia con Ranger. Para respetar el límite de 4 integrantes, la selección se hace por zona. Los campos de arma de los enemigos quedan nulos: no se implementan botines de armas aleatorios. La poción de resistencia al frío carece de precio fijo en el SRD; el precio 0 es un marcador que debe configurarse antes de habilitar la compra. Las botas, el anillo y la capa son objetos mágicos del SRD, pero sus precios no son universales. El anillo está en un cofre con cerradura CD 14, y la llave iron_key abre la reja opcional, no sustituye esa cerradura. La reliquia es un objeto narrativo original sin poderes. El esquema no ofrece campos para eventos globales, activación de tiendas, IA o la regla de regreso al pueblo: se especifican en estos apuntes y en descripciones. El tipo path_down se usa como transición ascendente entre zonas porque es el único tipo de salida interzona enumerado."
+  "balance_notes": "Niveles desde 2026-11-17: se entra con nivel 3, nivel máximo 4 dentro de la aventura, PX de combate ×3 para alcanzarlo en la zona 2 y subida a nivel 4 al entrar en la sala de Vharzûl, que baja a 75 PG, ataques +6 y aliento 5d8 CD 14. Sin acompañante en m2_e05 (oso pardo), m3_e05 (ogro) y m4_e02 (lobo invernal); Vharzûl entra sin la cría, solo con kobolds. Lo que sigue describe el diseño anterior para nivel 5. Todos los personajes conservan nivel 5 hasta terminar la aventura: el motor debe diferir la subida aunque el PX alcance el umbral de nivel 6, y entonces aplicar el nivel 6 al finalizar. PX indicados por encuentro son PX de monstruos según VD (sin multiplicadores) y se dividen entre los miembros presentes. Zona 1 tiene solo dos miembros y encuentros de uno o dos enemigos; el lobo invernal (VD 3) es un pico de dificultad evitable, tras un descanso corto y con opción de huida. No se emplean oso lechuza, ogro ni espectro: elevarían demasiado la dificultad o la volatilidad; el yeti (VD 3) aparece solo y puede evitarse o combatirse tras descansar. En zona 4 se reduce la fuerza del dragón joven y se limita el aliento; la cría y dos kobolds hacen que el jefe siga siendo difícil, por lo que conviene probarlo con composiciones de clases distintas. No se añaden encuentros aleatorios ni regeneración al retroceder; enemigos heridos permanecen. Las trampas usan Percepción del mejor personaje, desactivación y salvación visibles. El sabio solo aparece en z1_d01 y z2_d01, además de las líneas introductorias de la zona 1, nunca como aliado. El compañero antiguo sale al entrar Vurka o Aldric en z2_r02. Aldric sustituye al aliado por defecto solo cuando la clase del héroe coincide con Barbarian en z2, Cleric en z3 o Wizard en z4; no se sustituye por coincidencia con Ranger. Para respetar el límite de 4 integrantes, la selección se hace por zona. Los campos de arma de los enemigos quedan nulos: no se implementan botines de armas aleatorios. La poción de resistencia al frío carece de precio fijo en el SRD; el precio 0 es un marcador que debe configurarse antes de habilitar la compra. Las botas, el anillo y la capa son objetos mágicos del SRD, pero sus precios no son universales. El anillo está en un cofre con cerradura CD 14, y la llave iron_key abre la reja opcional, no sustituye esa cerradura. La reliquia es un objeto narrativo original sin poderes. El esquema no ofrece campos para eventos globales, activación de tiendas, IA o la regla de regreso al pueblo: se especifican en estos apuntes y en descripciones. El tipo path_down se usa como transición ascendente entre zonas porque es el único tipo de salida interzona enumerado."
 }

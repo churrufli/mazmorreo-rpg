@@ -7,7 +7,7 @@ const N = Number(process.env.N ?? 10);
 
 run('economía', () => {
   const out: string[] = [];
-  for (const [adv, start, xp] of [['hondaroca', 'z1', 0], ['corazon', 'b1', 2700]] as const) {
+  for (const [adv, start, xp] of [['hondaroca', 'z1', 0], ['corazon', 'b1', 300]] as const) {
     for (const cls of HERO_CLASSES as ClassId[]) {
       let wins = 0, gold = 0, sell = 0, potions = 0, n = 0, spent = 0;
       for (let s = 1; s <= N; s++) {

@@ -49,11 +49,11 @@ run('estudio de jugabilidad', () => {
     for (const c of r.byId) { const e = (enc[c.id] ??= { n: 0, lost: 0, rounds: 0, downs: 0 }); e.n++; e.lost += c.lost; e.rounds += c.rounds; e.downs += c.down; }
     out.push(`| ${cls}/${sp} | ${r.wins}/${N} | ${JSON.stringify(r.where).replace(/[{}"]/g, '') || '-'} | ${r.trips.toFixed(1)} | ${r.rounds.toFixed(1)} | ${pct(r.long)} | ${pct(r.filler)} | ${r.top} |`);
   }
-  out.push('', '## El Corazón Hueco (llega con 2.700 PX, nivel 4)', '', '| Héroe | Solo: victorias | Solo: cae en | Con escolta: victorias | Con escolta: cae en | Rondas/combate (escolta) |', '|---|---|---|---|---|---|');
+  out.push('', '## El Corazón Hueco (llega con 300 PX, nivel 2)', '', '| Héroe | Solo: victorias | Solo: cae en | Con escolta: victorias | Con escolta: cae en | Rondas/combate (escolta) |', '|---|---|---|---|---|---|');
   const ESC: Record<string, string> = { fighter: 'edmund', cleric: 'brunna', rogue: 'brunna', wizard: 'brunna', ranger: 'brunna', paladin: 'liss' };
   for (const cls of HERO_CLASSES as ClassId[]) {
-    const a = sample(seed => play(cls, 'human', seed, 'b1', 2700));
-    const b = sample(seed => play(cls, 'human', seed, 'b1', 2700, 'asi', ESC[cls]));
+    const a = sample(seed => play(cls, 'human', seed, 'b1', 300));
+    const b = sample(seed => play(cls, 'human', seed, 'b1', 300, 'asi', ESC[cls]));
     for (const c of b.byId) { const e = (enc[c.id] ??= { n: 0, lost: 0, rounds: 0, downs: 0 }); e.n++; e.lost += c.lost; e.rounds += c.rounds; e.downs += c.down; }
     out.push(`| ${cls} | ${a.wins}/${N} | ${JSON.stringify(a.where).replace(/[{}"]/g, '') || '-'} | ${b.wins}/${N} | ${JSON.stringify(b.where).replace(/[{}"]/g, '') || '-'} | ${b.rounds.toFixed(1)} |`);
   }
