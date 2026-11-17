@@ -151,6 +151,7 @@ export const IMG = {
   escena_baliza_apagada: require('../assets/img/escena_baliza_apagada.webp'),
   escena_baltoplat_atada: require('../assets/img/escena_baltoplat_atada.webp'),
   escena_barricada_cede: require('../assets/img/escena_barricada_cede.webp'),
+  escena_basilisco_encadenado: require('../assets/img/escena_basilisco_encadenado.webp'),
   escena_caja_resineros: require('../assets/img/escena_caja_resineros.webp'),
   escena_campanilla_hielo: require('../assets/img/escena_campanilla_hielo.webp'),
   escena_carta_emisarios: require('../assets/img/escena_carta_emisarios.webp'),
