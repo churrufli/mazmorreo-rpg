@@ -32,8 +32,13 @@ export interface Adv {
   faces: Record<string, ImgKey>;
   /** Aventura anterior: hay que vencerla para abrir esta, y uno de sus aliados puede acompañar al héroe al empezar. */
   prev?: AdvId;
-  /** Nivel al que sube todo el grupo al terminarla (escalera aprobada por el autor el 2026-11-04). */
+  /**
+   * Nivel objetivo (el autor 2026-11-17: 2, 3 y 4): dentro de la aventura nadie lo pasa, se alcanza
+   * como tarde al entrar en la sala del jefe y es el mínimo con el que se sale de ella.
+   */
   level: number;
+  /** Multiplicador de los PX de sus combates, para que el nivel objetivo llegue hacia la zona 3 (por defecto 1). */
+  xpScale?: number;
   /** Dónde acompaña el aliado de la aventura anterior («por la linde»). */
   escortWhere?: string;
   /** Descanso del mapa (la imagen de su casilla). */
@@ -58,7 +63,7 @@ export const ADVS: Record<AdvId, Adv> = {
     allyImg: { brunna: 'ally_brunna', tiko: 'ally_tiko', edmund: 'ally_edmund', liss: 'ally_liss' },
     speakers: { brunna: 'Brunna', tiko: 'Tiko', edmund: 'Hermano Edmund', liss: 'Liss', orvane: 'Maese Orvane' },
     faces: { brunna: 'ally_brunna', tiko: 'ally_tiko', edmund: 'ally_edmund', liss: 'ally_liss', orvane: 'orvane' },
-    level: 3, restImg: 'punto_descanso', trapImg: 'trampa',
+    level: 2, restImg: 'punto_descanso', trapImg: 'trampa',
   },
   corazon_hueco: {
     id: 'corazon_hueco', name: BD.dungeon.name, data: BD, town: 'vegahumbria', boss: 'Treant', sub: 'telmo',
@@ -72,7 +77,7 @@ export const ADVS: Record<AdvId, Adv> = {
       ...Object.fromEntries(BD.allies.map(a => [a.id, a.name])), [BD.traitor.id]: BD.traitor.name, corazon: BD.boss.name,
     },
     faces: { maren: 'ally_maren', anselmo: 'ally_anselmo', ivelle: 'ally_ivelle', telmo: 'ally_telmo', ortiga: 'abuela_ortiga', corazon: 'corazon_hueco' },
-    prev: 'hondaroca', level: 5, escortWhere: 'por la linde', restImg: 'campamento',
+    prev: 'hondaroca', level: 3, escortWhere: 'por la linde', restImg: 'campamento',
     trapImg: 'trampa_bosque',
   },
   montana: {
@@ -85,7 +90,7 @@ export const ADVS: Record<AdvId, Adv> = {
     allyImg: { vurka: 'ally_vurka', durnok: 'ally_durnok', syrael: 'ally_syrael', aldric: 'ally_aldric' },
     speakers: { ...Object.fromEntries(MD.allies.map(a => [a.id, a.name])), sabio: MD.sage.name, dragon: MD.boss.name },
     faces: { vurka: 'ally_vurka', durnok: 'ally_durnok', syrael: 'ally_syrael', aldric: 'ally_aldric', sabio: 'ally_telmo', dragon: 'dragon_blanco_joven' },
-    prev: 'corazon_hueco', level: 6, escortWhere: 'por el paso nevado', restImg: 'hoguera_nieve',
+    prev: 'corazon_hueco', level: 4, xpScale: 2, escortWhere: 'por el paso nevado', restImg: 'hoguera_nieve',
     trapImg: 'trampa_montana',
   },
 };

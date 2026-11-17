@@ -10,7 +10,7 @@
       "order": 1,
       "name": "Linde del bosque",
       "description": "En la linde de Umbría, las huellas de los desaparecidos terminan junto a raíces que se mueven.",
-      "expected_party_level": 4,
+      "expected_party_level": 2,
       "entry_dialogue": [
         {
           "speaker": "narrator",
@@ -1158,7 +1158,7 @@
       "order": 2,
       "name": "Bosque profundo",
       "description": "Entre árboles enormes, las raíces desvían los pasos y guardan las voces de los desaparecidos.",
-      "expected_party_level": 4,
+      "expected_party_level": 2,
       "entry_dialogue": [
         {
           "speaker": "narrator",
@@ -1606,9 +1606,7 @@
               "type": "encounter",
               "id": "b2_e03",
               "trigger": "enter",
-              "can_reinforce": [
-                "b2_e08"
-              ],
+              "can_reinforce": [],
               "enemies": [
                 {
                   "srd_creature": "Giant Spider",
@@ -1634,22 +1632,22 @@
               "can_reinforce": [],
               "enemies": [
                 {
-                  "srd_creature": "Owlbear",
-                  "name": "Oso lechuza territorial",
+                  "srd_creature": "Brown Bear",
+                  "name": "Oso pardo territorial",
                   "count": 1,
                   "row": "front",
                   "weapon": null,
                   "drop_weapon": false,
                   "alt": [
                     {
-                      "srd_creature": "Manticore",
-                      "name": "Mantícora"
+                      "srd_creature": "Giant Eagle",
+                      "name": "Águila gigante del nido"
                     }
                   ]
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 700
+              "xp_total": 200
             },
             {
               "type": "encounter",
@@ -2363,7 +2361,7 @@
       "order": 3,
       "name": "Ciénaga",
       "description": "Las aguas negras esconden antiguos puestos de vigilancia y raíces que conducen hacia el Corazón Hueco.",
-      "expected_party_level": 4,
+      "expected_party_level": 3,
       "entry_dialogue": [
         {
           "speaker": "narrator",
@@ -2967,8 +2965,8 @@
               "can_reinforce": [],
               "enemies": [
                 {
-                  "srd_creature": "Shambling Mound",
-                  "name": "Montículo andante del pantano",
+                  "srd_creature": "Giant Constrictor Snake",
+                  "name": "Serpiente constrictora del pantano",
                   "count": 1,
                   "row": "front",
                   "weapon": null,
@@ -2976,7 +2974,7 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 1800
+              "xp_total": 450
             },
             {
               "type": "chest",
@@ -3527,7 +3525,7 @@
       "order": 4,
       "name": "Claro maldito e interior del Corazón",
       "description": "En el claro maldito, las raíces conducen al Corazón Hueco y a las personas cautivas en su interior.",
-      "expected_party_level": 4,
+      "expected_party_level": 3,
       "entry_dialogue": [
         {
           "speaker": "narrator",
@@ -4810,7 +4808,7 @@
       "icon": "6.24"
     }
   ],
-  "balance_notes": "PX SRD por criatura y reparto equitativo entre miembros actuales, sin PX de misión. Umbrales acumulados: nivel 4 2700 PX, nivel 5 6500 PX. Todas las zonas y el jefe se equilibran para nivel 4; entrar con más PX importados puede cambiar el nivel real. PX potenciales de encuentros por zona (incluidos opcionales y grupos de refuerzo, sin contar jefe adaptado): {'z1': 225, 'z2': 1990, 'z3': 2850, 'z4': 980}. El jefe adaptado otorga 700 PX (equivalencia de VD 3, regla casera explícita), más 10 por arbusto generado; no se usan los 5000 PX del Treant ni los 450 PX de Awakened Tree para nudos no combatientes. Los refuerzos son encuentros independientes identificados que se incorporan al inicio de una ronda del combate origen, y no desencadenan combate simultáneo; si el jugador los derrotó antes no aparecen. z1_e04 refuerza z1_e03 cuando queda espacio (3 bandidos + 1 lobo). El Owlbear VD 3 (700 PX) es combate visible y opcional en z2_r05, separado espacialmente de la araña; la ciénaga incluye Specter VD 1 (200 PX) y Shambling Mound VD 5 (1800 PX), encuentro de alto riesgo, evitable en ramal secreto z3_r07; no se recomienda combatirlo sin recursos y no forma parte del camino obligatorio. Las dificultades exactas por presupuesto 2024 dependen de descansos, equipo y clase: Owlbear y Shambling Mound pueden superar la dificultad alta para sus grupos; se conservan como desafíos opcionales solicitados. El uso de lazos de visibilidad seen permite preparación/evitación. La entrada de cada zona se enlaza automáticamente con la salida de la anterior. Los secretos revelan los accesos opcionales; los encuentros en una misma sala ocupan casillas distintas. Los arbustos del jefe solo brotan si hay espacio. Las formas permitidas son round, long, irregular, cross y corridor: no se usa wide porque no figura en el esquema. El arma Light Crossbow del bandido se adapta a su equipo para la fila trasera. Los nudos y el Corazón usan reglas caseras declaradas, no estadísticas literales del SRD.",
+  "balance_notes": "Niveles desde 2026-11-17: se entra con nivel 2, nivel máximo 3 dentro de la aventura y subida a nivel 3 al entrar en la sala del Corazón; el oso lechuza de b2_e06 pasa a oso pardo, el montículo andante de b3_e04 a serpiente constrictora gigante y las dos arañas de b2_r05 ya no se refuerzan entre sí. Lo que sigue describe el diseño anterior para nivel 4. PX SRD por criatura y reparto equitativo entre miembros actuales, sin PX de misión. Umbrales acumulados: nivel 4 2700 PX, nivel 5 6500 PX. Todas las zonas y el jefe se equilibran para nivel 4; entrar con más PX importados puede cambiar el nivel real. PX potenciales de encuentros por zona (incluidos opcionales y grupos de refuerzo, sin contar jefe adaptado): {'z1': 225, 'z2': 1990, 'z3': 2850, 'z4': 980}. El jefe adaptado otorga 700 PX (equivalencia de VD 3, regla casera explícita), más 10 por arbusto generado; no se usan los 5000 PX del Treant ni los 450 PX de Awakened Tree para nudos no combatientes. Los refuerzos son encuentros independientes identificados que se incorporan al inicio de una ronda del combate origen, y no desencadenan combate simultáneo; si el jugador los derrotó antes no aparecen. z1_e04 refuerza z1_e03 cuando queda espacio (3 bandidos + 1 lobo). El Owlbear VD 3 (700 PX) es combate visible y opcional en z2_r05, separado espacialmente de la araña; la ciénaga incluye Specter VD 1 (200 PX) y Shambling Mound VD 5 (1800 PX), encuentro de alto riesgo, evitable en ramal secreto z3_r07; no se recomienda combatirlo sin recursos y no forma parte del camino obligatorio. Las dificultades exactas por presupuesto 2024 dependen de descansos, equipo y clase: Owlbear y Shambling Mound pueden superar la dificultad alta para sus grupos; se conservan como desafíos opcionales solicitados. El uso de lazos de visibilidad seen permite preparación/evitación. La entrada de cada zona se enlaza automáticamente con la salida de la anterior. Los secretos revelan los accesos opcionales; los encuentros en una misma sala ocupan casillas distintas. Los arbustos del jefe solo brotan si hay espacio. Las formas permitidas son round, long, irregular, cross y corridor: no se usa wide porque no figura en el esquema. El arma Light Crossbow del bandido se adapta a su equipo para la fila trasera. Los nudos y el Corazón usan reglas caseras declaradas, no estadísticas literales del SRD.",
   "shops": {
     "comunes": [
       "potion_healing",

@@ -216,7 +216,7 @@ test('equilibrio: los jefes no se duplican y sus acompañantes se ajustan al tam
       createAlly('vurka', 1, 0, 'montana'),
       createAlly('durnok', 1, 0, 'montana'),
     );
-    gainXp(g.party, 6500 * g.party.length);
+    gainXp(g.party, 2700 * g.party.length);
     return g;
   };
   const g = party();
@@ -265,13 +265,14 @@ test('equilibrio: el Corazón Hueco sigue siendo único con sus nudos de raíz',
   expect(enemies.reduce((n, e) => n + e.count, 0)).toBeLessThanOrEqual(4);
 });
 
-test('equilibrio: el montículo de la ciénaga es opcional y se advierte antes', () => {
+test('equilibrio: la serpiente del túmulo de la ciénaga es opcional y se advierte antes', () => {
   expect(contentById('b3_e04')!.c.trigger).toBe('enter');
   expect(contentById('b3_n_peligro')!.c.type).toBe('notice');
 });
 
 test('equilibrio: los jefes dan su PX completo aunque sus monstruos tengan PX internos cero', () => {
-  for (const [zone, id, xp] of [['b4', 'b4_e04', 700], ['m4', 'm4_e05', 2800]] as const) {
+  // Vharzûl da 2800 PX (×2 en la montaña), pero el héroe solo no pasa del nivel 4 (2700 PX) dentro de la aventura.
+  for (const [zone, id, xp] of [['b4', 'b4_e04', 700], ['m4', 'm4_e05', 2700]] as const) {
     const g = newGame(1, 'Prueba', 'fighter', 'human');
     g.zone = zone;
     const cb = startCombat(g, id);
@@ -295,7 +296,7 @@ test('equilibrio: Orvane combate con su escolta de mefits, empiece el combate po
     const g = newGame(1, 'Prueba', 'fighter', 'human');
     g.zone = 'z4';
     allies.forEach(a => g.party.push(createAlly(a, 1, 0, 'hondaroca')));
-    gainXp(g.party, 2700 * g.party.length);
+    gainXp(g.party, 300 * g.party.length);
     return g;
   };
   const foes = (g: ReturnType<typeof newGame>, ids: string[]) => {
@@ -304,9 +305,9 @@ test('equilibrio: Orvane combate con su escolta de mefits, empiece el combate po
     const n = (c: string) => all.filter(e => e.srd_creature === c).reduce((k, e) => k + e.count, 0);
     return { orvane: n('Orvane'), mefits: n('Steam Mephit') };
   };
-  // Grupo completo: Orvane y tres mefits, entre por la sala o por su casilla.
-  expect(foes(party(['tiko', 'brunna', 'liss']), ['z4_e04', 'z4_e05'])).toEqual({ orvane: 1, mefits: 3 });
-  expect(foes(party(['tiko', 'brunna', 'liss']), ['z4_e05', 'z4_e04'])).toEqual({ orvane: 1, mefits: 3 });
+  // Grupo completo de nivel 2: Orvane y un mefit (presupuesto moderado), entre por la sala o por su casilla.
+  expect(foes(party(['tiko', 'brunna', 'liss']), ['z4_e04', 'z4_e05'])).toEqual({ orvane: 1, mefits: 1 });
+  expect(foes(party(['tiko', 'brunna', 'liss']), ['z4_e05', 'z4_e04'])).toEqual({ orvane: 1, mefits: 1 });
   // Un grupo pequeño recibe la misma escolta recortada en los dos casos.
   const a = foes(party(['tiko']), ['z4_e04', 'z4_e05']);
   expect(foes(party(['tiko']), ['z4_e05', 'z4_e04'])).toEqual(a);

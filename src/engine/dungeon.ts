@@ -5,7 +5,7 @@ import type { ImgKey } from '../assets';
 import { DESIGN_ITEM, ITEMS } from '../data/srd';
 import { die, pick, roll } from './rng';
 import {
-  Char, MAX_ITEMS, abilMod, allyFor, createAlly, isDown, newItem, passivePerception, sightRadius, shortRest, longRest, needsRest,
+  Char, MAX_ITEMS, abilMod, allyFor, createAlly, isDown, newItem, passivePerception, raiseTo, sightRadius, shortRest, longRest, needsRest,
 } from './rules';
 import type { Game } from './game';
 import { bumpElement, elemAt, elemBlocked, elemCells, elemNews, elemPasses, elemState, enterElement, isMechanism, zoneElements } from './elementos';
@@ -592,6 +592,9 @@ function enterRoom(g: Game, room: Room): Ev[] {
     const hero = g.party.find(x => x.isHero)!;
     const brunnaVersion = adv.id === 'hondaroca' && hero.cls === 'wizard' && !g.party.some(p => p.id === 'liss');
     evs.push({ kind: 'dialogue', lines: brunnaVersion ? adv.data.boss.pre_boss_dialogue_brunna : adv.data.boss.pre_boss_dialogue });
+    // Al jefe se llega siempre con el nivel objetivo de la aventura (2, 3 y 4), aunque se hayan saltado combates.
+    const up = g.party.flatMap(c => raiseTo(c, adv.level));
+    if (up.length) evs.push({ kind: 'msg', title: `Nivel ${adv.level}`, lines: up });
   }
   const seen = (room.contents as Content[]).find(c => c.type === 'encounter' && c.trigger === 'seen' && !g.done.includes(c.id) && !g.fled.includes(c.id));
   if (seen) evs.push({ kind: 'combat', id: seen.id });

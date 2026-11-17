@@ -626,11 +626,12 @@ Object.assign(MONSTERS, {
   },
   // Jefe adaptado (diseño de la aventura, no el bloque SRD entero): mordisco y garra; el aliento va en asaltos fijos (combat.ts).
   'Young White Dragon': {
-    name: 'Vharzûl', img: 'dragon_blanco_joven', ac: 16, hp: 110, dexMod: 0, xp: 0, ai: 'beast', multi: 2, noSleep: true, immune: ['frío'],
+    // Versión propia para cuatro personajes de nivel 4 (el autor 2026-11-17; antes 110 PG, +7 y aliento 6d8 CD 15 para nivel 5).
+    name: 'Vharzûl', img: 'dragon_blanco_joven', ac: 16, hp: 85, dexMod: 0, xp: 0, ai: 'beast', multi: 2, noSleep: true, immune: ['frío'],
     attacks: [
-      { name: 'Aliento helado', bonus: 0, dice: '6d8', type: 'frío', save: { abil: 'con', dc: 15, half: true, area: true } },
-      { name: 'Mordisco', bonus: 7, dice: '2d10+4', type: 'perforante', extra: { dice: '1d6', type: 'frío' } },
-      { name: 'Garra', bonus: 7, dice: '2d6+4', type: 'cortante' },
+      { name: 'Aliento helado', bonus: 0, dice: '5d8', type: 'frío', save: { abil: 'con', dc: 14, half: true, area: true } },
+      { name: 'Mordisco', bonus: 6, dice: '2d10+3', type: 'perforante', extra: { dice: '1d6', type: 'frío' } },
+      { name: 'Garra', bonus: 6, dice: '2d6+3', type: 'cortante' },
     ],
     saves: { str: 4, dex: 3, con: 7, int: -1, wis: 3, cha: 1 },
   },

@@ -30,7 +30,7 @@ export const COMO_FUNCIONA: { icon: string; title: string; text: string[] }[] = 
   ] },
   { icon: mdiMapOutline, title: 'El reino', text: [
     'Desde la Puerta del pueblo se viaja por el reino. Valdescarcha lleva a Hondaroca; Vegaumbría, a El Corazón Hueco (se abre al vencer en Hondaroca), y Cumbrenieve, a El Invierno del Dragón (se abre al vencer en el bosque).',
-    'Al terminar una aventura todo el grupo sube como mínimo a un nivel: 3 tras Hondaroca, 5 tras el bosque y 6 tras la montaña.',
+    'Cada aventura tiene un nivel máximo: 2 en Hondaroca, 3 en el bosque y 4 en la montaña. Dentro de ella nadie lo pasa (los PX de más no cuentan) y, al entrar en la sala del jefe, quien no lo tenga sube a él.',
     'La salida de cada zona está cerrada: su llave se ve en el mapa, en la sala más alejada. En la primera zona, la puerta de entrada lleva al pueblo.',
   ] },
   { icon: mdiAccountGroupOutline, title: 'Compañeros y afinidad', text: [
@@ -120,6 +120,8 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Las tiradas son aleatorias de verdad: ya no dependen de ninguna semilla guardada en la partida, así que cargar una partida no repite los mismos dados.',
     'Enemigos nuevos del SRD, mucho más débiles: rata, murciélago, araña, escarabajo de fuego gigante, escorpión, lagarto, hongo chillón y plebeyo. Algunos sustituyen a ratas gigantes en la primera zona de Hondaroca.',
     'Más variedad de enemigos: en cada partida, algunos encuentros salen con otra criatura del SRD del mismo valor de desafío. En el bosque: búho, serpiente venenosa, mastín, duende, pantera, jabalí, águila gigante, alce gigante, serpiente constrictora gigante y mantícora. En la montaña: cabra, halcón, comadreja gigante, murciélago gigante, cabra gigante, hipogrifo, oso polar, tigre dientes de sable, gárgola y tumulario.',
+    'Niveles más bajos: llegáis al jefe de Hondaroca con nivel 2, al del bosque con nivel 3 y al de la montaña con nivel 4. Ninguna aventura deja pasar de ese nivel y, al entrar en la sala del jefe, quien no lo tenga sube a él.',
+    'Enemigos ajustados a esos niveles: en el bosque, un oso pardo sustituye al oso lechuza del nido de seda y una serpiente constrictora al montículo andante de la ciénaga. Vharzûl tiene menos PG, golpea con menos fuerza y su aliento hace menos daño.',
   ] },
   { version: 'v0.145', items: [
     'Combate más táctico con reglas del SRD 5.2.1: nueva acción Ayudar (ventaja para el siguiente ataque de un aliado) y Maestría de armas para guerrero, pícaro, paladín, bárbaro y explorador (Debilitar, Hostigar, Derribar y Empujar).',

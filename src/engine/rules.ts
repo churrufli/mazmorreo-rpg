@@ -232,13 +232,23 @@ export function passivePerception(c: Char): number {
 export const sightRadius = (party: Char[]) =>
   party.some(c => !c.dead && (c.cls === 'cleric' || c.cls === 'wizard' || c.items.some(i => i.id === 'torch'))) ? 2 : 1;
 
-/** Reparte PX entre los vivos y sube de nivel. Devuelve los mensajes. */
-export function gainXp(party: Char[], total: number): string[] {
+/**
+ * Reparte PX entre los vivos y sube de nivel. Devuelve los mensajes.
+ * `cap` es el nivel objetivo de la aventura: dentro de ella nadie lo pasa y los PX sobrantes se pierden.
+ */
+export function gainXp(party: Char[], total: number, cap = MAX_LEVEL): string[] {
   const alive = party.filter(c => !c.dead);
   if (!alive.length || !total) return [];
   const each = Math.floor(total / alive.length);
   const msgs = [alive.length === 1 ? `${alive[0].name} gana ${each} PX.` : `Cada miembro del grupo gana ${each} PX.`];
-  for (const c of alive) msgs.push(...addXp(c, each));
+  const top = cap < MAX_LEVEL ? XP_LEVELS[cap - 1] : Infinity;
+  let capped = false;
+  for (const c of alive) {
+    const n = Math.max(0, Math.min(each, top - c.xp));
+    if (n < each && c.level <= cap) capped = true;
+    msgs.push(...addXp(c, n));
+  }
+  if (capped) msgs.push(`Nivel ${cap} es el máximo en esta aventura: los PX de más no cuentan.`);
   return msgs;
 }
 

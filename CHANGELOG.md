@@ -2,6 +2,13 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 17 de noviembre de 2026 — Niveles más bajos: 2, 3 y 4
+
+- **Nivel objetivo por aventura** (`ADVS[].level`): 2 en Hondaroca, 3 en el bosque y 4 en la montaña. Dentro de la aventura nadie lo pasa (los PX de más se pierden, `gainXp`) y, al entrar en la sala del jefe, quien no lo tenga sube a él. También es el mínimo al terminarla (antes 3, 5 y 6).
+- **PX de la montaña ×2** (`xpScale`), para que el nivel 4 llegue hacia la zona 3.
+- **Enemigos**: en el bosque, oso pardo en vez del oso lechuza (b2_e06) y serpiente constrictora gigante en vez del montículo andante (b3_e04); las dos arañas del nido de seda ya no se refuerzan entre sí. Vharzûl baja a 85 PG, ataques +6 y aliento 5d8 CD 14.
+- Estudio con el bot: `NIVELES=1 N=10 npx jest niveles --runInBand`.
+
 ## 17 de noviembre de 2026 — Imágenes definitivas de los elementos dinámicos
 
 - Incorporadas las 11 imágenes de escombros, puerta, verja, palanca y barrera (`din_<tipo>_<estado>.webp`). Sustituyen a los marcadores provisionales; los estados sin imagen siguen con el suyo.
