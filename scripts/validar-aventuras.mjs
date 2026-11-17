@@ -83,6 +83,21 @@ for (const file of files) {
       warn(file, item.id || roomId, `Disparador after no encontrado en este archivo: ${item.after}`);
     }
   }
+  // Elementos dinámicos del mapa (src/engine/elementos.ts): ids únicos y referencias que existan.
+  // Los tipos, estados y casillas se comprueban en src/engine/elementos.test.ts.
+  const elems = new Map(data.zones.flatMap(zone => (zone.elements ?? []).map(el => [el.id, el])));
+  const sets = [];
+  for (const zone of data.zones) for (const el of zone.elements ?? []) {
+    if (!el.id || !el.type || !/^-?\d+,-?\d+$/.test(el.at ?? '')) fail(el.id || zone.id, 'Elemento sin id, tipo o casilla "q,r"');
+    if (contentIds.has(el.id)) fail(el.id, 'El id del elemento coincide con un contenido');
+    if (el.scene && !contentIds.has(el.scene)) fail(el.id, `Escena del elemento inexistente: ${el.scene}`);
+    for (const rule of el.on ?? []) if (!contentIds.has(rule.if) && !rooms.has(rule.if)) warn(file, el.id, `Acontecimiento no encontrado en este archivo: ${rule.if}`);
+    for (const use of el.use ?? []) sets.push([el.id, use.set]);
+  }
+  if (elems.size !== data.zones.reduce((n, zone) => n + (zone.elements ?? []).length, 0)) fail('elements', 'Hay ids de elementos repetidos');
+  for (const room of rooms.values()) for (const item of room.contents) if (item.type === 'scene')
+    for (const eff of [...(item.options ?? []).flatMap(o => [o.ok, o.fail]), item.fallback]) if (eff?.set) sets.push([item.id, eff.set]);
+  for (const [from, set] of sets) for (const id of Object.keys(set ?? {})) if (!elems.has(id)) fail(from, `Cambia un elemento inexistente: ${id}`);
   // Los PX pueden incluir ajustes de progresión deliberados. Solo avisamos.
   const xpByCreature = {
     'Giant Rat': 25, 'Goblin Warrior': 50, 'Goblin Boss': 200,

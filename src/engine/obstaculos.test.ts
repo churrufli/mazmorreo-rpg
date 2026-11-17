@@ -1,4 +1,5 @@
 import { newGame } from './game';
+import { ELEM_TYPES, zoneElements } from './elementos';
 import { ZONE_IDS, blockedCells, hkey, neighbors, passable, plan } from './dungeon';
 
 // Los decorados bloquean casillas, pero nunca deben dejar aislado nada que haya que pisar.
@@ -7,6 +8,8 @@ test.each(ZONE_IDS)('decorados de %s sin cortar el paso', zone => {
   g.zone = zone;
   g.found = plan(zone).marks.filter(m => m.kind === 'secret').map(m => m.id);
   g.done = plan(zone).marks.filter(m => m.kind === 'gate').map(m => m.id);
+  // Con los elementos dinámicos abiertos (derrumbe retirado, verja alzada...): cerrados tienen su propia prueba (elementos.test.ts).
+  g.elems = Object.fromEntries(zoneElements(zone).map(e => [e.id, Object.keys(ELEM_TYPES[e.type].states).find(s => ELEM_TYPES[e.type].states[s].pass)!]));
   const pass = passable(g, zone);
   const seen = new Set([hkey(plan(zone).start)]);
   const q = [plan(zone).start];

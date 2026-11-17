@@ -3140,7 +3140,43 @@
           "text": "Una puerta sellada en el depósito se abrirá con una luz traída de lejos. Habrá que volver algún día."
         }
       ],
-      "c_gold": true
+      "c_gold": true,
+      "elements": [
+        {
+          "id": "m3_x01",
+          "type": "palanca",
+          "at": "-7,-2",
+          "name": "Palanca del contrapeso",
+          "use": [
+            {
+              "from": "reposo",
+              "to": "activada",
+              "set": {
+                "m3_x02": "abierta"
+              },
+              "text": "Bajáis la palanca. Un contrapeso cae en las entrañas de la fortaleza y, a lo lejos, chirría una verja al subir."
+            },
+            {
+              "from": "activada",
+              "to": "reposo",
+              "set": {
+                "m3_x02": "cerrada"
+              },
+              "text": "Subís la palanca. El contrapeso vuelve a su sitio y, a lo lejos, una verja cae con estrépito."
+            }
+          ]
+        },
+        {
+          "id": "m3_x02",
+          "type": "verja",
+          "at": "-7,6",
+          "name": "Verja de las válvulas",
+          "texts": {
+            "cerrada": "Una verja de hierro cierra el paso. No tiene cerradura: la mueve algún mecanismo de la fortaleza.",
+            "abierta": "Pasáis bajo la verja levantada."
+          }
+        }
+      ]
     },
     {
       "id": "m4",
