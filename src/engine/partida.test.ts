@@ -15,6 +15,8 @@ export const TOWN = { on: false, trips: 0 };
 /** El bot topa con los elementos dinámicos cerrados (derrumbe, puerta...) para resolverlos, solo si se activa. */
 export const BUMP = { on: false, bumps: 0 };
 
+/** Llaves de zona de las aventuras (hierro, amuleto de corteza y llave serpiente). */
+const KEYS = ['zone_key', 'bark_amulet', 'serpent_key'];
 const charOf0 = (g: Game, u: { charId?: string }) => g.party.find(c => c.id === u.charId)!;
 
 function fight(g: Game, id: string): Combat {
@@ -138,9 +140,9 @@ function play(cls: ClassId, sp: SpeciesId, seed?: number, start = 'z1', xp = 0, 
       for (const it of [...here]) {
         let to = g.party.find(c => !c.dead && c.items.length < MAX_ITEMS);
         // Con las mochilas llenas, deja algo prescindible para coger la llave.
-        if (!to && (it.id === 'zone_key' || it.id === 'bark_amulet')) {
-          to = g.party.find(c => !c.dead && c.items.some(x => !x.basic && x.id !== 'zone_key' && x.id !== 'bark_amulet'));
-          if (to) to.items.splice(to.items.findIndex(x => !x.basic && x.id !== 'zone_key' && x.id !== 'bark_amulet'), 1);
+        if (!to && KEYS.includes(it.id)) {
+          to = g.party.find(c => !c.dead && c.items.some(x => !x.basic && !KEYS.includes(x.id)));
+          if (to) to.items.splice(to.items.findIndex(x => !x.basic && !KEYS.includes(x.id)), 1);
         }
         if (to) { to.items.push(it); here.splice(here.indexOf(it), 1); }
       }
@@ -155,9 +157,9 @@ function play(cls: ClassId, sp: SpeciesId, seed?: number, start = 'z1', xp = 0, 
     const bk = (k: string) => `${g.zone}:${k}:${elemState(g, elemAt(g.zone, k)!)}`;
     targets.push(...[...bump].filter(k => vis.has(k) && !knocked.has(bk(k))));
     // Con la llave de la zona en la mochila, vuelve a la salida cerrada.
-    const key = g.party.some(c => c.items.some(i => i.id === 'zone_key' || i.id === 'bark_amulet'));
+    const key = g.party.some(c => c.items.some(i => KEYS.includes(i.id)));
     if (key) targets.push(...plan(g.zone).marks.filter(m => m.kind === 'exit').map(m => `${m.q},${m.r}`));
-    for (const [k, list] of Object.entries(g.drops ?? {})) if (k.startsWith(`${g.zone}:`) && list.some(i => i.id === 'zone_key' || i.id === 'bark_amulet')) targets.push(k.split(':')[1]);
+    for (const [k, list] of Object.entries(g.drops ?? {})) if (k.startsWith(`${g.zone}:`) && list.some(i => KEYS.includes(i.id))) targets.push(k.split(':')[1]);
     let best: ReturnType<typeof findPath> = null;
     for (const k of targets) {
       const p = findPath(g, k.split(',').map(Number) as [number, number]);

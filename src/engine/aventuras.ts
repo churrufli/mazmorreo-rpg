@@ -1,12 +1,13 @@
-// Aventuras del juego y sus pueblos. Las zonas de Hondaroca son z1..z4, las del bosque b1..b4 y las de la
-// montaña m1..m4, así que un id de zona o de contenido basta para saber a qué aventura pertenece.
+// Aventuras del juego y sus pueblos. Las zonas de Hondaroca son z1..z4, las del bosque b1..b4, las de la
+// montaña m1..m4 y las de la tumba s1..s4, así que un id de zona o de contenido basta para saber a qué aventura pertenece.
 import H from '../data/hondaroca.json';
 import B from '../data/corazon.json';
 import M from '../data/montana.json';
+import T from '../data/tumba.json';
 import type { ImgKey } from '../assets';
 
-export type AdvId = 'hondaroca' | 'corazon_hueco' | 'montana';
-export type TownId = 'valdescarcha' | 'vegahumbria' | 'cumbrenieve';
+export type AdvId = 'hondaroca' | 'corazon_hueco' | 'montana' | 'tumba';
+export type TownId = 'valdescarcha' | 'vegahumbria' | 'cumbrenieve' | 'arenaroja';
 export type Design = typeof H;
 type Art = { bg: ImgKey; combat: ImgKey; floor: ImgKey; wall: ImgKey };
 
@@ -33,7 +34,7 @@ export interface Adv {
   /** Aventura anterior: hay que vencerla para abrir esta, y uno de sus aliados puede acompañar al héroe al empezar. */
   prev?: AdvId;
   /**
-   * Nivel objetivo (el autor 2026-11-17: 2, 3 y 4): dentro de la aventura nadie lo pasa, se alcanza
+   * Nivel objetivo (el autor 2026-11-17: 2, 3 y 4; la tumba, 5): dentro de la aventura nadie lo pasa, se alcanza
    * como tarde al entrar en la sala del jefe y es el mínimo con el que se sale de ella.
    */
   level: number;
@@ -52,6 +53,7 @@ const art = (bg: string, wall = bg): Art => ({
 });
 const BD = B as unknown as Design & { traitor: { id: string; name: string } };
 const MD = M as unknown as Design & { sage: { id: string; name: string } };
+const TD = T as unknown as Design & { npc: { id: string; name: string } };
 
 export const ADVS: Record<AdvId, Adv> = {
   hondaroca: {
@@ -93,10 +95,25 @@ export const ADVS: Record<AdvId, Adv> = {
     prev: 'corazon_hueco', level: 4, xpScale: 3, escortWhere: 'por el paso nevado', restImg: 'hoguera_nieve',
     trapImg: 'trampa_montana',
   },
+  // Basada en «Tomb of the Serpent Kings», de Skerples (Coins and Scrolls), CC BY-NC-SA.
+  tumba: {
+    id: 'tumba', name: TD.dungeon.name, data: TD, town: 'arenaroja', boss: 'Xiximanter', sub: 'teodor',
+    intro: 'intro_tumba', victoryImg: 'victoria_tumba', defeatImg: 'derrota_generica',
+    victoryText: 'Xiximanter cae entre sus frascos y la luz morada se apaga. Los prisioneros vuelven a Arenaroja y nadie más soñará con la voz que sisea. Encontráis 150 monedas de oro y la Corona de los Reyes Serpiente.',
+    defeatText: 'Todo el grupo ha caído en la tumba. Xiximanter añade nuevos frascos a su colección.',
+    reward: { gold: 150, item: 'serpent_crown' },
+    art: { s1: art('tumba_falsa'), s2: art('tumba_superior'), s3: art('salas_sacrificio'), s4: art('madrigueras') },
+    allyImg: { zeyna: 'ally_zeyna', hassim: 'ally_hassim', yara: 'ally_yara', teodor: 'ally_teodor' },
+    speakers: { ...Object.fromEntries(TD.allies.map(a => [a.id, a.name])), [TD.npc.id]: TD.npc.name, xiximanter: TD.boss.name },
+    faces: { zeyna: 'ally_zeyna', hassim: 'ally_hassim', yara: 'ally_yara', teodor: 'ally_teodor', baltoplat: 'baltoplat', xiximanter: 'xiximanter' },
+    prev: 'montana', level: 5, xpScale: 6, escortWhere: 'por la tumba falsa', restImg: 'campamento_tumba',
+    trapImg: 'trampa_tumba',
+  },
 };
 
 export const ADV_LIST = Object.values(ADVS);
-export const advOf = (zoneOrId: string): AdvId => (zoneOrId[0] === 'b' ? 'corazon_hueco' : zoneOrId[0] === 'm' ? 'montana' : 'hondaroca');
+const PREFIX: Record<string, AdvId> = { b: 'corazon_hueco', m: 'montana', s: 'tumba' };
+export const advOf = (zoneOrId: string): AdvId => PREFIX[zoneOrId[0]] ?? 'hondaroca';
 /** ¿Ha terminado esa aventura? (Hondaroca guardaba antes la victoria en g.won) */
 export const wonAdv = (g: { won: boolean; wins?: AdvId[] }, a: AdvId) => !!g.wins?.includes(a) || (a === 'hondaroca' && g.won);
 export const firstZone = (a: AdvId) => ADVS[a].data.zones[0].id;
@@ -120,6 +137,11 @@ export const TOWNS: Record<TownId, Town> = {
     name: 'Cumbrenieve', adv: 'montana',
     bg: { menu: 'cumbrenieve', tienda: 'cumbrenieve_tienda', templo: 'cumbrenieve_templo', posada: 'cumbrenieve_posada', puerta: 'cumbrenieve_puerta' },
     stock: [...COMUNES, ...M.shops.cumbrenieve],
+  },
+  arenaroja: {
+    name: 'Arenaroja', adv: 'tumba',
+    bg: { menu: 'arenaroja', tienda: 'arenaroja_tienda', templo: 'arenaroja_templo', posada: 'arenaroja_posada', puerta: 'arenaroja_puerta' },
+    stock: [...COMUNES, ...T.shops.arenaroja],
   },
 };
 

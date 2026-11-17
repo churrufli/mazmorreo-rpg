@@ -641,15 +641,32 @@ export function keyCell(zone: string): string | undefined {
   return k;
 }
 
-export const KEY_ITEM = (zone: string) => (advOf(zone) === 'corazon_hueco' ? 'bark_amulet' : 'zone_key');
+const KEYS: Partial<Record<string, string>> = { corazon_hueco: 'bark_amulet', tumba: 'serpent_key' };
+export const KEY_ITEM = (zone: string) => KEYS[advOf(zone)] ?? 'zone_key';
+/** Textos de cada llave: al encontrarla, sin ella ante la salida y al abrir. */
+const KEY_TEXT: Record<string, { found: string; missing: string; open: (who: string) => string }> = {
+  zone_key: {
+    found: 'Recogéis la llave de hierro. Abrirá la salida cerrada de esta zona.',
+    missing: 'Una reja de hierro cierra la salida. Buscad la llave en algún rincón de esta zona.',
+    open: who => `${who} abre la reja con la llave de hierro, que se queda en la cerradura.`,
+  },
+  bark_amulet: {
+    found: 'Los antiguos vigilantes del Corazón dejaron amuletos de corteza para cruzar los muros. Uno cuelga de esta raíz: su runa aún funciona.',
+    missing: 'Una pared de raíces bloquea el paso. Hace falta un amuleto de corteza antiguo para obligarlas a apartarse.',
+    open: who => `${who} alza el amuleto de corteza. Las raíces reconocen su runa, se apartan y la madera del amuleto se deshace.`,
+  },
+  serpent_key: {
+    found: 'Recogéis una llave de bronce con forma de serpiente. Abrirá la puerta sellada de esta zona de la tumba.',
+    missing: 'Una puerta de bronce con una cerradura en forma de serpiente cierra la salida. Buscad su llave en algún rincón de esta zona.',
+    open: who => `${who} gira la llave serpiente. La puerta de bronce se abre y la llave se queda en la cerradura.`,
+  },
+};
 
 function findKey(g: Game): Ev {
   g.done.push(`${g.zone}_key`);
   const id = KEY_ITEM(g.zone);
   const who = giveItem(g, id);
-  const lines = [id === 'zone_key'
-    ? 'Recogéis la llave de hierro. Abrirá la salida cerrada de esta zona.'
-    : 'Los antiguos vigilantes del Corazón dejaron amuletos de corteza para cruzar los muros. Uno cuelga de esta raíz: su runa aún funciona.'];
+  const lines = [KEY_TEXT[id].found];
   if (who) lines.push(`${who.name} guarda: ${ITEMS[id].name}.`);
   else {
     // Sin sitio en las mochilas: la llave se queda en el suelo de esta casilla.
@@ -713,16 +730,12 @@ function exitLock(g: Game): { ev?: Ev; text?: string; closed: boolean } | undefi
   const id = KEY_ITEM(g.zone);
   const holder = g.party.find(c => c.items.some(i => i.id === id));
   if (!holder) {
-    return { closed: true, text: id === 'zone_key'
-      ? 'Una reja de hierro cierra la salida. Buscad la llave en algún rincón de esta zona.'
-      : 'Una pared de raíces bloquea el paso. Hace falta un amuleto de corteza antiguo para obligarlas a apartarse.' };
+    return { closed: true, text: KEY_TEXT[id].missing };
   }
   g.done.push(open);
   const it = holder!.items.find(i => i.id === id)!;
   holder!.items = holder!.items.filter(i => i !== it);
-  return { closed: false, ev: { kind: 'msg', title: 'Paso abierto', items: [ITEMS[id].img], lines: [id === 'zone_key'
-    ? `${holder!.name} abre la reja con la llave de hierro, que se queda en la cerradura.`
-    : `${holder!.name} alza el amuleto de corteza. Las raíces reconocen su runa, se apartan y la madera del amuleto se deshace.`] } };
+  return { closed: false, ev: { kind: 'msg', title: 'Paso abierto', items: [ITEMS[id].img], lines: [KEY_TEXT[id].open(holder!.name)] } };
 }
 
 const chestVisible = (g: Game, id: string) =>

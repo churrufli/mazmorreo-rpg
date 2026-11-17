@@ -4,6 +4,10 @@
 
 - **System Reference Document 5.2.1** de Wizards of the Coast LLC, con licencia CC BY 4.0. Atribución completa en [NOTICE.md](NOTICE.md).
 
+## Aventuras
+
+- **La Tumba de los Reyes Serpiente** está basada en *Tomb of the Serpent Kings*, de Skerples ([Coins and Scrolls](https://coinsandscrolls.blogspot.com/2017/06/osr-tomb-of-serpent-kings-megapost.html)), CC BY-NC-SA. Adaptada a Mazmorreo. Más detalle en [NOTICE.md](NOTICE.md).
+
 ## Tipografías
 
 - **Cinzel**, de The Cinzel Project Authors ([NDISCOVER/Cinzel](https://github.com/NDISCOVER/Cinzel)). SIL Open Font License 1.1.
@@ -31,6 +35,8 @@ Las seis pistas (`mus_principal`, `mus_pueblo`, `mus_combate`, `mus_minas`, `mus
 - Se incluyen solo para que Mazmorreo, que es y será siempre gratuito y sin anuncios, tenga su música.
 - No se pueden reutilizar fuera de Mazmorreo ni en una versión con fines comerciales.
 - Si haces una versión derivada del juego, sustitúyelas o comprueba antes las condiciones de Suno.
+
+**Música de demostración (cuarta aventura).** Las pistas `mus_arenaroja`, `mus_tumba` y `mus_combate_tumba` también se crearon con Suno en su plan gratuito y se tratan igual que las anteriores. Son provisionales: sirven para ambientar el juego mientras se busca música definitiva.
 
 ### Ambientes
 

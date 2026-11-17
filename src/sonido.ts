@@ -100,12 +100,15 @@ export function refresh() {
   // Música: título y menús; el pueblo; la de cada aventura en la mazmorra; combate; combate contra el jefe.
   let track: string | undefined;
   if (st.screen === 'game' && g) {
-    if (g.place === 'town') track = 'mus_pueblo';
-    else if (st.combat) track = st.combat.encounters.includes(bossEncounter(g.zone)) ? 'mus_jefe' : 'mus_combate';
-    else track = forest(g) ? 'mus_bosque' : 'mus_minas';
+    // La tumba tiene música propia (de demostración) para Arenaroja, la exploración y los combates normales.
+    const tomb = g.zone.startsWith('s');
+    if (g.place === 'town') track = g.town === 'arenaroja' ? 'mus_arenaroja' : 'mus_pueblo';
+    else if (st.combat) track = st.combat.encounters.includes(bossEncounter(g.zone)) ? 'mus_jefe' : tomb ? 'mus_combate_tumba' : 'mus_combate';
+    else track = tomb ? 'mus_tumba' : forest(g) ? 'mus_bosque' : 'mus_minas';
   } else if (st.screen === 'intro') {
     // Imagen de entrada de la aventura: ya suena la música de su primera zona (el autor 2026-11-06).
-    track = (st.intro?.adv ?? 'hondaroca') === 'hondaroca' ? 'mus_minas' : 'mus_bosque';
+    const adv = st.intro?.adv ?? 'hondaroca';
+    track = adv === 'hondaroca' ? 'mus_minas' : adv === 'tumba' ? 'mus_tumba' : 'mus_bosque';
   } else if (st.screen === 'victory') track = 'mus_pueblo'; // Final de la aventura: suena la música del pueblo.
   else if (st.screen !== 'defeat') track = 'mus_principal';
   loop(!away && musicOn() && level('musica') > 0 ? track : undefined, mus, MUSIC * level('musica'));

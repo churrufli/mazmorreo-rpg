@@ -1,12 +1,12 @@
 # Mazmorreo
 
-RPG de fantasía para Android (y versión web) basado en las reglas de quinta edición (2024) del **SRD 5.2.1**. Tres aventuras: Hondaroca, El Corazón Hueco y El Invierno del Dragón. Pensado para Android con el móvil en vertical; la web es para probarlo y va en GitHub Pages. Ver `README.md`.
+RPG de fantasía para Android (y versión web) basado en las reglas de quinta edición (2024) del **SRD 5.2.1**. Cuatro aventuras: Hondaroca, El Corazón Hueco, El Invierno del Dragón y La Tumba de los Reyes Serpiente. Pensado para Android con el móvil en vertical; la web es para probarlo y va en GitHub Pages. Ver `README.md`.
 
 ## Tecnología
 
 - React Native 0.81 + TypeScript, Zustand, MMKV. Web con react-native-web y Vite.
 - `src/engine/`: motor puro (combate, mazmorra, reglas, escenas) con tests junto al código.
-- `src/data/`: aventuras (`hondaroca.json`, `corazon.json`, `montana.json`), charlas, ayuda y SRD.
+- `src/data/`: aventuras (`hondaroca.json`, `corazon.json`, `montana.json`, `tumba.json`), charlas, ayuda y SRD.
 - `src/screens/` y `src/ui/`: pantallas y componentes.
 - `scripts/`: validación de aventuras, conversión de arte y pruebas en navegador.
 - `docs/GUIA_CONTENIDOS.md`: convenciones de narrativa y equilibrio. Léela antes de tocar aventuras.
@@ -30,7 +30,7 @@ Ejecuta `/validar` (o lo mismo a mano):
 ```bash
 npx tsc --noEmit
 npm test -- --ci --runInBand
-node scripts/validar-aventuras.mjs src/data/hondaroca.json src/data/corazon.json src/data/montana.json
+node scripts/validar-aventuras.mjs src/data/hondaroca.json src/data/corazon.json src/data/montana.json src/data/tumba.json
 npm run web:build
 ```
 

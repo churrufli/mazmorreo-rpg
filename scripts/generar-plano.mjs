@@ -1,4 +1,4 @@
-// Genera el plano hexagonal FIJO de cada aventura (src/data/hondaroca.json, corazon.json y montana.json).
+// Genera el plano hexagonal FIJO de cada aventura (src/data/hondaroca.json, corazon.json, montana.json y tumba.json).
 // OJO: las zonas ya publicadas tienen marcas recolocadas a mano (obstáculos). Al añadir una aventura, copia en plano.json
 // solo las zonas nuevas de la salida de este script; no sobrescribas las demás o se moverían en las partidas guardadas.
 // Salida: src/data/plano.json (lo lee la app) y plano-<zona>.svg (para revisarlo a ojo).
@@ -56,7 +56,7 @@ function line(a, b) {
 }
 
 const plano = { zones: {} };
-for (const file of ['hondaroca', 'corazon', 'montana']) {
+for (const file of ['hondaroca', 'corazon', 'montana', 'tumba']) {
 const D = JSON.parse(fs.readFileSync(`src/data/${file}.json`, 'utf8'));
 seed = 20261101;
 for (const zone of D.zones) {
@@ -153,7 +153,10 @@ for (const zone of D.zones) {
     b3: ['swamp_water', 'swamp_water', 'fallen_tree', 'mushrooms', 'stump'], b4: ['big_tree', 'thorn_bush', 'mossy_rock', 'mushrooms', 'totem'],
     // Montaña: pinos y rocas nevadas fuera; hielo y piedra enana dentro.
     m1: ['pine', 'pine', 'snow_rock', 'fallen_pine'], m2: ['pine', 'pine', 'fallen_pine', 'snow_rock', 'frozen_pool'],
-    m3: ['snow_rock', 'ice_pillar', 'dwarf_statue', 'bone_pile'], m4: ['ice_pillar', 'ice_pillar', 'snow_rock', 'crevasse', 'bone_pile'] }[zone.id];
+    m3: ['snow_rock', 'ice_pillar', 'dwarf_statue', 'bone_pile'], m4: ['ice_pillar', 'ice_pillar', 'snow_rock', 'crevasse', 'bone_pile'],
+    // Tumba: arenisca y huesos arriba, mármol y estatuas en la tumba de los reyes, hongos en las madrigueras.
+    s1: ['rubble', 'column', 'bone_pile'], s2: ['column', 'serpent_statue', 'rubble'], s3: ['rubble', 'bone_pile', 'column'],
+    s4: ['mushrooms', 'mushrooms', 'rubble'] }[zone.id];
   if (AUTO) {
     let s2 = 7 + zone.id.charCodeAt(1);
     const r2 = () => ((s2 = (s2 * 1103515245 + 12345) % 2147483648) / 2147483648);
