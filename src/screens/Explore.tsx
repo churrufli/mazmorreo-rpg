@@ -160,7 +160,7 @@ const PartyCard = memo(function PartyCard({ info, id, width, dead, onOpen }: { i
 }, (a, b) => a.width === b.width && a.dead === b.dead && JSON.stringify(a.info) === JSON.stringify(b.info));
 
 export function Explore() {
-  const { game, queue, walking, walkTo, walkStep, next, rest, trapChoice, edit, zoom, setZoom, goTown, drop, pickUp, sceneChoose, sceneLeave, swapOut, reread } = useStore();
+  const { game, queue, walking, walkTo, walkStep, next, rest, trapChoice, edit, zoom, setZoom, goTown, drop, pickUp, sceneChoose, sceneLeave, swapOut, reread, devPass } = useStore();
   const g = game!;
   const ins = useSafeAreaInsets();
   const win = useWindowDimensions();
@@ -642,7 +642,11 @@ export function Explore() {
         </Message>
       ) : null}
       {/* Resultado de una escena: su ilustración de fondo, entera, en vez de una imagen pequeña recortada (el autor 2026-11-06). */}
-      {head?.kind === 'msg' ? <Message key={`m${queue.length}:${head.title}:${head.lines[0]}`} {...head} {...(head.img?.startsWith('escena_') && !head.img2 ? { img: undefined, bg: head.img, low: true } : {})} onDone={next} /> : null}
+      {head?.kind === 'msg' ? (
+        <Message key={`m${queue.length}:${head.title}:${head.lines[0]}`} {...head} {...(head.img?.startsWith('escena_') && !head.img2 ? { img: undefined, bg: head.img, low: true } : {})} onDone={next}>
+          {head.pass && dev ? <><Btn primary label="Continuar" onPress={next} /><Btn small label="Superar" sub="Modo desarrollador" onPress={devPass} /></> : undefined}
+        </Message>
+      ) : null}
       {head?.kind === 'trap' ? (
         <Message key={`t${head.id}`} title="¡Trampa!" img="trampa" lines={[`Estáis junto a la trampa: ${head.name}.`, 'Quien la desactive tira Destreza. Si falla, salta, pero con ventaja para esquivarla.']} onDone={() => undefined}>
           {g.party.filter(c => !isDown(c)).map(c => {

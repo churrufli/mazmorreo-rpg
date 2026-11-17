@@ -5,7 +5,7 @@ import { afterDefeat, clone, Game, newGame } from './engine/game';
 import { chooseOption, leaveScene, sceneSpent, spentMsg } from './engine/escenas';
 import { allyCap, endAdventure, sendToInn } from './engine/posada';
 import { migrateElements } from './engine/elementos';
-import { markReturn, react, atEntrance, atRest, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step, trap, logEvs } from './engine/dungeon';
+import { markReturn, react, atEntrance, atRest, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, devPass, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step, trap, logEvs } from './engine/dungeon';
 import { ADVS, ADV_LIST, AdvId, TOWNS, TownId, advOf, firstZone, wonAdv } from './engine/aventuras';
 import { ITEMS } from './data/srd';
 import { Action, actionsFor, autoTurn, Combat, devWin, endTurn, enemyTurn, perform, startCombat, withDice, useInspiration } from './engine/combat';
@@ -53,6 +53,8 @@ interface State {
   toTown: () => void;
   goBack: () => void;
   devWin: () => void;
+  /** Modo desarrollador: supera el obstáculo o la salida cerrada del aviso que se está viendo. */
+  devPass: () => void;
   goTown: () => void;
   leaveTown: (escort?: string) => void;
   travel: (t: TownId) => void;
@@ -269,6 +271,11 @@ export const useStore = create<State>((set, get) => {
     },
     edit: (fn, save = false) => mutate(g => { fn(g); }, save),
     devWin: () => mutate((g, cb) => { if (cb) devWin(g, cb); }),
+    devPass: () => {
+      const ev = get().queue[0];
+      if (ev?.kind !== 'msg' || !ev.pass || !isDev()) return;
+      mutate(g => advance(g, [...devPass(g, ev.pass!), ...get().queue.slice(1)]), true);
+    },
     goBack: () => {
       const { game, queue, combat, walking } = get();
       if (!game || queue.length || combat || walking.length) return;

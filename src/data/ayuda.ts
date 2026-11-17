@@ -78,6 +78,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Aliados nuevos en la posada de Arenaroja: Zeyna Polvoseco (pícara), Hassim Lanzadesol (paladín), la Hermana Yara del Pozo (clériga) y Teodor Escamagrís (mago), cada uno con sus tres charlas.',
     'Criaturas nuevas del SRD 5.2.1: momia, gelatina ocre, pudin negro, basilisco e íncubo, además de goblins de hongo y un guardián cobra de piedra. Contra el basilisco ayuda un espejo de acero.',
     'Música de demostración para Arenaroja, la tumba y sus combates. No es la definitiva: se busca música para ambientar el juego.',
+    'Modo desarrollador: los obstáculos que no ceden y las salidas cerradas con llave tienen un botón «Superar» para pasarlos sin más.',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',
