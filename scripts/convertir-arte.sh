@@ -28,7 +28,8 @@ for f in "$SRC"/personajes/heroes/*.* "$SRC"/personajes/aliados/*.* "$SRC"/enemi
   convert "$f" -resize 512x768^ -gravity center -extent 512x768 -quality 74 "$OUT/$(name "$f").webp"; done
 for f in "$SRC"/mapa/*.*; do
   n=$(name "$f")
-  case "$n" in suelo_*|pared_*|agua_*) convert "$f" -resize 256x256 -quality 80 "$OUT/$n.webp";;
+  case "$n" in pared_tumba_falsa) convert "$f" -resize 256x256 -modulate 70 -quality 80 "$OUT/$n.webp";;  # más oscura que su suelo
+    suelo_*|pared_*|agua_*) convert "$f" -resize 256x256 -quality 80 "$OUT/$n.webp";;
     puente) cutout "$f" 256 "$OUT/$n.webp" todo;;
     arbol_grande|arbol_caido|tocon|setas|arbusto_espinoso|roca_musgo|totem|altar_druidico|cabana|campamento|piedra_erguida|barriles_cajas|mesa_papeles|atril_libro) claro "$f" 256 "$OUT/$n.webp";;
     pasarela|raiz_arqueada|sacos_mineral) FUZZ=30% cutout "$f" 256 "$OUT/$n.webp" todo;;
@@ -40,7 +41,7 @@ cutout "$SRC/mapa/extras/5.16_altar_orvane.png" 256 "$OUT/altar_orvane.webp"
 # Sin recorte ni recentrado (los estados de un elemento deben conservar el mismo encuadre): ver convertir-dinamicos.py.
 for f in "$SRC"/mapa/dinamicos/*.png; do [ -e "$f" ] || continue; python3 "$(dirname "$0")/convertir-dinamicos.py" "$f" "$OUT/$(name "$f").webp"; done
 for f in "$SRC"/objetos/*.* "$SRC"/efectos/*.*; do
-  n=$(name "$f"); case "$n" in llave) cutout "$f" 256 "$OUT/$n.webp" 882,294;; arco_*|periapto_*|red|simbolo_sagrado|amuleto_corteza|anillo_calor|sello_deshielo) cutout "$f" 256 "$OUT/$n.webp" todo;; *) cutout "$f" 256 "$OUT/$n.webp";; esac; done
+  n=$(name "$f"); case "$n" in llave) cutout "$f" 256 "$OUT/$n.webp" 882,294;; arco_*|periapto_*|red|simbolo_sagrado|amuleto_corteza|anillo_calor|anillo_colmillo|sello_deshielo) cutout "$f" 256 "$OUT/$n.webp" todo;; *) cutout "$f" 256 "$OUT/$n.webp";; esac; done
 # Aliados del bosque y de la montaña (banco de PNJ) y la abuela Brezna.
 for p in 3.37_abuela_ortiga:abuela_ortiga pnj_exploradora_elfa_pelirroja:ally_maren pnj_monje_calvo_farol:ally_anselmo \
   pnj_guerrera_escudo_arbol_v1:ally_ivelle pnj_mago_anciano_v1:ally_telmo \
