@@ -18,6 +18,7 @@ import { FadeIn, PopIn, Portrait } from '../ui/Overlays';
 import { EASE, fxOn } from '../ui/movimiento';
 import { ADV_LIST, ADVS, MEJORES, TOWNS, TownId, advOf, speaker, wonAdv } from '../engine/aventuras';
 import { pendingNotes, useOutside } from '../engine/dungeon';
+import { entryLevel } from '../engine/desarrollador';
 import { allyCap, finishTalk, nextTalk, short, talkLines, talksDone } from '../engine/posada';
 import { Dialogue } from '../ui/Overlays';
 import { Galeria } from './Galeria';
@@ -330,7 +331,7 @@ export function Town() {
             <T>Más allá de la puerta se extiende el reino. ¿Adónde viajáis?</T>
             {(Object.keys(TOWNS) as TownId[]).filter(t => t !== townId).map(t => (
               <Btn key={t} label={`Viajar a ${TOWNS[t].name}`} disabled={!open(t)}
-                sub={open(t) ? `Pueblo de ${ADVS[TOWNS[t].adv].name}${dev && prevOf(t) ? ` · el grupo sube a nivel ${ADVS[prevOf(t)!].level}` : ''}` : lockText(t)}
+                sub={open(t) ? `Pueblo de ${ADVS[TOWNS[t].adv].name}${dev ? ` · el grupo empieza con nivel ${entryLevel(TOWNS[t].adv)}, sus compañeros y su equipo` : ''}` : lockText(t)}
                 onPress={() => { travel(t); setPlace('menu'); say(''); setArrival(TOWNS[t].name); }} />
             ))}
           </Panel>

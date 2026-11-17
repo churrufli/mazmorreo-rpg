@@ -79,6 +79,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Criaturas nuevas del SRD 5.2.1: momia, gelatina ocre, pudin negro, basilisco e íncubo, además de goblins de hongo y un guardián cobra de piedra. Contra el basilisco ayuda un espejo de acero.',
     'Música de demostración para Arenaroja, la tumba y sus combates. No es la definitiva: se busca música para ambientar el juego.',
     'Modo desarrollador: los obstáculos que no ceden y las salidas cerradas con llave tienen un botón «Superar» para pasarlos sin más.',
+    'Modo desarrollador: al viajar a un pueblo, el grupo queda como llegaría jugando a esa aventura: su nivel de entrada, los compañeros y el equipo mágico de las aventuras anteriores. Si viajáis a una aventura anterior, se quita lo que sobra.',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',
