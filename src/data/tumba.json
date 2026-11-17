@@ -1620,7 +1620,7 @@
               "enemies": [
                 {
                   "srd_creature": "Ochre Jelly",
-                  "name": "Cieno ocre",
+                  "name": "Gelatina ocre",
                   "count": 1,
                   "row": "front",
                   "weapon": null,
@@ -3360,14 +3360,14 @@
                 {
                   "srd_creature": "Fungus Goblin",
                   "name": "Goblin sirviente",
-                  "count": 3,
+                  "count": 2,
                   "row": "front",
                   "weapon": null,
                   "drop_weapon": false
                 }
               ],
               "gold_drop": 40,
-              "xp_total": 150,
+              "xp_total": 100,
               "omen": "Una luz morada se cuela por las rendijas. Al otro lado, alguien canturrea mientras remueve un frasco."
             }
           ]

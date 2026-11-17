@@ -76,7 +76,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Cuarta aventura: La Tumba de los Reyes Serpiente. Se abre al vencer a Vharzûl. Desde Arenaroja, en las Colinas de Ocre, bajáis a una tumba de hombres serpiente en busca de los pastores y caravaneros desaparecidos.',
     'Cuatro zonas nuevas (la tumba falsa, la tumba superior, las salas del sacrificio y las madrigueras), con trampas, secretos, decisiones y el hechicero Xiximanter esperando al fondo. Se entra con nivel 4 y se llega al jefe con nivel 5.',
     'Aliados nuevos en la posada de Arenaroja: Zeyna Polvoseco (pícara), Hassim Lanzadesol (paladín), la Hermana Yara del Pozo (clériga) y Teodor Escamagrís (mago), cada uno con sus tres charlas.',
-    'Criaturas nuevas del SRD 5.2.1: momia, cieno ocre, pudin negro, basilisco e íncubo, además de goblins de hongo y un guardián cobra de piedra. Contra el basilisco ayuda un espejo de acero.',
+    'Criaturas nuevas del SRD 5.2.1: momia, gelatina ocre, pudin negro, basilisco e íncubo, además de goblins de hongo y un guardián cobra de piedra. Contra el basilisco ayuda un espejo de acero.',
     'Música de demostración para Arenaroja, la tumba y sus combates. No es la definitiva: se busca música para ambientar el juego.',
   ] },
   { version: 'v0.146', items: [

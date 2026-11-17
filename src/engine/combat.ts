@@ -64,6 +64,8 @@ export interface Unit {
   temp?: number;
   /** Apresado (red o telaraña): CD para soltarse. */
   restrained?: number;
+  /** Usos gastados del ataque de área con límite por combate. */
+  spent?: number;
   /** Turnos que le quedan ardiendo (fuego de alquimista). */
   burn?: number;
   resPoison?: boolean;
@@ -1268,7 +1270,9 @@ export function enemyTurn(g: Game, cb: Combat) {
   }
   if (p.kind === 'area') {
     const area = m.attacks.find(a => a.save)!;
-    u.recharge![area.name] = false;
+    // Conjuros de X/día: se agota al gastar los usos; si no, espera la recarga.
+    u.spent = (u.spent ?? 0) + 1;
+    if (!area.save!.uses || u.spent >= area.save!.uses) u.recharge![area.name] = false;
     say(cb, `${u.name} usa ${area.name}.`, 'big');
     const dmg = roll(g.rng, area.dice);
     const hit = u.mon === DRAGON ? cb.units.filter(x => p.targets.includes(x.key) && conscious(x)) : cb.units.filter(x => x.side === 'party' && conscious(x) && x.row === 'front');
@@ -1287,7 +1291,7 @@ export function enemyTurn(g: Game, cb: Combat) {
       if ((u.rays ?? 0) > 0) {
         u.rays!--;
         for (let i = 0; i < 3 && t.hp > 0 && !t.dead; i++) attack(g, cb, u, t, toOpts(m.attacks[0]));
-      } else attack(g, cb, u, t, toOpts(m.attacks[2]));
+      } else for (let i = 0; i < (m.multi ?? 1) && t.hp > 0 && !t.dead; i++) attack(g, cb, u, t, toOpts(m.attacks[2]));
     }
     endTurn(g, cb);
     return;
