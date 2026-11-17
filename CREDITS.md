@@ -32,6 +32,8 @@ Las seis pistas (`mus_principal`, `mus_pueblo`, `mus_combate`, `mus_minas`, `mus
 - No se pueden reutilizar fuera de Mazmorreo ni en una versión con fines comerciales.
 - Si haces una versión derivada del juego, sustitúyelas o comprueba antes las condiciones de Suno.
 
+**Música de demostración (cuarta aventura).** Las pistas `mus_arenaroja`, `mus_tumba` y `mus_combate_tumba` también se crearon con Suno en su plan gratuito y se tratan igual que las anteriores. Son provisionales: sirven para ambientar el juego mientras se busca música definitiva.
+
 ### Ambientes
 
 | Archivo | Origen | Autor | Licencia |
