@@ -156,7 +156,7 @@ export function Town() {
             {asking ? (
               <View style={st.escort}>
                 <Text style={st.h}>¿Quién te acompaña {adv.escortWhere}?</Text>
-                <Text style={st.itemDesc}>Irá contigo hasta que se una a vosotros alguien de {adv.id === 'montana' ? 'la montaña' : 'el bosque'}; entonces volverá al pueblo.</Text>
+                <Text style={st.itemDesc}>Irá contigo hasta que se una a vosotros alguien de {adv.id === 'tumba' ? 'la tumba' : adv.id === 'montana' ? 'la montaña' : 'el bosque'}; entonces volverá al pueblo.</Text>
                 {escorts.map(c => <Btn key={c.id} label={c.name} sub={`${CLASSES[c.cls].name} · nivel ${c.level} · ${c.hp}/${c.maxHp} PG`} onPress={() => { setAsking(false); setPlace('menu'); leaveTown(c.id); }} />)}
                 <Btn label="Ir solo" onPress={() => { setAsking(false); setPlace('menu'); leaveTown(); }} />
                 <Btn small label="Cancelar" onPress={() => setAsking(false)} />

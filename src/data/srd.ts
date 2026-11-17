@@ -198,6 +198,14 @@ export const ITEMS: Record<string, ItemDef> = {
   silver_piece: { name: 'Broche del centinela', kind: 'gear', img: 'reliquia', value: 20, desc: 'Broche de plata de un vigía enano. Tesoro: se puede vender.' },
   old_map: { name: 'Plano de los túneles', kind: 'gear', img: 'pergamino_escudo', value: 15, desc: 'Plano deteriorado de las galerías de la fortaleza. Tesoro: se puede vender.' },
   gem_ice: { name: 'Cuarzo glaciar', kind: 'gear', img: 'cristal', value: 50, desc: 'Cristal helado que nunca se derrite. Tesoro: se puede vender.' },
+  // La Tumba de los Reyes Serpiente
+  serpent_key: { name: 'Llave serpiente', kind: 'gear', img: 'llave_serpiente', value: 0, key: true, desc: 'Llave de bronce con forma de serpiente. Abre la salida cerrada de esta zona de la tumba. Se queda en la cerradura al usarla.' },
+  fang_ring: { name: 'Anillo del colmillo', kind: 'gear', img: 'anillo_colmillo', value: 150, desc: 'Anillo de oro con un colmillo de serpiente que aún gotea. Nadie quiere llevarlo puesto. Tesoro: se puede vender.' },
+  dagger_plus1: { name: 'Daga +1', kind: 'weapon', img: 'dagas', value: 300, desc: 'La daga de Baltoplat. Arma mágica sutil: +1 a las tiradas de ataque y daño. 1d4 perforante.', weapon: { dice: '1d4', type: 'perforante', finesse: true, bonus: 1 } },
+  steel_mirror: { name: 'Espejo de acero', kind: 'gear', img: 'espejo_acero', value: 5, desc: 'Espejo de mano de acero pulido. Quien lo lleva mira al basilisco por el reflejo: si falla la salvación contra su mirada, la repite.' },
+  blue_cucumber: { name: 'Pepino azul', kind: 'potion', img: 'pepino_azul', value: 50, desc: 'Pepino del huerto de Xiximanter. Fresco y amargo. Comerlo es una acción adicional: recupera 2d4 + 2 PG.', heal: '2d4+2' },
+  stone_egg: { name: 'Huevo de piedra cálido', kind: 'gear', img: 'huevo_piedra', value: 100, desc: 'Huevo de piedra que nunca se enfría. Tesoro: se puede vender.' },
+  serpent_crown: { name: 'Corona de los Reyes Serpiente', kind: 'gear', img: 'corona_serpiente', value: 300, desc: 'Corona de oro y escamas del último imperio de los hombres serpiente. Trofeo: se guarda en el baúl de la posada.' },
   heart_fragment: { name: 'Astilla del Corazón', kind: 'gear', img: 'astilla_corazon', value: 150, desc: 'Astilla de madera petrificada del Corazón Hueco. Ya no tiene poder. Trofeo que se guarda en el baúl de la posada.' },
 };
 
@@ -634,6 +642,64 @@ Object.assign(MONSTERS, {
       { name: 'Garra', bonus: 6, dice: '2d6+3', type: 'cortante' },
     ],
     saves: { str: 4, dex: 3, con: 7, int: -1, wis: 3, cha: 1 },
+  },
+  // La Tumba de los Reyes Serpiente. Goblins de hongo y guardián cobra con las estadísticas del goblin, el jefe goblin y la gárgola.
+  'Fungus Goblin': {
+    name: 'Goblin de hongo', img: 'goblin_hongo', ac: 15, hp: 10, dexMod: 2, xp: 50, ai: 'goblin',
+    attacks: [
+      { name: 'Cimitarra', bonus: 4, dice: '1d6+2', type: 'cortante' },
+      { name: 'Arco corto', bonus: 4, dice: '1d6+2', type: 'perforante', ranged: true },
+    ],
+    saves: goblinSaves,
+  },
+  'Fungus Goblin Boss': {
+    name: 'Jefe goblin de hongo', img: 'goblin_hongo', ac: 17, hp: 21, dexMod: 2, xp: 200, ai: 'goblin', multi: 2,
+    attacks: [
+      { name: 'Cimitarra', bonus: 4, dice: '1d6+2', type: 'cortante' },
+      { name: 'Arco corto', bonus: 4, dice: '1d6+2', type: 'perforante', ranged: true },
+    ],
+    saves: { ...goblinSaves, str: 0, cha: 0 },
+  },
+  'Stone Cobra': {
+    name: 'Guardián cobra de piedra', img: 'cobra_piedra', ac: 15, hp: 67, dexMod: 0, xp: 450, ai: 'beast', multi: 2, immune: ['veneno'], noSleep: true,
+    attacks: [{ name: 'Mordisco de piedra', bonus: 4, dice: '2d4+2', type: 'cortante' }], saves: { str: 2, dex: 0, con: 3, int: -2, wis: 0, cha: -2 },
+  },
+  Mummy: {
+    name: 'Momia', img: 'momia', ac: 11, hp: 58, dexMod: -1, xp: 700, ai: 'undead', noSleep: true, vuln: ['fuego'], immune: ['necrótico', 'veneno'],
+    attacks: [{ name: 'Puño putrefacto', bonus: 5, dice: '1d10+3', type: 'contundente', extra: { dice: '3d6', type: 'necrótico' } }],
+    saves: { str: 3, dex: -1, con: 2, int: -2, wis: 2, cha: 1 },
+  },
+  'Ochre Jelly': {
+    name: 'Cieno ocre', img: 'cieno_ocre', ac: 8, hp: 45, dexMod: -2, xp: 450, ai: 'beast', noSleep: true, resist: ['ácido'], immune: ['relámpago', 'cortante'],
+    attacks: [{ name: 'Seudópodo', bonus: 4, dice: '2d6+2', type: 'contundente', extra: { dice: '1d6', type: 'ácido' } }],
+    saves: { str: 2, dex: -2, con: 2, int: -4, wis: -2, cha: -5 },
+  },
+  'Black Pudding': {
+    name: 'Pudin negro', img: 'pudin_negro', ac: 7, hp: 68, dexMod: -3, xp: 1100, ai: 'beast', noSleep: true, immune: ['ácido', 'frío', 'relámpago', 'cortante'],
+    attacks: [{ name: 'Seudópodo disolvente', bonus: 5, dice: '1d6+3', type: 'contundente', extra: { dice: '4d8', type: 'ácido' } }],
+    saves: { str: 3, dex: -3, con: 3, int: -5, wis: -2, cha: -5 },
+  },
+  // Mirada petrificante: quien recibe el mordisco y falla la salvación de Constitución queda paralizado (convirtiéndose en piedra).
+  Basilisk: {
+    name: 'Basilisco', img: 'basilisco', ac: 15, hp: 52, dexMod: -1, xp: 700, ai: 'beast',
+    attacks: [{ name: 'Mordisco', bonus: 5, dice: '2d6+3', type: 'perforante', extra: { dice: '2d6', type: 'veneno' }, paralyze: { dc: 12 } }],
+    saves: { str: 3, dex: -1, con: 2, int: -4, wis: -1, cha: -2 },
+  },
+  Incubus: {
+    name: 'Baltoplat', img: 'baltoplat', ac: 15, hp: 66, dexMod: 3, xp: 1100, ai: 'cultist', multi: 2, resist: ['frío', 'fuego', 'veneno', 'psíquico'],
+    attacks: [{ name: 'Toque inquieto', bonus: 5, dice: '2d6+3', type: 'psíquico' }],
+    saves: { str: 0, dex: 3, con: 2, int: 2, wis: 1, cha: 5 },
+  },
+  // Jefe adaptado del mago del SRD (diseño de la aventura, no el bloque entero) para cuatro personajes de nivel 5.
+  Xiximanter: {
+    name: 'Xiximanter', img: 'xiximanter', ac: 15, hp: 81, dexMod: 2, xp: 0, ai: 'caster', multi: 3, shieldSlots: 2, noSleep: true, resist: ['veneno'],
+    attacks: [
+      { name: 'Bola de fuego', bonus: 0, dice: '8d6', type: 'fuego', save: { abil: 'dex', dc: 15, half: true, area: true, recharge: 5 } },
+      { name: 'Descarga arcana', bonus: 6, dice: '2d8+3', type: 'fuerza', ranged: true },
+      { name: 'Rayo de veneno', bonus: 6, dice: '2d10', type: 'veneno', ranged: true },
+      { name: 'Bastón', bonus: 4, dice: '1d6+1', type: 'contundente' },
+    ],
+    saves: { str: -1, dex: 2, con: 1, int: 6, wis: 4, cha: 1 },
   },
 } satisfies Record<string, MonsterDef>);
 

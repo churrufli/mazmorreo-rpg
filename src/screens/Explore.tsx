@@ -70,6 +70,7 @@ const PROP: Record<string, ImgKey> = {
   bone_pile: 'monton_huesos', dragon_hoard: 'tesoro_dragon',
   lectern: 'atril_libro', barrels: 'barriles_cajas', milestone: 'hito_piedra', gravestone: 'lapida', desk: 'mesa_papeles',
   walkway: 'pasarela', pedestal: 'pedestal', root_arch: 'raiz_arqueada', ore_sacks: 'sacos_mineral', cell_bars: 'celda_reja',
+  serpent_statue: 'estatua_dios_serpiente', serpent_sarcophagus: 'sarcofago_serpiente', flame_pit: 'pozo_llama', barnacles: 'percebes',
 };
 
 /** Decorados planos del suelo, que se recortan como la casilla. */
@@ -716,7 +717,7 @@ function MapInfo({ g, onClose }: { g: ReturnType<typeof useStore.getState>['game
     ['Nivel', levelName(g.zone)],
     ['Zona', zoneById(g.zone).name],
     ['Salas exploradas', `${p.seen} de ${p.total}`],
-    ...(p.key !== 'none' ? [[KEY_ITEM(g.zone) === 'zone_key' ? 'Llave' : 'Amuleto', p.key === 'got' ? 'Encontrada' : 'Sin encontrar'] as [string, string]] : []),
+    ...(p.key !== 'none' ? [[KEY_ITEM(g.zone) === 'bark_amulet' ? 'Amuleto' : 'Llave', p.key === 'got' ? 'Encontrada' : 'Sin encontrar'] as [string, string]] : []),
     ['Enemigos vencidos', `${s.kills}`],
     ['Experiencia', `${s.xp} PX`],
     ['Oro conseguido', `${s.gold} po`],

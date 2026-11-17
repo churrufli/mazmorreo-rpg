@@ -1317,8 +1317,13 @@ export function enemyTurn(g: Game, cb: Combat) {
     // Maltrecho (la mitad de sus PG o menos): algunos monstruos hacen menos daño (SRD 5.2.1).
     const hit = attack(g, cb, u, t, toOpts(a.bloodied && u.hp <= u.maxHp / 2 ? { ...a, dice: a.bloodied } : a));
     if (hit && a.paralyze && conscious(t) && !t.paralyzed && !saveRoll(g, cb, t, 'con', a.paralyze.dc, 'Constitución')) {
-      t.paralyzed = true;
-      say(cb, `${t.name} queda paralizado.`, 'big');
+      // Basilisco: con el espejo de acero se le mira por el reflejo y la salvación se repite.
+      const mirror = u.mon === 'Basilisk' && t.side === 'party' && charOf(g, t).items.some(i => i.id === 'steel_mirror');
+      if (mirror) say(cb, `${t.name} aparta la vista y mira al basilisco en el espejo de acero.`, 'info');
+      if (!mirror || !saveRoll(g, cb, t, 'con', a.paralyze.dc, 'Constitución')) {
+        t.paralyzed = true;
+        say(cb, u.mon === 'Basilisk' ? `${t.name} empieza a volverse de piedra y queda paralizado.` : `${t.name} queda paralizado.`, 'big');
+      }
     }
     if (checkEnd(g, cb)) return;
   }

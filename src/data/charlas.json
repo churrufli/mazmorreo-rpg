@@ -706,5 +706,241 @@
    ]
   ],
   "insp": "Ningún camino seguro debe ser una condena."
+ },
+ "zeyna": {
+  "talks": [
+   [
+    {
+     "speaker": "zeyna",
+     "text": "Mi abuela saqueaba tumbas. Mi madre también. Yo pensaba ser la primera que no lo hiciera."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Qué pasó?"
+    },
+    {
+     "speaker": "zeyna",
+     "text": "Que en Arenaroja no hay otro oficio que pague el agua."
+    },
+    {
+     "speaker": "zeyna",
+     "text": "Al menos ahora saco de las tumbas a gente viva."
+    }
+   ],
+   [
+    {
+     "speaker": "zeyna",
+     "text": "En la sala de las estatuas estuve a punto de dejaros pasar delante. Por si había trampas."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Y por qué no lo hiciste?"
+    },
+    {
+     "speaker": "zeyna",
+     "text": "Porque me disteis la mitad del botín sin que os lo pidiera."
+    },
+    {
+     "speaker": "zeyna",
+     "text": "No estoy acostumbrada. Me desarmó."
+    }
+   ],
+   [
+    {
+     "speaker": "zeyna",
+     "text": "He vendido el anillo del colmillo tres veces en sueños. Siempre vuelve a mi mano."
+    },
+    {
+     "speaker": "hero",
+     "text": "Son solo sueños."
+    },
+    {
+     "speaker": "zeyna",
+     "text": "Eso decía la gente de Arenaroja antes de que la voz empezara a sisear."
+    },
+    {
+     "speaker": "zeyna",
+     "text": "Ya no tengo miedo de esos sueños. Os tengo a vosotros."
+    }
+   ]
+  ],
+  "insp": "Las trampas avisan a quien sabe escuchar."
+ },
+ "hassim": {
+  "talks": [
+   [
+    {
+     "speaker": "hassim",
+     "text": "Juré proteger las caravanas del desierto. Fallé con la que llevaba a mi hermano."
+    },
+    {
+     "speaker": "hero",
+     "text": "No fue culpa tuya."
+    },
+    {
+     "speaker": "hassim",
+     "text": "Un juramento no pregunta de quién es la culpa."
+    },
+    {
+     "speaker": "hassim",
+     "text": "Solo pregunta qué vas a hacer ahora."
+    }
+   ],
+   [
+    {
+     "speaker": "hassim",
+     "text": "Rashid siempre fue el listo de los dos. Yo era el que cargaba los fardos."
+    },
+    {
+     "speaker": "hero",
+     "text": "Ahora lo has cargado a él."
+    },
+    {
+     "speaker": "hassim",
+     "text": "Y pesaba menos que el miedo de no encontrarlo."
+    },
+    {
+     "speaker": "hassim",
+     "text": "Gracias por no dejar que me rindiera."
+    }
+   ],
+   [
+    {
+     "speaker": "hassim",
+     "text": "En las jaulas había gente de otros pueblos. Nadie había ido a buscarlos."
+    },
+    {
+     "speaker": "hero",
+     "text": "Ahora están en casa."
+    },
+    {
+     "speaker": "hassim",
+     "text": "Quiero que mi juramento sirva también para ellos."
+    },
+    {
+     "speaker": "hassim",
+     "text": "Para los que nadie busca."
+    }
+   ]
+  ],
+  "insp": "Mi escudo es de todos los que caminan por el desierto."
+ },
+ "yara": {
+  "talks": [
+   [
+    {
+     "speaker": "yara",
+     "text": "Cuido el pozo de Arenaroja desde que era niña. Mi maestra me dijo que el agua guarda memoria."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Y qué recuerda?"
+    },
+    {
+     "speaker": "yara",
+     "text": "A todos los que bebieron de él. También a los que se llevaron."
+    },
+    {
+     "speaker": "yara",
+     "text": "Por eso bajé a buscarlos."
+    }
+   ],
+   [
+    {
+     "speaker": "yara",
+     "text": "En la celda pensé que moriría allí. Mantuve la llama encendida para no olvidar quién era."
+    },
+    {
+     "speaker": "hero",
+     "text": "La llama te trajo hasta nosotros."
+    },
+    {
+     "speaker": "yara",
+     "text": "O vosotros hasta ella."
+    },
+    {
+     "speaker": "yara",
+     "text": "A mi edad, ya no distingo bien una cosa de la otra."
+    }
+   ],
+   [
+    {
+     "speaker": "yara",
+     "text": "Xiximanter pidió no morir nunca. Le concedieron el deseo y le quitaron todo lo demás."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Te da pena?"
+    },
+    {
+     "speaker": "yara",
+     "text": "Me da miedo lo fácil que es pedir algo así."
+    },
+    {
+     "speaker": "yara",
+     "text": "Vivir bien es mejor que vivir siempre."
+    }
+   ]
+  ],
+  "insp": "El agua del pozo recuerda a quien la defiende."
+ },
+ "teodor": {
+  "talks": [
+   [
+    {
+     "speaker": "teodor",
+     "text": "Aprendí la lengua de los hombres serpiente en tablillas robadas. Nadie más en la región sabía leerlas."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Para qué querías aprenderla?"
+    },
+    {
+     "speaker": "teodor",
+     "text": "Para entender por qué un imperio entero desapareció."
+    },
+    {
+     "speaker": "teodor",
+     "text": "Ahora sé que se ahogó en su propia crueldad."
+    }
+   ],
+   [
+    {
+     "speaker": "teodor",
+     "text": "Soñaba con la voz cada noche. Creí que me estaba volviendo loco."
+    },
+    {
+     "speaker": "hero",
+     "text": "No lo estabas."
+    },
+    {
+     "speaker": "teodor",
+     "text": "Lo sé. Pero tampoco estaba solo, y eso me asustó más."
+    },
+    {
+     "speaker": "teodor",
+     "text": "Ahora duermo de un tirón. Gracias."
+    }
+   ],
+   [
+    {
+     "speaker": "teodor",
+     "text": "Me llevé una tablilla de la biblioteca de barro. Cuenta cómo cayeron los reyes."
+    },
+    {
+     "speaker": "hero",
+     "text": "¿Y cómo cayeron?"
+    },
+    {
+     "speaker": "teodor",
+     "text": "Sus esclavos aprendieron a leer."
+    },
+    {
+     "speaker": "teodor",
+     "text": "Me gusta pensar que algo de eso hemos hecho nosotros."
+    }
+   ]
+  ],
+  "insp": "Lo que está escrito se puede leer, y lo que se lee se puede vencer."
  }
 }

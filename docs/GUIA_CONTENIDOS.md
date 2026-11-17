@@ -1,6 +1,6 @@
 # Guía de mantenimiento de contenido y narrativa
 
-Estas convenciones describen el comportamiento actual de Mazmorreo y los criterios de las últimas revisiones. Aplicarlas a las tres aventuras y a futuras ampliaciones.
+Estas convenciones describen el comportamiento actual de Mazmorreo y los criterios de las últimas revisiones. Aplicarlas a las cuatro aventuras y a futuras ampliaciones.
 
 ## 1. Historia independiente del decorado del mapa
 
@@ -28,6 +28,7 @@ Una escena interactiva **sí** puede presentar una trampa, un objeto o un mecani
 | Las profundidades de Hondaroca | `src/data/hondaroca.json` | `z1`–`z4` |
 | El Corazón Hueco | `src/data/corazon.json` | `b1`–`b4` |
 | El Invierno del Dragón | `src/data/montana.json` | `m1`–`m4` |
+| La Tumba de los Reyes Serpiente | `src/data/tumba.json` | `s1`–`s4` |
 
 El registro de aventuras, jefes, aliados y pueblos está en `src/engine/aventuras.ts`. Las conversaciones de afinidad están en `src/data/charlas.json`. Los textos de ayuda y novedades se mantienen en `src/data/ayuda.ts`.
 

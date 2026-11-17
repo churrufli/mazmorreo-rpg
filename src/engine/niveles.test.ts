@@ -22,6 +22,7 @@ run('niveles', () => {
     ['hondaroca', 'z1', Number(process.env.XP1 ?? 0), () => undefined],
     ['corazon', 'b1', Number(process.env.XP2 ?? 300), c => ESC[c]],
     ['montana', 'm1', Number(process.env.XP3 ?? 900), () => 'maren'],
+    ['tumba', 's1', Number(process.env.XP4 ?? 2700), () => 'vurka'],
   ];
   for (const [name, start, xp, esc] of cfg) {
     if (process.env.ONLY && !process.env.ONLY.includes(name)) continue;

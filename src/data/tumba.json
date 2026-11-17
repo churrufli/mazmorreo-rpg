@@ -1,0 +1,3669 @@
+{
+  "dungeon": {
+    "id": "tumba_reyes_serpiente",
+    "name": "La Tumba de los Reyes Serpiente",
+    "summary": "Una tormenta de arena y un desprendimiento abren una grieta en la colina del Cobra, junto a Arenaroja. Desde esa luna desaparecen pastores y caravaneros, y los que se quedan sueñan con una voz que sisea. Bajo la colina duerme la tumba de un imperio de hombres serpiente. Y en su fondo, algo no ha dejado de trabajar."
+  },
+  "credits": "Basada en Tomb of the Serpent Kings, de Skerples (Coins and Scrolls), CC BY-NC-SA. Adaptada a Mazmorreo.",
+  "zones": [
+    {
+      "id": "s1",
+      "order": 1,
+      "name": "La tumba falsa",
+      "description": "Pasillos de arenisca, polvo antiguo y la luz del día que se cuela por la grieta del desprendimiento.",
+      "expected_party_level": 4,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "La tormenta de arena ha abierto una grieta en la colina del Cobra. Por ella se baja a una tumba que nadie recordaba."
+        },
+        {
+          "speaker": "hero",
+          "text": "Si los desaparecidos de Arenaroja están ahí abajo, los sacaremos."
+        },
+        {
+          "speaker": "narrator",
+          "text": "El aire huele a polvo y a especias rancias. Las paredes están cubiertas de serpientes talladas."
+        }
+      ],
+      "pending": [
+        {
+          "id": "s1_j01",
+          "from": "s1_r03",
+          "until": "s1_r08",
+          "text": "Las estatuas eran huecas. Alguien construyó esta tumba para engañar."
+        },
+        {
+          "id": "s1_j02",
+          "from": "s1_r05",
+          "until": "s1_s01",
+          "text": "Una corriente de aire sale de detrás de los nichos del hechicero."
+        }
+      ],
+      "c_gold": true,
+      "rooms": [
+        {
+          "id": "s1_r01",
+          "name": "Boca del desprendimiento",
+          "description": "La arena entra a chorros por la grieta y se amontona sobre escalones tallados.",
+          "kind": "corridor",
+          "size_hexes": 7,
+          "shape": "corridor",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "s1_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "rubble",
+              "count": 2
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Huellas de pies descalzos y pequeños bajan por la arena. Huellas de botas, arrastradas, las acompañan."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Se llevaron a alguien por aquí. No hace mucho."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d02_vurka",
+              "lines": [
+                {
+                  "speaker": "vurka",
+                  "text": "Huele a carne seca y a algo dulce. No me gusta ninguno de los dos olores."
+                }
+              ],
+              "only": "vurka"
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d02_durnok",
+              "lines": [
+                {
+                  "speaker": "durnok",
+                  "text": "Buena piedra, mal trabajada a propósito. Quien hizo esto quería que pareciera vieja y pobre."
+                }
+              ],
+              "only": "durnok"
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d02_syrael",
+              "lines": [
+                {
+                  "speaker": "syrael",
+                  "text": "Siento magia muy antigua debajo de nosotros. Esta tumba es solo la tapa."
+                }
+              ],
+              "only": "syrael"
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d02_aldric",
+              "lines": [
+                {
+                  "speaker": "aldric",
+                  "text": "Las huellas pequeñas no son de niños. Tienen un dedo de menos."
+                }
+              ],
+              "only": "aldric"
+            }
+          ]
+        },
+        {
+          "id": "s1_r02",
+          "name": "Pasillo de los guardianes",
+          "description": "Nichos con figuras de arcilla vigilan el paso. Algunas ya no están en su sitio.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "s1_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Guardián de hueso",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Zombie",
+                      "name": "Guardián reseco"
+                    }
+                  ]
+                }
+              ],
+              "gold_drop": 3,
+              "xp_total": 100
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d03",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Bajo la arcilla rota asoman huesos. Los guardianes no eran estatuas."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Quien enterró aquí a estos soldados no quería que descansaran."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s1_r03",
+          "name": "Galería de las estatuas huecas",
+          "description": "Seis estatuas de hombres serpiente sostienen vasijas vacías.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_statue",
+              "count": 2
+            },
+            {
+              "type": "trap",
+              "id": "s1_t01",
+              "name": "Estatua de gas",
+              "description": "Un silbido sale de la boca de una estatua…",
+              "detect_dc": 13,
+              "disarm_dc": 13,
+              "save_ability": "CON",
+              "save_dc": 13,
+              "effect": "2d6 veneno: un gas amarillo sale de la estatua hueca."
+            },
+            {
+              "type": "scene",
+              "id": "s1_p01",
+              "title": "Las vasijas selladas",
+              "text": "Una de las estatuas aún sostiene una vasija con el sello intacto. Su boca de piedra está agujereada.",
+              "question": "¿Cómo cogéis la vasija?",
+              "options": [
+                {
+                  "label": "Contener la respiración y cogerla",
+                  "attr": "con",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Os aguantáis el aire mientras el gas sale. Dentro de la vasija hay monedas antiguas.",
+                    "gold": 8
+                  },
+                  "fail": {
+                    "text": "El gas os alcanza y os quema la garganta.",
+                    "damage": "1d6"
+                  }
+                },
+                {
+                  "label": "Tapar los agujeros antes",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Tapáis la boca de la estatua con tela mojada. La vasija se abre sin peligro.",
+                    "gold": 8
+                  },
+                  "fail": {
+                    "text": "No dais con todos los agujeros y el gas os hace toser."
+                  }
+                },
+                {
+                  "label": "Dejarla donde está",
+                  "ok": {
+                    "text": "Seguís adelante. La estatua sigue silbando a vuestra espalda."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s1_r04",
+          "name": "Cámara de los murciélagos",
+          "description": "El techo está negro de alas. El suelo cruje de guano seco.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "bone_pile",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s1_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Swarm of Bats",
+                  "name": "Enjambre de murciélagos",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Giant Bat",
+                      "name": "Murciélago gigante"
+                    }
+                  ]
+                }
+              ],
+              "gold_drop": 2,
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "s1_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 4,
+              "item": {
+                "id": "potion_healing"
+              }
+            }
+          ]
+        },
+        {
+          "id": "s1_r05",
+          "name": "Tumba del hechicero",
+          "description": "Un sarcófago abierto y un cuerpo vestido de seda. En su mano brilla un anillo con un colmillo.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_sarcophagus",
+              "count": 1
+            },
+            {
+              "type": "rest_point",
+              "id": "s1_rest1",
+              "rest": "short",
+              "name": "Nicho de los peregrinos",
+              "description": "Punto seguro; permite volver a Arenaroja porque es el último descanso de la zona."
+            },
+            {
+              "type": "scene",
+              "id": "s1_q01",
+              "title": "El anillo del colmillo",
+              "decision": true,
+              "text": "El hechicero lleva un anillo de oro con un colmillo de serpiente engarzado. La punta está húmeda.",
+              "question": "¿Qué hacéis con el anillo?",
+              "options": [
+                {
+                  "label": "Arrancarlo de un tirón",
+                  "ok": {
+                    "text": "El colmillo os muerde al sacarlo, pero el anillo es vuestro.",
+                    "item": "fang_ring",
+                    "damage": "1d6"
+                  }
+                },
+                {
+                  "label": "Sacarlo con cuidado",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Giráis el anillo sin rozar el colmillo. Sale limpio.",
+                    "item": "fang_ring"
+                  },
+                  "fail": {
+                    "text": "El colmillo os pincha. Soltáis el anillo y cae dentro del sarcófago.",
+                    "damage": "1d6"
+                  }
+                },
+                {
+                  "label": "Dejarlo en su dedo",
+                  "ok": {
+                    "text": "Algunas joyas es mejor no tocarlas. El hechicero sigue con su anillo."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "secret",
+              "id": "s1_s01",
+              "detect_dc": 13,
+              "reveals": "exit:s1_s01_r01",
+              "description": "Detrás de los nichos se abre una cámara que no sale en ningún plano."
+            },
+            {
+              "type": "scene",
+              "id": "s1_s01_pista",
+              "title": "El aire de los nichos",
+              "reveals": "s1_s01",
+              "text": "Una corriente fría sale de entre dos nichos. El polvo del suelo dibuja una media luna, como si algo girara ahí.",
+              "question": "¿Cómo lo investigáis?",
+              "options": [
+                {
+                  "label": "Seguir la corriente",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Encontráis la piedra que gira. Detrás hay una cámara.",
+                    "reveal": "s1_s01"
+                  },
+                  "fail": {
+                    "text": "La corriente se pierde entre las grietas."
+                  }
+                },
+                {
+                  "label": "Buscar el mecanismo",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Un nicho tiene la piedra más gastada. Al empujarla, la pared cede.",
+                    "reveal": "s1_s01"
+                  },
+                  "fail": {
+                    "text": "Todas las piedras os parecen iguales."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s1_r06",
+          "name": "Puerta atrancada",
+          "description": "Una puerta de bronce con una tranca de madera. Sobre ella cuelga un martillo de piedra enorme.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "rubble",
+              "count": 1
+            },
+            {
+              "type": "scene",
+              "id": "s1_p02",
+              "title": "La trampa del martillo",
+              "text": "La tranca está unida a una cuerda que sube hasta el martillo. Al levantarla, caerá.",
+              "question": "¿Cómo pasáis?",
+              "options": [
+                {
+                  "label": "Alzar la tranca de golpe y apartarse",
+                  "attr": "str",
+                  "dc": 13,
+                  "ok": {
+                    "text": "La tranca salta y el martillo pasa rozando. Detrás hay un cofrecillo olvidado.",
+                    "gold": 10
+                  },
+                  "fail": {
+                    "text": "El martillo os golpea de lleno.",
+                    "damage": "2d6"
+                  }
+                },
+                {
+                  "label": "Esquivar el martillo",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Os lanzáis a un lado cuando cae. El cofrecillo de detrás es vuestro.",
+                    "gold": 10
+                  },
+                  "fail": {
+                    "text": "No sois lo bastante rápidos.",
+                    "damage": "2d6"
+                  }
+                },
+                {
+                  "label": "Cortar la cuerda antes",
+                  "attr": "int",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Subís por la pared y cortáis la cuerda. El martillo cae sin nadie debajo.",
+                    "gold": 10
+                  },
+                  "fail": {
+                    "text": "Tocáis la cuerda equivocada y el martillo se descuelga solo.",
+                    "damage": "1d6"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s1_r07",
+          "name": "Sala del falso rey",
+          "description": "Un trono de piedra y tres sarcófagos. Un rey con corona de latón espera sentado.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r08",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_sarcophagus",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s1_e03",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Falso rey",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Esposa del falso rey",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 12,
+              "xp_total": 100,
+              "omen": "Detrás de la puerta suena un roce de huesos contra la piedra. Algo se levanta de un trono."
+            },
+            {
+              "type": "chest",
+              "id": "s1_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 15,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d04",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "La corona del rey es latón pintado. Las joyas son vidrio."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Una tumba falsa con un rey falso. Lo de verdad tiene que estar más abajo."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s1_r08",
+          "name": "Templo falso",
+          "description": "Una estatua del dios serpiente preside un templo inundado a medias. El agua ha bajado y deja ver una losa suelta.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r01",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_statue",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 1
+            },
+            {
+              "type": "scene",
+              "id": "s1_q02",
+              "title": "El paso bajo el dios serpiente",
+              "img": "escena_templo_falso",
+              "text": "El agua se ha retirado y bajo la estatua asoma un pasadizo. Sale aire caliente y un olor a aceite.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Bajar por el pasadizo",
+                  "ok": {
+                    "text": "Os deslizáis bajo la estatua. Aquí empieza la tumba de verdad."
+                  }
+                },
+                {
+                  "label": "Examinar la estatua antes",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "En la base hay grabadas cuatro coronas y una serpiente con alas. Guardáis el dibujo en la memoria.",
+                    "flag": "s1_coronas"
+                  },
+                  "fail": {
+                    "text": "Los grabados están demasiado gastados."
+                  }
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Bajo la estatua, el pasadizo desciende hacia la oscuridad."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Lo de arriba era un decorado. Vamos a ver qué escondían."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s1_r09",
+          "name": "Pozo de las ofrendas",
+          "description": "Un pozo seco lleno de vasijas rotas y huesos pequeños.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "s1_e04",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Giant Spider",
+                  "name": "Araña del pozo",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 200
+            },
+            {
+              "type": "scene",
+              "id": "s1_p03",
+              "title": "La bolsa del fondo",
+              "text": "En el fondo del pozo hay una bolsa de cuero entre telarañas. Algo grande se mueve más abajo.",
+              "question": "¿Cómo la recuperáis?",
+              "options": [
+                {
+                  "label": "Bajar deprisa con la cuerda",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Bajáis, cogéis la bolsa y subís antes de que nada despierte.",
+                    "gold": 12,
+                    "item": "antidote"
+                  },
+                  "fail": {
+                    "text": "Una araña enorme sale de las sombras.",
+                    "fight": "s1_e04"
+                  }
+                },
+                {
+                  "label": "Engancharla desde arriba",
+                  "attr": "wis",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Con paciencia, subís la bolsa con un gancho improvisado.",
+                    "gold": 12,
+                    "item": "antidote"
+                  },
+                  "fail": {
+                    "text": "La bolsa cae más hondo. No vale la pena bajar."
+                  }
+                },
+                {
+                  "label": "Dejarla allí",
+                  "ok": {
+                    "text": "Os alejáis del pozo."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s1_r10",
+          "name": "Osario de los obreros",
+          "description": "Huesos amontonados con cuidado. Junto a ellos, herramientas de cantero.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "bone_pile",
+              "count": 2
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En la pared, alguien rayó una frase con un cincel: «Nos hicieron cavar dos tumbas. Una para mentir, otra para dormir»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Los obreros sabían el secreto. Por eso están aquí."
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "s1_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 8,
+              "item": {
+                "id": "crowbar"
+              }
+            }
+          ]
+        },
+        {
+          "id": "s1_r11",
+          "name": "Despensa del ritual",
+          "description": "Tinajas de aceite y sacos de especias podridas.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 2
+            },
+            {
+              "type": "chest",
+              "id": "s1_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 6,
+              "item": {
+                "id": "alchemists_fire"
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "s1_d07",
+              "lines": [
+                {
+                  "speaker": "hero",
+                  "text": "Aceite de lámpara. Esto arde bien."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Las tinajas tienen pintada una llama sobre una serpiente."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s1_s01_r01",
+          "name": "Cámara del arquitecto",
+          "description": "Planos en tablillas de barro y un esqueleto con el cincel aún en la mano.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s1_r05",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "s1_d08",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Las tablillas muestran la tumba entera: arriba la falsa, abajo la de los reyes, y al fondo un pozo que no tiene final."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Y alguien sigue viviendo en ese fondo."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "s1_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Skeleton",
+                  "name": "Arquitecto sin descanso",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Swarm of Bats",
+                  "name": "Enjambre de murciélagos",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "s1_c05",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 20,
+              "item": {
+                "id": "spell_scroll_shield"
+              }
+            },
+            {
+              "type": "prop",
+              "prop": "lectern",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "order": 2,
+      "name": "La tumba superior",
+      "description": "Mármol verde, estatuas de reyes serpiente y un estanque de agua aceitosa que no refleja nada.",
+      "expected_party_level": 4,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "El pasadizo desemboca en salas de mármol verde. Aquí nada es de latón ni de vidrio."
+        },
+        {
+          "speaker": "hero",
+          "text": "Esta es la tumba de los reyes serpiente. Cuidado con lo que toquéis."
+        }
+      ],
+      "pending": [
+        {
+          "id": "s2_j01",
+          "from": "s2_r03",
+          "until": "s2_r07",
+          "text": "Los sacerdotes escribían nombres en las paredes. Algún nombre puede servir más adelante."
+        },
+        {
+          "id": "s2_j02",
+          "from": "s2_r06",
+          "until": "s2_r10",
+          "text": "Uno de los reyes no descansa en su sarcófago, sino en un ataúd sellado con plomo."
+        }
+      ],
+      "c_gold": true,
+      "rooms": [
+        {
+          "id": "s2_r01",
+          "name": "Rellano de mármol",
+          "description": "Una escalera ancha baja hasta una sala de mármol verde.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "corridor",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "s2_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s1_r08",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 2
+            },
+            {
+              "type": "rest_point",
+              "id": "s2_rest1",
+              "rest": "short",
+              "name": "Rellano de mármol",
+              "description": "Primer descanso de la tumba de los reyes; desde aquí se permite volver al pueblo."
+            },
+            {
+              "type": "dialogue",
+              "id": "s2_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Sobre la escalera, un relieve muestra a un rey serpiente recibiendo tributo de hombres arrodillados."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Aquí reinaban sobre nosotros. Hace siglos."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s2_r02",
+          "name": "Sala de las estatuas",
+          "description": "Doce estatuas de reyes en fila. Una de ellas no mira al mismo lado que las demás.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "cross",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_statue",
+              "count": 2
+            },
+            {
+              "type": "ally",
+              "slot_zone": 2,
+              "default_ally": "zeyna",
+              "default_scene": [
+                {
+                  "speaker": "zeyna",
+                  "text": "Llevo tres días aquí abajo. La estatua torcida esconde algo, pero sola no podía moverla."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ven con nosotros. Necesitamos a alguien que sepa ver las trampas."
+                },
+                {
+                  "speaker": "zeyna",
+                  "text": "Trato hecho. Y lo que encontremos, a partes iguales."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "teodor",
+                  "text": "He seguido a la voz de mis sueños hasta aquí. Puedo leer lo que dicen estas paredes."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Entonces ven. Nos hará falta."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "s2_q01",
+              "title": "La estatua descolocada",
+              "text": "Una de las estatuas está girada hacia la pared. A sus pies, el suelo tiene marcas de arrastre.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Girarla a su sitio",
+                  "attr": "str",
+                  "dc": 13,
+                  "ok": {
+                    "text": "La estatua gira con un chasquido y se abre un hueco con un cofre.",
+                    "reveal": "s2_s02"
+                  },
+                  "fail": {
+                    "text": "La estatua no se mueve."
+                  }
+                },
+                {
+                  "label": "Buscar el mecanismo",
+                  "attr": "int",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Un resorte en el zócalo libera el giro. Se abre un hueco con un cofre.",
+                    "reveal": "s2_s02"
+                  },
+                  "fail": {
+                    "text": "No veis cómo funciona."
+                  }
+                },
+                {
+                  "label": "Dejad que Zeyna mire",
+                  "ally": "zeyna",
+                  "ok": {
+                    "text": "Zeyna sonríe, toca dos escamas del zócalo y la estatua gira sola.",
+                    "reveal": "s2_s02"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "secret",
+              "id": "s2_s02",
+              "detect_dc": 16,
+              "reveals": "chest:s2_c01",
+              "description": "Detrás de la estatua giratoria hay un hueco con un cofre."
+            },
+            {
+              "type": "chest",
+              "id": "s2_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 18,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "s2_r03",
+          "name": "Escalera de la rampa",
+          "description": "Una escalera estrecha baja entre dos muros pulidos.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "trap",
+              "id": "s2_t01",
+              "name": "Escalera trampa",
+              "description": "Los peldaños se hunden de golpe…",
+              "detect_dc": 14,
+              "disarm_dc": 13,
+              "save_ability": "DEX",
+              "save_dc": 13,
+              "effect": "2d8 contundente: la escalera se convierte en una rampa y os deja caer."
+            },
+            {
+              "type": "dialogue",
+              "id": "s2_d02",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En las paredes hay nombres escritos en una lengua de curvas. Alguien los tachó con furia."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Nombres prohibidos. Los sacerdotes sabían algo que no querían que se repitiera."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s2_r04",
+          "name": "Atrio del estanque",
+          "description": "Un estanque cuadrado de agua negra y aceitosa. No refleja la luz.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "water",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "s2_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Zombie",
+                  "name": "Ahogado del estanque",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false,
+                  "alt": [
+                    {
+                      "srd_creature": "Ghoul",
+                      "name": "Necrófago del estanque"
+                    }
+                  ]
+                }
+              ],
+              "gold_drop": 4,
+              "xp_total": 100
+            },
+            {
+              "type": "scene",
+              "id": "s2_p01",
+              "title": "El agua aceitosa",
+              "text": "En el fondo del estanque brilla algo dorado. El agua huele a vendas y a resina.",
+              "question": "¿Cómo lo sacáis?",
+              "options": [
+                {
+                  "label": "Meter el brazo",
+                  "ok": {
+                    "text": "El agua está tibia. Sacáis un brazalete de oro, pero la piel se os llena de manchas grises.",
+                    "gold": 20,
+                    "damage": "1d8"
+                  }
+                },
+                {
+                  "label": "Pescarlo con una vara",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Con paciencia, el brazalete sube enganchado. No tocáis el agua.",
+                    "gold": 20
+                  },
+                  "fail": {
+                    "text": "El brazalete resbala y se hunde."
+                  }
+                },
+                {
+                  "label": "No tocar el agua",
+                  "ok": {
+                    "text": "Algunas cosas brillan para atraer a los incautos."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s2_r05",
+          "name": "Tumba de Xisor el Verde",
+          "description": "Un sarcófago de jade con una placa de bronce encima.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_sarcophagus",
+              "count": 1
+            },
+            {
+              "type": "trap",
+              "id": "s2_t02",
+              "name": "Placa del rayo",
+              "description": "La placa de bronce chisporrotea…",
+              "detect_dc": 14,
+              "disarm_dc": 14,
+              "save_ability": "DEX",
+              "save_dc": 13,
+              "effect": "3d6 relámpago: la placa dispara un rayo verde."
+            },
+            {
+              "type": "chest",
+              "id": "s2_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 25,
+              "item": {
+                "id": "potion_healing"
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "s2_d03",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "La placa dice que Xisor el Verde murió «sin dejar hijos, sin dejar deudas y sin dejar a nadie con vida»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Un buen rey para su tiempo, imagino."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s2_r06",
+          "name": "Cripta de Sparamuntar",
+          "description": "Un derrumbe ha aplastado medio techo. Bajo las piedras, un sarcófago se mueve.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r07",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "rubble",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "s2_e02",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Mummy",
+                  "name": "Sparamuntar",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 15,
+              "xp_total": 700
+            },
+            {
+              "type": "scene",
+              "id": "s2_q02",
+              "title": "Sparamuntar bajo las piedras",
+              "decision": true,
+              "img": "escena_sparamuntar",
+              "text": "Una mano vendada golpea desde dentro del sarcófago aplastado. Una voz ronca pide que lo liberéis.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Liberarlo",
+                  "ok": {
+                    "text": "Apartáis las piedras. Sparamuntar se alza y no da las gracias.",
+                    "fight": "s2_e02"
+                  }
+                },
+                {
+                  "label": "Quemar el sarcófago",
+                  "needs": "alchemists_fire",
+                  "ok": {
+                    "text": "El fuego prende en las vendas secas. El rey no volverá a levantarse.",
+                    "lose": "alchemists_fire",
+                    "remove": "s2_e02",
+                    "gold": 10
+                  }
+                },
+                {
+                  "label": "Prender las vendas con una antorcha",
+                  "needs": "torch",
+                  "ok": {
+                    "text": "La antorcha basta: las vendas viejas arden enseguida.",
+                    "lose": "torch",
+                    "remove": "s2_e02",
+                    "gold": 10
+                  }
+                },
+                {
+                  "label": "Dejarlo atrapado",
+                  "ok": {
+                    "text": "Sparamuntar sigue golpeando. Os alejáis antes de que las piedras cedan."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s2_r07",
+          "name": "Cuarto del sacerdote",
+          "description": "Una celda austera con un catre de piedra y tablillas apiladas.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r08",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "lectern",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            },
+            {
+              "type": "scene",
+              "id": "s2_p02",
+              "title": "Las tablillas del sacerdote",
+              "text": "Una tablilla habla de una criatura que los reyes ataron en la sala de invocación. Su nombre está escrito a medias.",
+              "question": "¿Cómo descifráis el nombre?",
+              "options": [
+                {
+                  "label": "Leer la escritura antigua",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Las curvas forman un nombre: Baltoplat. Con él se le puede ordenar algo, una vez.",
+                    "flag": "s2_nombre"
+                  },
+                  "fail": {
+                    "text": "La tablilla está demasiado rota."
+                  }
+                },
+                {
+                  "label": "Buscar otras copias",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Otra tablilla repite el nombre entero: Baltoplat.",
+                    "flag": "s2_nombre"
+                  },
+                  "fail": {
+                    "text": "No encontráis más copias."
+                  }
+                },
+                {
+                  "label": "Dejad que Teodor lo lea",
+                  "ally": "teodor",
+                  "ok": {
+                    "text": "Teodor lee en voz baja: «Baltoplat». Se le eriza la piel.",
+                    "flag": "s2_nombre"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "rest_point",
+              "id": "s2_rest2",
+              "rest": "short",
+              "name": "Celda del sacerdote",
+              "description": "Último descanso antes de la arena de los escudos."
+            }
+          ]
+        },
+        {
+          "id": "s2_r08",
+          "name": "Arena de los escudos",
+          "description": "Un círculo de arena rodeado de escudos de bronce. En el centro, una cobra de piedra enroscada.",
+          "kind": "room",
+          "size_hexes": 12,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r01",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "s2_e04",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Stone Cobra",
+                  "name": "Guardián cobra de piedra",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 20,
+              "xp_total": 450,
+              "omen": "Un roce de piedra contra piedra recorre la arena. Algo enorme se desenrosca en el centro."
+            },
+            {
+              "type": "chest",
+              "id": "s2_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 20,
+              "item": {
+                "id": "cloak_protection"
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "s2_d04",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "La cobra de piedra se queda quieta, rota en pedazos. Al fondo, una escalera baja hacia un calor seco."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Más abajo. Siempre más abajo."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s2_r09",
+          "name": "Galería de los tributos",
+          "description": "Relieves de pueblos enteros llevando cestas a los reyes serpiente.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "encounter",
+              "id": "s2_e05",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Ochre Jelly",
+                  "name": "Cieno ocre",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 450
+            },
+            {
+              "type": "scene",
+              "id": "s2_p03",
+              "title": "Las cestas de oro",
+              "text": "Al pie del relieve hay cestas de verdad, con monedas pegadas por una sustancia amarilla.",
+              "question": "¿Cómo cogéis las monedas?",
+              "options": [
+                {
+                  "label": "Rascar con cuidado",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Separáis las monedas sin tocar la sustancia.",
+                    "gold": 15
+                  },
+                  "fail": {
+                    "text": "La sustancia amarilla se mueve y os envuelve la mano.",
+                    "fight": "s2_e05"
+                  }
+                },
+                {
+                  "label": "Quemar la sustancia",
+                  "needs": "torch",
+                  "ok": {
+                    "text": "El fuego hace retroceder la masa amarilla y las monedas quedan libres.",
+                    "lose": "torch",
+                    "gold": 15,
+                    "remove": "s2_e05"
+                  }
+                },
+                {
+                  "label": "Dejarlas",
+                  "ok": {
+                    "text": "La sustancia amarilla tiembla cuando os alejáis."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s2_r10",
+          "name": "Cripta sellada de Franbinzar",
+          "description": "Un ataúd de piedra soldado con plomo. Por las juntas rezuma algo negro.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_sarcophagus",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s2_e06",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Black Pudding",
+                  "name": "Franbinzar, el último rey",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 40,
+              "xp_total": 1100
+            },
+            {
+              "type": "scene",
+              "id": "s2_q03",
+              "title": "El último rey",
+              "decision": true,
+              "text": "Franbinzar fue el último rey serpiente. Su ataúd está sellado y algo negro rezuma por las juntas. Dentro suena un borboteo.",
+              "question": "Es un combate muy peligroso. ¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Romper el sello",
+                  "ok": {
+                    "text": "El plomo cede. Lo que fue un rey sale como una ola negra.",
+                    "fight": "s2_e06"
+                  }
+                },
+                {
+                  "label": "Dejarlo sellado",
+                  "ok": {
+                    "text": "El borboteo sigue a vuestra espalda. Hay reyes que es mejor no despertar."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s2_r11",
+          "name": "Biblioteca de barro",
+          "description": "Estantes de tablillas cocidas, casi todas rotas.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s2_r07",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "lectern",
+              "count": 1
+            },
+            {
+              "type": "chest",
+              "id": "s2_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 10,
+              "item": {
+                "id": "holy_water"
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "s2_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Una tablilla entera cuenta que el hechicero Xiximanter pidió no morir nunca. Los reyes se lo concedieron."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Y nadie le dijo que el imperio se acabaría."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "order": 3,
+      "name": "Las salas del sacrificio",
+      "description": "Un abismo sin fondo, una llama que nunca se apaga y el olor a carne de la sala del basilisco.",
+      "expected_party_level": 5,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "El aire se vuelve caliente y seco. Un resplandor rojo llega desde el fondo de un abismo."
+        },
+        {
+          "speaker": "hero",
+          "text": "Aquí sacrificaban a los que traían. Ojalá lleguemos a tiempo."
+        }
+      ],
+      "pending": [
+        {
+          "id": "s3_j01",
+          "from": "s3_r03",
+          "until": "s3_r08",
+          "text": "Las cocinas guardan carne fresca. Alguien alimenta a algo grande."
+        }
+      ],
+      "c_gold": true,
+      "rooms": [
+        {
+          "id": "s3_r01",
+          "name": "Sendero del abismo",
+          "description": "Un sendero estrecho bordea un abismo. Al fondo se ve una llama roja.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "corridor",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "s3_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s2_r08",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "rubble",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s3_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Fungus Goblin",
+                  "name": "Goblin de hongo",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 6,
+              "xp_total": 150,
+              "omen": "Entre las rocas suenan risitas y el roce de algo húmedo. Huele a setas podridas."
+            },
+            {
+              "type": "rest_point",
+              "id": "s3_rest1",
+              "rest": "short",
+              "name": "Recodo del sendero",
+              "description": "Primer descanso de las salas del sacrificio; desde aquí se permite volver al pueblo."
+            },
+            {
+              "type": "dialogue",
+              "id": "s3_d01",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Los goblins tienen la piel cubierta de hongos. Algunos aún llevan jirones de ropa de pastor."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Son los experimentos de alguien. Alguien que sigue ahí abajo."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s3_r02",
+          "name": "Percebes de mazmorra",
+          "description": "Las paredes y el paso están cubiertos de conchas grises que se cierran al acercarse.",
+          "kind": "corridor",
+          "size_hexes": 9,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "barnacles",
+              "count": 2
+            },
+            {
+              "type": "ally",
+              "slot_zone": 3,
+              "default_ally": "hassim",
+              "default_scene": [
+                {
+                  "speaker": "hassim",
+                  "text": "Mi hermano estaba en la caravana que desapareció. Llevo dos noches abriéndome paso entre estas conchas."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Lo buscaremos juntos. Te damos nuestra palabra."
+                },
+                {
+                  "speaker": "hassim",
+                  "text": "Entonces tenéis mi lanza y mi escudo."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "teodor",
+                  "text": "Los percebes no soportan el fuego. Lo leí en una tablilla de arriba."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ven con nosotros, Teodor. Tu lectura nos ha salvado ya una vez."
+                }
+              ]
+            },
+            {
+              "type": "scene",
+              "id": "s3_p01",
+              "title": "El paso de los percebes",
+              "text": "Las conchas tapan un cofre encajado en la pared. Al acercaros, se abren y escupen un jugo que quema.",
+              "question": "¿Cómo llegáis al cofre?",
+              "options": [
+                {
+                  "label": "Quemarlas",
+                  "needs": "alchemists_fire",
+                  "ok": {
+                    "text": "El fuego las hace cerrarse para siempre. El cofre queda libre.",
+                    "lose": "alchemists_fire",
+                    "gold": 18,
+                    "item": "potion_healing"
+                  }
+                },
+                {
+                  "label": "Picarlas una a una",
+                  "attr": "str",
+                  "dc": 14,
+                  "ok": {
+                    "text": "A golpes, abrís hueco hasta el cofre.",
+                    "gold": 18,
+                    "item": "potion_healing"
+                  },
+                  "fail": {
+                    "text": "El jugo os quema las manos.",
+                    "damage": "1d8"
+                  }
+                },
+                {
+                  "label": "Pasar de lado",
+                  "ok": {
+                    "text": "Os escurrís junto a la pared sin tocarlos, pero el cofre queda donde está."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s3_r03",
+          "name": "Cocinas del sacrificio",
+          "description": "Ganchos de carne, una mesa de piedra y un barril de sal.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "s3_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Fungus Goblin",
+                  "name": "Goblin cocinero",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Fungus Goblin Boss",
+                  "name": "Cocinero mayor",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 10,
+              "xp_total": 300
+            },
+            {
+              "type": "scene",
+              "id": "s3_q01",
+              "title": "La carne de los ganchos",
+              "decision": true,
+              "text": "Cuelga carne fresca de cabra, sin sal. Demasiada para unos goblins.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Llevaros un buen trozo",
+                  "ok": {
+                    "text": "Envolvéis un pedazo en tela. Algo grande come esto.",
+                    "flag": "s3_carne"
+                  }
+                },
+                {
+                  "label": "Dejarla",
+                  "ok": {
+                    "text": "No es cosa vuestra lo que coman aquí."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s3_r04",
+          "name": "Sala de los grilletes",
+          "description": "Grilletes de hierro cuelgan de las paredes. Algunos se mueven solos.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "cell_bars",
+              "count": 1
+            },
+            {
+              "type": "trap",
+              "id": "s3_t01",
+              "name": "Grilletes encantados",
+              "description": "Un grillete se cierra solo en vuestro tobillo…",
+              "detect_dc": 14,
+              "disarm_dc": 14,
+              "save_ability": "DEX",
+              "save_dc": 14,
+              "effect": "2d6 contundente: los grilletes arrastran a la víctima contra la pared."
+            },
+            {
+              "type": "dialogue",
+              "id": "s3_d02",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En un grillete hay un trozo de tela de caravanero, con un nombre bordado."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Estuvieron aquí. Hace poco."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "s3_d03",
+              "lines": [
+                {
+                  "speaker": "hassim",
+                  "text": "Es el bordado de mi madre. Mi hermano estuvo atado aquí."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Entonces sigue vivo. Vamos."
+                }
+              ],
+              "only": "hassim"
+            }
+          ]
+        },
+        {
+          "id": "s3_r05",
+          "name": "Pozo del sacrificio",
+          "description": "Una boca circular en el suelo. Abajo arde una llama que nunca se apaga.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_s01_r01",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "flame_pit",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s3_e03",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Ochre Jelly",
+                  "name": "Cieno del pozo",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Fungus Goblin",
+                  "name": "Goblin del pozo",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 8,
+              "xp_total": 500
+            },
+            {
+              "type": "secret",
+              "id": "s3_s01",
+              "detect_dc": 15,
+              "reveals": "exit:s3_s01_r01",
+              "description": "Un hueco junto al pozo baja a una cámara de las víctimas."
+            },
+            {
+              "type": "scene",
+              "id": "s3_s01_pista",
+              "title": "El calor del pozo",
+              "reveals": "s3_s01",
+              "text": "Junto al borde, el calor sube por una grieta que no lleva al pozo.",
+              "question": "¿Cómo la investigáis?",
+              "options": [
+                {
+                  "label": "Seguir el aire caliente",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Detrás de una losa hay una escalera que baja.",
+                    "reveal": "s3_s01"
+                  },
+                  "fail": {
+                    "text": "El calor os hace llorar los ojos."
+                  }
+                },
+                {
+                  "label": "Golpear las losas",
+                  "attr": "str",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Una losa suena hueca. La levantáis.",
+                    "reveal": "s3_s01"
+                  },
+                  "fail": {
+                    "text": "Todas suenan igual."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s3_r06",
+          "name": "Sala de invocación",
+          "description": "Un altar con cuencos de oro. Junto a la pared, una mujer encadenada por una muñeca.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "altar",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s3_e04",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Incubus",
+                  "name": "Baltoplat",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 25,
+              "xp_total": 1100
+            },
+            {
+              "type": "scene",
+              "id": "s3_q02",
+              "title": "Baltoplat",
+              "decision": true,
+              "img": "escena_baltoplat_atada",
+              "text": "Una mujer con gafas redondas y delantal de herbolaria os sonríe. Dice ser botánica y pide que la soltéis. Su sombra tiene alas y cuernos.",
+              "question": "¿Qué hacéis con ella?",
+              "options": [
+                {
+                  "label": "Pronunciar su nombre verdadero",
+                  "if": "s2_nombre",
+                  "ok": {
+                    "text": "«Baltoplat». Su sonrisa se apaga. Os entrega su daga y os dice dónde guardan el oro de las víctimas. Luego desaparece en la sombra.",
+                    "item": "dagger_plus1",
+                    "gold": 30
+                  }
+                },
+                {
+                  "label": "Negociar un trato",
+                  "attr": "cha",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Acepta un trato: os da su daga a cambio de un poco de vuestra fuerza. Cumple lo que promete.",
+                    "item": "dagger_plus1",
+                    "damage": "2d6"
+                  },
+                  "fail": {
+                    "text": "Se ríe de vuestra oferta. No hay trato."
+                  }
+                },
+                {
+                  "label": "Liberarla",
+                  "ok": {
+                    "text": "Soltáis la cadena. Baltoplat os besa la mano y os roba el aliento. Cuando os recuperáis, ya no está.",
+                    "damage": "2d8"
+                  }
+                },
+                {
+                  "label": "Luchar contra ella",
+                  "ok": {
+                    "text": "Su piel se vuelve roja y le salen alas.",
+                    "fight": "s3_e04"
+                  }
+                },
+                {
+                  "label": "Dejarla atada",
+                  "ok": {
+                    "text": "Os alejáis. A vuestra espalda, Baltoplat canturrea vuestros nombres."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s3_r07",
+          "name": "Santuario de la cobra",
+          "description": "Una cobra de bronce gira sobre un pedestal. A un lado sale veneno; al otro, monedas.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r08",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "pedestal",
+              "count": 1
+            },
+            {
+              "type": "rest_point",
+              "id": "s3_rest2",
+              "rest": "short",
+              "name": "Rincón del santuario",
+              "description": "Último descanso antes de la sala del basilisco."
+            },
+            {
+              "type": "scene",
+              "id": "s3_p02",
+              "title": "La cobra que gira",
+              "text": "La cobra de bronce gira si la empujáis. Su boca escupe veneno o monedas según adónde mire.",
+              "question": "¿Cómo la usáis?",
+              "options": [
+                {
+                  "label": "Girarla con tino",
+                  "attr": "wis",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Detenéis la cobra mirando al lado bueno. Caen monedas.",
+                    "gold": 25
+                  },
+                  "fail": {
+                    "text": "Se detiene del lado malo y os escupe veneno.",
+                    "damage": "2d6"
+                  }
+                },
+                {
+                  "label": "Estudiar el mecanismo",
+                  "attr": "int",
+                  "dc": 13,
+                  "ok": {
+                    "text": "Contáis las vueltas y acertáis. Caen monedas.",
+                    "gold": 25
+                  },
+                  "fail": {
+                    "text": "Os equivocáis por media vuelta y os salpica el veneno.",
+                    "damage": "1d6"
+                  }
+                },
+                {
+                  "label": "No tocarla",
+                  "ok": {
+                    "text": "La cobra se queda quieta, esperando al siguiente."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s3_r08",
+          "name": "Sala del basilisco",
+          "description": "Una sala enorme de pilares rotos y estatuas destrozadas. Una cadena larga baja del techo.",
+          "kind": "room",
+          "size_hexes": 12,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r01",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 2
+            },
+            {
+              "type": "prop",
+              "prop": "bone_pile",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s3_e05",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Basilisk",
+                  "name": "Basilisco encadenado",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 30,
+              "xp_total": 700
+            },
+            {
+              "type": "scene",
+              "id": "s3_q03",
+              "title": "El basilisco encadenado",
+              "decision": true,
+              "img": "escena_basilisco_encadenado",
+              "text": "Un lagarto enorme de ocho patas os mira desde el fondo. Lleva un collar de hierro y una llave cuelga de él. Las estatuas a su alrededor eran personas.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Lanzarle la carne",
+                  "if": "s3_carne",
+                  "ok": {
+                    "text": "El basilisco devora la carne y se tumba. Le quitáis la llave del collar sin que se mueva.",
+                    "remove": "s3_e05",
+                    "gold": 30,
+                    "item": "potion_greater_healing_1"
+                  }
+                },
+                {
+                  "label": "Calmarlo sin mirarle a los ojos",
+                  "attr": "wis",
+                  "dc": 15,
+                  "ok": {
+                    "text": "Os acercáis de lado, hablando bajo. El basilisco os deja coger la llave.",
+                    "remove": "s3_e05",
+                    "gold": 30
+                  },
+                  "fail": {
+                    "text": "Se revuelve y os encara.",
+                    "fight": "s3_e05"
+                  }
+                },
+                {
+                  "label": "Luchar",
+                  "ok": {
+                    "text": "Avanzáis con los ojos entornados.",
+                    "fight": "s3_e05"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "s3_d04",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Detrás del basilisco, una puerta de hierro da a un túnel de barro y hongos."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Las madrigueras. Los secuestrados tienen que estar ahí."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s3_r09",
+          "name": "Estatuas petrificadas",
+          "description": "Personas de piedra con gesto de sorpresa. Entre ellas, un pastor con su cayado.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_statue",
+              "count": 1
+            },
+            {
+              "type": "dialogue",
+              "id": "s3_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Las estatuas no son talla. Tienen pestañas, arrugas y polvo en las uñas."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "El basilisco. Que nadie le mire a los ojos."
+                }
+              ]
+            },
+            {
+              "type": "chest",
+              "id": "s3_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 12,
+              "item": {
+                "id": "steel_mirror"
+              }
+            }
+          ]
+        },
+        {
+          "id": "s3_r10",
+          "name": "Foso falso",
+          "description": "Un pasillo con el suelo pintado de piedra sobre un vacío.",
+          "kind": "corridor",
+          "size_hexes": 7,
+          "shape": "corridor",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "trap",
+              "id": "s3_t02",
+              "name": "Foso falso",
+              "description": "El suelo cede como si fuera tela…",
+              "detect_dc": 15,
+              "disarm_dc": 14,
+              "save_ability": "DEX",
+              "save_dc": 14,
+              "effect": "3d6 contundente: el falso suelo se rompe y caéis al foso."
+            },
+            {
+              "type": "chest",
+              "id": "s3_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 22,
+              "item": {
+                "id": "potion_poison_resistance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "s3_r11",
+          "name": "Pasillo de las cuchillas",
+          "description": "Ranuras finas en las paredes, a la altura del cuello.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "long",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "trap",
+              "id": "s3_t03",
+              "name": "Pasillo de cuchillas",
+              "description": "Un chasquido metálico recorre las paredes…",
+              "detect_dc": 15,
+              "disarm_dc": 15,
+              "save_ability": "DEX",
+              "save_dc": 14,
+              "effect": "3d6 cortante: salen cuchillas de las ranuras."
+            },
+            {
+              "type": "encounter",
+              "id": "s3_e06",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Swarm of Bats",
+                  "name": "Enjambre del pasillo",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 100
+            },
+            {
+              "type": "chest",
+              "id": "s3_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 30,
+              "item": {
+                "id": "wand_of_web"
+              }
+            }
+          ]
+        },
+        {
+          "id": "s3_s01_r01",
+          "name": "Cámara de las víctimas",
+          "description": "Sacos, mochilas y bastones de pastor amontonados.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s3_r05",
+              "type": "secret",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "dialogue",
+              "id": "s3_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Entre las mochilas hay un diario: «Nos llevan de dos en dos. Dicen que el amo destila a los que no sirven»"
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Destila. Como quien hace licor."
+                }
+              ]
+            },
+            {
+              "type": "encounter",
+              "id": "s3_e07",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Specter",
+                  "name": "Víctima sin descanso",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 400
+            },
+            {
+              "type": "chest",
+              "id": "s3_c04",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 35,
+              "item": {
+                "id": "restorative_ointment"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "order": 4,
+      "name": "Las madrigueras y la guarida",
+      "description": "Túneles de barro y hongos que llevan a una guarida bañada en luz morada.",
+      "expected_party_level": 5,
+      "entry_dialogue": [
+        {
+          "speaker": "narrator",
+          "text": "El túnel huele a tierra mojada y a setas. En el fondo, una luz morada parpadea."
+        },
+        {
+          "speaker": "hero",
+          "text": "Ahí está la voz que sisea en los sueños de Arenaroja."
+        }
+      ],
+      "pending": [
+        {
+          "id": "s4_j01",
+          "from": "s4_r03",
+          "until": "s4_r04",
+          "text": "Los goblins de hongo nacen en un pozo. Si no se quema, volverán."
+        },
+        {
+          "id": "s4_j02",
+          "from": "s4_r02",
+          "until": "s4_r05",
+          "text": "Los prisioneros están en el almacén de ingredientes."
+        }
+      ],
+      "c_gold": true,
+      "rooms": [
+        {
+          "id": "s4_r01",
+          "name": "Túnel de barro",
+          "description": "Un túnel bajo, cavado a mano, con setas que brillan débilmente.",
+          "kind": "corridor",
+          "size_hexes": 8,
+          "shape": "corridor",
+          "is_zone_entrance": true,
+          "exits": [
+            {
+              "to": "s4_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s3_r08",
+              "type": "path",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "mushrooms",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "s4_e01",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Fungus Goblin",
+                  "name": "Goblin de hongo",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Shrieker",
+                  "name": "Hongo chillón",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 6,
+              "xp_total": 150
+            },
+            {
+              "type": "rest_point",
+              "id": "s4_rest1",
+              "rest": "short",
+              "name": "Recodo seco",
+              "description": "Primer descanso de las madrigueras; desde aquí se permite volver al pueblo."
+            }
+          ]
+        },
+        {
+          "id": "s4_r02",
+          "name": "Celda de la hermana",
+          "description": "Una celda abierta a golpes. Una mujer mayor sostiene un cuenco con una llama.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r01",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r09",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "cell_bars",
+              "count": 1
+            },
+            {
+              "type": "ally",
+              "slot_zone": 4,
+              "default_ally": "yara",
+              "default_scene": [
+                {
+                  "speaker": "yara",
+                  "text": "Vine a por los míos y me cogieron. Esta llama del pozo de Arenaroja me ha mantenido viva."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ahora saldréis todos. Ven con nosotros."
+                },
+                {
+                  "speaker": "yara",
+                  "text": "Os seguiré. Y os curaré cuando haga falta."
+                }
+              ],
+              "brunna_scene": [
+                {
+                  "speaker": "teodor",
+                  "text": "La voz de mis sueños sale de aquí. Ya sé quién es: Xiximanter, el hechicero que pidió no morir."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Entonces vamos a recordarle que todo se acaba."
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "s4_d01",
+              "lines": [
+                {
+                  "speaker": "yara",
+                  "text": "Los prisioneros están más adelante, en el almacén. Él los llama ingredientes."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ya no por mucho tiempo."
+                }
+              ],
+              "only": "yara"
+            }
+          ]
+        },
+        {
+          "id": "s4_r03",
+          "name": "Trono de los cubiertos",
+          "description": "Un trono de barro con una corona hecha de tenedores y cucharas.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r02",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "mushrooms",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s4_e02",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Fungus Goblin Boss",
+                  "name": "Rey de los goblins",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Fungus Goblin",
+                  "name": "Goblin de hongo",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Fungus Goblin",
+                  "name": "Goblin arquero",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 20,
+              "xp_total": 350,
+              "omen": "Un tintineo de metal llega desde la sala de al lado, como cubiertos chocando. Alguien da órdenes con voz chillona."
+            },
+            {
+              "type": "dialogue",
+              "id": "s4_d02",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "La corona del rey goblin es de tenedores atados con tripa. La ha hecho con lo que robaron en Arenaroja."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Hasta los monstruos quieren ser reyes."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s4_r04",
+          "name": "Pozo de engendro",
+          "description": "Un pozo de lodo burbujeante del que salen brazos verdes cubiertos de hongos.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r03",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r10",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "mushrooms",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "s4_e03",
+              "trigger": "scene",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Fungus Goblin",
+                  "name": "Goblin recién nacido",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 0,
+              "xp_total": 150
+            },
+            {
+              "type": "scene",
+              "id": "s4_q01",
+              "title": "El pozo de engendro",
+              "decision": true,
+              "img": "escena_pozo_engendro",
+              "text": "Del lodo salen goblins nuevos, todavía húmedos. Si el pozo sigue vivo, Arenaroja nunca estará a salvo.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Quemarlo con fuego de alquimista",
+                  "needs": "alchemists_fire",
+                  "ok": {
+                    "text": "El lodo arde con un chillido. Ya no saldrán más goblins.",
+                    "lose": "alchemists_fire",
+                    "flag": "s4_pozo",
+                    "remove": "s4_e03"
+                  }
+                },
+                {
+                  "label": "Prenderlo con una antorcha",
+                  "needs": "torch",
+                  "ok": {
+                    "text": "Los hongos secos del borde prenden. El pozo se consume poco a poco.",
+                    "lose": "torch",
+                    "flag": "s4_pozo",
+                    "remove": "s4_e03"
+                  }
+                },
+                {
+                  "label": "Derrumbar el borde",
+                  "attr": "str",
+                  "dc": 15,
+                  "ok": {
+                    "text": "Las piedras tapan el pozo. Aguantará un tiempo.",
+                    "flag": "s4_pozo",
+                    "remove": "s4_e03"
+                  },
+                  "fail": {
+                    "text": "El borde no cede y los recién nacidos os rodean.",
+                    "fight": "s4_e03"
+                  }
+                },
+                {
+                  "label": "Pasar de largo",
+                  "ok": {
+                    "text": "Los recién nacidos os miran pasar. Ya crecerán."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s4_r05",
+          "name": "Almacén de ingredientes",
+          "description": "Jaulas de caña con gente dentro. Etiquetas de barro cuelgan de cada jaula.",
+          "kind": "room",
+          "size_hexes": 10,
+          "shape": "cross",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r04",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "cell_bars",
+              "count": 2
+            },
+            {
+              "type": "encounter",
+              "id": "s4_e04",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Ochre Jelly",
+                  "name": "Cieno guardián",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Fungus Goblin",
+                  "name": "Carcelero",
+                  "count": 2,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 10,
+              "xp_total": 550
+            },
+            {
+              "type": "scene",
+              "id": "s4_q02",
+              "title": "Los prisioneros",
+              "decision": true,
+              "text": "Pastores y caravaneros os miran desde las jaulas. Las etiquetas dicen cosas como «hígado» o «miedo».",
+              "question": "¿Cómo los liberáis?",
+              "options": [
+                {
+                  "label": "Romper las jaulas",
+                  "ok": {
+                    "text": "Las cañas se parten. Los prisioneros salen y os dan lo poco que les queda.",
+                    "gold": 20,
+                    "flag": "s4_libres"
+                  }
+                },
+                {
+                  "label": "Abrir las cerraduras",
+                  "attr": "dex",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Las abrís sin ruido. Un caravanero os da una poción que escondía.",
+                    "item": "potion_healing",
+                    "flag": "s4_libres"
+                  },
+                  "fail": {
+                    "text": "Las cerraduras se atascan. Acabáis rompiendo las cañas.",
+                    "flag": "s4_libres"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "dialogue",
+              "id": "s4_d03",
+              "lines": [
+                {
+                  "speaker": "hassim",
+                  "text": "¡Rashid! Hermano… estás vivo."
+                },
+                {
+                  "speaker": "narrator",
+                  "text": "Un caravanero flaco abraza a Hassim y llora sin ruido."
+                }
+              ],
+              "only": "hassim"
+            }
+          ]
+        },
+        {
+          "id": "s4_r06",
+          "name": "Huerto de los pepinos azules",
+          "description": "Un huerto bajo tierra con pepinos azules que brillan en la oscuridad.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r05",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r07",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r11",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "mushrooms",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s4_e05",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Shrieker",
+                  "name": "Hongo chillón",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Mummy",
+                  "name": "Jardinero vendado",
+                  "count": 1,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 10,
+              "xp_total": 700
+            },
+            {
+              "type": "chest",
+              "id": "s4_c01",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 15,
+              "item": {
+                "id": "blue_cucumber"
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "s4_d04",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Los pepinos azules huelen a menta. Un cartel de barro dice: «Para las visitas que vuelven cansadas»"
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Hasta un monstruo cuida su huerto."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s4_r07",
+          "name": "Sala de las pociones",
+          "description": "Alambiques, frascos de colores y un olor dulzón que marea.",
+          "kind": "room",
+          "size_hexes": 8,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r06",
+              "type": "open",
+              "key_item_id": null
+            },
+            {
+              "to": "s4_r08",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "lectern",
+              "count": 1
+            },
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 1
+            },
+            {
+              "type": "rest_point",
+              "id": "s4_rest2",
+              "rest": "short",
+              "name": "Rincón de los alambiques",
+              "description": "Último rincón seguro, justo antes de la guarida de Xiximanter."
+            },
+            {
+              "type": "chest",
+              "id": "s4_c02",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 25,
+              "item": {
+                "id": "potion_greater_healing_1"
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "s4_d05",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "Cada frasco tiene una etiqueta con un nombre de persona. Algunos nombres son de Arenaroja."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "No vamos a dejar que embotelle a nadie más."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s4_r08",
+          "name": "Guarida de Xiximanter",
+          "description": "Una cámara bañada en luz morada. Un hombre serpiente con bastón espera tras una mesa llena de frascos.",
+          "kind": "room",
+          "size_hexes": 14,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r07",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_statue",
+              "count": 2
+            },
+            {
+              "type": "prop",
+              "prop": "column",
+              "count": 1
+            },
+            {
+              "type": "encounter",
+              "id": "s4_e06",
+              "trigger": "enter",
+              "can_reinforce": [],
+              "enemies": [
+                {
+                  "srd_creature": "Xiximanter",
+                  "name": "Xiximanter",
+                  "count": 1,
+                  "row": "back",
+                  "weapon": null,
+                  "drop_weapon": false
+                },
+                {
+                  "srd_creature": "Fungus Goblin",
+                  "name": "Goblin sirviente",
+                  "count": 3,
+                  "row": "front",
+                  "weapon": null,
+                  "drop_weapon": false
+                }
+              ],
+              "gold_drop": 40,
+              "xp_total": 150,
+              "omen": "Una luz morada se cuela por las rendijas. Al otro lado, alguien canturrea mientras remueve un frasco."
+            }
+          ]
+        },
+        {
+          "id": "s4_r09",
+          "name": "Sala del trono de los reyes",
+          "description": "Un trono de piedra negra con una corona de oro y escamas sobre el asiento.",
+          "kind": "room",
+          "size_hexes": 9,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r02",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "serpent_statue",
+              "count": 2
+            },
+            {
+              "type": "scene",
+              "id": "s4_q03",
+              "title": "El trono de los reyes serpiente",
+              "decision": true,
+              "img": "escena_trono_reyes",
+              "text": "Al acercaros al trono, una voz os promete un imperio. Solo tenéis que sentaros.",
+              "question": "¿Qué hacéis?",
+              "options": [
+                {
+                  "label": "Resistir la tentación",
+                  "attr": "wis",
+                  "dc": 14,
+                  "ok": {
+                    "text": "Apartáis la mirada del trono. Junto a él hay un cofre de ofrendas.",
+                    "gold": 30,
+                    "item": "stone_egg"
+                  },
+                  "fail": {
+                    "text": "Os sentáis un instante. Veis un imperio de esclavos y os levantáis temblando.",
+                    "damage": "2d6"
+                  }
+                },
+                {
+                  "label": "Romper el trono",
+                  "attr": "str",
+                  "dc": 14,
+                  "ok": {
+                    "text": "El respaldo se parte. La voz calla para siempre.",
+                    "gold": 15
+                  },
+                  "fail": {
+                    "text": "La piedra negra no se mella."
+                  }
+                },
+                {
+                  "label": "Marcharse",
+                  "ok": {
+                    "text": "Os alejáis. La voz os llama por vuestro nombre hasta que salís de la sala."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s4_r10",
+          "name": "Cámara de las esporas",
+          "description": "El aire está lleno de polvo verde. Cuesta respirar.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "irregular",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r04",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "mushrooms",
+              "count": 2
+            },
+            {
+              "type": "trap",
+              "id": "s4_t01",
+              "name": "Nube de esporas",
+              "description": "Los hongos del suelo revientan al pisarlos…",
+              "detect_dc": 15,
+              "disarm_dc": 14,
+              "save_ability": "CON",
+              "save_dc": 14,
+              "effect": "3d6 veneno: una nube de esporas os llena los pulmones."
+            },
+            {
+              "type": "chest",
+              "id": "s4_c03",
+              "locked": false,
+              "lock_dc": null,
+              "gold": 20,
+              "item": {
+                "id": "potion_poison_resistance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "s4_r11",
+          "name": "Despensa del hechicero",
+          "description": "Sacos de ingredientes raros y un baúl con candado.",
+          "kind": "room",
+          "size_hexes": 7,
+          "shape": "round",
+          "is_zone_entrance": false,
+          "exits": [
+            {
+              "to": "s4_r06",
+              "type": "open",
+              "key_item_id": null
+            }
+          ],
+          "contents": [
+            {
+              "type": "prop",
+              "prop": "barrels",
+              "count": 2
+            },
+            {
+              "type": "chest",
+              "id": "s4_c04",
+              "locked": true,
+              "lock_dc": 14,
+              "gold": 35,
+              "item": {
+                "id": "alchemists_fire"
+              }
+            },
+            {
+              "type": "dialogue",
+              "id": "s4_d06",
+              "lines": [
+                {
+                  "speaker": "narrator",
+                  "text": "En los sacos hay escamas, colmillos y una etiqueta que dice «aventurero, sin abrir»."
+                },
+                {
+                  "speaker": "hero",
+                  "text": "Ya veremos quién acaba en un frasco."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "allies": [
+    {
+      "id": "zeyna",
+      "name": "Zeyna Polvoseco",
+      "class": "Rogue",
+      "species": "Humana",
+      "personality": "Saqueadora de tumbas, risueña y desconfiada; cumple los tratos.",
+      "starting_items": [
+        "Espada corta",
+        "Arco corto",
+        "Armadura de cuero",
+        "Herramientas de ladrón"
+      ]
+    },
+    {
+      "id": "hassim",
+      "name": "Hassim Lanzadesol",
+      "class": "Paladin",
+      "species": "Humano",
+      "personality": "Guardián de caravanas, serio y leal; busca a su hermano.",
+      "starting_items": [
+        "Espada larga",
+        "Escudo",
+        "Cota de malla"
+      ]
+    },
+    {
+      "id": "yara",
+      "name": "Hermana Yara del Pozo",
+      "class": "Cleric",
+      "species": "Humana",
+      "personality": "Anciana tranquila y firme; cuida el pozo de Arenaroja.",
+      "starting_items": [
+        "Maza",
+        "Escudo",
+        "Cota de escamas",
+        "Símbolo sagrado"
+      ]
+    },
+    {
+      "id": "teodor",
+      "name": "Teodor Escamagrís",
+      "class": "Wizard",
+      "species": "Humano",
+      "personality": "Erudito nervioso que lee la lengua de los hombres serpiente y sueña con la voz.",
+      "starting_items": [
+        "Bastón",
+        "Libro de conjuros",
+        "Daga"
+      ]
+    }
+  ],
+  "npc": {
+    "id": "baltoplat",
+    "name": "Baltoplat",
+    "note": "Criatura atada en la sala de invocación. Miente para escapar, pero cumple sus tratos."
+  },
+  "boss": {
+    "id": "xiximanter",
+    "name": "Xiximanter",
+    "based_on": "Mage",
+    "adjustments": "Versión de encuentro adaptada del mago del SRD 5.2.1 para cuatro personajes de nivel 5: CA 15, 80 PG, descarga arcana y bola de fuego con recarga. Lucha desde la retaguardia con dos goblins de hongo delante.",
+    "room_id": "s4_r08",
+    "pre_boss_dialogue": [
+      {
+        "speaker": "xiximanter",
+        "text": "Hola, bípedos. ¿Turistas? Hace siglos que no venían turistas."
+      },
+      {
+        "speaker": "hero",
+        "text": "Venimos a por la gente de Arenaroja."
+      },
+      {
+        "speaker": "xiximanter",
+        "text": "Ah, los ingredientes. Me temo que ya están reservados. Vosotros también serviréis."
+      }
+    ],
+    "victory_reward": "Corona de los Reyes Serpiente, 150 po."
+  },
+  "items": [
+    {
+      "id": "fang_ring",
+      "name": "Anillo del colmillo",
+      "type": "treasure",
+      "description": "Anillo maldito del falso hechicero.",
+      "value_gp": 150
+    },
+    {
+      "id": "dagger_plus1",
+      "name": "Daga +1",
+      "srd_item": "Weapon, +1",
+      "type": "weapon",
+      "description": "Daga de Baltoplat.",
+      "value_gp": 300
+    },
+    {
+      "id": "steel_mirror",
+      "name": "Espejo de acero",
+      "srd_item": "Mirror",
+      "type": "gear",
+      "description": "Protege de la mirada del basilisco.",
+      "value_gp": 5
+    },
+    {
+      "id": "blue_cucumber",
+      "name": "Pepino azul",
+      "type": "potion",
+      "description": "Devuelve la carne a quien se ha vuelto piedra.",
+      "value_gp": 50
+    },
+    {
+      "id": "stone_egg",
+      "name": "Huevo de piedra cálido",
+      "type": "treasure",
+      "description": "Huevo de piedra que nunca se enfría.",
+      "value_gp": 100
+    },
+    {
+      "id": "serpent_crown",
+      "name": "Corona de los Reyes Serpiente",
+      "type": "treasure",
+      "description": "Trofeo de la aventura.",
+      "value_gp": 300
+    }
+  ],
+  "shops": {
+    "arenaroja": [
+      "alchemists_fire",
+      "steel_mirror",
+      "potion_poison_resistance"
+    ],
+    "nota": "Arenaroja vende fuego de alquimista (percebes, momias y pozo de engendro), espejos de acero (basilisco) y pociones contra el veneno."
+  },
+  "balance_notes": "Se entra con nivel 4 y se llega a la sala de Xiximanter con nivel 5 (tope y subida de las otras aventuras). Zona 1 con el héroe y un compañero de la montaña; Zeyna se une en s2, Hassim en s3 y Yara en s4 (Teodor sustituye al de la clase del héroe). Franbinzar (pudin negro) y Baltoplat (íncubo) son combates opcionales y avisados. El basilisco se puede evitar con la carne de las cocinas o calmándolo. Criaturas del SRD 5.2.1; los goblins de hongo usan las estadísticas del goblin y del jefe goblin, y el guardián cobra de piedra las de la gárgola."
+}

@@ -25,13 +25,14 @@
 
 El sistema parte de las reglas de quinta edición del **SRD 5.2.1** (2024), adaptadas a una experiencia táctil y a grupos de uno a cuatro personajes. Es un proyecto independiente, en desarrollo, y los APK publicados son **versiones de prueba**. La versión web es para probarlo en el navegador; la experiencia de referencia es Android con el móvil en vertical (el modo horizontal queda para más adelante).
 
-## Las tres aventuras
+## Las cuatro aventuras
 
 | Orden | Aventura | Punto de partida | Ambientación y conflicto | Progresión al completarla |
 | --- | --- | --- | --- | --- |
 | 1 | **Las profundidades de Hondaroca** | **Valdescarcha** | Minas abandonadas, ruinas enanas, cripta real y monasterio hundido. El mago **Maese Orvane** amenaza las profundidades. | El grupo alcanza al menos el **nivel 3**. |
 | 2 | **El Corazón Hueco** | **Vegaumbría** | El **Bosque de Umbría** se ha vuelto hostil. Desapariciones, una ciénaga y secretos antiguos conducen hasta el propio Corazón del bosque. | El grupo alcanza al menos el **nivel 5**. |
 | 3 | **El Invierno del Dragón** | **Cumbrenieve** | Un paso nevado, bosques helados y una fortaleza enana conducen al dragón blanco **Vharzûl**. | El grupo alcanza al menos el **nivel 6**. |
+| 4 | **La Tumba de los Reyes Serpiente** | **Arenaroja** | Bajo las Colinas de Ocre, una tumba de hombres serpiente esconde al hechicero **Xiximanter**, que secuestra a la gente del pueblo. Basada en *Tomb of the Serpent Kings*, de Skerples (CC BY-NC-SA). | El grupo llega al jefe con **nivel 5**. |
 
 Las aventuras se desbloquean **en orden**. Cada una tiene **cuatro zonas**, salas, encuentros, personajes, decisiones y recompensas propias. Existen secretos relacionados entre aventuras que pueden animar a regresar a zonas anteriores.
 

@@ -4,6 +4,10 @@
 
 - **System Reference Document 5.2.1** de Wizards of the Coast LLC, con licencia CC BY 4.0. Atribución completa en [NOTICE.md](NOTICE.md).
 
+## Aventuras
+
+- **La Tumba de los Reyes Serpiente** está basada en *Tomb of the Serpent Kings*, de Skerples ([Coins and Scrolls](https://coinsandscrolls.blogspot.com/2017/06/osr-tomb-of-serpent-kings-megapost.html)), CC BY-NC-SA. Adaptada a Mazmorreo. Más detalle en [NOTICE.md](NOTICE.md).
+
 ## Tipografías
 
 - **Cinzel**, de The Cinzel Project Authors ([NDISCOVER/Cinzel](https://github.com/NDISCOVER/Cinzel)). SIL Open Font License 1.1.

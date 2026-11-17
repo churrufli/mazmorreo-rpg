@@ -72,6 +72,13 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 ];
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
+  { version: 'v0.147', items: [
+    'Cuarta aventura: La Tumba de los Reyes Serpiente. Se abre al vencer a Vharzûl. Desde Arenaroja, en las Colinas de Ocre, bajáis a una tumba de hombres serpiente en busca de los pastores y caravaneros desaparecidos.',
+    'Cuatro zonas nuevas (la tumba falsa, la tumba superior, las salas del sacrificio y las madrigueras), con trampas, secretos, decisiones y el hechicero Xiximanter esperando al fondo. Se entra con nivel 4 y se llega al jefe con nivel 5.',
+    'Aliados nuevos en la posada de Arenaroja: Zeyna Polvoseco (pícara), Hassim Lanzadesol (paladín), la Hermana Yara del Pozo (clériga) y Teodor Escamagrís (mago), cada uno con sus tres charlas.',
+    'Criaturas nuevas del SRD 5.2.1: momia, cieno ocre, pudin negro, basilisco e íncubo, además de goblins de hongo y un guardián cobra de piedra. Contra el basilisco ayuda un espejo de acero.',
+    'Música de demostración para Arenaroja, la tumba y sus combates. No es la definitiva: se busca música para ambientar el juego.',
+  ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',
     'Cada daño mágico se reconoce: el ácido salpica y gotea, el veneno sube en vapores, el necrótico trae sombras, el psíquico ondula y el trueno estalla en ondas.',
@@ -391,7 +398,8 @@ export const CREDITOS: string[] = [
   'Reglas: este juego usa material del System Reference Document 5.2.1 (SRD 5.2.1) de Wizards of the Coast, disponible en https://www.dndbeyond.com/srd, bajo la licencia Creative Commons Atribución 4.0 Internacional (https://creativecommons.org/licenses/by/4.0/legalcode).',
   'Tipografías: Cinzel y Cormorant Garamond, licencia SIL Open Font License.',
   'Iconos: Material Design Icons (Pictogrammers), licencia Apache 2.0.',
-  'Música: todas las pistas se han creado con Suno (suno.com). Uso no comercial; no van con la licencia libre del resto del juego.',
+  'Música: todas las pistas se han creado con Suno (suno.com). Uso no comercial; no van con la licencia libre del resto del juego. La música de la cuarta aventura es de demostración: se busca música definitiva para ambientar el juego.',
+  'Aventura «La Tumba de los Reyes Serpiente»: basada en Tomb of the Serpent Kings, de Skerples (Coins and Scrolls), con licencia CC BY-NC-SA. Adaptada a Mazmorreo.',
   'Efectos de sonido: Kenney (kenney.nl), «80 CC0 RPG SFX» de rubberduck, «Tinysized SFX» de Vehicle y «RPG Sound Pack» de artisticdude, CC0.',
   'Ambientes: pack «Ambience» de yewbic (CC0) y «Nature Sounds Pack» de Antoine Goumain (CC BY 4.0).',
 ];
