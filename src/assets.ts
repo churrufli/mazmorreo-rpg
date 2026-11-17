@@ -194,6 +194,7 @@ export const IMG = {
   espada: require('../assets/img/espada.webp'),
   espada_larga_mas1: require('../assets/img/espada_larga_mas1.webp'),
   espectro: require('../assets/img/espectro.webp'),
+  espejo_acero: require('../assets/img/espejo_acero.webp'),
   esqueleto: require('../assets/img/esqueleto.webp'),
   estatua_dios_serpiente: require('../assets/img/estatua_dios_serpiente.webp'),
   estatua_enano: require('../assets/img/estatua_enano.webp'),
