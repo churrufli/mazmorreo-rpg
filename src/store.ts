@@ -11,6 +11,7 @@ import { ITEMS } from './data/srd';
 import { Action, actionsFor, autoTurn, Combat, devWin, endTurn, enemyTurn, perform, startCombat, withDice, useInspiration } from './engine/combat';
 import * as storage from './storage';
 import { Char, MAX_ITEMS, longRest, raiseTo } from './engine/rules';
+import { devSetup } from './engine/desarrollador';
 
 export type Screen = 'title' | 'slots' | 'create' | 'intro' | 'game' | 'victory' | 'defeat';
 
@@ -330,9 +331,8 @@ export const useStore = create<State>((set, get) => {
     travel: t => mutate(g => {
       g.town = t;
       g.log.push(`— Viajáis a ${TOWNS[t].name} —`);
-      // Modo desarrollador: el grupo sube al nivel con el que se entra en esa aventura (el de terminar la anterior).
-      const prev = ADVS[TOWNS[t].adv].prev;
-      if (isDev() && prev) for (const c of [...g.party, ...(g.bench ?? [])]) g.log.push(...raiseTo(c, ADVS[prev].level));
+      // Modo desarrollador: nivel, compañeros y equipo como se llegaría jugando a esa aventura (también hacia atrás).
+      if (isDev()) g.log.push(...devSetup(g, TOWNS[t].adv));
     }, true),
     drop: (charId, uid) => mutate(g => {
       const c = g.party.find(x => x.id === charId)!;
