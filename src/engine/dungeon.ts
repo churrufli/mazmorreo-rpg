@@ -8,6 +8,7 @@ import {
   Char, MAX_ITEMS, abilMod, allyFor, createAlly, isDown, newItem, passivePerception, sightRadius, shortRest, longRest, needsRest,
 } from './rules';
 import type { Game } from './game';
+import { bumpElement, elemAt, elemBlocked, elemCells, elemNews, elemPasses, elemState, enterElement, isMechanism, zoneElements } from './elementos';
 
 export type Hex = [number, number];
 export const hkey = (h: Hex) => `${h[0]},${h[1]}`;
@@ -112,9 +113,11 @@ export function blockedCells(zone: string): Set<string> {
   // Junto a una reja con palanca no se cierra el paso con decorado (si se llega a esa casilla sin abrirla): al abrirla, la roca seguiría tapando la entrada del pasadizo.
   const levered = new Set(p.marks.filter(m => m.kind === 'lever').map(m => (contentById(m.id)?.c as any)?.gate));
   const byGate = new Set(p.marks.filter(m => m.kind === 'gate' && levered.has(m.id) && advOf(zone) !== 'hondaroca').flatMap(m => neighbors([m.q, m.r]).map(hkey)).filter(k => base[0].has(k)));
+  // Las casillas de elementos dinámicos son suelo: su elemento decide si se cruzan (ver elementos.ts).
+  const dyn = elemCells(zone);
   for (const m of p.marks.filter(m => isObstacle(m) && !bridgedWater(zone, m))) {
     const k = `${m.q},${m.r}`;
-    if (byGate.has(k) || k === hkey(p.start) || p.marks.some(o => !isObstacle(o) && o.kind !== 'prop' && `${o.q},${o.r}` === k)) continue;
+    if (dyn.has(k) || byGate.has(k) || k === hkey(p.start) || p.marks.some(o => !isObstacle(o) && o.kind !== 'prop' && `${o.q},${o.r}` === k)) continue;
     const trial = new Set([...blocked, k]);
     const keeps = [false, true].every((s, i) => { const r = reach(trial, s); return [...base[i]].every(c => trial.has(c) || r.has(c)); });
     if (keeps) blocked.add(k);
@@ -130,6 +133,8 @@ export function passable(g: Game, zone: string): Set<string> {
   for (const m of p.marks) if (m.kind === 'secret' && !g.found.includes(m.id)) m.path?.forEach(k => hidden.add(k));
   // Reja cerrada (se abre con una palanca del otro lado).
   for (const m of p.marks) if (m.kind === 'gate' && !g.done.includes(m.id)) hidden.add(`${m.q},${m.r}`);
+  // Elementos dinámicos cerrados (roca, verja, barrera...): no se pisan ni dejan ver más allá.
+  for (const k of elemBlocked(g, zone)) hidden.add(k);
   return new Set(p.cells.map(([q, r]) => `${q},${r}`).filter(k => !hidden.has(k)));
 }
 
@@ -200,11 +205,12 @@ export function visibleCells(g: Game, reveal = false): Set<string> {
 
 /** Camino más corto por casillas conocidas y transitables (BFS). */
 export function findPath(g: Game, to: Hex, reveal = false, viaTraps = false): Hex[] | null {
-  const pass = passable(g, g.zone);
-  const vis = visibleCells(g, reveal);
   const goal = hkey(to);
+  // Un elemento cerrado se puede tocar como destino: el grupo se acerca y topa con él (escena o aviso).
+  const pass = new Set([...passable(g, g.zone), ...(bumpable(g).has(goal) ? [goal] : [])]);
+  const vis = visibleCells(g, reveal);
   if (!pass.has(goal) || !vis.has(goal)) return null;
-  const doors = closedDoors(g);
+  const doors = new Map([...closedDoors(g), ...[...mechanismCells(g)].map(k => [k, k] as [string, string])]);
   const traps = viaTraps ? new Set<string>() : spottedTraps(g);
   const prev = new Map<string, string>();
   const q = [hkey(g.pos)];
@@ -224,6 +230,11 @@ export function findPath(g: Game, to: Hex, reveal = false, viaTraps = false): He
   return path;
 }
 
+/** Elementos cerrados de la zona actual con los que se puede topar (tocarlos lleva hasta ellos). */
+export const bumpable = (g: Game) => elemBlocked(g, g.zone);
+/** Mecanismos de la zona: el camino no pasa por encima sin querer (se accionarían); se pisan como destino. */
+const mechanismCells = (g: Game) => new Set(zoneElements(g.zone).filter(el => isMechanism(el) && el.use!.some(u => u.from === elemState(g, el)) && elemPasses(el, elemState(g, el))).map(el => el.at));
+
 /** Tirada que se enseña en una ventana: d20 + bonificador contra una CD. */
 export interface ShownRoll { d20: number; bonus: number; dc: number; ok: boolean; text: string }
 /**
@@ -233,7 +244,7 @@ export interface ShownRoll { d20: number; bonus: number; dc: number; ok: boolean
 export function pathToward(g: Game, goal: Hex, reveal = false, viaTraps = false): Hex[] | null {
   const pass = passable(g, g.zone);
   const vis = visibleCells(g, reveal);
-  const doors = closedDoors(g);
+  const doors = new Map([...closedDoors(g), ...[...mechanismCells(g)].map(k => [k, k] as [string, string])]);
   const traps = viaTraps ? new Set<string>() : spottedTraps(g);
   const prev = new Map<string, string>([[hkey(g.pos), '']]);
   const q = [hkey(g.pos)];
@@ -293,6 +304,14 @@ export function disarmBonus(c: Char): { bonus: number; adv: boolean } {
 /** Pisa una casilla. `free` (modo desarrollador) entra aunque haya un obstáculo cerrado. */
 export function step(g: Game, to: Hex, free = false): Ev[] {
   const k = hkey(to);
+  // Elemento dinámico cerrado (roca, verja, barrera...): se topa con él desde fuera y el grupo no se mueve.
+  const el = elemAt(g.zone, k);
+  if (el && !free && !elemPasses(el, elemState(g, el))) {
+    g.note = undefined;
+    const evs = bumpElement(g, el);
+    logEvs(g, evs);
+    return evs;
+  }
   // Obstáculo cerrado: se intenta abrir desde fuera y, si no cede, el grupo se queda donde estaba.
   const door = free ? undefined : closedDoors(g).get(k);
   const tried = door ? obstacle(g, door, contentById(door)!.c.obstacle as Obstacle) : undefined;
@@ -306,7 +325,17 @@ export function step(g: Game, to: Hex, free = false): Ev[] {
   const first = !g.visited.includes(k);
   if (first) g.visited.push(k);
   g.note = note(g, k, first);
-  const evs: Ev[] = [];
+  const evs: Ev[] = elemNews(g);
+  // Mecanismo que se acciona al pisarlo, portal activo o aviso del elemento de la casilla.
+  if (el) {
+    const r = enterElement(g, el);
+    evs.push(...r.evs);
+    if (r.warp && passable(g, g.zone).has(r.warp)) {
+      g.pos = r.warp.split(',').map(Number) as Hex;
+      if (!g.visited.includes(r.warp)) g.visited.push(r.warp);
+      g.note = `${el.name}: aparecéis en otro lugar.`;
+    }
+  }
   // Botín único del corredor secreto de Hondaroca. Se deposita en una casilla
   // transitable del propio pasadizo y se recoge mediante el sistema normal de suelo.
   secretPotions(g);

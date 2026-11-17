@@ -4,6 +4,7 @@ import type { Ability, ClassId, SpeciesId } from './data/srd';
 import { afterDefeat, clone, Game, newGame } from './engine/game';
 import { chooseOption, leaveScene, sceneSpent, spentMsg } from './engine/escenas';
 import { allyCap, endAdventure, sendToInn } from './engine/posada';
+import { migrateElements } from './engine/elementos';
 import { markReturn, react, atEntrance, atRest, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step, trap, logEvs } from './engine/dungeon';
 import { ADVS, ADV_LIST, AdvId, TOWNS, TownId, advOf, firstZone, wonAdv } from './engine/aventuras';
 import { ITEMS } from './data/srd';
@@ -174,6 +175,7 @@ export const useStore = create<State>((set, get) => {
     loadSlot: slot => {
       const g = storage.load(slot);
       if (!g) return;
+      migrateElements(g);
       set({ game: g, combat: undefined, queue: [], walking: [], screen: 'game' });
     },
     walkTo: h => {
@@ -206,6 +208,8 @@ export const useStore = create<State>((set, get) => {
         // Abrir un cofre o coger la llave guarda la partida: no se pierde aunque caiga el grupo después.
         if (evs.some(e => e.kind === 'msg' && e.save)) storage.save(g);
         if (evs.length) return { walking: [], goal: undefined, ...advance(g, evs) };
+        // Topó con un elemento cerrado (solo un aviso) o un portal lo llevó a otro sitio: la marcha se para ahí.
+        if (hkey(g.pos) !== hkey(h)) return { walking: [], goal: undefined };
         const goal = get().goal;
         if (!goal || hkey(goal) === hkey(g.pos)) return { walking: rest, goal: rest.length ? goal : undefined };
         const p = pathToward(g, goal, isDev());
@@ -244,7 +248,7 @@ export const useStore = create<State>((set, get) => {
       if (cb.result === 'lose') {
         // Una derrota devuelve al último guardado: 10 % menos de oro, PG llenos y una poción más.
         const last = storage.load(get().game!.slot);
-        if (last) { afterDefeat(last); storage.save(last); }
+        if (last) { migrateElements(last); afterDefeat(last); storage.save(last); }
         set({ screen: 'defeat' });
         return;
       }

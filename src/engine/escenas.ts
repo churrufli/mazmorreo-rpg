@@ -7,6 +7,7 @@ import { ADVS, advOf } from './aventuras';
 import { logEvs, reached, contentById, dropKey, encounterById, rolledEnemies, Ev, giveItem, ShownRoll } from './dungeon';
 import type { Game } from './game';
 import { die, roll } from './rng';
+import { setElems } from './elementos';
 import { Char, abilMod, isDown, newItem } from './rules';
 
 /** Lo que pasa al elegir una opción (o al acertar o fallar su tirada). */
@@ -26,6 +27,8 @@ export interface Effect {
   reveal?: string;
   /** Reja o paso que se abre. */
   open?: string;
+  /** Elementos dinámicos del mapa que cambian de estado (id → estado): la roca se rompe, la verja se abre... */
+  set?: Record<string, string>;
   /** Combate que empieza ahora (ruido, alarma, el grupo de paso que ataca). */
   fight?: string;
   flag?: string;
@@ -122,6 +125,7 @@ export function applyEffect(g: Game, e: Effect, who?: Char): { lines: string[]; 
     lines.push('Ya lo puedes ver en el mapa.');
   }
   if (e.open && !g.done.includes(e.open)) g.done.push(e.open);
+  setElems(g, e.set);
   if (e.flag && !g.flags?.includes(e.flag)) g.flags = [...(g.flags ?? []), e.flag];
   const fight = e.fight && !g.done.includes(e.fight) && encounterById(e.fight) ? e.fight : undefined;
   return { lines, items, fight };

@@ -20,6 +20,8 @@ import { Card, CardInfo, CardModal, charInfo } from '../ui/Card';
 import { Dialogue, FadeIn, Message } from '../ui/Overlays';
 import { Btn, Icon } from '../ui/kit';
 import { fxFull } from '../ui/movimiento';
+import { ElementoMapa } from '../ui/ElementoMapa';
+import { elemBlocked, elemPasses, elemState, zoneElements } from '../engine/elementos';
 import { getDev } from '../storage';
 import { MAX_ITEMS, isDown, needsRest } from '../engine/rules';
 import { FeatPicker } from '../ui/FeatPicker';
@@ -197,9 +199,21 @@ export function Explore() {
     const gates = plan(g.zone).marks.filter(m => m.kind === 'gate' && !g.done.includes(m.id)).map(m => `${m.q},${m.r}`);
     // Lo que hay tras un secreto sin descubrir no se dibuja (tampoco sin niebla): ni suelo ni decorados.
     const hidden = new Set(plan(g.zone).marks.filter(m => m.kind === 'secret' && !g.found.includes(m.id)).flatMap(m => m.path ?? []));
-    return new Set([...blockedCells(g.zone), ...gates].filter(k => !hidden.has(k)));
+    // Elementos dinámicos cerrados (roca, verja...): también suelo con su elemento encima.
+    return new Set([...blockedCells(g.zone), ...gates, ...elemBlocked(g, g.zone)].filter(k => !hidden.has(k)));
   }, [g]);
   const rooms = useMemo(() => cellMap(g.zone), [g.zone]);
+  const elems = zoneElements(g.zone).map(el => ({ el, state: elemState(g, el) }));
+  // Elemento que se abre (o se cierra): su casilla se ilumina como un pasadizo recién descubierto.
+  const prevElems = useRef<{ zone: string; open: Record<string, boolean> } | undefined>(undefined);
+  useEffect(() => {
+    const before = prevElems.current;
+    const open = Object.fromEntries(elems.map(({ el, state }) => [el.id, elemPasses(el, state)]));
+    prevElems.current = { zone: g.zone, open };
+    if (!before || before.zone !== g.zone) return;
+    const changed = elems.filter(({ el }) => before.open[el.id] !== undefined && before.open[el.id] !== open[el.id]).map(({ el }) => el.at);
+    if (changed.length) pendingPaths.current = [...pendingPaths.current, ...changed];
+  }, [g]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Por casillas ya pisadas se anda más deprisa (volver por lo explorado); la marcha sigue parándose en cada evento.
   const quick = useRef(false);
@@ -364,6 +378,8 @@ export function Explore() {
               const k = `${m.q},${m.r}`;
               if (!vis.has(k)) return null;
               if (!pass.has(k) && !blocked.has(k) && m.kind !== 'gate') return null;
+              // En la casilla de un elemento dinámico manda el elemento: el decorado de debajo no se dibuja.
+              if (m.kind === 'prop' && elems.some(x => x.el.at === k)) return null;
               const [x, y] = center(m.q, m.r);
               let img: ImgKey | undefined;
               // Decorados bloqueantes y capas de suelo; el agua bajo una pasarela también se ve.
@@ -446,6 +462,12 @@ export function Explore() {
               );
               const sz = m.kind === 'prop' ? S * 1.4 : S * 1.5;
               return <SvgImage key={i} href={IMG[img]} x={X(x) - sz / 2} y={Y(y) - sz / 2} width={sz} height={sz} />;
+            })}
+            {/* Elementos dinámicos: forma provisional o su imagen definitiva, según el estado. */}
+            {elems.map(({ el, state }) => {
+              if (!vis.has(el.at)) return null;
+              const [x, y] = center(...(el.at.split(',').map(Number) as [number, number]));
+              return <ElementoMapa key={`x${el.id}`} type={el.type} state={state} x={X(x)} y={Y(y)} s={S} />;
             })}
             {/* Combates ganados: espadas cruzadas en la posición fija de cada grupo enemigo (el autor 2026-11-05/06). */}
             {[...new Set(zp.marks.filter(m => m.kind === 'encounter').map(m => wonCell(g, m.id)).filter((k): k is string => !!k && vis.has(k)))].map(k => {

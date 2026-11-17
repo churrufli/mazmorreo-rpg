@@ -1,9 +1,10 @@
 // Juega Hondaroca entera con un bot sencillo para comprobar que el motor no se rompe
 // con ninguna de las 16 combinaciones de héroe.
 import { newGame, Game } from './game';
-import { bossEncounter, closedDoors, enterZone, step, findPath, plan, doRest, Ev, hkey, visibleCells, passable, trap } from './dungeon';
+import { bumpable, bossEncounter, closedDoors, enterZone, step, findPath, plan, doRest, Ev, hkey, visibleCells, passable, trap } from './dungeon';
 import { startCombat, autoTurn, enemyTurn, actionsFor, targetsFor, perform, endTurn, current, Combat, hasUseful } from './combat';
 import { HERO_CLASSES, ITEMS, SPECIES, ClassId, SpeciesId } from '../data/srd';
+import { elemAt, elemState } from './elementos';
 import { chooseFeat, FeatId, gainXp, longRest, MAX_ITEMS } from './rules';
 
 /** Datos que recoge el estudio de equilibrio (estudio.test.ts) mientras juega el bot. */
@@ -11,6 +12,8 @@ export interface Rec { combats: { id: string; rounds: number; lost: number; down
 export const REC: { cur?: Rec } = {};
 /** El bot va al pueblo a curarse (como una persona) solo si se activa: los tests normales siguen igual. */
 export const TOWN = { on: false, trips: 0 };
+/** El bot topa con los elementos dinámicos cerrados (derrumbe, puerta...) para resolverlos, solo si se activa. */
+export const BUMP = { on: false, bumps: 0 };
 
 const charOf0 = (g: Game, u: { charId?: string }) => g.party.find(c => c.id === u.charId)!;
 
@@ -147,6 +150,10 @@ function play(cls: ClassId, sp: SpeciesId, seed?: number, start = 'z1', xp = 0, 
     const pass = passable(g, g.zone);
     const doors = closedDoors(g);
     const targets = [...vis].filter(k => pass.has(k) && !g.visited.includes(k) && !(doors.has(k) && knocked.has(`${g.zone}:${k}`)));
+    const bump = BUMP.on ? bumpable(g) : new Set<string>();
+    // Cada estado del elemento se intenta una vez (una puerta desbloqueada aún hay que empujarla).
+    const bk = (k: string) => `${g.zone}:${k}:${elemState(g, elemAt(g.zone, k)!)}`;
+    targets.push(...[...bump].filter(k => vis.has(k) && !knocked.has(bk(k))));
     // Con la llave de la zona en la mochila, vuelve a la salida cerrada.
     const key = g.party.some(c => c.items.some(i => i.id === 'zone_key' || i.id === 'bark_amulet'));
     if (key) targets.push(...plan(g.zone).marks.filter(m => m.kind === 'exit').map(m => `${m.q},${m.r}`));
@@ -159,6 +166,7 @@ function play(cls: ClassId, sp: SpeciesId, seed?: number, start = 'z1', xp = 0, 
     if (!best) throw new Error(`atascado en ${g.zone} ${hkey(g.pos)} items=${g.party.map(c => c.name + ':' + c.items.map(i => i.id).join('/')).join(' ')} bench=${(g.bench ?? []).map(c => c.name + ':' + c.items.map(i => i.id).join('/')).join(' ')} drops=${JSON.stringify(g.drops)} done=${g.done.filter(d => /key|open/.test(d)).join(',')} tras ${log.join(' ')}`);
     for (const h of best) {
       if (doors.has(hkey(h))) knocked.add(`${g.zone}:${hkey(h)}`);
+      if (bump.has(hkey(h))) { knocked.add(bk(hkey(h))); BUMP.bumps++; }
       const evs = step(g, h);
       if (evs.length) { queue.push(...evs); break; }
     }

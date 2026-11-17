@@ -15,7 +15,9 @@ test('las 8 decisiones de Hondaroca tienen su ilustración y todas las escenas, 
   }
   for (const f of ['hondaroca', 'corazon', 'montana']) for (const z of require(`../data/${f}.json`).zones) for (const r of z.rooms)
     for (const c of r.contents) {
-      if (c.type === 'scene') expect([c.id, plan(z.id).marks.some(m => m.kind === 'scene' && m.id === c.id)]).toEqual([c.id, true]);
+      // Las escenas de un elemento dinámico (derrumbe, puerta...) se abren al topar con él: van en su casilla, no en una marca propia.
+      const ofElement = (z.elements ?? []).some((e: any) => e.scene === c.id);
+      if (c.type === 'scene') expect([c.id, ofElement || plan(z.id).marks.some(m => m.kind === 'scene' && m.id === c.id)]).toEqual([c.id, true]);
       if (c.type === 'scene' && c.img) expect(require('../assets').IMG[c.img]).toBeTruthy();
     }
 });

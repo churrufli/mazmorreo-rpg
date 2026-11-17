@@ -881,6 +881,49 @@
               "type": "prop",
               "prop": "barrels",
               "count": 1
+            },
+            {
+              "type": "scene",
+              "id": "z1_x01_p",
+              "title": "La galería derrumbada",
+              "text": "Un derrumbe reciente tapa la galería que lleva a la cámara de las poleas. Entre las piedras se cuela una corriente de aire: al otro lado hay espacio.",
+              "question": "¿Cómo despejáis el paso?",
+              "options": [
+                {
+                  "label": "Apartar las piedras grandes a pulso",
+                  "attr": "str",
+                  "dc": 12,
+                  "ok": {
+                    "text": "Las piedras ceden y ruedan a un lado. El paso queda libre.",
+                    "set": {
+                      "z1_x01": "retirados"
+                    }
+                  },
+                  "fail": {
+                    "text": "Las piedras no se mueven y os duelen los brazos."
+                  }
+                },
+                {
+                  "label": "Hacer palanca con la palanqueta",
+                  "needs": "crowbar",
+                  "ok": {
+                    "text": "La palanqueta suelta la piedra que sujetaba el resto. El derrumbe se viene abajo y deja libre el paso.",
+                    "set": {
+                      "z1_x01": "retirados"
+                    }
+                  }
+                },
+                {
+                  "label": "Retirar los cascotes uno a uno",
+                  "ok": {
+                    "text": "Tras un buen rato de trabajo, el paso queda libre. Las piedras os dejan las manos en carne viva.",
+                    "damage": "1d4",
+                    "set": {
+                      "z1_x01": "retirados"
+                    }
+                  }
+                }
+              ]
             }
           ]
         },
@@ -1208,7 +1251,20 @@
         }
       ],
       "c_scaled": true,
-      "c_gold": true
+      "c_gold": true,
+      "elements": [
+        {
+          "id": "z1_x01",
+          "type": "escombros",
+          "at": "4,-1",
+          "name": "Derrumbe de la galería",
+          "scene": "z1_x01_p",
+          "texts": {
+            "intactos": "Un derrumbe tapa la galería.",
+            "retirados": "Pasáis entre las piedras que apartasteis."
+          }
+        }
+      ]
     },
     {
       "id": "z2",
@@ -3233,6 +3289,54 @@
               "type": "prop",
               "prop": "sarcophagus",
               "count": 1
+            },
+            {
+              "type": "scene",
+              "id": "z3_x01_p",
+              "title": "La puerta de las cenizas",
+              "text": "Una puerta de bronce cierra la cámara de las cenizas. El cerrojo está verde de óxido, pero aún aguanta.",
+              "question": "¿Cómo la abrís?",
+              "options": [
+                {
+                  "label": "Forzar el cerrojo",
+                  "attr": "dex",
+                  "dc": 13,
+                  "ok": {
+                    "text": "El cerrojo salta con un chasquido. Ya solo queda empujar la puerta.",
+                    "set": {
+                      "z3_x01": "desbloqueada"
+                    }
+                  },
+                  "fail": {
+                    "text": "El cerrojo no cede."
+                  }
+                },
+                {
+                  "label": "Abrir el cerrojo con las herramientas de ladrón",
+                  "needs": "thieves_tools",
+                  "ok": {
+                    "text": "Las herramientas encuentran el mecanismo y el cerrojo se suelta. Ya solo queda empujar la puerta.",
+                    "set": {
+                      "z3_x01": "desbloqueada"
+                    }
+                  }
+                },
+                {
+                  "label": "Embestir la puerta con el hombro",
+                  "attr": "str",
+                  "dc": 14,
+                  "ok": {
+                    "text": "La puerta cede de golpe y se abre de par en par.",
+                    "set": {
+                      "z3_x01": "abierta"
+                    }
+                  },
+                  "fail": {
+                    "text": "La puerta resiste y el golpe os deja dolorido el hombro.",
+                    "damage": "1d4"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -3601,7 +3705,28 @@
           "text": "Un hueco en el pedestal del sepulcro podría guardar el último tributo del rey."
         }
       ],
-      "c_gold": true
+      "c_gold": true,
+      "elements": [
+        {
+          "id": "z3_x01",
+          "type": "puerta",
+          "at": "3,5",
+          "name": "Puerta de las cenizas",
+          "state": "bloqueada",
+          "scene": "z3_x01_p",
+          "use": [
+            {
+              "from": "desbloqueada",
+              "to": "abierta",
+              "text": "Empujáis la puerta de bronce, que se abre chirriando."
+            }
+          ],
+          "texts": {
+            "bloqueada": "La puerta de bronce sigue cerrada con cerrojo.",
+            "abierta": "Cruzáis la puerta de bronce."
+          }
+        }
+      ]
     },
     {
       "id": "z4",
@@ -4910,7 +5035,25 @@
           "text": "Un antiguo símbolo de Umbría responde a la magia de un amuleto de corteza."
         }
       ],
-      "c_gold": true
+      "c_gold": true,
+      "elements": [
+        {
+          "id": "z4_x01",
+          "type": "barrera",
+          "at": "-12,15",
+          "name": "Sello de la sala de los sellos",
+          "on": [
+            {
+              "if": "z4_e03",
+              "to": "disipada",
+              "text": "Al caer los devotos de la cámara de estudio, la barrera violeta que cerraba la sala de los sellos se apaga."
+            }
+          ],
+          "texts": {
+            "activa": "Una barrera de luz violeta cierra el paso. Late al ritmo de los cánticos de la cámara de estudio."
+          }
+        }
+      ]
     }
   ],
   "allies": [
