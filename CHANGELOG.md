@@ -2,6 +2,12 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 17 de noviembre de 2026 — Elementos dinámicos en los mapas
+
+- **Sistema genérico** (`src/engine/elementos.ts`): elementos con estados que cambian por escenas, mecanismos o acontecimientos y que de verdad abren o cierran el paso. Se guardan con la partida; las partidas anteriores que ya habían pasado por esas casillas los encuentran abiertos.
+- **Ejemplos jugables**: derrumbe en la galería de las poleas (z1, prueba de Fuerza), puerta de las cenizas (z3, cerrojo y empujón), contrapeso que alza y baja la verja de las válvulas (m3) y sello que se apaga al vencer a los devotos de la cámara de estudio (z4).
+- Marcadores provisionales con transición suave (respetan «Efectos visuales»). Imágenes definitivas pendientes: `docs/arte/elementos-dinamicos-pendientes.md`.
+
 ## 16 de noviembre de 2026 — Efectos visuales y animaciones
 
 - **Lenguaje común de animación** en `src/ui/movimiento.ts`: duraciones, curvas y nivel de efectos (completos, reducidos o mínimos) con ajuste persistente y respeto a «reducir movimiento» del sistema.

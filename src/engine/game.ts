@@ -99,6 +99,10 @@ export interface Game {
   news?: string[];
   /** Aliados elegidos en la posada para la próxima salida (si falta, van los de la aventura). */
   chosen?: string[];
+  /** Estado de los elementos dinámicos del mapa que ha cambiado (id → estado). Falta en partidas anteriores a ellos. */
+  elems?: Record<string, string>;
+  /** Cambios de elementos por acontecimiento ya contados al jugador. */
+  elemNews?: string[];
 }
 
 export function newGame(slot: number, name: string, cls: ClassId, species: SpeciesId, abil?: Record<Ability, number>, img?: ImgKey): Game {
@@ -108,7 +112,7 @@ export function newGame(slot: number, name: string, cls: ClassId, species: Speci
   return {
     slot, savedAt: Date.now(), rng: { seed: (Date.now() % 2147483647) | 0 }, variant: Math.floor(rand({ seed: Date.now() | 0 }) * 2147483647), place: 'dungeon', zone: 'z1',
     pos: [0, 0], prev: [0, 0], visited: [], party: [hero], gold: 0, done: [], found: [],
-    enemyHp: {}, fled: [], won: false, log: [],
+    enemyHp: {}, fled: [], won: false, log: [], elems: {},
   };
 }
 

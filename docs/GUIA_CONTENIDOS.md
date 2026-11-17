@@ -31,6 +31,25 @@ Una escena interactiva **sí** puede presentar una trampa, un objeto o un mecani
 
 El registro de aventuras, jefes, aliados y pueblos está en `src/engine/aventuras.ts`. Las conversaciones de afinidad están en `src/data/charlas.json`. Los textos de ayuda y novedades se mantienen en `src/data/ayuda.ts`.
 
+### Elementos dinámicos del mapa
+
+Rocas, puertas, verjas, puentes, palancas o barreras que cambian de estado se declaran en el campo `elements` de la zona (motor en `src/engine/elementos.ts`; tipos y estados en `ELEM_TYPES`):
+
+```json
+{ "id": "m3_x02", "type": "verja", "at": "-7,6", "name": "Verja de las válvulas",
+  "scene": "id de una escena de la zona (opcional)",
+  "on": [{ "if": "z4_e03", "to": "disipada", "text": "Aviso al jugador" }],
+  "use": [{ "from": "reposo", "to": "activada", "set": { "m3_x02": "abierta" }, "text": "..." }],
+  "texts": { "cerrada": "Aviso al topar con ella", "abierta": "Aviso al pisarla" } }
+```
+
+- `on`: cambio permanente cuando ocurre algo (escena hecha, combate ganado, secreto o marca). Solo puede abrir pasos.
+- `scene`: escena que salta al topar con el elemento cerrado; sus efectos lo cambian con `"set": { "id": "estado" }`. La escena va en `contents` de una sala, sin marca en el plano.
+- `use`: mecanismo que se acciona al pisarlo; puede ser reversible y cambiar otros elementos con `set`.
+- Un elemento no puede cortar el camino a la salida, la llave ni el jefe, ni encerrar al grupo: lo comprueba `src/engine/elementos.test.ts`.
+- Su casilla debe ser suelo libre en el plano (sin otra marca) y la historia no debe depender de cómo se dibuje.
+- Imágenes de cada estado: `docs/arte/elementos-dinamicos-pendientes.md`.
+
 ## 4. Equilibrio de encuentros
 
 - Mantener la referencia a D&D 2024 SRD 5.2.1, con adaptación de **composición y recursos** a un juego individual.
