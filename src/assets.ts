@@ -149,6 +149,7 @@ export const IMG = {
   escarabajo_fuego: require('../assets/img/escarabajo_fuego.webp'),
   escena_altar_herido: require('../assets/img/escena_altar_herido.webp'),
   escena_baliza_apagada: require('../assets/img/escena_baliza_apagada.webp'),
+  escena_baltoplat_atada: require('../assets/img/escena_baltoplat_atada.webp'),
   escena_barricada_cede: require('../assets/img/escena_barricada_cede.webp'),
   escena_caja_resineros: require('../assets/img/escena_caja_resineros.webp'),
   escena_campanilla_hielo: require('../assets/img/escena_campanilla_hielo.webp'),
