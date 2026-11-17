@@ -19,11 +19,12 @@ import { MONSTERS } from '../data/srd';
 import { Card, CardInfo, CardModal, charInfo } from '../ui/Card';
 import { Dialogue, FadeIn, Message } from '../ui/Overlays';
 import { Btn, Icon } from '../ui/kit';
-import { fxFull } from '../ui/movimiento';
+import { fxFull, useFxMode } from '../ui/movimiento';
+import { AmbienteAgua, AmbienteAire, AmbienteSuelo, Vineta, useAmbientActive } from '../ui/ambiente';
 import { ElementoMapa } from '../ui/ElementoMapa';
 import { elemBlocked, elemPasses, elemState, zoneElements } from '../engine/elementos';
 import { getDev } from '../storage';
-import { MAX_ITEMS, isDown, needsRest } from '../engine/rules';
+import { MAX_ITEMS, isDown, needsRest, sightRadius } from '../engine/rules';
 import { FeatPicker } from '../ui/FeatPicker';
 
 const S = 30; // radio del hexágono en píxeles
@@ -363,12 +364,28 @@ export function Explore() {
   const here = g.drops?.[dropKey(g)] ?? [];
   const restImg: ImgKey = ADVS[advOf(g.zone)].restImg;
   const townName = TOWNS[ADVS[advOf(g.zone)].town].name;
+  // Ambientación (luces, bruma, motas, agua): decorativa, se para con una ventana encima o la app en segundo plano.
+  const fx = useFxMode();
+  const ambOn = useAmbientActive(!head && !sheet && !showLog && !showOpts && !showInfo);
+  const visKey = `${g.zone}:${vis.size}:${pass.size}:${g.visited.length}`;
+  const amb = {
+    // Los decorados de las casillas con elemento no se dibujan: tampoco su luz ni su agua.
+    zone: g.zone, marks: zp.marks.filter(m => !(m.kind === 'prop' && elems.some(x => x.el.at === `${m.q},${m.r}`))), visKey, vis, floor: (k: string) => pass.has(k) || blocked.has(k), S, mode: fx, active: ambOn,
+    toXY: (q: number, r: number): [number, number] => { const [x, y] = center(q, r); return [X(x), Y(y)]; },
+    cells: zp.cells as unknown as [number, number][],
+  };
+  // La luz que lleva el grupo (antorcha o truco Luz), la misma que da dos casillas de visión.
+  const heroLight = sightRadius(g.party) < 2 ? undefined : g.party.some(c => !c.dead && c.items.some(i => i.id === 'torch')) ? 'fire' as const : 'magic' as const;
+  const viewRef = useRef(view);
+  viewRef.current = view;
+  const reach = useRef(() => ({ x: viewRef.current.w / 2 / zoomNow.current + S, y: viewRef.current.h / 2 / zoomNow.current + S })).current;
 
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }}>
       <View nativeID="mazmorreo-map" style={{ flex: 1, overflow: 'hidden' }} onLayout={e => setView({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...responder.panHandlers}>
         <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: box.w, height: box.h, transform: [{ translateX: tx }, { translateY: ty }, { scale }] }}>
-          <Ground zone={g.zone} box={box} art={art} vis={vis} visKey={`${g.zone}:${vis.size}:${pass.size}:${g.visited.length}`} pass={pass} blocked={blocked} rooms={rooms} visited={g.visited} onTap={tapRef} />
+          <Ground zone={g.zone} box={box} art={art} vis={vis} visKey={visKey} pass={pass} blocked={blocked} rooms={rooms} visited={g.visited} onTap={tapRef} />
+          <AmbienteSuelo {...amb} heroLight={heroLight} hx={hx} hy={hy} />
           <Svg width={box.w} height={box.h} style={StyleSheet.absoluteFill} pointerEvents="none">
             <Defs>
               <ClipPath id="tok"><Circle cx={0} cy={0} r={S * 0.78} /></ClipPath>
@@ -523,6 +540,7 @@ export function Explore() {
               return <SvgImage key={`d${k}`} href={IMG[ITEMS[items[0].id].img]} x={X(x) - S * 0.6} y={Y(y) - S * 0.6} width={S * 1.2} height={S * 1.2} />;
             })}
           </Svg>
+          <AmbienteAgua {...amb} />
           {/* La niebla que se aparta va en su propio lienzo: animarla no obliga a redibujar fichas ni suelo. */}
           {reveals.length ? (
             <Svg width={box.w} height={box.h} style={StyleSheet.absoluteFill} pointerEvents="none">
@@ -561,7 +579,9 @@ export function Explore() {
               return <SvgImage key={i} href={IMG[PROP[m.id]]} x={X(x) - sz / 2} y={Y(y) - sz * 0.6} width={sz} height={sz} opacity={k === hkey(g.pos) ? 0.5 : 1} />;
             })}
           </Svg>
+          <AmbienteAire {...amb} focus={lastPos} reach={reach} />
         </Animated.View>
+        <View pointerEvents="none" style={StyleSheet.absoluteFill}><Vineta zone={g.zone} w={view.w} h={view.h} mode={fx} /></View>
       </View>
 
       <View style={[st.top, { paddingTop: ins.top + 6 }]}>

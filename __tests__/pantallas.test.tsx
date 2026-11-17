@@ -12,7 +12,7 @@ jest.mock('react-native-mmkv', () => {
 jest.mock('react-native-svg', () => {
   const R = require('react');
   const C = (name: string) => (p: any) => R.createElement(name, p, p.children);
-  const names = ['Svg', 'Circle', 'ClipPath', 'Defs', 'G', 'Image', 'Pattern', 'Polygon', 'Rect', 'Path', 'Text', 'LinearGradient', 'Stop', 'Line'];
+  const names = ['Svg', 'Circle', 'ClipPath', 'Defs', 'G', 'Image', 'Pattern', 'Polygon', 'Rect', 'Path', 'Text', 'LinearGradient', 'RadialGradient', 'Ellipse', 'Stop', 'Line'];
   const mod: any = { __esModule: true, default: C('Svg') };
   names.forEach(n => (mod[n] = C(n)));
   return mod;
