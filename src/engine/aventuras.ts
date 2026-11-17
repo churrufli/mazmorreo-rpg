@@ -37,7 +37,7 @@ export interface Adv {
    * como tarde al entrar en la sala del jefe y es el mínimo con el que se sale de ella.
    */
   level: number;
-  /** Multiplicador de los PX de sus combates, para que el nivel objetivo llegue hacia la zona 3 (por defecto 1). */
+  /** Multiplicador de los PX de sus combates (por defecto 1): el nivel objetivo llega hacia la mitad de la aventura. */
   xpScale?: number;
   /** Dónde acompaña el aliado de la aventura anterior («por la linde»). */
   escortWhere?: string;
@@ -63,7 +63,7 @@ export const ADVS: Record<AdvId, Adv> = {
     allyImg: { brunna: 'ally_brunna', tiko: 'ally_tiko', edmund: 'ally_edmund', liss: 'ally_liss' },
     speakers: { brunna: 'Brunna', tiko: 'Tiko', edmund: 'Hermano Edmund', liss: 'Liss', orvane: 'Maese Orvane' },
     faces: { brunna: 'ally_brunna', tiko: 'ally_tiko', edmund: 'ally_edmund', liss: 'ally_liss', orvane: 'orvane' },
-    level: 2, restImg: 'punto_descanso', trapImg: 'trampa',
+    level: 2, xpScale: 2, restImg: 'punto_descanso', trapImg: 'trampa',
   },
   corazon_hueco: {
     id: 'corazon_hueco', name: BD.dungeon.name, data: BD, town: 'vegahumbria', boss: 'Treant', sub: 'telmo',
@@ -77,7 +77,7 @@ export const ADVS: Record<AdvId, Adv> = {
       ...Object.fromEntries(BD.allies.map(a => [a.id, a.name])), [BD.traitor.id]: BD.traitor.name, corazon: BD.boss.name,
     },
     faces: { maren: 'ally_maren', anselmo: 'ally_anselmo', ivelle: 'ally_ivelle', telmo: 'ally_telmo', ortiga: 'abuela_ortiga', corazon: 'corazon_hueco' },
-    prev: 'hondaroca', level: 3, escortWhere: 'por la linde', restImg: 'campamento',
+    prev: 'hondaroca', level: 3, xpScale: 2, escortWhere: 'por la linde', restImg: 'campamento',
     trapImg: 'trampa_bosque',
   },
   montana: {
@@ -90,7 +90,7 @@ export const ADVS: Record<AdvId, Adv> = {
     allyImg: { vurka: 'ally_vurka', durnok: 'ally_durnok', syrael: 'ally_syrael', aldric: 'ally_aldric' },
     speakers: { ...Object.fromEntries(MD.allies.map(a => [a.id, a.name])), sabio: MD.sage.name, dragon: MD.boss.name },
     faces: { vurka: 'ally_vurka', durnok: 'ally_durnok', syrael: 'ally_syrael', aldric: 'ally_aldric', sabio: 'ally_telmo', dragon: 'dragon_blanco_joven' },
-    prev: 'corazon_hueco', level: 4, xpScale: 2, escortWhere: 'por el paso nevado', restImg: 'hoguera_nieve',
+    prev: 'corazon_hueco', level: 4, xpScale: 3, escortWhere: 'por el paso nevado', restImg: 'hoguera_nieve',
     trapImg: 'trampa_montana',
   },
 };

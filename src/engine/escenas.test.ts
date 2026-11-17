@@ -271,8 +271,9 @@ test('equilibrio: la serpiente del túmulo de la ciénaga es opcional y se advie
 });
 
 test('equilibrio: los jefes dan su PX completo aunque sus monstruos tengan PX internos cero', () => {
-  // Vharzûl da 2800 PX (×2 en la montaña), pero el héroe solo no pasa del nivel 4 (2700 PX) dentro de la aventura.
-  for (const [zone, id, xp] of [['b4', 'b4_e04', 700], ['m4', 'm4_e05', 2700]] as const) {
+  // El Corazón da 700 PX (×2 en el bosque) y Vharzûl 2350 (×3 en la montaña), pero el héroe solo
+  // no pasa del nivel objetivo de la aventura: 3 (900 PX) y 4 (2700 PX).
+  for (const [zone, id, xp] of [['b4', 'b4_e04', 900], ['m4', 'm4_e05', 2700]] as const) {
     const g = newGame(1, 'Prueba', 'fighter', 'human');
     g.zone = zone;
     const cb = startCombat(g, id);

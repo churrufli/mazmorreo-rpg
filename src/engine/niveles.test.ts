@@ -1,6 +1,6 @@
 // Estudio con el bot (solo informativo): victorias, dónde cae, nivel del grupo ante cada jefe y PX al empezar cada zona.
 // Ejecutar con: NIVELES=1 N=10 npx jest niveles --runInBand (ONLY=montana para una sola; XP2/XP3 cambian los PX iniciales).
-import { play, TOWN } from './partida.test';
+import { play, REC, TOWN } from './partida.test';
 import * as combat from './combat';
 import { HERO_CLASSES } from '../data/srd';
 declare const process: { env: Record<string, string | undefined> };
@@ -26,6 +26,7 @@ run('niveles', () => {
   for (const [name, start, xp, esc] of cfg) {
     if (process.env.ONLY && !process.env.ONLY.includes(name)) continue;
     zl = {};
+    REC.cur = process.env.DETALLE ? { combats: [], acts: {}, idle: 0 } : undefined;
     const lv: Record<string, number> = {}; let wins = 0, n = 0; const where: Record<string, number> = {};
     for (const cls of HERO_CLASSES) for (let s = 1; s <= N; s++) {
       atBoss = undefined; n++; seenZ = new Set();
@@ -35,6 +36,12 @@ run('niveles', () => {
       lv[k] = (lv[k] ?? 0) + 1;
     }
     console.log(name, 'xp inicial', xp, 'victorias', wins, '/', n, 'cae', JSON.stringify(where), 'niveles ante el jefe (partidas ganadas)', JSON.stringify(lv));
+    if (REC.cur) {
+      const by: Record<string, { n: number; lost: number }> = {};
+      for (const c of REC.cur.combats) { const e = (by[c.id] ??= { n: 0, lost: 0 }); e.n++; e.lost += c.lost; }
+      console.log('PG perdidos por combate', Object.entries(by).sort((a, b) => b[1].lost / b[1].n - a[1].lost / a[1].n).map(([id, e]) => `${id} ${Math.round((e.lost / e.n) * 100)}%`).join(', '));
+      REC.cur = undefined;
+    }
     console.log('PX medios del héroe al primer combate de cada zona', Object.entries(zl).map(([z, a]) => `${z} ${Math.round(a.reduce((x, y) => x + y, 0) / a.length)} (${a.length})`).join(', '));
   }
   spy.mockRestore();
