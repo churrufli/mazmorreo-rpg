@@ -36,8 +36,9 @@ for f in "$SRC"/mapa/*.*; do
     *) FUZZ=30% cutout "$f" 256 "$OUT/$n.webp";; esac  # 30 %: quita el halo claro que deja el recorte
 done
 cutout "$SRC/mapa/extras/5.16_altar_orvane.png" 256 "$OUT/altar_orvane.webp"
-# Elementos dinámicos del mapa (docs/arte/elementos-dinamicos-pendientes.md): din_<tipo>_<estado>, con el mismo recorte que los objetos.
-for f in "$SRC"/mapa/dinamicos/*.*; do [ -e "$f" ] || continue; FUZZ=30% cutout "$f" 256 "$OUT/$(name "$f").webp"; done
+# Elementos dinámicos del mapa (docs/arte/elementos-dinamicos-pendientes.md): din_<tipo>_<estado>.
+# Sin recorte ni recentrado (los estados de un elemento deben conservar el mismo encuadre): ver convertir-dinamicos.py.
+for f in "$SRC"/mapa/dinamicos/*.png; do [ -e "$f" ] || continue; python3 "$(dirname "$0")/convertir-dinamicos.py" "$f" "$OUT/$(name "$f").webp"; done
 for f in "$SRC"/objetos/*.* "$SRC"/efectos/*.*; do
   n=$(name "$f"); case "$n" in llave) cutout "$f" 256 "$OUT/$n.webp" 882,294;; arco_*|periapto_*|red|simbolo_sagrado|amuleto_corteza|anillo_calor|sello_deshielo) cutout "$f" 256 "$OUT/$n.webp" todo;; *) cutout "$f" 256 "$OUT/$n.webp";; esac; done
 # Aliados del bosque y de la montaña (banco de PNJ) y la abuela Brezna.

@@ -9,7 +9,7 @@ Cómo funciona por dentro: `src/engine/elementos.ts` (motor y catálogo de tipos
 Cada estado tiene una **clave fija** con la forma `din_<tipo>_<estado>`. Para incorporar una imagen no hay que tocar código ni reglas:
 
 1. Guarda el original como `/mnt/project-files/arte/mapa/dinamicos/din_<tipo>_<estado>.png`.
-2. Conviértelo a `assets/img/din_<tipo>_<estado>.webp` (256 × 256 con transparencia). `scripts/convertir-arte.sh` ya lo hace con todo lo que haya en esa carpeta; para una sola imagen basta la función `cutout` del mismo script con `FUZZ=30%`.
+2. Conviértelo a `assets/img/din_<tipo>_<estado>.webp` (256 × 256 con transparencia). `scripts/convertir-arte.sh` ya lo hace con todo lo que haya en esa carpeta mediante `scripts/convertir-dinamicos.py` (sin recortar ni recentrar, para no mover el encuadre entre estados).
 3. Añade su línea en `src/assets.ts`, en orden alfabético: `  din_<tipo>_<estado>: require('../assets/img/din_<tipo>_<estado>.webp'),`. La versión web (`src/assets.web.ts`) se genera sola al compilar.
 
 En cuanto la clave existe, el mapa usa la imagen en lugar del marcador provisional. Si falta la imagen de un estado, ese estado sigue con su marcador: se pueden entregar una a una.
@@ -27,9 +27,9 @@ Son objetos del mapa, así que siguen el prompt de «Objetos del mapa» de `docs
 - **Legibilidad**: deben distinguirse sobre suelos de mina, piedra enana, cripta, monasterio inundado y fortaleza helada. Silueta clara, legible a 48 px.
 - **Genéricas**: la misma imagen sirve para todas las aventuras. Sin emblemas ni símbolos de un lugar concreto, y sin violeta salvo en los elementos mágicos.
 
-## Imágenes necesarias ahora (11)
+## Imágenes necesarias ahora (11): ya incorporadas
 
-Son las de los elementos que ya están en las aventuras. Agrupadas por tipo de elemento.
+Las 11 están incorporadas (17 de noviembre de 2026). Son las de los elementos que ya están en las aventuras. Agrupadas por tipo de elemento.
 
 ### Escombros (rocas y escombros)
 

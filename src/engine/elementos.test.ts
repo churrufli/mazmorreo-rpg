@@ -83,6 +83,17 @@ describe('datos de los elementos', () => {
   test('cada estado tiene su clave de imagen estable', () => {
     for (const [t, d] of Object.entries(ELEM_TYPES)) for (const s of Object.keys(d.states)) expect(artKey(t, s)).toBe(`din_${t}_${s}`);
   });
+
+  test('los estados de los elementos que ya usan las aventuras tienen su imagen registrada', () => {
+    const fs = require('fs');
+    const assets: string = fs.readFileSync('src/assets.ts', 'utf8');
+    const usados = [['escombros', ['intactos', 'retirados']], ['puerta', ['bloqueada', 'desbloqueada', 'abierta']], ['verja', ['cerrada', 'abierta']], ['palanca', ['reposo', 'activada']], ['barrera', ['activa', 'disipada']]] as const;
+    for (const [t, estados] of usados) for (const e of estados) {
+      expect(ELEM_TYPES[t].states[e]).toBeDefined();
+      expect(assets).toContain(`${artKey(t, e)}: require('../assets/img/${artKey(t, e)}.webp')`);
+      expect(fs.existsSync(`assets/img/${artKey(t, e)}.webp`)).toBe(true);
+    }
+  });
 });
 
 describe('ninguna aventura queda bloqueada', () => {
