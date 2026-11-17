@@ -269,7 +269,7 @@ export type DialogueLine = { speaker: string; text: string };
 export type Ev =
   | { kind: 'combat'; id: string }
   | { kind: 'dialogue'; lines: DialogueLine[] }
-  | { kind: 'msg'; title: string; lines: string[]; table?: [string, string][]; intro?: string; bg?: ImgKey; img?: ImgKey; img2?: ImgKey; items?: ImgKey[]; portrait?: ImgKey; rolls?: ShownRoll[]; save?: boolean }
+  | { kind: 'msg'; title: string; lines: string[]; table?: [string, string][]; intro?: string; bg?: ImgKey; img?: ImgKey; img2?: ImgKey; items?: ImgKey[]; portrait?: ImgKey; rolls?: ShownRoll[]; save?: boolean; pass?: string }
   | { kind: 'rest'; id: string; long: boolean; name: string; text: string }
   | { kind: 'scene'; id: string }
   /** Trampa vista antes de pisarla: se elige quién la desactiva, pasar con cuidado o volver atrás. */
@@ -386,7 +386,12 @@ export function step(g: Game, to: Hex, free = false): Ev[] {
       }
       // Cerrada: solo un aviso, sin parar la marcha (la casilla puede estar de paso hacia otras salas).
       const lock = exitLock(g);
-      if (lock?.closed) { g.note = lock.text; continue; }
+      if (lock?.closed) {
+        // Modo desarrollador: el aviso sale como mensaje, con un botón para abrirla sin la llave.
+        if (free) evs.push({ kind: 'msg', title: 'Salida cerrada', lines: [lock.text!], pass: m.id });
+        else g.note = lock.text;
+        continue;
+      }
       if (lock?.ev) evs.push(lock.ev);
       const sum = zoneSummary(g);
       if (sum) evs.push(sum);
@@ -796,9 +801,17 @@ function obstacle(g: Game, id: string, o: Obstacle): { ev: Ev; open: boolean } {
     g.done.push(tried);
     const dmg = Math.min(who.hp - 1, roll(g.rng, a.dmg));
     who.hp -= Math.max(0, dmg);
-    return { open: false, ev: { kind: 'msg', title: o.title, img: o.img, rolls, lines: [o.text, a.try.replace('{who}', who.name), `${a.hurt.replace('{who}', who.name)}: pierde ${Math.max(0, dmg)} PG.`, o.missing] } };
+    return { open: false, ev: { kind: 'msg', title: o.title, img: o.img, rolls, lines: [o.text, a.try.replace('{who}', who.name), `${a.hurt.replace('{who}', who.name)}: pierde ${Math.max(0, dmg)} PG.`, o.missing], pass: id } };
   }
-  return { open: false, ev: { kind: 'msg', title: o.title, img: o.img, lines: [o.text, o.missing] } };
+  return { open: false, ev: { kind: 'msg', title: o.title, img: o.img, lines: [o.text, o.missing], pass: id } };
+}
+
+/** Modo desarrollador: supera un obstáculo cerrado (se abre su cofre) o abre la salida de la zona sin la llave. */
+export function devPass(g: Game, id: string): Ev[] {
+  if (contentById(id)?.c.obstacle) return g.done.includes(id) ? [] : [chest(g, id)];
+  g.done.push(`${g.zone}_open`);
+  const sum = zoneSummary(g);
+  return [...(sum ? [sum] : []), { kind: 'zone', to: id }];
 }
 
 function chest(g: Game, id: string): Ev {
