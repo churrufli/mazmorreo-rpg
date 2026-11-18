@@ -90,6 +90,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Especies nuevas: dracónido, con aliento contra una fila enemiga y resistencia al daño de su linaje (el color de sus escamas), y tiefling, con resistencia al fuego, Descarga de fuego y, desde nivel 3, Reprensión infernal.',
     'Clase nueva: el brujo de pacto infernal. Descarga sobrenatural, Maleficio, Armadura de sombras y, más adelante, Manos ardientes, Rayo abrasador y Bola de fuego. Tiene pocos espacios, pero vuelven con un descanso corto.',
     'El bárbaro ya se puede elegir como héroe: Furia, Defensa sin armadura y Ataque adicional a nivel 5.',
+    'Dracónidos, tieflings y brujos tienen ya retrato de hombre y de mujer: al elegir el sexo sale la imagen que toca.',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',

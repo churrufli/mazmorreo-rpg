@@ -30,12 +30,19 @@ export const FACE: Partial<Record<ImgKey, [number, number]>> = {
   hero_fighter_tiefling: px(237, 80), hero_cleric_tiefling: px(234, 130), hero_rogue_tiefling: px(277, 110), hero_wizard_tiefling: px(291, 70),
   hero_ranger_tiefling: px(228, 130), hero_paladin_tiefling: px(235, 110), hero_barbarian_tiefling: px(265, 100), hero_warlock_tiefling: px(265, 115),
   hero_warlock_human: px(330, 64), hero_warlock_elf: px(272, 75), hero_warlock_dwarf: px(295, 170), hero_warlock_halfling: px(235, 145),
+  // Su versión del otro sexo (3.49b-3.68b).
+  hero_fighter_dragonborn_b: px(300, 78), hero_cleric_dragonborn_b: px(306, 62), hero_rogue_dragonborn_b: px(321, 86), hero_wizard_dragonborn_b: px(321, 81),
+  hero_ranger_dragonborn_b: px(321, 78), hero_paladin_dragonborn_b: px(261, 66), hero_barbarian_dragonborn_b: px(266, 66), hero_warlock_dragonborn_b: px(305, 112),
+  hero_fighter_tiefling_b: px(291, 106), hero_cleric_tiefling_b: px(291, 76), hero_rogue_tiefling_b: px(261, 111), hero_wizard_tiefling_b: px(289, 101),
+  hero_ranger_tiefling_b: px(196, 141), hero_paladin_tiefling_b: px(276, 109), hero_barbarian_tiefling_b: px(321, 166), hero_warlock_tiefling_b: px(291, 138),
+  hero_warlock_human_b: px(297, 64), hero_warlock_elf_b: px(301, 71), hero_warlock_dwarf_b: px(286, 116), hero_warlock_halfling_b: px(272, 127),
 };
 
 /** Sexo de la ilustración principal de cada héroe (la versión _b es la del otro sexo). */
 const MAN = new Set(['fighter_dwarf', 'fighter_human', 'cleric_elf', 'cleric_halfling', 'rogue_dwarf', 'rogue_elf', 'wizard_halfling', 'wizard_human',
   'ranger_halfling', 'ranger_human', 'paladin_elf', 'paladin_human', 'barbarian_dwarf', 'barbarian_halfling',
-  'barbarian_tiefling', 'cleric_tiefling', 'ranger_tiefling', 'wizard_tiefling', 'warlock_human', 'warlock_halfling']);
+  'barbarian_tiefling', 'cleric_tiefling', 'ranger_tiefling', 'wizard_tiefling', 'warlock_human', 'warlock_halfling',
+  'fighter_dragonborn', 'rogue_dragonborn', 'paladin_dragonborn', 'warlock_dragonborn']);
 export type Sex = 'man' | 'woman';
 export const baseSex = (cls: string, sp: string): Sex => (MAN.has(`${cls}_${sp}`) ? 'man' : 'woman');
 /** Ilustración del héroe según clase, especie y sexo elegido. */
