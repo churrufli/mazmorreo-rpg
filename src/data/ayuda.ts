@@ -85,7 +85,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'El hongo chillón chilla: su primer grito atrae a otro enemigo del grupo, si cabe.',
     'Al superar una zona, en la introducción de cada aventura y en las escenas con ilustración, primero se ve la imagen y a los dos segundos el cartel (tocar lo adelanta).',
     'Los avisos largos, como la subida de nivel de todo el grupo, se desplazan y el botón de continuar queda siempre a la vista.',
-    'Victoria en combate: los rayos de luz salen por los bordes de la pantalla. El final de aventura ya no muestra el botón de opciones. La estatua de la cobra se ve sin restos de fondo.',
+    'Victoria en combate: los rayos de luz salen por los bordes de la pantalla. El final de aventura ya no muestra el botón de opciones. La estatua de la cobra y la hoguera de los descansos de la tumba se ven sin restos de fondo.',
     'Modo desarrollador: al viajar a un pueblo, su aventura empieza de cero, y cada arma mágica de las aventuras anteriores va a quien usa ese arma.',
   ] },
   { version: 'v0.146', items: [
