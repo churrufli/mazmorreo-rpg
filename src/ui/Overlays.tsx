@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
 import Svg, { Circle, Line, Polygon, Text as SvgText } from 'react-native-svg';
 import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
@@ -255,18 +255,36 @@ export interface MessageProps {
   celebrate?: boolean;
   /** Con fondo: el cuadro abajo, para ver la ilustración entera (resultado de una escena). */
   low?: boolean;
+  /** Milisegundos en los que solo se ve la ilustración de fondo antes del cuadro (tocar la pantalla lo adelanta). */
+  hold?: number;
+}
+
+/** Tiempo que se deja ver una ilustración antes de su cartel (zona superada, introducciones, escenas). */
+export const HOLD_MS = 2000;
+
+/** Espera `ms` antes de enseñar algo; devuelve si ya se enseña y cómo adelantarlo. */
+export function useHold(ms: number): [boolean, () => void] {
+  const [on, setOn] = useState(!ms);
+  useEffect(() => {
+    if (!ms) return;
+    const t = setTimeout(() => setOn(true), ms);
+    return () => clearTimeout(t);
+  }, [ms]);
+  return [on, () => setOn(true)];
 }
 
 /**
  * Ventana de aviso con entrada animada. Va mostrando por pasos: la imagen (el cofre se abre),
  * cada tirada con su dado y al final el texto y los botones. Tocarla enseña todo de golpe.
  */
-export function Message({ title, lines, table, intro, img, img2, items, portrait, rolls = [], bg, low, onDone, children, celebrate }: MessageProps) {
+export function Message({ title, lines, table, intro, img, img2, items, portrait, rolls = [], bg, low, onDone, children, celebrate, hold = 0 }: MessageProps) {
   const pop = useRef(new Animated.Value(0)).current;
+  const [shown, show] = useHold(hold);
+  const { height } = useWindowDimensions();
   const steps = (img2 ? 1 : 0) + rolls.length + 1;
   // Sin pasos animados (victoria, avisos) el texto sale desde el principio, sin esperar a ningún temporizador.
   const [k, setK] = useState(steps === 1 ? 1 : 0);
-  useEffect(() => { Animated.spring(pop, { toValue: 1, friction: 7, tension: 70, useNativeDriver: true }).start(); }, [pop]);
+  useEffect(() => { if (shown) Animated.spring(pop, { toValue: 1, friction: 7, tension: 70, useNativeDriver: true }).start(); }, [pop, shown]);
   useEffect(() => {
     // Con dos imágenes (cofre cerrado y abierto), la primera se ve un segundo largo antes de abrirse.
     const t0 = img2 ? 1100 : 350;
@@ -297,6 +315,8 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
           {rollsShown.map((r, i) => <FadeIn key={i}><RollBadge r={r} /></FadeIn>)}
           {done ? (
             <View>
+              {/* Textos largos (subida de nivel de todo el grupo): se desplazan y el botón queda siempre a la vista. */}
+              <ScrollView style={{ maxHeight: height * (img || portrait ? 0.4 : 0.55) }}>
               {items?.length ? <View style={st.items}>{items.map((it, i) => <PopIn key={i} delay={i * 90}><Image source={IMG[it]} style={st.itemImg} /></PopIn>)}</View> : null}
               {table?.map(([k, v]) => (
                 <View key={k} style={st.tRow}>
@@ -308,6 +328,7 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
               {lines.map((l, i) => /sube a nivel/.test(l)
                 ? <FadeIn key={i} delay={i * step} from={6} duration={DUR.panel}><LevelUp text={l} /></FadeIn>
                 : <FadeIn key={i} delay={i * step} from={6} duration={DUR.panel}><Text style={[st.msgLine, /^Objetivo cumplido/.test(l) && st.goalOk, /^Objetivo fallado/.test(l) && st.goalKo]}>{l}</Text></FadeIn>)}
+              </ScrollView>
               {children ?? <Btn primary label="Continuar" onPress={onDone} />}
             </View>
           ) : null}
@@ -315,7 +336,9 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
       </Pressable>
     </Animated.View>
   );
-  if (bg) return <View style={StyleSheet.absoluteFill}><Bg src={IMG[bg]} dim={low ? 0.15 : 0.3}><View style={[st.center0, low && { justifyContent: 'flex-end', paddingBottom: 40 }]}>{panel}</View></Bg></View>;
+  const wait = <Pressable style={StyleSheet.absoluteFill} onPress={show} accessibilityLabel="Continuar" />;
+  if (bg) return <View style={StyleSheet.absoluteFill}><Bg src={IMG[bg]} dim={low ? 0.15 : 0.3}>{shown ? <View style={[st.center0, low && { justifyContent: 'flex-end', paddingBottom: 40 }]}>{panel}</View> : wait}</Bg></View>;
+  if (!shown) return wait;
   return <View style={st.center}>{panel}</View>;
 }
 
@@ -342,7 +365,9 @@ function TitlePunch({ children }: { children: React.ReactNode }) {
 function Rays() {
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(v, { toValue: 1, duration: 1600, easing: EASE.out, useNativeDriver: true }).start(); }, [v]);
-  const S = 520;
+  // Más grandes que la pantalla: las puntas de los rayos salen por los bordes y no se ven cortadas.
+  const { width, height } = useWindowDimensions();
+  const S = Math.ceil(Math.hypot(width, height) * 2.2);
   return (
     <Animated.View pointerEvents="none" style={{ position: 'absolute', alignSelf: 'center', top: '50%', width: S, height: S, marginTop: -S / 2,
       opacity: v.interpolate({ inputRange: [0, 0.25, 1], outputRange: [0, fxFull() ? 0.5 : 0.3, 0.22] }),
@@ -470,8 +495,8 @@ const st = StyleSheet.create({
   speaker: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 16, marginBottom: 2 },
   dlgText: { fontFamily: F.text, color: C.text, fontSize: 19, lineHeight: 25 },
   hint: { fontFamily: F.italic, color: C.textDim, fontSize: 13, textAlign: 'right', marginTop: 8 },
-  center: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.55)' },
-  center0: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  center: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.55)', overflow: 'hidden' },
+  center0: { flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   msgPanel: { borderColor: C.gold, borderWidth: 1.5, paddingTop: 16 },
   msgImgBox: { alignSelf: 'center', width: 110, height: 110, marginTop: -4 },
   msgImg: { width: 110, height: 110 },

@@ -2509,7 +2509,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Las madrigueras. Los secuestrados tienen que estar ahí."
+                  "text": "Las madrigueras. Los secuestrados tienen que estar ahí, más adentro."
                 }
               ]
             }
@@ -3217,7 +3217,7 @@
                 },
                 {
                   "srd_creature": "Mummy",
-                  "name": "Jardinero vendado",
+                  "name": "Momia jardinera",
                   "count": 1,
                   "row": "front",
                   "weapon": null,

@@ -17,7 +17,7 @@ import { ADVS, TOWNS, advOf } from '../engine/aventuras';
 import { ITEMS } from '../data/srd';
 import { MONSTERS } from '../data/srd';
 import { Card, CardInfo, CardModal, charInfo } from '../ui/Card';
-import { Dialogue, FadeIn, Message } from '../ui/Overlays';
+import { Dialogue, FadeIn, HOLD_MS, Message } from '../ui/Overlays';
 import { Btn, Icon } from '../ui/kit';
 import { fxFull, useFxMode } from '../ui/movimiento';
 import { AmbienteAgua, AmbienteAire, AmbienteSuelo, Vineta, useAmbientActive } from '../ui/ambiente';
@@ -643,7 +643,7 @@ export function Explore() {
       ) : null}
       {/* Resultado de una escena: su ilustración de fondo, entera, en vez de una imagen pequeña recortada (el autor 2026-11-06). */}
       {head?.kind === 'msg' ? (
-        <Message key={`m${queue.length}:${head.title}:${head.lines[0]}`} {...head} {...(head.img?.startsWith('escena_') && !head.img2 ? { img: undefined, bg: head.img, low: true } : {})} onDone={next}>
+        <Message key={`m${queue.length}:${head.title}:${head.lines[0]}`} {...head} {...(head.img?.startsWith('escena_') && !head.img2 ? { img: undefined, bg: head.img, low: true } : {})} hold={head.bg ? HOLD_MS : 0} onDone={next}>
           {head.pass && dev ? <><Btn primary label="Continuar" onPress={next} /><Btn small label="Superar" sub="Modo desarrollador" onPress={devPass} /></> : undefined}
         </Message>
       ) : null}

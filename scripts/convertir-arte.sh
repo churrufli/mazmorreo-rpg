@@ -32,6 +32,7 @@ for f in "$SRC"/mapa/*.*; do
     suelo_*|pared_*|agua_*) convert "$f" -resize 256x256 -quality 80 "$OUT/$n.webp";;
     puente) cutout "$f" 256 "$OUT/$n.webp" todo;;
     arbol_grande|arbol_caido|tocon|setas|arbusto_espinoso|roca_musgo|totem|altar_druidico|cabana|campamento|piedra_erguida|barriles_cajas|mesa_papeles|atril_libro) claro "$f" 256 "$OUT/$n.webp";;
+    estatua_dios_serpiente) python3 scripts/quitar-gris.py "$f" /tmp/gris.png && convert /tmp/gris.png -trim +repage -resize 256x256 -background none -gravity center -extent 256x256 -quality 82 "$OUT/$n.webp";;
     pasarela|raiz_arqueada|sacos_mineral) FUZZ=30% cutout "$f" 256 "$OUT/$n.webp" todo;;
     tela_arana|barricada_ramas) cutout "$f" 256 "$OUT/$n.webp" todo;;
     *) FUZZ=30% cutout "$f" 256 "$OUT/$n.webp";; esac  # 30 %: quita el halo claro que deja el recorte

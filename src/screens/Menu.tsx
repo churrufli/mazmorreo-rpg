@@ -13,7 +13,7 @@ import { ABIL_NAME, Ability, CLASSES, ClassId, HERO_CLASSES, SPECIES, SpeciesId 
 import { assignRolls, rollAbilities } from '../engine/rules';
 import { zoneById } from '../engine/dungeon';
 import { ADVS, TOWNS } from '../engine/aventuras';
-import { Dialogue, FadeIn, MiniDie } from '../ui/Overlays';
+import { Dialogue, FadeIn, HOLD_MS, MiniDie, useHold } from '../ui/Overlays';
 import { COLABORAR, Settings } from '../ui/Settings';
 import { BUILD } from '../version';
 import { CAMBIOS } from '../versionWeb';
@@ -370,10 +370,12 @@ export function Intro() {
     { speaker: 'narrator', text: A.data.dungeon.summary },
     { speaker: 'narrator', text: A.data.zones[0].description },
   ], [A]);
+  // Primero se ve la ilustración; el texto llega a los dos segundos (o al tocar).
+  const [shown, show] = useHold(HOLD_MS);
   return (
     <Bg src={IMG[A.intro]} dim={0.1}>
-      <View style={{ flex: 1 }} />
-      <Dialogue lines={lines} hero={{ name: hero.name, img: hero.img }} onDone={closeIntro} />
+      {shown ? <><View style={{ flex: 1 }} /><Dialogue lines={lines} hero={{ name: hero.name, img: hero.img }} onDone={closeIntro} /></>
+        : <Pressable style={{ flex: 1 }} onPress={show} accessibilityLabel="Continuar" />}
     </Bg>
   );
 }
