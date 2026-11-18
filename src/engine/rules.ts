@@ -40,8 +40,10 @@ export interface Char {
   featPending?: boolean;
   /** Inspiración heroica (tras la tercera charla en la posada): repite una tirada fallida por aventura. */
   inspired?: boolean;
-  /** Usos del rasgo de especie con descanso largo: Ataque de aliento (dracónido) o Reprensión infernal (tiefling). */
+  /** Usos del rasgo de especie: Ataque de aliento (dracónido), Reprensión infernal (tiefling) o Descarga de adrenalina (orco). */
   racial?: number;
+  /** Orco: ya ha usado Aguante incansable desde el último descanso largo. */
+  relentless?: boolean;
   /** Brujo: ya ha usado Astucia mágica desde el último descanso largo. */
   cunning?: boolean;
 }
@@ -63,7 +65,7 @@ export const slotsAt = (cls: ClassId, level: number): Slots => {
 };
 /** Usos de Ataque de aliento (bonificador de competencia) o de Reprensión infernal (una vez desde nivel 3). */
 export const maxRacial = (c: { species: SpeciesId; level: number }) =>
-  c.species === 'dragonborn' ? prof(c.level) : c.species === 'tiefling' && c.level >= 3 ? 1 : 0;
+  c.species === 'dragonborn' || c.species === 'orc' ? prof(c.level) : c.species === 'tiefling' && c.level >= 3 ? 1 : 0;
 /** Espacios que le quedan en total (de cualquier nivel). */
 export const slotsLeft = (c: Char) => c.slots[0] + c.slots[1] + (c.slots[2] ?? 0);
 /** Usos de Canalizar divinidad, Enemigo predilecto, Furia (bárbaro) o la reserva de Imposición de manos (paladín). */
@@ -125,9 +127,8 @@ export function makeChar(o: {
 }
 
 const CLASS_EN: Record<ClassId, string> = { fighter: 'Fighter', cleric: 'Cleric', rogue: 'Rogue', wizard: 'Wizard', ranger: 'Ranger', paladin: 'Paladin', barbarian: 'Barbarian', warlock: 'Warlock' };
-const ALLY_CLASS: Record<string, ClassId> = { Fighter: 'fighter', Cleric: 'cleric', Rogue: 'rogue', Wizard: 'wizard', Ranger: 'ranger', Paladin: 'paladin', Barbarian: 'barbarian' };
-// Vurka es orca: no hay especie orca en el juego y cuenta como humana (Percepción, sin rasgos de otras especies).
-const ALLY_SPECIES: Record<string, SpeciesId> = { Enana: 'dwarf', Enano: 'dwarf', Mediano: 'halfling', Humano: 'human', Humana: 'human', Elfa: 'elf', Orca: 'human' };
+const ALLY_CLASS: Record<string, ClassId> = { Fighter: 'fighter', Cleric: 'cleric', Rogue: 'rogue', Wizard: 'wizard', Ranger: 'ranger', Paladin: 'paladin', Barbarian: 'barbarian', Warlock: 'warlock' };
+const ALLY_SPECIES: Record<string, SpeciesId> = { Enana: 'dwarf', Enano: 'dwarf', Mediano: 'halfling', Humano: 'human', Humana: 'human', Elfa: 'elf', Orca: 'orc', Dracónida: 'dragonborn', Tiefling: 'tiefling' };
 
 export function createHero(name: string, cls: ClassId, species: SpeciesId, abil?: Record<Ability, number>, img?: ImgKey): Char {
   return makeChar({
@@ -303,6 +304,7 @@ function addXp(c: Char, n: number): string[] {
     if (extraChannel > 0 && c.cls === 'cleric') msgs.push(`Chispa divina: +${extraChannel} uso.`);
     if (extraChannel > 0 && c.cls === 'barbarian') msgs.push(`Furia: +${extraChannel} uso.`);
     if (racialUp > 0 && c.species === 'dragonborn') msgs.push(`Ataque de aliento: +${racialUp} uso.`);
+    if (racialUp > 0 && c.species === 'orc') msgs.push(`Descarga de adrenalina: +${racialUp} uso.`);
     if (racialUp > 0 && c.species === 'tiefling') msgs.push('Nueva habilidad de tiefling: Reprensión infernal. Una vez por descanso largo, quien te dañe sufre 2d10 de fuego (salvación de Destreza).');
     if (c.level === 5 && c.species === 'dragonborn') msgs.push('Mejora de Ataque de aliento: inflige 2d10.');
     if (c.level === 5 && c.species === 'tiefling') msgs.push('Mejora de truco: Descarga de fuego inflige 2d10.');
@@ -391,6 +393,8 @@ export function shortRest(c: Char, rng: Rng): number {
   if (c.cls !== 'paladin') c.channel = Math.min(maxChannel(c), c.channel + 1);
   // Magia del pacto: el brujo recupera todos sus espacios con un descanso corto.
   if (c.cls === 'warlock') c.slots = slotsAt(c.cls, c.level);
+  // Descarga de adrenalina del orco: vuelve con el descanso corto.
+  if (c.species === 'orc') c.racial = maxRacial(c);
   return healed;
 }
 
@@ -398,7 +402,7 @@ export function longRest(c: Char) {
   if (c.dead) return;
   Object.assign(c, {
     hp: c.maxHp, hitDice: c.level, slots: slotsAt(c.cls, c.level), secondWind: 2, actionSurge: 1, channel: maxChannel(c),
-    racial: maxRacial(c), cunning: false, stable: false, deathS: 0, deathF: 0,
+    racial: maxRacial(c), cunning: false, relentless: false, stable: false, deathS: 0, deathF: 0,
   });
 }
 

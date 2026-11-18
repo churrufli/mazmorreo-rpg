@@ -12,6 +12,7 @@ export const FACE: Partial<Record<ImgKey, [number, number]>> = {
   hero_wizard_dwarf: px(263, 140), hero_wizard_elf: px(258, 110), hero_wizard_halfling: px(268, 168), hero_wizard_human: px(258, 115),
   ally_brunna: px(242, 100), ally_tiko: px(252, 100), ally_edmund: px(250, 62), ally_liss: px(256, 70), orvane: px(250, 70),
   ally_anselmo: px(256, 60), ally_ivelle: px(256, 76), ally_maren: px(260, 80), ally_telmo: px(260, 64), abuela_ortiga: px(200, 138), corazon_hueco: px(256, 80),
+  ally_kallux: px(281, 101), ally_ghaldra: px(331, 71), ally_iskarra: px(356, 86),
   ally_vurka: px(256, 100), ally_durnok: px(256, 100), ally_syrael: px(256, 100), ally_aldric: px(256, 100), dragon_blanco_joven: px(256, 200),
   hero_paladin_dwarf: px(256, 60), hero_paladin_elf: px(256, 52), hero_paladin_halfling: px(256, 160), hero_paladin_human: px(256, 50),
   hero_ranger_dwarf: px(256, 100), hero_ranger_elf: px(256, 84), hero_ranger_halfling: px(264, 80), hero_ranger_human: px(256, 76),
@@ -56,6 +57,7 @@ const NAMES: Record<SpeciesId, string[]> = {
   dwarf: ['Brakka', 'Dunrae', 'Grimna', 'Hrothi', 'Kardun', 'Morrik', 'Orsa', 'Rundra', 'Skarri', 'Thoryn', 'Vulka', 'Ymir'],
   halfling: ['Alby', 'Brindle', 'Corrin', 'Fenny', 'Jessamy', 'Kip', 'Merrow', 'Pip', 'Rosco', 'Tansy', 'Wyll', 'Quill'],
   dragonborn: ['Arkhes', 'Brasvor', 'Drakkis', 'Ghaldra', 'Iskarra', 'Khorvan', 'Mezzar', 'Nyxara', 'Rhazul', 'Sothrak', 'Tyrrha', 'Vorrash'],
+  orc: ['Vurka'],
   tiefling: ['Azhrel', 'Belyth', 'Caelzar', 'Damaris', 'Ephyra', 'Kallux', 'Lilthra', 'Nephis', 'Orzhia', 'Seraxis', 'Vexra', 'Ysmer'],
 };
 

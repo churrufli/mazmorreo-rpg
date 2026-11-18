@@ -1,11 +1,11 @@
 // Dracónido, tiefling, brujo y bárbaro elegible (SRD 5.2.1).
 import { ACTION_HELP } from '../data/actionHelp';
-import { DRACONIC, HERO_CLASSES, ITEMS } from '../data/srd';
+import { DRACONIC, draconic, HERO_CLASSES, ITEMS } from '../data/srd';
 import { baseSex, heroImg } from '../data/caras';
 import { IMG } from '../assets';
 import { newGame } from './game';
-import { armorClass, createHero, gainXp, longRest, maxRacial, newItem, raiseTo, shortRest, slotsAt } from './rules';
-import { Combat, actionsFor, current, endTurn, perform, startCombat, Unit } from './combat';
+import { allyFor, armorClass, createAlly, createHero, gainXp, longRest, maxRacial, newItem, raiseTo, shortRest, slotsAt } from './rules';
+import { Combat, actionsFor, applyDamage, current, endTurn, perform, startCombat, Unit } from './combat';
 import { enterZone } from './dungeon';
 import type { Game } from './game';
 
@@ -155,4 +155,40 @@ test('cada acción nueva tiene ayuda', () => {
       expect(ACTION_HELP[key] || (item && ITEMS[item.id].desc)).toBeTruthy();
     }
   }
+});
+
+test('aliados nuevos: Kallux brujo tiefling, Ghaldra guerrera de plata, Iskarra bárbara de latón y Teodor brujo', () => {
+  const k = createAlly('anselmo', 3, 900, 'corazon_hueco');
+  expect([k.name, k.cls, k.species]).toEqual(['Kallux', 'warlock', 'tiefling']);
+  const gh = createAlly('syrael', 4, 2700, 'montana');
+  expect([gh.name, gh.cls, gh.species, draconic(gh).type]).toEqual(['Ghaldra', 'fighter', 'dragonborn', 'frío']);
+  const is = createAlly('yara', 5, 6500, 'tumba');
+  expect([is.name, is.cls, is.species, draconic(is).type]).toEqual(['Iskarra', 'barbarian', 'dragonborn', 'fuego']);
+  expect(createAlly('teodor', 5, 6500, 'tumba').cls).toBe('warlock');
+  // El guerrero héroe se cruza con Ghaldra: la sustituye Tavin.
+  expect(allyFor('fighter', 'syrael', 'montana')).toBe('aldric');
+});
+
+test('Vurka es orca: Descarga de adrenalina y Aguante incansable una vez por descanso largo', () => {
+  const g = newGame(1, 'Prueba', 'fighter', 'human');
+  const v = createAlly('vurka', 4, 2700, 'montana');
+  expect(v.species).toBe('orc');
+  expect(v.racial).toBe(2);
+  g.party.push(v);
+  enterZone(g, 'z1');
+  const cb = startCombat(g, 'z1_e01');
+  while (current(cb).key !== cb.units.find(x => x.name === v.name)!.key && !cb.result) endTurn(g, cb);
+  const u = current(cb);
+  perform(g, cb, act(g, cb, 'adrenaline')!, u.key);
+  expect(u.temp).toBe(2);
+  expect(v.racial).toBe(1);
+  // Un golpe que la deja a 0 la mantiene con 1 PG la primera vez.
+  u.temp = 0;
+  applyDamage(g, cb, u, u.hp, 'cortante', foes(cb)[0]);
+  expect(u.hp).toBe(1);
+  expect(v.relentless).toBe(true);
+  shortRest(v, { seed: 1 });
+  expect(v.racial).toBe(2);
+  longRest(v);
+  expect(v.relentless).toBe(false);
 });

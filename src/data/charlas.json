@@ -299,59 +299,59 @@
    [
     {
      "speaker": "anselmo",
-     "text": "Una noche escuché la voz de alguien querido entre los juncos. La seguí con el farol apagado."
+     "text": "Hice un pacto para salvar a mi hermana de unas fiebres. Ella vivió."
     },
     {
      "speaker": "hero",
-     "text": "¿Encontraste a alguien?"
+     "text": "¿Y el precio?"
     },
     {
      "speaker": "anselmo",
-     "text": "No encontré a nadie. Eran las raíces imitando una voz. Pude escapar por muy poco."
+     "text": "Servir a quien me escuchó. No dijo durante cuánto tiempo."
     },
     {
      "speaker": "anselmo",
-     "text": "Desde entonces mantengo el farol encendido cuando cruzo la ciénaga."
+     "text": "Rompí la cadena y huí al bosque."
     }
    ],
    [
     {
      "speaker": "anselmo",
-     "text": "Mi maestro decía que la fe no debe imponer caminos."
+     "text": "Este fuego no es mío. Cada vez que lo uso, siento que alguien sonríe muy lejos."
     },
     {
      "speaker": "hero",
-     "text": "¿Qué debe hacer entonces?"
+     "text": "¿Por qué lo sigues usando?"
     },
     {
      "speaker": "anselmo",
-     "text": "Iluminar el suelo para que otro decida dónde pisar."
+     "text": "Porque aquí hay gente atrapada, y el fuego quema raíces."
     },
     {
      "speaker": "anselmo",
-     "text": "Me costó muchos años comprenderlo."
+     "text": "Que sonría si quiere. Hoy trabaja para mí."
     }
    ],
    [
     {
      "speaker": "anselmo",
-     "text": "Temía que todas las súplicas del pantano fueran trampas."
+     "text": "En la ermita pensaba que nadie querría a su lado a un tiefling con una deuda infernal."
     },
     {
      "speaker": "hero",
-     "text": "Aun así seguiste ayudando."
+     "text": "Te equivocabas."
     },
     {
      "speaker": "anselmo",
-     "text": "Ahora sé que las voces pueden ser falsas, pero los prisioneros son reales."
+     "text": "Eso empiezo a creer."
     },
     {
      "speaker": "anselmo",
-     "text": "Ya no dejaré que el miedo apague mi farol."
+     "text": "Cuando esto acabe, buscaré la forma de pagar mi deuda sin perderme."
     }
    ]
   ],
-  "insp": "¡Mi farol nos guiará hasta los cautivos!"
+  "insp": "¡Arded, raíces! Hoy el fuego es nuestro."
  },
  "ivelle": {
   "talks": [
@@ -594,59 +594,59 @@
    [
     {
      "speaker": "syrael",
-     "text": "Aprendí a leer las grietas de los cristales."
+     "text": "Los dracónidos de plata juramos proteger a quien viaja con nosotros."
     },
     {
      "speaker": "hero",
-     "text": "¿Para estudiar hechizos?"
+     "text": "¿Es un juramento de familia?"
     },
     {
      "speaker": "syrael",
-     "text": "Para anticipar avalanchas y salvar expediciones."
+     "text": "De linaje. Lo llevamos en las escamas."
     },
     {
      "speaker": "syrael",
-     "text": "La montaña advierte a quien sabe escucharla."
+     "text": "Y yo lo rompí cuando el dragón bajó al paso."
     }
    ],
    [
     {
      "speaker": "syrael",
-     "text": "Una vez confundimos un brillo extraño con hielo común."
+     "text": "Cuando llegó el dragón, su frío no me hizo nada. Los demás no tuvieron esa suerte."
     },
     {
      "speaker": "hero",
-     "text": "¿Qué ocurrió?"
+     "text": "No fue culpa tuya."
     },
     {
      "speaker": "syrael",
-     "text": "La expedición desapareció antes de que pudiera advertirla."
+     "text": "Ya lo sé. Pero me quedé de pie mientras ellos caían."
     },
     {
      "speaker": "syrael",
-     "text": "Desde entonces temo callar cuando percibo peligro."
+     "text": "Esta vez estaré delante, no detrás."
     }
    ],
    [
     {
      "speaker": "syrael",
-     "text": "Durante años creí que comprender era suficiente."
+     "text": "Antes pensaba que una escolta solo sirve para pelear."
     },
     {
      "speaker": "hero",
-     "text": "¿Has cambiado de idea?"
+     "text": "¿Y ahora?"
     },
     {
      "speaker": "syrael",
-     "text": "El conocimiento debe servir a quienes caminan bajo la tormenta."
+     "text": "Ahora sé que sirve para que otros lleguen."
     },
     {
      "speaker": "syrael",
-     "text": "Esta vez no me quedaré observando desde lejos."
+     "text": "Cuando caiga el dragón, el paso volverá a abrirse para todos."
     }
    ]
   ],
-  "insp": "No dejaré que el frío silencie otra advertencia."
+  "insp": "¡Detrás de mí! El hielo no pasa."
  },
  "aldric": {
   "talks": [
@@ -830,59 +830,59 @@
    [
     {
      "speaker": "yara",
-     "text": "Cuido el pozo de Arenaroja desde que era niña. Mi maestra me dijo que el agua guarda memoria."
+     "text": "Mi clan escolta caravanas desde que el desierto tiene caminos. Nunca se nos había perdido ninguna."
     },
     {
      "speaker": "hero",
-     "text": "¿Y qué recuerda?"
+     "text": "¿Hasta esta?"
     },
     {
      "speaker": "yara",
-     "text": "A todos los que bebieron de él. También a los que se llevaron."
+     "text": "Hasta esta. Por eso no pienso volver sin ellos."
     },
     {
      "speaker": "yara",
-     "text": "Por eso bajé a buscarlos."
+     "text": "Las dunas no perdonan una deuda así."
     }
    ],
    [
     {
      "speaker": "yara",
-     "text": "En la celda pensé que moriría allí. Mantuve la llama encendida para no olvidar quién era."
+     "text": "En la celda, el hechicero me miraba como a un frasco vacío."
     },
     {
      "speaker": "hero",
-     "text": "La llama te trajo hasta nosotros."
+     "text": "¿Qué quería de ti?"
     },
     {
      "speaker": "yara",
-     "text": "O vosotros hasta ella."
+     "text": "Mi aliento. Decía que arde mejor que cualquier lámpara."
     },
     {
      "speaker": "yara",
-     "text": "A mi edad, ya no distingo bien una cosa de la otra."
+     "text": "Le enseñaré cuánto arde."
     }
    ],
    [
     {
      "speaker": "yara",
-     "text": "Xiximanter pidió no morir nunca. Le concedieron el deseo y le quitaron todo lo demás."
+     "text": "Mi abuela decía que la furia es un caballo: te lleva lejos si no sueltas las riendas."
     },
     {
      "speaker": "hero",
-     "text": "¿Te da pena?"
+     "text": "¿Y tú las sueltas?"
     },
     {
      "speaker": "yara",
-     "text": "Me da miedo lo fácil que es pedir algo así."
+     "text": "Solo en combate. Fuera, las agarro con las dos manos."
     },
     {
      "speaker": "yara",
-     "text": "Vivir bien es mejor que vivir siempre."
+     "text": "Hoy he aprendido a esperar el momento justo."
     }
    ]
   ],
-  "insp": "El agua del pozo recuerda a quien la defiende."
+  "insp": "¡Por las caravanas que nunca llegaron!"
  },
  "teodor": {
   "talks": [
@@ -907,19 +907,19 @@
    [
     {
      "speaker": "teodor",
-     "text": "Soñaba con la voz cada noche. Creí que me estaba volviendo loco."
+     "text": "Soñaba con la voz cada noche. Para callarla, acepté un trato con otra voz, más antigua."
     },
     {
      "speaker": "hero",
-     "text": "No lo estabas."
+     "text": "¿Y funcionó?"
     },
     {
      "speaker": "teodor",
-     "text": "Lo sé. Pero tampoco estaba solo, y eso me asustó más."
+     "text": "La primera calla. La segunda me presta su fuego."
     },
     {
      "speaker": "teodor",
-     "text": "Ahora duermo de un tirón. Gracias."
+     "text": "Algún día me pedirá algo a cambio. Prefiero no pensarlo todavía."
     }
    ],
    [
