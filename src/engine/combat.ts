@@ -2,11 +2,11 @@
 // Todo son funciones puras sobre el estado de la partida (se muta una copia).
 import { applyEffect, canInspire, enemiesOf, inspire, maxFoesFor, sizeEncounter } from './escenas';
 import type { ImgKey } from '../assets';
-import { ABIL_NAME, Ability, CLASSES, DmgType, ITEMS, MONSTERS, MonsterAttack } from '../data/srd';
+import { ABIL_NAME, Ability, CLASSES, DRACONIC, DmgType, ITEMS, MONSTERS, MonsterAttack } from '../data/srd';
 import B from '../data/corazon.json';
 import { die, pick, rand, roll, tray } from './rng';
 import {
-  Char, abilMod, armorClass, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft,
+  Char, abilMod, armorClass, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft, slotsAt,
 } from './rules';
 import { prof } from '../data/srd';
 import type { Game } from './game';
@@ -78,10 +78,12 @@ export interface Unit {
   poisoned?: boolean;
   /** Objetivo de su Marca del cazador. */
   mark?: string;
+  /** Objetivo de su Maleficio (brujo). */
+  hex?: string;
   /** Asalto en que termina Arma espiritual. */
   spiritualUntil?: number;
   /** Conjuro que mantiene mediante concentración. */
-  concentration?: 'mark' | 'bless' | 'spiritual';
+  concentration?: 'mark' | 'bless' | 'spiritual' | 'hex';
   /** Lo que el enemigo ha anunciado que hará en su turno. */
   plan?: Plan;
 }
@@ -229,6 +231,7 @@ function endConcentration(cb: Combat, caster: Unit) {
   const spell = caster.concentration;
   caster.concentration = undefined;
   if (spell === 'mark') caster.mark = undefined;
+  if (spell === 'hex') caster.hex = undefined;
   if (spell === 'bless') for (const ally of cb.units.filter(u => u.side === caster.side)) ally.bless = false;
   if (spell === 'spiritual') { caster.spiritual = false; caster.spiritualUntil = undefined; }
   say(cb, `${caster.name} pierde la concentración.`, 'info');
@@ -241,7 +244,7 @@ function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: Dm
   if (m?.vuln?.includes(type)) amount *= 2;
   if (target.side === 'party' && type === 'veneno' && (charOf(g, target).species === 'dwarf' || target.resPoison)) amount = Math.floor(amount / 2);
   if (target.mon === 'Treant' && type !== 'psíquico' && knotsUp(cb)) amount = Math.floor(amount / 2);
-  if (target.side === 'party' && ((target.rage && PHYSICAL.includes(type)) || (type === 'frío' && coldProof(g, target)))) amount = Math.floor(amount / 2);
+  if (target.side === 'party' && ((target.rage && PHYSICAL.includes(type)) || (type === 'frío' && coldProof(g, target)) || speciesResist(charOf(g, target)) === type)) amount = Math.floor(amount / 2);
   target.lastHitBy = from.key;
   fx(cb, target, crit ? 'crit' : PHYSICAL.includes(type) ? 'hit' : 'magic', type);
   if (target.asleep) { target.asleep = false; say(cb, `${target.name} despierta.`, 'info'); }
@@ -270,6 +273,7 @@ function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: Dm
     target.poisoned = true;
     say(cb, `${target.name} queda envenenado: ataca con desventaja.`, 'big');
   }
+  if (target.side === 'party' && from.side === 'enemy' && target.hp > 0 && amount > 0) rebuke(g, cb, target, from);
   const spare = goalOpen(cb, 'spare');
   if (spare && target.side === 'enemy' && goalUnits(cb, spare.who!).includes(target)) {
     if (target.hp > 0 && target.hp <= target.maxHp / 2) { target.fled = true; target.plan = undefined; say(cb, `${target.name} se rinde.`, 'big'); goalDone(cb, true); return; }
@@ -285,12 +289,42 @@ function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: Dm
       say(cb, `${tirada} y cae.`, 'info');
     }
     kill(cb, target);
+    darkBlessing(g, cb, target, from);
   } else if (amount - before >= target.maxHp) kill(cb, target);
   else {
     Object.assign(target, { deathS: 0, deathF: 0, stable: false });
     say(cb, `${target.name} cae inconsciente.`, 'big');
     if (goalOpen(cb, 'nodown')) goalDone(cb, false);
     if (canHeal(g, target)) say(cb, `¡${target.name} ha caído! Cúralo antes de que falle tres tiradas de salvación.`, 'big');
+  }
+}
+
+/** Resistencia de especie: el linaje del dracónido o el fuego del tiefling (legado infernal). */
+const speciesResist = (c: Char): DmgType | undefined => (c.species === 'dragonborn' ? DRACONIC[c.cls].type : c.species === 'tiefling' ? 'fuego' : undefined);
+/** CD de los rasgos de especie: 8 + competencia + Constitución (aliento) o Carisma (legado infernal). */
+const speciesDc = (c: Char) => 8 + prof(c.level) + abilMod(c, c.species === 'dragonborn' ? 'con' : 'cha');
+/** Ataque de conjuro del legado infernal (Carisma) o el del propio lanzador si es mejor. */
+const infernalAttack = (c: Char) => Math.max(prof(c.level) + abilMod(c, 'cha'), CLASSES[c.cls].spell ? spellAttack(c) : -99);
+
+/** Reprensión infernal (tiefling de nivel 3): una vez por descanso largo, quien le daña arde (2d10 de fuego, salvación de Destreza). */
+function rebuke(g: Game, cb: Combat, t: Unit, from: Unit) {
+  const c = charOf(g, t);
+  if (c.species !== 'tiefling' || (c.racial ?? 0) <= 0 || !conscious(from)) return;
+  c.racial!--;
+  say(cb, `${t.name} responde con Reprensión infernal: llamas verdes envuelven a ${from.name}.`, 'big');
+  const dmg = roll(g.rng, '2d10');
+  applyDamage(g, cb, from, saveRoll(g, cb, from, 'dex', speciesDc(c), 'Destreza') ? Math.floor(dmg / 2) : dmg, 'fuego', t);
+}
+
+/** Bendición del oscuro (brujo infernal de nivel 3): PG temporales al caer un enemigo por su mano o delante de él. */
+function darkBlessing(g: Game, cb: Combat, foe: Unit, from: Unit) {
+  for (const u of cb.units.filter(x => x.side === 'party' && conscious(x))) {
+    const c = charOf(g, u);
+    if (c.cls !== 'warlock' || c.level < 3 || (u !== from && !(u.row === 'front' && foe.row === 'front'))) continue;
+    const temp = Math.max(1, abilMod(c, 'cha') + c.level);
+    if ((u.temp ?? 0) >= temp) continue;
+    u.temp = temp;
+    say(cb, `Bendición del oscuro: ${u.name} gana ${temp} PG temporales.`, 'info');
   }
 }
 
@@ -505,6 +539,7 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   applyDamage(g, cb, t, dmg, o.type, a, crit);
   if (o.extra && alive(t)) applyDamage(g, cb, t, Math.max(0, roll(g.rng, o.extra.dice, crit)), o.extra.type, a, crit);
   if (a.concentration === 'mark' && a.mark === t.key && !o.spell) { const bonus = roll(g.rng, '1d6', crit); say(cb, `Marca del cazador: +${bonus} de fuerza.`, 'info'); if (alive(t)) applyDamage(g, cb, t, bonus, 'fuerza', a, crit); }
+  if (a.concentration === 'hex' && a.hex === t.key && alive(t)) { const bonus = roll(g.rng, '1d6', crit); say(cb, `Maleficio: +${bonus} necrótico.`, 'info'); applyDamage(g, cb, t, bonus, 'necrótico', a, crit); }
   if (o.mastery && conscious(t)) masteryHit(g, cb, a, t, o.mastery, o.masteryDc ?? 10);
   if (a.mon === 'Treant') say(cb, pick(g.rng, B.boss.visions), 'info');
   return true;
@@ -641,6 +676,7 @@ function startTurn(g: Game, cb: Combat) {
   if (u.vexNew) u.vexNew = false; else u.vex = undefined;
   if (u.concentration === 'spiritual' && cb.round >= (u.spiritualUntil ?? Infinity)) endConcentration(cb, u);
   if (u.concentration === 'mark' && !cb.units.some(x => x.key === u.mark && conscious(x))) u.mark = undefined;
+  if (u.concentration === 'hex' && !cb.units.some(x => x.key === u.hex && conscious(x))) u.hex = undefined;
   cb.savageUsed = false;
   u.dodge = false;
   if (u.shield) u.shield = false;
@@ -775,6 +811,15 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
     xp = Math.round(xp * (adv.xpScale ?? 1));
     tally(g, { kills: cb.units.filter(u => u.side === 'enemy' && u.dead).length, gold, xp: alive0 ? Math.floor(xp / alive0) : 0 });
     msgs.push(...gainXp(g.party, xp, adv.level));
+    // Astucia mágica (brujo de nivel 2): tras el combate, un rito de un minuto devuelve la mitad de los espacios de pacto.
+    for (const c of g.party.filter(x => !x.dead && x.hp > 0 && x.cls === 'warlock' && x.level >= 2 && !x.cunning)) {
+      const full = slotsAt(c.cls, c.level), max = full[0] + full[1] + full[2];
+      const back = Math.min(Math.ceil(max / 2), max - slotsLeft(c));
+      if (back <= 0) continue;
+      c.cunning = true;
+      c.slots = full.map(n => (n ? slotsLeft(c) + back : 0)) as Char['slots'];
+      msgs.push(`${c.name} usa Astucia mágica: recupera ${back} espacio${back > 1 ? 's' : ''} de pacto.`);
+    }
     if (gold) msgs.push(`Botín: ${gold} monedas de oro.`);
     const got = new Map<string, number>();
     const floor: string[] = [];
@@ -864,6 +909,7 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
   if (u.side !== 'party' || !conscious(u)) return [];
   const c = charOf(g, u);
   const A: Action[] = [];
+  const slots = slotsLeft(c);
   for (const w of weapons(c)) {
     const def = ITEMS[w.id];
     const s = weaponStat(c, w.id);
@@ -893,13 +939,26 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     if (c.level >= 3 && c.slots[1] > 0) A.push({ id: 'scorching', label: 'Rayo abrasador', cost: 'action', target: 'enemy', detail: '3×2d6' });
     if (c.level >= 5 && (c.slots[2] ?? 0) > 0) A.push({ id: 'fireball', label: 'Bola de fuego', cost: 'action', target: 'enemy', detail: 'una fila 8d6' });
   }
+  if (c.cls === 'warlock') {
+    const lvl = pactLevel(c);
+    A.push({ id: 'eldritch', label: 'Descarga sobrenatural', cost: 'action', target: 'enemy', detail: `${c.level >= 5 ? '2×' : ''}1d10${c.level >= 2 ? `+${abilMod(c, 'cha')}` : ''} fuerza` });
+    if (u.concentration === 'hex' && !u.hex) A.push({ id: 'hex_move', label: 'Mover Maleficio', cost: 'bonus', target: 'enemy', detail: 'Sin gastar conjuro' });
+    else if (slots > 0) A.push({ id: 'hex', label: 'Maleficio', cost: 'bonus', target: 'enemy', detail: '+1d6 necrótico al impactar' });
+    if (c.level >= 3 && slots > 0) {
+      A.push({ id: 'burning_hands', label: 'Manos ardientes', cost: 'action', target: 'none', detail: `fila delantera ${lvl + 2}d6` });
+      A.push({ id: 'scorching', label: 'Rayo abrasador', cost: 'action', target: 'enemy', detail: `${lvl + 1}×2d6` });
+    }
+    if (c.level >= 5 && slots > 0) A.push({ id: 'fireball', label: 'Bola de fuego', cost: 'action', target: 'enemy', detail: 'una fila 8d6' });
+  }
+  // Rasgos de especie: Ataque de aliento del dracónido y Descarga de fuego del tiefling (el mago ya la tiene).
+  if (c.species === 'dragonborn' && (c.racial ?? 0) > 0) A.push({ id: 'breath', label: 'Ataque de aliento', cost: 'action', target: 'enemy', detail: `una fila ${c.level >= 5 ? '2d10' : '1d10'} ${DRACONIC[c.cls].type} (${c.racial})` });
+  if (c.species === 'tiefling' && c.cls !== 'wizard') A.push({ id: 'infernal_bolt', label: 'Descarga de fuego', cost: 'action', target: 'enemy', detail: c.level >= 5 ? '2d10' : '1d10' });
   if (c.cls === 'barbarian' && c.channel > 0 && !u.rage) A.push({ id: 'rage', label: 'Furia', cost: 'bonus', target: 'none', detail: `+2 daño, resiste golpes (${c.channel})` });
   if (c.cls === 'fighter') {
     if (c.secondWind > 0) A.push({ id: 'second_wind', label: 'Tomar aliento', cost: 'bonus', target: 'none', detail: `1d10+${c.level} (${c.secondWind})` });
     if (c.level >= 2 && c.actionSurge > 0 && cb.acted) A.push({ id: 'surge', label: 'Oleada de acción', cost: 'free', target: 'none', detail: 'otra acción' });
   }
   if (c.cls === 'rogue' && c.level >= 2) A.push({ id: 'hide', label: 'Esconderse', cost: 'bonus', target: 'none', detail: 'Sigilo' });
-  const slots = slotsLeft(c);
   if (c.cls === 'ranger') {
     if (u.concentration === 'mark' && !u.mark) A.push({ id: 'mark_move', label: 'Mover Marca del cazador', cost: 'bonus', target: 'enemy', detail: 'Sin gastar conjuro' });
     else if (c.channel > 0 || slots > 0) A.push({ id: 'mark', label: 'Marca del cazador', cost: 'bonus', target: 'enemy', detail: `+1d6 al impactar${c.channel > 0 ? ` (${c.channel} gratis)` : ''}` });
@@ -975,7 +1034,7 @@ export function preview(g: Game, cb: Combat, a: Action, t: Unit): Preview | unde
   const m = MONSTERS[t.mon!];
   // Conjuros y objetos que piden salvación: la probabilidad de que el objetivo la falle.
   const saveOf: Record<string, [Ability, number]> = {
-    sacred_flame: ['dex', spellDc(c)], fireball: ['dex', spellDc(c)], sleep: ['wis', spellDc(c)],
+    sacred_flame: ['dex', spellDc(c)], fireball: ['dex', spellDc(c)], sleep: ['wis', spellDc(c)], breath: ['dex', speciesDc(c)],
     throw: ['dex', 8 + abilMod(c, 'dex') + 2], web: ['dex', 13],
   };
   if (saveOf[kind]) {
@@ -987,12 +1046,12 @@ export function preview(g: Game, cb: Combat, a: Action, t: Unit): Preview | unde
     return { pct: Math.round(Math.max(0, Math.min(20, need - 1)) * 5), adv: 0, why: [`salvación de ${ABIL_NAME[abil]} CD ${dc}`], save: true };
   }
   if (kind === 'magic_missile' || kind === 'wand') return { pct: t.shield ? 0 : 100, adv: 0, why: ['impacta siempre'] };
-  const spell = ['guiding_bolt', 'spiritual', 'fire_bolt', 'ray_frost', 'scorching'].includes(kind);
+  const spell = ['guiding_bolt', 'spiritual', 'fire_bolt', 'ray_frost', 'scorching', 'eldritch', 'infernal_bolt'].includes(kind);
   if (kind !== 'atk' && !spell) return undefined;
   const w = kind === 'atk' ? ITEMS[arg]?.weapon : undefined;
   if (kind === 'atk' && !w) return undefined;
   const ranged = spell || !!w!.ranged;
-  const toHit = spell ? spellAttack(c) : weaponStat(c, arg).toHit;
+  const toHit = kind === 'infernal_bolt' ? infernalAttack(c) : spell ? spellAttack(c) : weaponStat(c, arg).toHit;
   const { up, down } = advFor(cb, u, t, ranged);
   const adv = up.length && down.length ? 0 : up.length ? 1 : down.length ? -1 : 0;
   const cover = coverOf(cb, u, t);
@@ -1009,6 +1068,9 @@ export function preview(g: Game, cb: Combat, a: Action, t: Unit): Preview | unde
   ];
   return { pct: Math.round(p * 100), adv, why };
 }
+
+/** Nivel de los espacios de pacto del brujo (todos iguales). */
+const pactLevel = (c: Char) => slotsAt(c.cls, c.level).findIndex(n => n > 0) + 1;
 
 function spendSlot(c: Char): boolean {
   if (c.slots[0] > 0) { c.slots[0]--; return true; }
@@ -1134,8 +1196,38 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       break;
     case 'fire_bolt': attack(g, cb, u, t!, { name: 'Descarga de fuego', toHit: spellAttack(c), dice: c.level >= 5 ? '2d10' : '1d10', bonus: 0, type: 'fuego', ranged: true, spell: true }); break;
     case 'ray_frost': attack(g, cb, u, t!, { name: 'Rayo de escarcha', toHit: spellAttack(c), dice: c.level >= 5 ? '2d8' : '1d8', bonus: 0, type: 'frío', ranged: true, spell: true }); break;
+    case 'eldritch': {
+      // Descarga sobrenatural: un rayo (dos desde nivel 5); Descarga agónica suma el Carisma desde nivel 2.
+      const bonus = c.level >= 2 ? abilMod(c, 'cha') : 0;
+      let tt: Unit | undefined = t;
+      for (let i = 0; i < (c.level >= 5 ? 2 : 1) && tt; i++) {
+        attack(g, cb, u, tt, { name: 'Descarga sobrenatural', toHit: spellAttack(c), dice: '1d10', bonus, type: 'fuerza', ranged: true, spell: true });
+        if (!conscious(tt)) tt = validTargets(cb, u, 'ranged')[0];
+      }
+      break;
+    }
+    case 'hex_move':
+      if (u.concentration === 'hex' && !u.hex) { u.hex = t!.key; say(cb, `${u.name} traslada Maleficio a ${t!.name}.`, 'info'); }
+      break;
+    case 'hex':
+      spendSlot(c);
+      endConcentration(cb, u);
+      u.hex = t!.key;
+      u.concentration = 'hex';
+      say(cb, `${u.name} lanza Maleficio sobre ${t!.name}.`, 'info');
+      break;
+    case 'breath': {
+      c.racial = (c.racial ?? 1) - 1;
+      const type = DRACONIC[c.cls].type;
+      say(cb, `${u.name} exhala su aliento de dragón ${DRACONIC[c.cls].dragon} sobre la fila ${t!.row === 'front' ? 'delantera' : 'trasera'}.`, 'big');
+      const dmg = roll(g.rng, c.level >= 5 ? '2d10' : '1d10');
+      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && x.row === t!.row))
+        applyDamage(g, cb, e, saveRoll(g, cb, e, 'dex', speciesDc(c), 'Destreza') ? Math.floor(dmg / 2) : dmg, type, u);
+      break;
+    }
+    case 'infernal_bolt': attack(g, cb, u, t!, { name: 'Descarga de fuego', toHit: infernalAttack(c), dice: c.level >= 5 ? '2d10' : '1d10', bonus: 0, type: 'fuego', ranged: true, spell: true }); break;
     case 'fireball': {
-      c.slots[2]--;
+      if (c.cls === 'warlock') spendSlot(c); else c.slots[2]--;
       const dc = spellDc(c);
       say(cb, `${u.name} lanza Bola de fuego sobre la fila ${t!.row === 'front' ? 'delantera' : 'trasera'}.`, 'big');
       const dmg = roll(g.rng, '8d6');
@@ -1169,7 +1261,8 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       spendSlot(c);
       const dc = spellDc(c);
       say(cb, `${u.name} lanza Manos ardientes.`, 'info');
-      const dmg = roll(g.rng, '3d6');
+      // El brujo la lanza con su espacio de pacto: +1d6 por cada nivel por encima de 1.
+      const dmg = roll(g.rng, c.cls === 'warlock' ? `${pactLevel(c) + 2}d6` : '3d6');
       for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && x.row === 'front'))
         applyDamage(g, cb, e, saveRoll(g, cb, e, 'dex', dc, 'Destreza') ? Math.floor(dmg / 2) : dmg, 'fuego', u);
       break;
@@ -1185,8 +1278,9 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       break;
     }
     case 'scorching':
-      c.slots[1]--;
-      for (let i = 0; i < 3 && alive(t!) && t!.hp > 0; i++) attack(g, cb, u, t!, { name: 'Rayo abrasador', toHit: spellAttack(c), dice: '2d6', bonus: 0, type: 'fuego', ranged: true, spell: true });
+      // El brujo con espacio de nivel 3 lanza un rayo más.
+      if (c.cls === 'warlock') spendSlot(c); else c.slots[1]--;
+      for (let i = 0; i < (c.cls === 'warlock' ? pactLevel(c) + 1 : 3) && alive(t!) && t!.hp > 0; i++) attack(g, cb, u, t!, { name: 'Rayo abrasador', toHit: spellAttack(c), dice: '2d6', bonus: 0, type: 'fuego', ranged: true, spell: true });
       break;
     case 'second_wind': c.secondWind--; heal(cb, u, roll(g.rng, '1d10') + c.level); break;
     case 'surge': c.actionSurge--; cb.acted = false; say(cb, `${u.name} usa Oleada de acción.`, 'info'); break;

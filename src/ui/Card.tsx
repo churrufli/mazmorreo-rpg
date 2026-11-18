@@ -408,7 +408,8 @@ const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
 
 // Resumen de conjuros realmente implementados en el motor de combate.
 // No añade conjuros nuevos ni cambia sus tiradas o costes.
-const SPELL_CARDS: Partial<Record<Char['cls'], { name: string; level: number; cost: string; desc: string }[]>> = {
+/** `from`: nivel de personaje desde el que lo tiene (brujo: sus espacios de pacto cambian de nivel). */
+const SPELL_CARDS: Partial<Record<Char['cls'], { name: string; level: number; cost: string; desc: string; from?: number }[]>> = {
   cleric: [
     { name: 'Llama sagrada', level: 0, cost: 'Acción', desc: 'Truco. Salvación de Destreza del enemigo; 1d8 de daño radiante.' },
     { name: 'Curar heridas', level: 1, cost: 'Acción', desc: 'Gasta un espacio de conjuro; cura 2d8 + Sabiduría a un aliado.' },
@@ -435,6 +436,13 @@ const SPELL_CARDS: Partial<Record<Char['cls'], { name: string; level: number; co
     { name: 'Bendecir', level: 1, cost: 'Acción', desc: 'Hasta tres aliados suman 1d4 a ataques y salvaciones.' },
     { name: 'Curar heridas', level: 1, cost: 'Acción', desc: 'Gasta un espacio; cura 2d8 + Carisma a un aliado.' },
     { name: 'Castigo divino', level: 1, cost: 'Acción adicional', desc: 'Tras impactar, gasta un espacio para añadir 2d8 de daño radiante.' },
+  ],
+  warlock: [
+    { name: 'Descarga sobrenatural', level: 0, cost: 'Acción', desc: 'Truco. Ataque de conjuro, 1d10 de fuerza (+Carisma desde nivel 2). Dos rayos desde nivel 5.' },
+    { name: 'Maleficio', level: 1, cost: 'Acción adicional', desc: 'Maldice a un enemigo; +1d6 necrótico cada vez que le impactas. Si cae, puedes pasarlo a otro sin gastar espacio.', from: 1 },
+    { name: 'Manos ardientes', level: 1, cost: 'Acción', desc: 'Salvación de Destreza de la fila delantera enemiga; fuego, mitad con éxito. +1d6 por cada nivel del espacio por encima de 1.', from: 3 },
+    { name: 'Rayo abrasador', level: 2, cost: 'Acción', desc: 'Rayos de 2d6 de fuego con tiradas de ataque independientes; uno más con espacio de nivel 3.', from: 3 },
+    { name: 'Bola de fuego', level: 3, cost: 'Acción', desc: 'Explosión sobre una fila enemiga, 8d6 de fuego.', from: 5 },
   ],
 };
 
@@ -540,13 +548,13 @@ function Sheet({ c, party, onGive, onDrop, onUse, onFlip }: { c: Char; party?: C
       </View>
       </>) : null}
       {tab === 'habilidades' ? (<>
-      <Text style={st.small}>Percepción pasiva {passivePerception(c)}{c.slots[0] + c.slots[1] > 0 || CLASSES[c.cls].spell ? ` · Espacios de conjuro: ${c.slots[0]} de nivel 1${c.level >= 3 ? `, ${c.slots[1]} de nivel 2` : ''}${c.level >= 5 && slotsAt(c.cls, c.level)[2] ? `, ${c.slots[2] ?? 0} de nivel 3` : ''}` : ''}{c.cls === 'fighter' ? ` · Tomar aliento: ${c.secondWind}` : ''}{c.cls === 'paladin' ? ` · Imposición de manos: ${c.channel} PG` : ''}{c.cls === 'barbarian' ? ` · Furia: ${c.channel}` : ''}</Text>
+      <Text style={st.small}>Percepción pasiva {passivePerception(c)}{c.slots[0] + c.slots[1] > 0 || CLASSES[c.cls].spell ? ` · Espacios de conjuro: ${c.slots[0]} de nivel 1${c.level >= 3 ? `, ${c.slots[1]} de nivel 2` : ''}${c.level >= 5 && slotsAt(c.cls, c.level)[2] ? `, ${c.slots[2] ?? 0} de nivel 3` : ''}` : ''}{c.cls === 'fighter' ? ` · Tomar aliento: ${c.secondWind}` : ''}{c.cls === 'paladin' ? ` · Imposición de manos: ${c.channel} PG` : ''}{c.cls === 'barbarian' ? ` · Furia: ${c.channel}` : ''}{c.species === 'dragonborn' ? ` · Ataque de aliento: ${c.racial ?? 0}` : ''}{c.species === 'tiefling' && c.level >= 3 ? ` · Reprensión infernal: ${c.racial ?? 0}` : ''}</Text>
       {slotsOf(c) ? (
         <Pressable style={st.featureCard} onPress={() => setExpanded(expanded === 'spells' ? undefined : 'spells')}>
           <Text style={st.featureTitle}>✦ Espacios de conjuro {expanded === 'spells' ? '▴' : '▾'}</Text>
           <Slots s={slotsOf(c)!} size={26} />
           <Text style={st.small}>Nivel 1: {c.slots[0]}/{slotsAt(c.cls, c.level)[0]} · Nivel 2: {c.slots[1]}/{slotsAt(c.cls, c.level)[1]}{slotsAt(c.cls, c.level)[2] ? ` · Nivel 3: ${c.slots[2] ?? 0}/${slotsAt(c.cls, c.level)[2]}` : ''}</Text>
-          {expanded === 'spells' ? <Text style={st.small}>Las esferas muestran los espacios disponibles: violeta nivel 1, azul nivel 2 y dorada nivel 3; gris cuando se gastan. Los trucos no gastan espacios. Los espacios se recuperan con un descanso largo.</Text> : null}
+          {expanded === 'spells' ? <Text style={st.small}>Las esferas muestran los espacios disponibles: violeta nivel 1, azul nivel 2 y dorada nivel 3; gris cuando se gastan. Los trucos no gastan espacios. {c.cls === 'warlock' ? 'Magia del pacto: todos los espacios son del mismo nivel y se recuperan con un descanso corto o largo.' : 'Los espacios se recuperan con un descanso largo.'}</Text> : null}
         </Pressable>
       ) : null}
       <Pressable style={st.featureCard} onPress={() => setExpanded(expanded === 'hitdice' ? undefined : 'hitdice')}>
@@ -557,7 +565,7 @@ function Sheet({ c, party, onGive, onDrop, onUse, onFlip }: { c: Char; party?: C
         <>
           <Text style={st.itemName}>Conjuros y trucos</Text>
           <Text style={st.small}>Resumen de los conjuros disponibles en el combate de Mazmorreo. Despliega una tarjeta para conocer su efecto.</Text>
-          {SPELL_CARDS[c.cls]!.filter(sp => sp.level === 0 || (sp.level === 1 && slotsAt(c.cls, c.level)[0] > 0) || (sp.level === 2 && slotsAt(c.cls, c.level)[1] > 0) || (sp.level === 3 && slotsAt(c.cls, c.level)[2] > 0)).map(sp => {
+          {SPELL_CARDS[c.cls]!.filter(sp => sp.from !== undefined ? c.level >= sp.from : sp.level === 0 || (sp.level === 1 && slotsAt(c.cls, c.level)[0] > 0) || (sp.level === 2 && slotsAt(c.cls, c.level)[1] > 0) || (sp.level === 3 && slotsAt(c.cls, c.level)[2] > 0)).map(sp => {
             const key = `spell-${sp.name}`;
             return (
               <Pressable key={key} accessibilityRole="button" onPress={() => setExpanded(expanded === key ? undefined : key)} style={st.featureCard}>
@@ -626,7 +634,7 @@ function Stat({ icon, label, value, onPress }: { icon: ImgKey; label: string; va
 /** Espacios de conjuro de un personaje para su carta (solo si tiene alguno). */
 export const slotsOf = (c: Char): CardInfo['slots'] => {
   const max = slotsAt(c.cls, c.level);
-  return max[0] + max[1] > 0 ? { have: [c.slots[0], c.slots[1], c.slots[2] ?? 0], max } : undefined;
+  return max[0] + max[1] + max[2] > 0 ? { have: [c.slots[0], c.slots[1], c.slots[2] ?? 0], max } : undefined;
 };
 
 export const charInfo = (c: Char): CardInfo => ({ name: c.name, img: c.img, hp: c.hp, maxHp: c.maxHp, ac: armorClass(c), dead: !!c.dead, slots: slotsOf(c) });

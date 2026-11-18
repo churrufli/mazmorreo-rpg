@@ -9,7 +9,7 @@ import { Bg, Btn, Crop, Icon, Panel, T } from '../ui/kit';
 import { Sex, heroImg, randomName } from '../data/caras';
 import { useStore } from '../store';
 import * as storage from '../storage';
-import { ABIL_NAME, Ability, CLASSES, ClassId, HERO_CLASSES, SPECIES, SpeciesId } from '../data/srd';
+import { ABIL_NAME, Ability, CLASSES, ClassId, DRACONIC, HERO_CLASSES, SPECIES, SpeciesId } from '../data/srd';
 import { assignRolls, rollAbilities } from '../engine/rules';
 import { zoneById } from '../engine/dungeon';
 import { ADVS, TOWNS } from '../engine/aventuras';
@@ -197,7 +197,7 @@ function DeleteSlot({ slot, onClose }: { slot: number; onClose: (deleted: boolea
 }
 
 const CLS: ClassId[] = HERO_CLASSES;
-const SPS: SpeciesId[] = ['human', 'elf', 'dwarf', 'halfling'];
+const SPS: SpeciesId[] = ['human', 'elf', 'dwarf', 'halfling', 'dragonborn', 'tiefling'];
 
 const STEPS = ['Sexo', 'Especie', 'Clase', 'Atributos', 'Nombre'];
 const NEXT = ['Elegir especie', 'Elegir clase', 'Elegir atributos', 'Poner nombre', 'Empezar la aventura'];
@@ -316,6 +316,7 @@ export function Create() {
               <Panel style={{ marginTop: 10 }}>
                 <Text style={st.blurbT}>{CLASSES[cls].name}</Text>
                 <Text style={st.blurb}>{CLASSES[cls].blurb}</Text>
+                {sp === 'dragonborn' ? <Text style={st.blurb}>{`Linaje: dragón ${DRACONIC[cls].dragon}, aliento de ${DRACONIC[cls].type}.`}</Text> : null}
                 <Text style={st.blurbSmall}>Los aliados serán de otras clases.</Text>
               </Panel>
             </>

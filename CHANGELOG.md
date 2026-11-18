@@ -2,6 +2,13 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 18 de noviembre de 2026 — Dracónido, tiefling, brujo y bárbaro elegible
+
+- **Especies** (`SPECIES`): dracónido y tiefling, según el SRD 5.2.1. El linaje del dracónido sale del color de su retrato (`DRACONIC`): aliento de 1d10 (2d10 a nivel 5) sobre una fila enemiga, tantos usos como su competencia, y resistencia a ese daño. El tiefling tiene legado infernal fijo: resistencia al fuego, Descarga de fuego con Carisma y Reprensión infernal automática una vez por descanso largo desde nivel 3. Los usos van en `Char.racial`.
+- **Brujo** (patrón infernal): magia del pacto (`slotsAt`) con espacios del mismo nivel que se recuperan en el descanso corto, Descarga sobrenatural (+Carisma desde nivel 2, dos rayos a nivel 5), Maleficio con concentración, Armadura de sombras (CA 13 + Destreza), Astucia mágica tras un combate, Bendición del oscuro y los conjuros del infernal.
+- **Bárbaro** elegible como héroe; en la montaña, Vurka cede su sitio al suplente.
+- 24 retratos nuevos con la cara centrada para las miniaturas.
+
 ## 17 de noviembre de 2026 — Niveles más bajos: 2, 3 y 4
 
 - **Nivel objetivo por aventura** (`ADVS[].level`): 2 en Hondaroca, 3 en el bosque y 4 en la montaña. Dentro de la aventura nadie lo pasa (los PX de más se pierden, `gainXp`) y, al entrar en la sala del jefe, quien no lo tenga sube a él. También es el mínimo al terminarla (antes 3, 5 y 6).

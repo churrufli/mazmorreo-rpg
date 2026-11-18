@@ -40,6 +40,10 @@ export interface Char {
   featPending?: boolean;
   /** Inspiración heroica (tras la tercera charla en la posada): repite una tirada fallida por aventura. */
   inspired?: boolean;
+  /** Usos del rasgo de especie con descanso largo: Ataque de aliento (dracónido) o Reprensión infernal (tiefling). */
+  racial?: number;
+  /** Brujo: ya ha usado Astucia mágica desde el último descanso largo. */
+  cunning?: boolean;
 }
 
 export const MAX_ITEMS = 12;
@@ -49,8 +53,17 @@ export const score = (c: Char, a: Ability) =>
   a === 'str' && c.items.some(i => i.id === 'gauntlets_ogre_power') ? Math.max(19, c.abil.str) : c.abil[a];
 export const abilMod = (c: Char, a: Ability) => mod(score(c, a));
 const half = (cls: ClassId) => cls === 'ranger' || cls === 'paladin';
+/** Magia del pacto del brujo (SRD 5.2.1): pocos espacios, todos del mismo nivel. */
+const PACT: Record<number, Slots> = { 1: [1, 0, 0], 2: [2, 0, 0], 3: [0, 2, 0], 4: [0, 2, 0], 5: [0, 0, 2], 6: [0, 0, 2] };
 /** Espacios de conjuro: guerrero y pícaro no lanzan conjuros (el autor, opiniones v0.58). */
-export const slotsAt = (cls: ClassId, level: number): Slots => { if (cls === 'fighter' || cls === 'rogue' || cls === 'barbarian') return [0, 0, 0]; const t = (half(cls) ? HALF_SLOTS : SLOTS)[level]; return [t[0], t[1], t[2]]; };
+export const slotsAt = (cls: ClassId, level: number): Slots => {
+  if (cls === 'fighter' || cls === 'rogue' || cls === 'barbarian') return [0, 0, 0];
+  const t = (cls === 'warlock' ? PACT : half(cls) ? HALF_SLOTS : SLOTS)[level];
+  return [t[0], t[1], t[2]];
+};
+/** Usos de Ataque de aliento (bonificador de competencia) o de Reprensión infernal (una vez desde nivel 3). */
+export const maxRacial = (c: { species: SpeciesId; level: number }) =>
+  c.species === 'dragonborn' ? prof(c.level) : c.species === 'tiefling' && c.level >= 3 ? 1 : 0;
 /** Espacios que le quedan en total (de cualquier nivel). */
 export const slotsLeft = (c: Char) => c.slots[0] + c.slots[1] + (c.slots[2] ?? 0);
 /** Usos de Canalizar divinidad, Enemigo predilecto, Furia (bárbaro) o la reserva de Imposición de manos (paladín). */
@@ -101,16 +114,17 @@ export function makeChar(o: {
     secondWind: 2,
     actionSurge: 1,
     channel: maxChannel(o),
+    racial: maxRacial(o),
     dead: false,
     stable: false,
     deathS: 0,
     deathF: 0,
     items: o.items.map(id => ({ ...newItem(id), basic: !CONSUMABLE.includes(ITEMS[id]?.kind) || undefined })),
-    row: o.cls === 'wizard' || o.cls === 'ranger' ? 'back' : 'front',
+    row: o.cls === 'wizard' || o.cls === 'ranger' || o.cls === 'warlock' ? 'back' : 'front',
   };
 }
 
-const CLASS_EN: Record<ClassId, string> = { fighter: 'Fighter', cleric: 'Cleric', rogue: 'Rogue', wizard: 'Wizard', ranger: 'Ranger', paladin: 'Paladin', barbarian: 'Barbarian' };
+const CLASS_EN: Record<ClassId, string> = { fighter: 'Fighter', cleric: 'Cleric', rogue: 'Rogue', wizard: 'Wizard', ranger: 'Ranger', paladin: 'Paladin', barbarian: 'Barbarian', warlock: 'Warlock' };
 const ALLY_CLASS: Record<string, ClassId> = { Fighter: 'fighter', Cleric: 'cleric', Rogue: 'rogue', Wizard: 'wizard', Ranger: 'ranger', Paladin: 'paladin', Barbarian: 'barbarian' };
 // Vurka es orca: no hay especie orca en el juego y cuenta como humana (Percepción, sin rasgos de otras especies).
 const ALLY_SPECIES: Record<string, SpeciesId> = { Enana: 'dwarf', Enano: 'dwarf', Mediano: 'halfling', Humano: 'human', Humana: 'human', Elfa: 'elf', Orca: 'human' };
@@ -153,6 +167,8 @@ export function armorClass(c: Char): number {
   const defense = (c.cls === 'fighter' || c.cls === 'paladin') && wearsArmor ? 1 : 0; // estilo de combate Defensa
   // Defensa sin armadura del bárbaro: 10 + Destreza + Constitución si es mejor que su armadura.
   if (c.cls === 'barbarian') best = Math.max(best, 10 + dex + abilMod(c, 'con'));
+  // Invocación Armadura de sombras del brujo: armadura de mago a voluntad, 13 + Destreza.
+  if (c.cls === 'warlock') best = Math.max(best, 13 + dex);
   return best + shield + defense + (c.items.some(i => i.id === 'cloak_protection') ? 1 : 0);
 }
 
@@ -268,16 +284,28 @@ function addXp(c: Char, n: number): string[] {
     if (c.hp > 0) c.hp += gain;
     c.hitDice++;
     const s = slotsAt(c.cls, c.level), p = slotsAt(c.cls, c.level - 1);
-    c.slots = [c.slots[0] + s[0] - p[0], c.slots[1] + s[1] - p[1], (c.slots[2] ?? 0) + s[2] - p[2]];
+    if (c.cls === 'warlock') {
+      // Los espacios de pacto cambian de nivel: se conservan los gastados y el resto pasa al nivel nuevo.
+      const spent = Math.max(0, p[0] + p[1] + p[2] - slotsLeft(c));
+      const left = Math.max(0, s[0] + s[1] + s[2] - spent);
+      c.slots = s.map(n => (n ? left : 0)) as Slots;
+    } else c.slots = [c.slots[0] + s[0] - p[0], c.slots[1] + s[1] - p[1], (c.slots[2] ?? 0) + s[2] - p[2]];
     c.channel += maxChannel(c) - maxChannel({ cls: c.cls, level: c.level - 1 });
+    const racialUp = maxRacial(c) - maxRacial({ species: c.species, level: c.level - 1 });
+    c.racial = (c.racial ?? 0) + racialUp;
     msgs.push(`¡${c.name} sube a nivel ${c.level}! (+${gain} PG)${featAt(c) ? ' Puede elegir una mejora de característica o una dote.' : ''}`);
     msgs.push(...(LEVEL_FEATURES[c.level]?.[c.cls] ?? []));
-    const extraSlots = s.map((slots, i) => slots - p[i] > 0 ? `+${slots - p[i]} de nivel ${i + 1}` : '').filter(Boolean);
+    const extraSlots = c.cls === 'warlock' ? [] : s.map((slots, i) => slots - p[i] > 0 ? `+${slots - p[i]} de nivel ${i + 1}` : '').filter(Boolean);
+    if (c.cls === 'warlock' && s.join() !== p.join()) msgs.push(`Magia del pacto: ${s.find(n => n)} espacios de nivel ${s.findIndex(n => n) + 1}.`);
     if (extraSlots.length) msgs.push(`Espacios de conjuro: ${extraSlots.join(', ')}.`);
     const extraChannel = maxChannel(c) - maxChannel({ cls: c.cls, level: c.level - 1 });
     if (extraChannel > 0 && c.cls === 'paladin') msgs.push(`Imposición de manos: +${extraChannel} PG en la reserva de curación.`);
     if (extraChannel > 0 && c.cls === 'cleric') msgs.push(`Chispa divina: +${extraChannel} uso.`);
     if (extraChannel > 0 && c.cls === 'barbarian') msgs.push(`Furia: +${extraChannel} uso.`);
+    if (racialUp > 0 && c.species === 'dragonborn') msgs.push(`Ataque de aliento: +${racialUp} uso.`);
+    if (racialUp > 0 && c.species === 'tiefling') msgs.push('Nueva habilidad de tiefling: Reprensión infernal. Una vez por descanso largo, quien te dañe sufre 2d10 de fuego (salvación de Destreza).');
+    if (c.level === 5 && c.species === 'dragonborn') msgs.push('Mejora de Ataque de aliento: inflige 2d10.');
+    if (c.level === 5 && c.species === 'tiefling') msgs.push('Mejora de truco: Descarga de fuego inflige 2d10.');
     if (prof(c.level) > prof(c.level - 1)) msgs.push(`Competencia: +${prof(c.level - 1)} → +${prof(c.level)} en las tiradas que la usan.`);
   }
   return msgs;
@@ -290,12 +318,14 @@ export const LEVEL_FEATURES: Partial<Record<number, Partial<Record<ClassId, stri
     rogue: ['Nueva habilidad: Esconderse como acción adicional.'],
     cleric: ['Nueva habilidad: Chispa divina. Cura 1d8 + Sabiduría a un aliado.'],
     ranger: ['Nuevo estilo: Tiro con arco. +2 a las tiradas de ataque con armas a distancia.'],
+    warlock: ['Nueva invocación: Descarga agónica. Descarga sobrenatural suma tu Carisma al daño.', 'Nueva habilidad: Astucia mágica. Una vez por descanso largo, tras un combate recuperas la mitad de tus espacios de pacto.'],
   },
   3: {
     fighter: ['Nueva habilidad: Crítico mejorado. Los ataques con armas son críticos con 19 o 20.'],
     rogue: ['Mejora de habilidad: Ataque furtivo aumenta de 1d6 a 2d6.'],
     cleric: ['Nuevo conjuro: Arma espiritual. Ataque como acción adicional por 1d8 + Sabiduría.'],
     wizard: ['Nuevo conjuro: Rayo abrasador. Lanza tres rayos de 2d6.'],
+    warlock: ['Patrón infernal: Manos ardientes y Rayo abrasador, con espacios de nivel 2.', 'Nueva habilidad: Bendición del oscuro. Al caer un enemigo por tu mano o delante de ti, ganas PG temporales.'],
   },
   5: {
     fighter: ['Nueva habilidad: Ataque adicional. Ataca dos veces con tu arma.'],
@@ -305,6 +335,7 @@ export const LEVEL_FEATURES: Partial<Record<number, Partial<Record<ClassId, stri
     rogue: ['Mejora de habilidad: Ataque furtivo aumenta de 2d6 a 3d6.'],
     wizard: ['Nuevo conjuro: Bola de fuego. Inflige 8d6 de daño a una fila.', 'Mejora de trucos: Descarga de fuego inflige 2d10 y Rayo de escarcha, 2d8.'],
     cleric: ['Nuevo conjuro: Curación en masa. Cura 2d4 + Sabiduría a todo el grupo.', 'Mejora de truco: Llama sagrada inflige 2d8.'],
+    warlock: ['Nuevo conjuro: Bola de fuego. Inflige 8d6 de daño a una fila.', 'Mejora de truco: Descarga sobrenatural lanza dos rayos.'],
   },
   6: {
     paladin: ['Nueva habilidad: Aura de protección. El grupo suma tu modificador de Carisma (mínimo +1) a las salvaciones mientras sigues en pie.'],
@@ -338,7 +369,8 @@ export function chooseFeat(c: Char, f: FeatId) {
 
 /** ¿Sirve de algo descansar? Corto: alguien herido. Largo: además, conjuros o usos gastados. */
 export function needsRest(party: Char[], long: boolean): boolean {
-  return party.some(c => !c.dead && (c.hp < c.maxHp || c.secondWind < 2 || (long && (
+  return party.some(c => !c.dead && (c.hp < c.maxHp || c.secondWind < 2 || (c.cls === 'warlock' && slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0)) || (long && (
+    (c.racial ?? 0) < maxRacial(c) || !!c.cunning ||
     slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0) || c.hitDice < c.level || c.channel < maxChannel(c) || c.actionSurge < 1))));
 }
 
@@ -357,6 +389,8 @@ export function shortRest(c: Char, rng: Rng): number {
   c.secondWind = Math.min(2, c.secondWind + 1);
   c.actionSurge = 1;
   if (c.cls !== 'paladin') c.channel = Math.min(maxChannel(c), c.channel + 1);
+  // Magia del pacto: el brujo recupera todos sus espacios con un descanso corto.
+  if (c.cls === 'warlock') c.slots = slotsAt(c.cls, c.level);
   return healed;
 }
 
@@ -364,7 +398,7 @@ export function longRest(c: Char) {
   if (c.dead) return;
   Object.assign(c, {
     hp: c.maxHp, hitDice: c.level, slots: slotsAt(c.cls, c.level), secondWind: 2, actionSurge: 1, channel: maxChannel(c),
-    stable: false, deathS: 0, deathF: 0,
+    racial: maxRacial(c), cunning: false, stable: false, deathS: 0, deathF: 0,
   });
 }
 

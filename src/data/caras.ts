@@ -22,11 +22,20 @@ export const FACE: Partial<Record<ImgKey, [number, number]>> = {
   hero_wizard_dwarf_b: px(260, 110), hero_wizard_elf_b: px(256, 80), hero_wizard_halfling_b: px(256, 116), hero_wizard_human_b: px(256, 84),
   hero_ranger_dwarf_b: px(256, 96), hero_ranger_elf_b: px(250, 90), hero_ranger_halfling_b: px(256, 96), hero_ranger_human_b: px(252, 80),
   hero_paladin_dwarf_b: px(260, 116), hero_paladin_elf_b: px(256, 84), hero_paladin_halfling_b: px(256, 104), hero_paladin_human_b: px(256, 90),
+  hero_barbarian_dwarf: px(245, 110), hero_barbarian_elf: px(270, 125), hero_barbarian_halfling: px(276, 160), hero_barbarian_human: px(272, 75),
+  hero_barbarian_dwarf_b: px(268, 110), hero_barbarian_elf_b: px(325, 185), hero_barbarian_halfling_b: px(340, 125), hero_barbarian_human_b: px(321, 125),
+  // Dracónidos, tieflings y brujos (3.49-3.68).
+  hero_fighter_dragonborn: px(305, 128), hero_cleric_dragonborn: px(277, 130), hero_rogue_dragonborn: px(300, 130), hero_wizard_dragonborn: px(272, 115),
+  hero_ranger_dragonborn: px(222, 160), hero_paladin_dragonborn: px(276, 110), hero_barbarian_dragonborn: px(300, 158), hero_warlock_dragonborn: px(244, 110),
+  hero_fighter_tiefling: px(237, 80), hero_cleric_tiefling: px(234, 130), hero_rogue_tiefling: px(277, 110), hero_wizard_tiefling: px(291, 70),
+  hero_ranger_tiefling: px(228, 130), hero_paladin_tiefling: px(235, 110), hero_barbarian_tiefling: px(265, 100), hero_warlock_tiefling: px(265, 115),
+  hero_warlock_human: px(330, 64), hero_warlock_elf: px(272, 75), hero_warlock_dwarf: px(295, 170), hero_warlock_halfling: px(235, 145),
 };
 
 /** Sexo de la ilustración principal de cada héroe (la versión _b es la del otro sexo). */
 const MAN = new Set(['fighter_dwarf', 'fighter_human', 'cleric_elf', 'cleric_halfling', 'rogue_dwarf', 'rogue_elf', 'wizard_halfling', 'wizard_human',
-  'ranger_halfling', 'ranger_human', 'paladin_elf', 'paladin_human']);
+  'ranger_halfling', 'ranger_human', 'paladin_elf', 'paladin_human', 'barbarian_dwarf', 'barbarian_halfling',
+  'barbarian_tiefling', 'cleric_tiefling', 'ranger_tiefling', 'wizard_tiefling', 'warlock_human', 'warlock_halfling']);
 export type Sex = 'man' | 'woman';
 export const baseSex = (cls: string, sp: string): Sex => (MAN.has(`${cls}_${sp}`) ? 'man' : 'woman');
 /** Ilustración del héroe según clase, especie y sexo elegido. */
@@ -39,6 +48,8 @@ const NAMES: Record<SpeciesId, string[]> = {
   elf: ['Aeris', 'Caelith', 'Elarin', 'Faelyn', 'Ilyndra', 'Lirael', 'Nimrae', 'Sariel', 'Sylvaris', 'Thalior', 'Vaelin', 'Yllar'],
   dwarf: ['Brakka', 'Dunrae', 'Grimna', 'Hrothi', 'Kardun', 'Morrik', 'Orsa', 'Rundra', 'Skarri', 'Thoryn', 'Vulka', 'Ymir'],
   halfling: ['Alby', 'Brindle', 'Corrin', 'Fenny', 'Jessamy', 'Kip', 'Merrow', 'Pip', 'Rosco', 'Tansy', 'Wyll', 'Quill'],
+  dragonborn: ['Arkhes', 'Brasvor', 'Drakkis', 'Ghaldra', 'Iskarra', 'Khorvan', 'Mezzar', 'Nyxara', 'Rhazul', 'Sothrak', 'Tyrrha', 'Vorrash'],
+  tiefling: ['Azhrel', 'Belyth', 'Caelzar', 'Damaris', 'Ephyra', 'Kallux', 'Lilthra', 'Nephis', 'Orzhia', 'Seraxis', 'Vexra', 'Ysmer'],
 };
 
 /** Nombre al azar según la especie, distinto del actual. */

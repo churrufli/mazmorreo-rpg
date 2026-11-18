@@ -4,7 +4,7 @@ import { ITEMS } from '../data/srd';
 
 /** Tres categorías; esquivar, cambiar de fila y huir van fuera (fila fija, campo y barra de arriba). */
 export type CombatGroup = 'attack' | 'skills' | 'items' | 'other';
-const CANTRIPS = ['sacred_flame', 'fire_bolt', 'ray_frost'];
+const CANTRIPS = ['sacred_flame', 'fire_bolt', 'ray_frost', 'eldritch', 'infernal_bolt'];
 export function groupOf(a: Action): CombatGroup {
   const id = a.id.split(':')[0];
   if (['potion', 'throw', 'web', 'wand', 'scroll'].includes(id)) return 'items';
