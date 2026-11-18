@@ -303,7 +303,7 @@ export const MONSTERS: Record<string, MonsterDef> = {
     attacks: [{ name: 'Mordisco', bonus: 2, dice: '1', type: 'perforante' }],
     saves: { str: -4, dex: 0, con: 0, int: -5, wis: -1, cha: -4 },
   },
-  // No ataca: solo chilla (en el SRD avisa a quien esté cerca).
+  // No ataca: solo chilla (en el SRD avisa a quien esté cerca). Su primer chillido atrae a otro enemigo (shriek en combat.ts).
   Shrieker: {
     name: 'Hongo chillón', img: 'hongo_chillon', ac: 5, hp: 13, dexMod: -5, xp: 0, ai: 'beast', noSleep: true,
     attacks: [], saves: { str: -5, dex: -5, con: 0, int: -5, wis: -4, cha: -5 },

@@ -80,6 +80,13 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Música de demostración para Arenaroja, la tumba y sus combates. No es la definitiva: se busca música para ambientar el juego.',
     'Modo desarrollador: los obstáculos que no ceden y las salidas cerradas con llave tienen un botón «Superar» para pasarlos sin más.',
     'Modo desarrollador: al viajar a un pueblo, el grupo queda como llegaría jugando a esa aventura: su nivel de entrada, los compañeros y el equipo mágico de las aventuras anteriores. Si viajáis a una aventura anterior, se quita lo que sobra.',
+    'La tumba: sus escenas ya aparecen en el mapa. Antes no se veían, y por eso Sparamuntar, la gelatina ocre y otros enemigos de escena no llegaban a luchar.',
+    'El cartel de «¡Combate!» usa los mismos nombres que las cartas y agrupa los repetidos: «dos enjambres de murciélagos». El jardinero vendado pasa a llamarse momia jardinera.',
+    'El hongo chillón chilla: su primer grito atrae a otro enemigo del grupo, si cabe.',
+    'Al superar una zona, en la introducción de cada aventura y en las escenas con ilustración, primero se ve la imagen y a los dos segundos el cartel (tocar lo adelanta).',
+    'Los avisos largos, como la subida de nivel de todo el grupo, se desplazan y el botón de continuar queda siempre a la vista.',
+    'Victoria en combate: los rayos de luz salen por los bordes de la pantalla. El final de aventura ya no muestra el botón de opciones. La estatua de la cobra y la hoguera de los descansos de la tumba se ven sin restos de fondo.',
+    'Modo desarrollador: al viajar a un pueblo, su aventura empieza de cero, y cada arma mágica de las aventuras anteriores va a quien usa ese arma.',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',

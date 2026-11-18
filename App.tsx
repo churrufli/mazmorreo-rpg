@@ -20,8 +20,8 @@ startSound();
 let lastTouch = Date.now();
 const IDLE_MS = 3 * 60 * 1000;
 
-/** Pantallas que ya tienen su propio botón de ajustes (título, mapa, combate y pueblo). */
-const OWN_GEAR = new Set<string>(['title', 'game']);
+/** Pantallas con su propio botón de ajustes (título, mapa, combate y pueblo) o sin él (final de aventura). */
+const OWN_GEAR = new Set<string>(['title', 'game', 'victory']);
 
 function Router() {
   const ins = useSafeAreaInsets();

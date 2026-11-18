@@ -1,6 +1,6 @@
 // La Tumba de los Reyes Serpiente: Xiximanter es el mago del SRD 5.2.1.
 import { newGame } from './game';
-import { enterZone } from './dungeon';
+import { ZONE_IDS, enterZone, plan, zoneById } from './dungeon';
 import { enemyTurn, startCombat } from './combat';
 import { createAlly } from './rules';
 
@@ -33,4 +33,38 @@ describe('Xiximanter', () => {
     turn();
     expect(cb.log.slice(from).filter(l => l.t.includes('Estallido arcano')).length).toBe(3);
   });
+});
+
+describe('Hongo chillón', () => {
+  it('su primer chillido atrae a un enemigo más del tipo más débil; luego solo chilla', () => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    g.rng.seed = 5;
+    for (const id of ['tiko', 'liss', 'brunna']) g.party.push(createAlly(id, 5, 6500));
+    enterZone(g, 's4');
+    const cb = startCombat(g, 's4_e01');
+    const goblins = cb.units.filter(u => u.mon === 'Fungus Goblin');
+    for (const u of goblins.slice(1)) { u.hp = 0; u.dead = true; }
+    const sh = cb.units.find(u => u.mon === 'Shrieker')!;
+    const turn = () => { cb.turn = cb.order.indexOf(sh.key); cb.acted = cb.bonus = cb.moved = false; enemyTurn(g, cb); };
+    const before = cb.units.length;
+    turn();
+    expect(cb.units.length).toBe(before + 1);
+    expect(cb.units[cb.units.length - 1].mon).toBe('Fungus Goblin');
+    turn();
+    expect(cb.units.length).toBe(before + 1);
+    expect(cb.log.some(l => l.t.includes('sigue chillando'))).toBe(true);
+  });
+});
+
+// Las escenas de la tumba no estaban en el plano: sus combates (Sparamuntar, la gelatina...) nunca empezaban.
+test('cada escena tiene su casilla en el mapa y los combates de escena no tienen ficha propia', () => {
+  for (const z of ZONE_IDS) {
+    const marks = new Set(plan(z).marks.map(m => m.id));
+    const zone = zoneById(z) as any;
+    const byElement = new Set((zone.elements ?? []).map((e: any) => e.scene));
+    for (const r of zone.rooms) for (const c of r.contents) {
+      if (c.type === 'scene' && !c.noMark && !byElement.has(c.id)) expect(`${c.id}:${marks.has(c.id)}`).toBe(`${c.id}:true`);
+      if (c.type === 'encounter' && c.trigger === 'scene') expect(`${c.id}:${marks.has(c.id)}`).toBe(`${c.id}:false`);
+    }
+  }
 });

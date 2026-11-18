@@ -3,6 +3,7 @@ import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG } from '../assets';
 import { C, F } from '../theme';
+import { foeList } from '../ui/anuncio';
 import { useStore } from '../store';
 import { Action, MASTERY_NAME, Unit, actionsFor, autoTurn, current, hasUseful, masteryOf, preview, targetsFor } from '../engine/combat';
 import { Card, CardInfo, CardModal, resetFx, slotsOf } from '../ui/Card';
@@ -607,12 +608,12 @@ function EncounterIntro({ cb, onDone }: { cb: ReturnType<typeof useStore.getStat
   const scale = v.interpolate({ inputRange: [0, 1], outputRange: [2.4, 1] });
   const order = cb.order.map(k => cb.units.find(u => u.key === k)!).filter(u => !u.dead);
   const foes = cb.units.filter(u => u.side === 'enemy');
-  const names = foes.map(f => MONSTERS[f.mon!].name);
-  const foeList = names.length > 1 ? `${names.slice(0, -1).join(', ')} y ${names[names.length - 1]}` : names[0];
+  // Con los mismos nombres que las cartas, y los repetidos agrupados («dos enjambres de murciélagos»).
+  const foeText = foeList(foes.map(f => f.name));
   return (
     <View style={st.introBg}>
       <Animated.Text style={[st.introTitle, { opacity: v, transform: [{ scale }] }]}>¡Combate!</Animated.Text>
-      <FadeIn delay={500}><Text style={st.introSub}>{foeList}</Text></FadeIn>
+      <FadeIn delay={500}><Text style={st.introSub}>{foeText}</Text></FadeIn>
       {cb.goal ? (
         <FadeIn delay={700} style={{ width: '86%', marginBottom: 10 }}>
           <View style={st.goalIntro}>

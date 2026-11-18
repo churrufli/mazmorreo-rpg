@@ -61,6 +61,8 @@ export interface Unit {
   recharge?: Record<string, boolean>;
   shieldSlots?: number;
   rays?: number;
+  /** Hongo chillón que ya ha llamado a alguien con su grito. */
+  shrieked?: boolean;
   temp?: number;
   /** Apresado (red o telaraña): CD para soltarse. */
   restrained?: number;
@@ -371,6 +373,32 @@ function bossRound(g: Game, cb: Combat) {
     cb.bonusXp = (cb.bonusXp ?? 0) + 10;
     say(cb, '¡Del suelo brota un arbusto despertado!', 'big');
   }
+}
+
+/**
+ * Hongo chillón: no ataca. Su reacción del SRD 5.2.1 (Chillar) es un grito que se oye a 90 m.
+ * En el juego, el primer grito atrae a una criatura más del tipo más débil del grupo, si cabe.
+ */
+function shriek(g: Game, cb: Combat, u: Unit) {
+  if (u.shrieked) { say(cb, `${u.name} sigue chillando.`, 'info'); return; }
+  u.shrieked = true;
+  const foes = cb.units.filter(x => x.side === 'enemy' && alive(x));
+  const kin = cb.units.filter(x => x.side === 'enemy' && x.mon && x.mon !== 'Shrieker' && MONSTERS[x.mon].xp > 0)
+    .sort((a, b) => MONSTERS[a.mon!].xp - MONSTERS[b.mon!].xp)[0];
+  const cap = maxFoesFor(g.party.filter(c => !c.dead).length);
+  if (!kin || foes.filter(x => x.row === 'front').length >= MAX_ROW || foes.length >= cap) {
+    say(cb, `${u.name} lanza un chillido que retumba por los pasillos.`, 'big');
+    return;
+  }
+  const m = MONSTERS[kin.mon!];
+  const v: Unit = {
+    key: `e_grito_${u.key}`, side: 'enemy', mon: kin.mon, name: `${kin.name.replace(/ \d+$/, '')} de refresco`, img: kin.img, hp: m.hp, maxHp: m.hp,
+    ac: m.ac, row: 'front', init: die(g.rng, 20) + m.dexMod, recharge: {}, weapon: kin.weapon, shieldSlots: m.shieldSlots,
+  };
+  cb.units.push(v);
+  cb.order.push(v.key);
+  cb.bonusXp = (cb.bonusXp ?? 0) + m.xp;
+  say(cb, `${u.name} lanza un chillido. ¡Acude otro enemigo: ${v.name}!`, 'big');
 }
 
 function heal(cb: Combat, u: Unit, amount: number) {
@@ -1248,6 +1276,7 @@ export function enemyTurn(g: Game, cb: Combat) {
   }
   if (u.prone) { u.prone = false; say(cb, `${u.name} se levanta del suelo.`, 'info'); }
   const m = MONSTERS[u.mon!];
+  if (u.mon === 'Shrieker') { shriek(g, cb, u); if (!checkEnd(g, cb)) endTurn(g, cb); return; }
   // Goblins malheridos huyen.
   if (m.ai === 'goblin' && u.hp < u.maxHp * 0.25 && rand(g.rng) < 0.5) {
     u.fled = true;

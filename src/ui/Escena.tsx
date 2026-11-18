@@ -1,7 +1,7 @@
 // Escena con opciones: ilustración, texto, pregunta y respuestas. Las que piden tirada dicen quién lo haría mejor
 // y, al tocarlas, se elige quién del grupo la intenta (con su bonificador).
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { IMG } from '../assets';
 import { ABIL_NAME, ITEMS } from '../data/srd';
 import { C, F } from '../theme';
@@ -12,7 +12,7 @@ import { Bg, Btn, Panel } from './kit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { zoneArt } from '../engine/dungeon';
 import { getDev } from '../storage';
-import { FadeIn } from './Overlays';
+import { FadeIn, HOLD_MS, useHold } from './Overlays';
 import { DUR } from './movimiento';
 
 const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
@@ -21,6 +21,8 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
   const s = sceneById(id)!;
   const ins = useSafeAreaInsets();
   const [ask, setAsk] = useState<number>();
+  // Escena con ilustración propia: primero se ve la imagen y a los dos segundos el cuadro (o al tocar).
+  const [shown, show] = useHold(s.img ? HOLD_MS : 0);
   const closed = sceneState(g, id).closed;
   const o = ask !== undefined ? s.options[ask] : undefined;
   // Ordenar solo las pruebas: la CD y el mejor modificador determinan la probabilidad real del d20.
@@ -37,6 +39,7 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
     // Pantalla entera: de fondo, la ilustración de la escena (o la de la zona si no tiene propia); el texto, abajo.
     <View style={StyleSheet.absoluteFill}>
       <Bg src={IMG[s.img ?? g.zoneBg ?? zoneArt(g.zone).combat]} dim={0.15}>
+      {!shown ? <Pressable style={{ flex: 1 }} onPress={show} accessibilityLabel="Continuar" /> : (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end', padding: 12, paddingBottom: ins.bottom + 12, paddingTop: ins.top + 40 }}>
       {/* El cuadro sube al aparecer y su contenido cambia con un fundido corto (pregunta ↔ quién lo intenta). */}
       <FadeIn key={id} from={18} duration={DUR.panel + 80}>
@@ -75,6 +78,7 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
       </Panel>
       </FadeIn>
       </ScrollView>
+      )}
       </Bg>
     </View>
   );
