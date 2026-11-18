@@ -237,7 +237,7 @@ function endConcentration(cb: Combat, caster: Unit) {
   say(cb, `${caster.name} pierde la concentración.`, 'info');
 }
 
-function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: DmgType, from: Unit, crit = false) {
+export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: DmgType, from: Unit, crit = false) {
   const m = target.mon ? MONSTERS[target.mon] : undefined;
   if (m?.immune?.includes(type)) { say(cb, `${target.name} es inmune al daño de ${type}.`, 'info'); return; }
   if (m?.resist?.includes(type)) amount = Math.floor(amount / 2);
@@ -291,7 +291,12 @@ function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: Dm
     kill(cb, target);
     darkBlessing(g, cb, target, from);
   } else if (amount - before >= target.maxHp) kill(cb, target);
-  else {
+  else if (charOf(g, target).species === 'orc' && !charOf(g, target).relentless) {
+    // Aguante incansable (orco): una vez por descanso largo se queda con 1 PG en vez de caer.
+    charOf(g, target).relentless = true;
+    target.hp = 1;
+    say(cb, `Aguante incansable: ${target.name} se niega a caer y se queda con 1 PG.`, 'big');
+  } else {
     Object.assign(target, { deathS: 0, deathF: 0, stable: false });
     say(cb, `${target.name} cae inconsciente.`, 'big');
     if (goalOpen(cb, 'nodown')) goalDone(cb, false);
@@ -953,6 +958,7 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
   // Rasgos de especie: Ataque de aliento del dracónido y Descarga de fuego del tiefling (el mago ya la tiene).
   if (c.species === 'dragonborn' && (c.racial ?? 0) > 0) A.push({ id: 'breath', label: 'Ataque de aliento', cost: 'action', target: 'enemy', detail: `una fila ${c.level >= 5 ? '2d10' : '1d10'} ${draconic(c).type} (${c.racial})` });
   if (c.species === 'tiefling' && c.cls !== 'wizard') A.push({ id: 'infernal_bolt', label: 'Descarga de fuego', cost: 'action', target: 'enemy', detail: c.level >= 5 ? '2d10' : '1d10' });
+  if (c.species === 'orc' && (c.racial ?? 0) > 0) A.push({ id: 'adrenaline', label: 'Descarga de adrenalina', cost: 'bonus', target: 'none', detail: `+${prof(c.level)} PG temporales (${c.racial})` });
   if (c.cls === 'barbarian' && c.channel > 0 && !u.rage) A.push({ id: 'rage', label: 'Furia', cost: 'bonus', target: 'none', detail: `+2 daño, resiste golpes (${c.channel})` });
   if (c.cls === 'fighter') {
     if (c.secondWind > 0) A.push({ id: 'second_wind', label: 'Tomar aliento', cost: 'bonus', target: 'none', detail: `1d10+${c.level} (${c.secondWind})` });
@@ -1239,6 +1245,11 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       c.slots[2]--;
       say(cb, `${u.name} lanza Palabra de curación en masa.`, 'info');
       for (const x of hurt(cb)) heal(cb, x, roll(g.rng, '2d4') + wis);
+      break;
+    case 'adrenaline':
+      c.racial = (c.racial ?? 1) - 1;
+      u.temp = Math.max(u.temp ?? 0, prof(c.level));
+      say(cb, `${u.name} usa Descarga de adrenalina: ${prof(c.level)} PG temporales.`, 'big');
       break;
     case 'rage':
       c.channel--;

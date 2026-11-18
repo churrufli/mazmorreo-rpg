@@ -10,6 +10,7 @@ Este documento resume hitos funcionales comprobados en el código y en las PR re
 - 24 retratos nuevos con la cara centrada para las miniaturas.
 - 20 retratos más del otro sexo (`hero_*_b`) para dracónidos, tieflings y brujos, y corregido el sexo de los cuatro dracónidos varones en `baseSex`.
 - **Aliados sin repetir**: Kallux (brujo tiefling) sustituye al Hermano Ismerel, Ghaldra (guerrera dracónida de plata) a Syrael e Iskarra (bárbara dracónida de latón) a la Hermana Yara; Teodor pasa a brujo. Cada clase tiene dos aliados. Las aliadas dracónidas tienen su propio linaje (`draconic`).
+- **Vurka, orca** (especie `orc`, solo para ella): Aguante incansable y Descarga de adrenalina del SRD 5.2.1. La visión en la oscuridad no está modelada, como en las demás especies.
 
 ## 17 de noviembre de 2026 — Niveles más bajos: 2, 3 y 4
 

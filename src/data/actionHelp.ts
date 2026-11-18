@@ -2,6 +2,7 @@
 export const ACTION_HELP: Record<string, string> = {
   mass_heal: 'Acción adicional y un espacio de nivel 3: los aliados heridos recuperan 2d4 + Sabiduría PG de inmediato. No requiere tirada de ataque ni concentración.',
   fireball: 'Acción y un espacio de nivel 3: 8d6 de fuego. Cada enemigo de la fila elegida hace una salvación de Destreza contra tu CD de conjuros (8 + competencia + característica de lanzamiento); recibe la mitad si la supera. El área por filas es una adaptación de Mazmorreo.',
+  adrenaline: 'Acción adicional y un uso de Descarga de adrenalina (tantos como tu bonificador de competencia; vuelven con un descanso corto o largo): ganas PG temporales iguales a tu bonificador de competencia. En el SRD es la acción de Correr; aquí, sin movimiento, solo cuentan los PG temporales.',
   rage: 'Acción adicional y un uso de Furia: +2 al daño cuerpo a cuerpo y resistencia al daño contundente, perforante y cortante. En esta versión se mantiene durante el combate; la duración y restricciones del SRD no están modeladas por completo.',
   mark: 'Acción adicional: consume primero un uso gratuito de Marca del cazador o, si no quedan, un espacio de conjuro. Requiere concentración: tus impactos con armas contra la presa añaden 1d6 de fuerza. Perder la concentración elimina la marca; en Mazmorreo dura como máximo este combate.',
   mark_move: 'Acción adicional: tras caer la presa, trasladas la marca a otro enemigo sin gastar otro espacio ni uso gratuito, mientras mantengas la concentración.',

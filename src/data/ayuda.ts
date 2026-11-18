@@ -92,6 +92,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'El bárbaro ya se puede elegir como héroe: Furia, Defensa sin armadura y Ataque adicional a nivel 5.',
     'Dracónidos, tieflings y brujos tienen ya retrato de hombre y de mujer: al elegir el sexo sale la imagen que toca.',
     'Aliados con más variedad: en el Corazón Hueco os espera Kallux, brujo tiefling; en la montaña, Ghaldra, guerrera dracónida de plata; y en la tumba, Iskarra, bárbara dracónida de latón. Teodor pasa a ser brujo.',
+    'Vurka ya es orca de verdad: Aguante incansable (una vez por descanso largo se queda con 1 PG en vez de caer) y Descarga de adrenalina (PG temporales como acción adicional).',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',

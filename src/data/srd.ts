@@ -6,7 +6,8 @@ export type Ability = 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
 export type ClassId = 'fighter' | 'cleric' | 'rogue' | 'wizard' | 'ranger' | 'paladin' | 'barbarian' | 'warlock';
 /** Clases que puede elegir el héroe (el bárbaro también es aliado: Vurka, en la montaña). */
 export const HERO_CLASSES: ClassId[] = ['fighter', 'cleric', 'rogue', 'wizard', 'ranger', 'paladin', 'barbarian', 'warlock'];
-export type SpeciesId = 'human' | 'elf' | 'dwarf' | 'halfling' | 'dragonborn' | 'tiefling';
+/** El orco solo lo tiene Vurka, aliada: no se elige al crear el héroe. */
+export type SpeciesId = 'human' | 'elf' | 'dwarf' | 'halfling' | 'dragonborn' | 'tiefling' | 'orc';
 
 export const ABIL_NAME: Record<Ability, string> = {
   str: 'Fuerza', dex: 'Destreza', con: 'Constitución', int: 'Inteligencia', wis: 'Sabiduría', cha: 'Carisma',
@@ -95,6 +96,7 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   halfling: { name: 'Mediano', blurb: 'Suerte: repite los 1 naturales en el d20.' },
   dragonborn: { name: 'Dracónido', blurb: 'Ataque de aliento contra una fila enemiga y resistencia al daño de su linaje, que marca el color de sus escamas.' },
   tiefling: { name: 'Tiefling', blurb: 'Legado infernal: resistencia al fuego y el truco Descarga de fuego. Desde nivel 3, responde a un golpe con Reprensión infernal.' },
+  orc: { name: 'Orco', blurb: 'Aguante incansable: una vez por descanso largo se queda con 1 PG en vez de caer. Descarga de adrenalina: PG temporales como acción adicional.' },
 };
 
 /** Linaje dracónico de cada retrato (SRD 5.2.1, «Ancestros dracónicos»): el color de las escamas decide el aliento. */
