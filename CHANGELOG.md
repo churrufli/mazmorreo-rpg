@@ -8,6 +8,7 @@ Este documento resume hitos funcionales comprobados en el código y en las PR re
 - **Brujo** (patrón infernal): magia del pacto (`slotsAt`) con espacios del mismo nivel que se recuperan en el descanso corto, Descarga sobrenatural (+Carisma desde nivel 2, dos rayos a nivel 5), Maleficio con concentración, Armadura de sombras (CA 13 + Destreza), Astucia mágica tras un combate, Bendición del oscuro y los conjuros del infernal.
 - **Bárbaro** elegible como héroe; en la montaña, Vurka cede su sitio al suplente.
 - 24 retratos nuevos con la cara centrada para las miniaturas.
+- 20 retratos más del otro sexo (`hero_*_b`) para dracónidos, tieflings y brujos, y corregido el sexo de los cuatro dracónidos varones en `baseSex`.
 
 ## 17 de noviembre de 2026 — Niveles más bajos: 2, 3 y 4
 

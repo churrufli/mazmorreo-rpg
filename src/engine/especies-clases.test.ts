@@ -1,7 +1,7 @@
 // Dracónido, tiefling, brujo y bárbaro elegible (SRD 5.2.1).
 import { ACTION_HELP } from '../data/actionHelp';
 import { DRACONIC, HERO_CLASSES, ITEMS } from '../data/srd';
-import { heroImg } from '../data/caras';
+import { baseSex, heroImg } from '../data/caras';
 import { IMG } from '../assets';
 import { newGame } from './game';
 import { armorClass, createHero, gainXp, longRest, maxRacial, newItem, raiseTo, shortRest, slotsAt } from './rules';
@@ -26,6 +26,11 @@ test('el bárbaro y el brujo se pueden elegir como héroe y todas las combinacio
   for (const cls of HERO_CLASSES) for (const sp of ['human', 'elf', 'dwarf', 'halfling', 'dragonborn', 'tiefling'] as const)
     for (const sex of ['man', 'woman'] as const) expect(IMG[heroImg(cls, sp, sex)]).toBeTruthy();
   expect(createHero('X', 'warlock', 'halfling').img).toBe('hero_warlock_halfling');
+  // Cada especie y clase nueva tiene retrato del otro sexo.
+  for (const cls of HERO_CLASSES) for (const sp of ['dragonborn', 'tiefling'] as const)
+    expect(heroImg(cls, sp, baseSex(cls, sp) === 'man' ? 'woman' : 'man')).toBe(`hero_${cls}_${sp}_b`);
+  for (const sp of ['human', 'elf', 'dwarf', 'halfling'] as const) expect(heroImg('warlock', sp, baseSex('warlock', sp) === 'man' ? 'woman' : 'man')).toBe(`hero_warlock_${sp}_b`);
+  expect(baseSex('fighter', 'dragonborn')).toBe('man');
 });
 
 test('magia del pacto: espacios del mismo nivel que vuelven con un descanso corto', () => {
