@@ -33,7 +33,7 @@ function fight(g: Game, id: string): Combat {
     const acts = actionsFor(g, cb);
     const u = current(cb);
     // Los que atacan a distancia se colocan en la retaguardia.
-    if (u.row === 'front' && !['fighter', 'paladin'].includes(g.party.find(c => c.id === u.charId)!.cls)) {
+    if (u.row === 'front' && !['fighter', 'paladin', 'barbarian'].includes(g.party.find(c => c.id === u.charId)!.cls)) {
       const mv = actionsFor(g, cb).find(a => a.id === 'row');
       if (mv) perform_(g, cb, mv);
     }
@@ -52,12 +52,14 @@ function fight(g: Game, id: string): Combat {
     const hw = actionsFor(g, cb).find(a => a.id === 'healing_word' || a.id === 'cure');
     if (down && hw) perform_(g, cb, hw, down.key);
     // En el estudio, el mago usa sus trucos en vez de la daga (como haría una persona).
-    const PRI = REC.cur && charOf0(g, u).cls === 'wizard' ? ['fireball', 'magic_missile', 'scorching', 'burning_hands', 'fire_bolt', 'atk'] : ['fireball', 'magic_missile', 'guiding_bolt', 'scorching', 'burning_hands', 'atk', 'fire_bolt', 'sacred_flame'];
+    const PRI = REC.cur && charOf0(g, u).cls === 'wizard' ? ['fireball', 'magic_missile', 'scorching', 'burning_hands', 'fire_bolt', 'atk'] : ['fireball', 'magic_missile', 'guiding_bolt', 'scorching', 'burning_hands', 'eldritch', 'atk', 'fire_bolt', 'sacred_flame'];
     const rank = (id: string) => { const i = PRI.indexOf(id.split(':')[0]); return i < 0 ? 99 : i; };
     const rage = actionsFor(g, cb).find(a => a.id === 'rage');
     if (rage) perform_(g, cb, rage);
     const mass = actionsFor(g, cb).find(a => a.id === 'mass_heal' && !a.off);
     if (mass && cb.units.filter(x => x.side === 'party' && x.hp < x.maxHp / 2 && !x.dead).length >= 2) perform_(g, cb, mass);
+    const hex = actionsFor(g, cb).find(a => (a.id === 'hex' || a.id === 'hex_move') && !a.off);
+    if (hex) perform_(g, cb, hex, targetsFor(cb, hex)[0].key);
     const sw = actionsFor(g, cb).find(a => a.id === 'spiritual' && targetsFor(cb, a).length);
     if (sw) perform_(g, cb, sw, targetsFor(cb, sw)[0].key);
     const atk = actionsFor(g, cb)

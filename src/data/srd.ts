@@ -3,11 +3,10 @@
 import type { ImgKey } from '../assets';
 
 export type Ability = 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
-/** El bárbaro solo existe como aliado (Vurka, en la montaña): no se elige como héroe. */
-export type ClassId = 'fighter' | 'cleric' | 'rogue' | 'wizard' | 'ranger' | 'paladin' | 'barbarian';
-/** Clases que puede elegir el héroe; explorador y paladín solo son aliados. */
-export const HERO_CLASSES: ClassId[] = ['fighter', 'cleric', 'rogue', 'wizard', 'ranger', 'paladin'];
-export type SpeciesId = 'human' | 'elf' | 'dwarf' | 'halfling';
+export type ClassId = 'fighter' | 'cleric' | 'rogue' | 'wizard' | 'ranger' | 'paladin' | 'barbarian' | 'warlock';
+/** Clases que puede elegir el héroe (el bárbaro también es aliado: Vurka, en la montaña). */
+export const HERO_CLASSES: ClassId[] = ['fighter', 'cleric', 'rogue', 'wizard', 'ranger', 'paladin', 'barbarian', 'warlock'];
+export type SpeciesId = 'human' | 'elf' | 'dwarf' | 'halfling' | 'dragonborn' | 'tiefling';
 
 export const ABIL_NAME: Record<Ability, string> = {
   str: 'Fuerza', dex: 'Destreza', con: 'Constitución', int: 'Inteligencia', wis: 'Sabiduría', cha: 'Carisma',
@@ -79,6 +78,13 @@ export const CLASSES: Record<ClassId, ClassDef> = {
     items: ['battleaxe', 'hide_armor'],
     blurb: 'Furia: más daño cuerpo a cuerpo y resiste los golpes. Sin armadura, su CA suma Destreza y Constitución.',
   },
+  warlock: {
+    name: 'Brujo', hitDie: 8, saves: ['wis', 'cha'],
+    abil: { str: 8, dex: 14, con: 14, int: 10, wis: 12, cha: 17 },
+    armor: ['light'], martial: false, spell: 'cha', perception: false,
+    items: ['leather', 'dagger', 'arcane_focus'],
+    blurb: 'Pacto infernal: Descarga sobrenatural y Maleficio desde la retaguardia. Pocos espacios de conjuro, pero los recupera con un descanso corto.',
+  },
 };
 
 export interface SpeciesDef { name: string; blurb: string }
@@ -87,6 +93,15 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   elf: { name: 'Elfo', blurb: 'Sentidos agudos: competencia en Percepción. Inmune al sueño mágico.' },
   dwarf: { name: 'Enano', blurb: 'Dureza enana: +1 PG por nivel y resistencia al veneno.' },
   halfling: { name: 'Mediano', blurb: 'Suerte: repite los 1 naturales en el d20.' },
+  dragonborn: { name: 'Dracónido', blurb: 'Ataque de aliento contra una fila enemiga y resistencia al daño de su linaje, que marca el color de sus escamas.' },
+  tiefling: { name: 'Tiefling', blurb: 'Legado infernal: resistencia al fuego y el truco Descarga de fuego. Desde nivel 3, responde a un golpe con Reprensión infernal.' },
+};
+
+/** Linaje dracónico de cada retrato (SRD 5.2.1, «Ancestros dracónicos»): el color de las escamas decide el aliento. */
+export const DRACONIC: Record<ClassId, { dragon: string; type: DmgType }> = {
+  fighter: { dragon: 'rojo', type: 'fuego' }, cleric: { dragon: 'de plata', type: 'frío' }, rogue: { dragon: 'negro', type: 'ácido' },
+  wizard: { dragon: 'azul', type: 'relámpago' }, ranger: { dragon: 'verde', type: 'veneno' }, paladin: { dragon: 'de oro', type: 'fuego' },
+  barbarian: { dragon: 'blanco', type: 'frío' }, warlock: { dragon: 'de cobre', type: 'ácido' },
 };
 
 export const XP_LEVELS = [0, 300, 900, 2700, 6500, 14000];
@@ -152,7 +167,7 @@ export const ITEMS: Record<string, ItemDef> = {
   shield: { name: 'Escudo', kind: 'shield', img: 'escudo', value: 10, desc: '+2 a la CA.' },
   holy_symbol: { name: 'Símbolo sagrado', kind: 'gear', img: 'simbolo_sagrado', value: 5, desc: 'Foco para los conjuros del clérigo.' },
   spellbook: { name: 'Libro de conjuros', kind: 'gear', img: 'pergamino_escudo', value: 50, desc: 'Contiene los conjuros del mago.' },
-  arcane_focus: { name: 'Foco arcano', kind: 'gear', img: 'cristal', value: 10, desc: 'Foco para los conjuros del mago.' },
+  arcane_focus: { name: 'Foco arcano', kind: 'gear', img: 'cristal', value: 10, desc: 'Foco para los conjuros arcanos del mago o del brujo.' },
   torch: { name: 'Antorcha', kind: 'gear', img: 'antorcha', value: 5, desc: 'Basta con que alguien la lleve: el grupo ve dos casillas a su alrededor en lugar de una. Un clérigo o un mago no la necesitan (conocen el truco Luz). Se consume si se usa para quemar algo.' },
   thieves_tools: { name: 'Herramientas de ladrón', kind: 'gear', img: 'herramientas_ladron', value: 25, desc: 'Para abrir cerraduras y desactivar trampas.' },
   healers_kit_1: { name: 'Estuche de curandero', kind: 'gear', img: 'estuche_curandero', value: 5, desc: 'Fuera de combate, cura 1d6 + 4 PG a un compañero (también a un caído). Tiene 3 usos.', heal: '1d6+4', charges: 3 },

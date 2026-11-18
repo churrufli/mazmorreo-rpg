@@ -3,10 +3,6 @@ import type { ImgKey } from '../assets';
 import { FACE } from './caras';
 
 export const PORTRAIT_FRAMES: Partial<Record<ImgKey, [number, number, number]>> = {
-  hero_barbarian_dwarf: [0.5, 0.15, 4.2],
-  hero_barbarian_elf: [0.5, 0.15, 4.6],
-  hero_barbarian_halfling: [0.5, 0.19, 3.8],
-  hero_barbarian_human: [0.5, 0.105, 5.6],
   hero_druid_dwarf: [0.5, 0.105, 5.4],
   hero_druid_elf: [0.5, 0.075, 6.2],
   hero_druid_halfling: [0.54, 0.165, 3.8],

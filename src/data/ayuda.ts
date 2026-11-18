@@ -87,6 +87,9 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Los avisos largos, como la subida de nivel de todo el grupo, se desplazan y el botón de continuar queda siempre a la vista.',
     'Victoria en combate: los rayos de luz salen por los bordes de la pantalla. El final de aventura ya no muestra el botón de opciones. La estatua de la cobra y la hoguera de los descansos de la tumba se ven sin restos de fondo.',
     'Modo desarrollador: al viajar a un pueblo, su aventura empieza de cero, y cada arma mágica de las aventuras anteriores va a quien usa ese arma.',
+    'Especies nuevas: dracónido, con aliento contra una fila enemiga y resistencia al daño de su linaje (el color de sus escamas), y tiefling, con resistencia al fuego, Descarga de fuego y, desde nivel 3, Reprensión infernal.',
+    'Clase nueva: el brujo de pacto infernal. Descarga sobrenatural, Maleficio, Armadura de sombras y, más adelante, Manos ardientes, Rayo abrasador y Bola de fuego. Tiene pocos espacios, pero vuelven con un descanso corto.',
+    'El bárbaro ya se puede elegir como héroe: Furia, Defensa sin armadura y Ataque adicional a nivel 5.',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',

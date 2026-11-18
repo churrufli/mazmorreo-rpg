@@ -4,7 +4,7 @@ import { FACE, heroImg } from './caras';
 import { hasPortraitFrame, PORTRAIT_FRAMES, portraitFrame } from './portraitFrames';
 import type { ImgKey } from '../assets';
 
-const heroes = HERO_CLASSES.flatMap(cls => (['human', 'elf', 'dwarf', 'halfling'] as const).flatMap(sp =>
+const heroes = HERO_CLASSES.flatMap(cls => (['human', 'elf', 'dwarf', 'halfling', 'dragonborn', 'tiefling'] as const).flatMap(sp =>
   (['man', 'woman'] as const).map(sex => heroImg(cls, sp, sex))));
 const images = [...new Set<ImgKey>([...heroes, ...Object.values(ADVS).flatMap(a => Object.values(a.faces)),
   ...Object.values(MONSTERS).map(m => m.img), ...Object.keys(PORTRAIT_FRAMES) as ImgKey[]])];
