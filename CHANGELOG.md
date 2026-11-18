@@ -9,6 +9,7 @@ Este documento resume hitos funcionales comprobados en el código y en las PR re
 - **Bárbaro** elegible como héroe; en la montaña, Vurka cede su sitio al suplente.
 - 24 retratos nuevos con la cara centrada para las miniaturas.
 - 20 retratos más del otro sexo (`hero_*_b`) para dracónidos, tieflings y brujos, y corregido el sexo de los cuatro dracónidos varones en `baseSex`.
+- **Aliados sin repetir**: Kallux (brujo tiefling) sustituye al Hermano Ismerel, Ghaldra (guerrera dracónida de plata) a Syrael e Iskarra (bárbara dracónida de latón) a la Hermana Yara; Teodor pasa a brujo. Cada clase tiene dos aliados. Las aliadas dracónidas tienen su propio linaje (`draconic`).
 
 ## 17 de noviembre de 2026 — Niveles más bajos: 2, 3 y 4
 

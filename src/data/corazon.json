@@ -2401,7 +2401,7 @@
               "default_scene": [
                 {
                   "speaker": "anselmo",
-                  "text": "Me llamo Ismerel. Protejo esta ermita. Las luces atraen a los viajeros, pero mi farol las mantiene lejos."
+                  "text": "Me llamo Kallux. Me escondo en esta ermita de quien me prestó este fuego. Al menos mantiene lejos a los fuegos fatuos."
                 },
                 {
                   "speaker": "hero",
@@ -3077,9 +3077,9 @@
                 },
                 {
                   "ally": "anselmo",
-                  "label": "Dejar que Ismerel bendiga la ofrenda",
+                  "label": "Dejar que Kallux acerque su fuego a la semilla",
                   "ok": {
-                    "text": "Ismerel alza su farol sobre la semilla. La luz señala un cofre oculto bajo la losa.",
+                    "text": "Kallux acerca su fuego a la semilla. Las raíces de la losa se retiran y dejan ver un cofre oculto.",
                     "reveal": "b3_s01"
                   }
                 }
@@ -3267,7 +3267,7 @@
               "lines": [
                 {
                   "speaker": "anselmo",
-                  "text": "Cuando alguien confunde proteger con encerrar, hasta una buena promesa puede convertirse en una prisión."
+                  "text": "Yo también hice una promesa que se convirtió en cadena. Por eso sé que se puede romper."
                 }
               ],
               "only": "anselmo"
@@ -4620,15 +4620,14 @@
     },
     {
       "id": "anselmo",
-      "name": "Hermano Ismerel",
-      "class": "Cleric",
-      "species": "Humano",
-      "personality": "Sereno, perspicaz y compasivo.",
+      "name": "Kallux",
+      "class": "Warlock",
+      "species": "Tiefling",
+      "personality": "Desconfiado y amargo; huye de su propio pacto infernal.",
       "starting_items": [
-        "Maza",
-        "Escudo",
-        "Cota de escamas",
-        "Farol"
+        "Armadura de cuero",
+        "Daga",
+        "Foco arcano"
       ]
     },
     {

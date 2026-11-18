@@ -75,7 +75,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
   { version: 'v0.147', items: [
     'Cuarta aventura: La Tumba de los Reyes Serpiente. Se abre al vencer a Vharzûl. Desde Arenaroja, en las Colinas de Ocre, bajáis a una tumba de hombres serpiente en busca de los pastores y caravaneros desaparecidos.',
     'Cuatro zonas nuevas (la tumba falsa, la tumba superior, las salas del sacrificio y las madrigueras), con trampas, secretos, decisiones y el hechicero Xiximanter esperando al fondo. Se entra con nivel 4 y se llega al jefe con nivel 5.',
-    'Aliados nuevos en la posada de Arenaroja: Zeyna Polvoseco (pícara), Hassim Lanzadesol (paladín), la Hermana Yara del Pozo (clériga) y Teodor Escamagrís (mago), cada uno con sus tres charlas.',
+    'Aliados nuevos en la posada de Arenaroja: Zeyna Polvoseco (pícara), Hassim Lanzadesol (paladín), Iskarra (bárbara dracónida) y Teodor Escamagrís (brujo), cada uno con sus tres charlas.',
     'Criaturas nuevas del SRD 5.2.1: momia, gelatina ocre, pudin negro, basilisco e íncubo, además de goblins de hongo y un guardián cobra de piedra. Contra el basilisco ayuda un espejo de acero.',
     'Música de demostración para Arenaroja, la tumba y sus combates. No es la definitiva: se busca música para ambientar el juego.',
     'Modo desarrollador: los obstáculos que no ceden y las salidas cerradas con llave tienen un botón «Superar» para pasarlos sin más.',
@@ -91,6 +91,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Clase nueva: el brujo de pacto infernal. Descarga sobrenatural, Maleficio, Armadura de sombras y, más adelante, Manos ardientes, Rayo abrasador y Bola de fuego. Tiene pocos espacios, pero vuelven con un descanso corto.',
     'El bárbaro ya se puede elegir como héroe: Furia, Defensa sin armadura y Ataque adicional a nivel 5.',
     'Dracónidos, tieflings y brujos tienen ya retrato de hombre y de mujer: al elegir el sexo sale la imagen que toca.',
+    'Aliados con más variedad: en el Corazón Hueco os espera Kallux, brujo tiefling; en la montaña, Ghaldra, guerrera dracónida de plata; y en la tumba, Iskarra, bárbara dracónida de latón. Teodor pasa a ser brujo.',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',

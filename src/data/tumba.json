@@ -105,7 +105,7 @@
               "lines": [
                 {
                   "speaker": "syrael",
-                  "text": "Siento magia muy antigua debajo de nosotros. Esta tumba es solo la tapa."
+                  "text": "Estas losas suenan huecas. Esta tumba es solo la tapa de algo más hondo."
                 }
               ],
               "only": "syrael"
@@ -2851,7 +2851,7 @@
               "default_scene": [
                 {
                   "speaker": "yara",
-                  "text": "Vine a por los míos y me cogieron. Esta llama del pozo de Arenaroja me ha mantenido viva."
+                  "text": "Me cogieron defendiendo la última caravana. Llevo días rompiéndome las garras contra estos barrotes."
                 },
                 {
                   "speaker": "hero",
@@ -2859,7 +2859,7 @@
                 },
                 {
                   "speaker": "yara",
-                  "text": "Os seguiré. Y os curaré cuando haga falta."
+                  "text": "Dadme un arma y abriré camino hasta los demás."
                 }
               ],
               "brunna_scene": [
@@ -3560,27 +3560,24 @@
     },
     {
       "id": "yara",
-      "name": "Hermana Yara del Pozo",
-      "class": "Cleric",
-      "species": "Humana",
-      "personality": "Anciana tranquila y firme; cuida el pozo de Arenaroja.",
+      "name": "Iskarra",
+      "class": "Barbarian",
+      "species": "Dracónida",
+      "personality": "Escolta de caravanas, ruidosa y leal; no vuelve sin los suyos.",
       "starting_items": [
-        "Maza",
-        "Escudo",
-        "Cota de escamas",
-        "Símbolo sagrado"
+        "Martillo de guerra"
       ]
     },
     {
       "id": "teodor",
       "name": "Teodor Escamagrís",
-      "class": "Wizard",
+      "class": "Warlock",
       "species": "Humano",
-      "personality": "Erudito nervioso que lee la lengua de los hombres serpiente y sueña con la voz.",
+      "personality": "Erudito nervioso que lee la lengua de los hombres serpiente; para callar la voz de sus sueños aceptó un pacto infernal.",
       "starting_items": [
-        "Bastón",
-        "Libro de conjuros",
-        "Daga"
+        "Armadura de cuero",
+        "Daga",
+        "Foco arcano"
       ]
     }
   ],
@@ -3665,5 +3662,5 @@
     ],
     "nota": "Arenaroja vende fuego de alquimista (percebes, momias y pozo de engendro), espejos de acero (basilisco) y pociones contra el veneno."
   },
-  "balance_notes": "Se entra con nivel 4 y se llega a la sala de Xiximanter con nivel 5 (tope y subida de las otras aventuras). Zona 1 con el héroe y un compañero de la montaña; Zeyna se une en s2, Hassim en s3 y Yara en s4 (Teodor sustituye al de la clase del héroe). Franbinzar (pudin negro) y Baltoplat (íncubo) son combates opcionales y avisados. El basilisco se puede evitar con la carne de las cocinas o calmándolo. Criaturas del SRD 5.2.1; los goblins de hongo usan las estadísticas del goblin y del jefe goblin, y el guardián cobra de piedra las de la gárgola."
+  "balance_notes": "Se entra con nivel 4 y se llega a la sala de Xiximanter con nivel 5 (tope y subida de las otras aventuras). Zona 1 con el héroe y un compañero de la montaña; Zeyna se une en s2, Hassim en s3 y Iskarra en s4 (Teodor sustituye al de la clase del héroe). Franbinzar (pudin negro) y Baltoplat (íncubo) son combates opcionales y avisados. El basilisco se puede evitar con la carne de las cocinas o calmándolo. Criaturas del SRD 5.2.1; los goblins de hongo usan las estadísticas del goblin y del jefe goblin, y el guardián cobra de piedra las de la gárgola."
 }

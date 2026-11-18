@@ -1,10 +1,10 @@
 // Dracónido, tiefling, brujo y bárbaro elegible (SRD 5.2.1).
 import { ACTION_HELP } from '../data/actionHelp';
-import { DRACONIC, HERO_CLASSES, ITEMS } from '../data/srd';
+import { DRACONIC, draconic, HERO_CLASSES, ITEMS } from '../data/srd';
 import { baseSex, heroImg } from '../data/caras';
 import { IMG } from '../assets';
 import { newGame } from './game';
-import { armorClass, createHero, gainXp, longRest, maxRacial, newItem, raiseTo, shortRest, slotsAt } from './rules';
+import { allyFor, armorClass, createAlly, createHero, gainXp, longRest, maxRacial, newItem, raiseTo, shortRest, slotsAt } from './rules';
 import { Combat, actionsFor, current, endTurn, perform, startCombat, Unit } from './combat';
 import { enterZone } from './dungeon';
 import type { Game } from './game';
@@ -155,4 +155,16 @@ test('cada acción nueva tiene ayuda', () => {
       expect(ACTION_HELP[key] || (item && ITEMS[item.id].desc)).toBeTruthy();
     }
   }
+});
+
+test('aliados nuevos: Kallux brujo tiefling, Ghaldra guerrera de plata, Iskarra bárbara de latón y Teodor brujo', () => {
+  const k = createAlly('anselmo', 3, 900, 'corazon_hueco');
+  expect([k.name, k.cls, k.species]).toEqual(['Kallux', 'warlock', 'tiefling']);
+  const gh = createAlly('syrael', 4, 2700, 'montana');
+  expect([gh.name, gh.cls, gh.species, draconic(gh).type]).toEqual(['Ghaldra', 'fighter', 'dragonborn', 'frío']);
+  const is = createAlly('yara', 5, 6500, 'tumba');
+  expect([is.name, is.cls, is.species, draconic(is).type]).toEqual(['Iskarra', 'barbarian', 'dragonborn', 'fuego']);
+  expect(createAlly('teodor', 5, 6500, 'tumba').cls).toBe('warlock');
+  // El guerrero héroe se cruza con Ghaldra: la sustituye Tavin.
+  expect(allyFor('fighter', 'syrael', 'montana')).toBe('aldric');
 });

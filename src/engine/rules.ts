@@ -125,9 +125,9 @@ export function makeChar(o: {
 }
 
 const CLASS_EN: Record<ClassId, string> = { fighter: 'Fighter', cleric: 'Cleric', rogue: 'Rogue', wizard: 'Wizard', ranger: 'Ranger', paladin: 'Paladin', barbarian: 'Barbarian', warlock: 'Warlock' };
-const ALLY_CLASS: Record<string, ClassId> = { Fighter: 'fighter', Cleric: 'cleric', Rogue: 'rogue', Wizard: 'wizard', Ranger: 'ranger', Paladin: 'paladin', Barbarian: 'barbarian' };
+const ALLY_CLASS: Record<string, ClassId> = { Fighter: 'fighter', Cleric: 'cleric', Rogue: 'rogue', Wizard: 'wizard', Ranger: 'ranger', Paladin: 'paladin', Barbarian: 'barbarian', Warlock: 'warlock' };
 // Vurka es orca: no hay especie orca en el juego y cuenta como humana (Percepción, sin rasgos de otras especies).
-const ALLY_SPECIES: Record<string, SpeciesId> = { Enana: 'dwarf', Enano: 'dwarf', Mediano: 'halfling', Humano: 'human', Humana: 'human', Elfa: 'elf', Orca: 'human' };
+const ALLY_SPECIES: Record<string, SpeciesId> = { Enana: 'dwarf', Enano: 'dwarf', Mediano: 'halfling', Humano: 'human', Humana: 'human', Elfa: 'elf', Orca: 'human', Dracónida: 'dragonborn', Tiefling: 'tiefling' };
 
 export function createHero(name: string, cls: ClassId, species: SpeciesId, abil?: Record<Ability, number>, img?: ImgKey): Char {
   return makeChar({

@@ -3284,11 +3284,15 @@
               "default_scene": [
                 {
                   "speaker": "syrael",
-                  "text": "He seguido el pulso del glaciar. El dragón alimenta la tormenta desde su cámara."
+                  "text": "Me llamo Ghaldra. Escoltaba la última caravana que cruzó el paso. El dragón se la llevó entera."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Tu magia nos ayudará a resistir el frío."
+                  "text": "Ven con nosotros. Vamos a por él."
+                },
+                {
+                  "speaker": "syrael",
+                  "text": "Mi linaje es de plata: su hielo no me asusta."
                 }
               ],
               "brunna_scene": [
@@ -3308,7 +3312,7 @@
               "lines": [
                 {
                   "speaker": "syrael",
-                  "text": "Mi maestra decía que ningún hechizo es pequeño para quien debe soportarlo cada día."
+                  "text": "Mi madre decía que una escolta no termina el viaje hasta que el último carro llega a casa."
                 },
                 {
                   "speaker": "syrael",
@@ -4091,9 +4095,9 @@
                 },
                 {
                   "ally": "syrael",
-                  "label": "Dejar que Syrael calme el aire",
+                  "label": "Dejar que Ghaldra os cubra con su escudo",
                   "ok": {
-                    "text": "Syrael escucha el pulso del glaciar y os avisa del instante de calma. Recuperáis el frasco del nicho.",
+                    "text": "Ghaldra planta el escudo contra la ráfaga y os cubre mientras recuperáis el frasco del nicho.",
                     "item": "potion_healing"
                   }
                 }
@@ -4217,13 +4221,14 @@
     },
     {
       "id": "syrael",
-      "name": "Syrael Escarchaluz",
-      "class": "Wizard",
-      "species": "Elfa",
-      "personality": "Observadora y serena; conoce los peligros de la magia helada.",
+      "name": "Ghaldra",
+      "class": "Fighter",
+      "species": "Dracónida",
+      "personality": "Escolta de caravanas, seria y protectora; el dragón se llevó a los suyos.",
       "starting_items": [
-        "Bastón",
-        "Libro de conjuros"
+        "Cota de escamas",
+        "Pico de minero",
+        "Escudo"
       ]
     },
     {

@@ -103,6 +103,11 @@ export const DRACONIC: Record<ClassId, { dragon: string; type: DmgType }> = {
   wizard: { dragon: 'azul', type: 'relámpago' }, ranger: { dragon: 'verde', type: 'veneno' }, paladin: { dragon: 'de oro', type: 'fuego' },
   barbarian: { dragon: 'blanco', type: 'frío' }, warlock: { dragon: 'de cobre', type: 'ácido' },
 };
+/** Linaje de los aliados dracónidos, por el color de su retrato (el de los héroes sale de su clase). */
+const DRACONIC_ALLY: Record<string, { dragon: string; type: DmgType }> = {
+  syrael: { dragon: 'de plata', type: 'frío' }, yara: { dragon: 'de latón', type: 'fuego' },
+};
+export const draconic = (c: { id: string; cls: ClassId }) => DRACONIC_ALLY[c.id] ?? DRACONIC[c.cls];
 
 export const XP_LEVELS = [0, 300, 900, 2700, 6500, 14000];
 export const MAX_LEVEL = 6;

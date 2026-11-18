@@ -2,7 +2,7 @@
 // Todo son funciones puras sobre el estado de la partida (se muta una copia).
 import { applyEffect, canInspire, enemiesOf, inspire, maxFoesFor, sizeEncounter } from './escenas';
 import type { ImgKey } from '../assets';
-import { ABIL_NAME, Ability, CLASSES, DRACONIC, DmgType, ITEMS, MONSTERS, MonsterAttack } from '../data/srd';
+import { ABIL_NAME, Ability, CLASSES, DmgType, draconic, ITEMS, MONSTERS, MonsterAttack } from '../data/srd';
 import B from '../data/corazon.json';
 import { die, pick, rand, roll, tray } from './rng';
 import {
@@ -300,7 +300,7 @@ function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: Dm
 }
 
 /** Resistencia de especie: el linaje del dracónido o el fuego del tiefling (legado infernal). */
-const speciesResist = (c: Char): DmgType | undefined => (c.species === 'dragonborn' ? DRACONIC[c.cls].type : c.species === 'tiefling' ? 'fuego' : undefined);
+const speciesResist = (c: Char): DmgType | undefined => (c.species === 'dragonborn' ? draconic(c).type : c.species === 'tiefling' ? 'fuego' : undefined);
 /** CD de los rasgos de especie: 8 + competencia + Constitución (aliento) o Carisma (legado infernal). */
 const speciesDc = (c: Char) => 8 + prof(c.level) + abilMod(c, c.species === 'dragonborn' ? 'con' : 'cha');
 /** Ataque de conjuro del legado infernal (Carisma) o el del propio lanzador si es mejor. */
@@ -951,7 +951,7 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     if (c.level >= 5 && slots > 0) A.push({ id: 'fireball', label: 'Bola de fuego', cost: 'action', target: 'enemy', detail: 'una fila 8d6' });
   }
   // Rasgos de especie: Ataque de aliento del dracónido y Descarga de fuego del tiefling (el mago ya la tiene).
-  if (c.species === 'dragonborn' && (c.racial ?? 0) > 0) A.push({ id: 'breath', label: 'Ataque de aliento', cost: 'action', target: 'enemy', detail: `una fila ${c.level >= 5 ? '2d10' : '1d10'} ${DRACONIC[c.cls].type} (${c.racial})` });
+  if (c.species === 'dragonborn' && (c.racial ?? 0) > 0) A.push({ id: 'breath', label: 'Ataque de aliento', cost: 'action', target: 'enemy', detail: `una fila ${c.level >= 5 ? '2d10' : '1d10'} ${draconic(c).type} (${c.racial})` });
   if (c.species === 'tiefling' && c.cls !== 'wizard') A.push({ id: 'infernal_bolt', label: 'Descarga de fuego', cost: 'action', target: 'enemy', detail: c.level >= 5 ? '2d10' : '1d10' });
   if (c.cls === 'barbarian' && c.channel > 0 && !u.rage) A.push({ id: 'rage', label: 'Furia', cost: 'bonus', target: 'none', detail: `+2 daño, resiste golpes (${c.channel})` });
   if (c.cls === 'fighter') {
@@ -1218,8 +1218,8 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       break;
     case 'breath': {
       c.racial = (c.racial ?? 1) - 1;
-      const type = DRACONIC[c.cls].type;
-      say(cb, `${u.name} exhala su aliento de dragón ${DRACONIC[c.cls].dragon} sobre la fila ${t!.row === 'front' ? 'delantera' : 'trasera'}.`, 'big');
+      const type = draconic(c).type;
+      say(cb, `${u.name} exhala su aliento de dragón ${draconic(c).dragon} sobre la fila ${t!.row === 'front' ? 'delantera' : 'trasera'}.`, 'big');
       const dmg = roll(g.rng, c.level >= 5 ? '2d10' : '1d10');
       for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && x.row === t!.row))
         applyDamage(g, cb, e, saveRoll(g, cb, e, 'dex', speciesDc(c), 'Destreza') ? Math.floor(dmg / 2) : dmg, type, u);
