@@ -292,7 +292,7 @@ export const MONSTERS: Record<string, MonsterDef> = {
   'Giant Rat': {
     name: 'Rata gigante', img: 'rata_gigante', ac: 13, hp: 7, dexMod: 3, xp: 25, ai: 'beast', packTactics: true,
     attacks: [{ name: 'Mordisco', bonus: 5, dice: '1d4+3', type: 'perforante' }],
-    saves: { str: -2, dex: 3, con: 0, int: -4, wis: 0, cha: -3 },
+    saves: { str: -2, dex: 5, con: 0, int: -4, wis: 0, cha: -3 },
   },
   // Criaturas de valor de desafío 0 del SRD 5.2.1 para la primera zona de Hondaroca (el autor 2026-11-16).
   Rat: {
@@ -387,11 +387,11 @@ export const MONSTERS: Record<string, MonsterDef> = {
     saves: { str: 1, dex: -2, con: 3, int: -4, wis: 0, cha: -3 },
   },
   Ghoul: {
+    // SRD 5.2.1: el ataque múltiple son dos mordiscos; la garra paralizante es otra acción que el juego no usa.
     name: 'Necrófago', img: 'necrofago', ac: 12, hp: 22, dexMod: 2, xp: 200, ai: 'undead', noSleep: true, multi: 2,
     immune: ['veneno'],
     attacks: [
       { name: 'Mordisco', bonus: 4, dice: '1d6+2', type: 'perforante', extra: { dice: '1d6', type: 'necrótico' } },
-      { name: 'Garras', bonus: 4, dice: '1d4+2', type: 'cortante', paralyze: { dc: 10 } },
     ],
     saves: { str: 1, dex: 2, con: 0, int: -2, wis: 0, cha: -2 },
   },
@@ -428,7 +428,7 @@ const beast = (str: number, dex: number, con: number) => ({ str, dex, con, int: 
 Object.assign(MONSTERS, {
   Wolf: {
     name: 'Lobo', img: 'lobo', ac: 12, hp: 11, dexMod: 2, xp: 50, ai: 'beast', packTactics: true,
-    attacks: [{ name: 'Mordisco', bonus: 4, dice: '1d6+2', type: 'perforante' }], saves: beast(1, 2, 1),
+    attacks: [{ name: 'Mordisco', bonus: 4, dice: '1d6+2', type: 'perforante' }], saves: beast(2, 2, 1),
   },
   'Dire Wolf': {
     name: 'Lobo terrible', img: 'huargo', ac: 14, hp: 22, dexMod: 2, xp: 200, ai: 'beast', packTactics: true,
@@ -445,12 +445,12 @@ Object.assign(MONSTERS, {
   'Brown Bear': {
     name: 'Oso pardo', img: 'oso_pardo', ac: 11, hp: 22, dexMod: 1, xp: 200, ai: 'beast', multi: 2,
     attacks: [{ name: 'Mordisco', bonus: 5, dice: '1d8+3', type: 'perforante' }, { name: 'Zarpazo', bonus: 5, dice: '1d4+3', type: 'cortante' }],
-    saves: beast(3, 1, 3),
+    saves: beast(3, 1, 2),
   },
   'Awakened Shrub': {
     name: 'Arbusto despertado', img: 'arbusto_despertado', ac: 9, hp: 10, dexMod: -1, xp: 10, ai: 'beast', noSleep: true,
     vuln: ['fuego'], resist: ['perforante'],
-    attacks: [{ name: 'Arañazo', bonus: 1, dice: '1d4-1', type: 'cortante' }], saves: { str: -3, dex: -1, con: 0, int: -2, wis: 0, cha: -2 },
+    attacks: [{ name: 'Desgarrar', bonus: 1, dice: '1', type: 'cortante' }], saves: { str: -4, dex: -1, con: 0, int: 0, wis: 0, cha: -2 },
   },
   Owlbear: {
     // Rebajado (era 59 PG y 2d8+5): en la zona 2 del bosque el grupo solo tiene dos personajes.
@@ -459,12 +459,12 @@ Object.assign(MONSTERS, {
   },
   'Giant Boar': {
     name: 'Jabalí gigante', img: 'jabali_gigante', ac: 13, hp: 42, dexMod: 0, xp: 450, ai: 'beast',
-    attacks: [{ name: 'Colmillos', bonus: 5, dice: '2d6+3', type: 'cortante' }], saves: beast(3, 0, 3),
+    attacks: [{ name: 'Colmillos', bonus: 5, dice: '2d6+3', type: 'perforante' }], saves: { str: 5, dex: 0, con: 3, int: -4, wis: -2, cha: -3 },
   },
   "Will-o'-Wisp": {
     name: 'Fuego fatuo', img: 'fuego_fatuo', ac: 19, hp: 27, dexMod: 9, xp: 450, ai: 'undead', noSleep: true,
     resist: ['ácido', 'contundente', 'frío', 'fuego', 'necrótico', 'perforante', 'cortante'], immune: ['relámpago', 'veneno'],
-    attacks: [{ name: 'Descarga', bonus: 4, dice: '2d8', type: 'relámpago' }], saves: { str: -5, dex: 9, con: 0, int: 1, wis: 2, cha: 0 },
+    attacks: [{ name: 'Descarga', bonus: 4, dice: '2d8+2', type: 'relámpago' }], saves: { str: -5, dex: 9, con: 0, int: 1, wis: 2, cha: 0 },
   },
   Harpy: {
     name: 'Arpía', img: 'arpia', ac: 11, hp: 38, dexMod: 1, xp: 200, ai: 'beast',
@@ -473,26 +473,27 @@ Object.assign(MONSTERS, {
   Specter: {
     name: 'Espectro', img: 'espectro', ac: 12, hp: 22, dexMod: 2, xp: 200, ai: 'undead', noSleep: true,
     resist: ['ácido', 'frío', 'fuego', 'relámpago', 'trueno', 'contundente', 'perforante', 'cortante'], immune: ['necrótico', 'veneno'],
-    attacks: [{ name: 'Drenar vida', bonus: 4, dice: '3d6', type: 'necrótico' }], saves: { str: -5, dex: 2, con: 0, int: 0, wis: 0, cha: 0 },
+    attacks: [{ name: 'Consumir vida', bonus: 4, dice: '2d6', type: 'necrótico' }], saves: { str: -5, dex: 2, con: 0, int: 0, wis: 0, cha: 0 },
   },
   'Shambling Mound': {
-    name: 'Montículo andante', img: 'monticulo_andante', ac: 15, hp: 110, dexMod: -1, xp: 1800, ai: 'beast', multi: 2, noSleep: true,
+    name: 'Montículo andante', img: 'monticulo_andante', ac: 15, hp: 110, dexMod: -1, xp: 1800, ai: 'beast', multi: 3, noSleep: true,
     resist: ['frío', 'fuego'], immune: ['relámpago'],
-    attacks: [{ name: 'Golpe', bonus: 7, dice: '1d8+4', type: 'contundente' }], saves: { str: 4, dex: -1, con: 3, int: -3, wis: 0, cha: -3 },
+    attacks: [{ name: 'Zarcillo cargado', bonus: 7, dice: '1d6+4', type: 'contundente', extra: { dice: '2d4', type: 'relámpago' } }], saves: { str: 4, dex: -1, con: 3, int: -3, wis: 0, cha: -3 },
   },
   Dryad: {
     name: 'Dríade', img: 'driade', ac: 16, hp: 22, dexMod: 1, xp: 200, ai: 'cultist',
     attacks: [
-      { name: 'Látigo de enredadera', bonus: 6, dice: '1d10+4', type: 'cortante' },
+      { name: 'Látigo de enredadera', bonus: 6, dice: '1d8+4', type: 'cortante' },
       { name: 'Ráfaga de espinas', bonus: 6, dice: '1d6+4', type: 'perforante', ranged: true },
     ],
-    saves: { str: 0, dex: 1, con: 0, int: 2, wis: 4, cha: 3 },
+    saves: { str: 0, dex: 1, con: 0, int: 2, wis: 2, cha: 4 },
   },
   'Green Hag': {
     name: 'Bruja verde', img: 'bruja_verde', ac: 17, hp: 82, dexMod: 1, xp: 700, ai: 'cultist', multi: 2,
     attacks: [
-      { name: 'Garra', bonus: 6, dice: '2d8+4', type: 'cortante' },
-      { name: 'Rayo de enfermedad', bonus: 5, dice: '2d8', type: 'veneno', ranged: true },
+      { name: 'Garra', bonus: 6, dice: '1d8+4', type: 'cortante', extra: { dice: '1d6', type: 'veneno' } },
+      // Rayo nauseabundo de nivel 3 (SRD 5.2.1).
+      { name: 'Rayo nauseabundo', bonus: 4, dice: '4d8', type: 'veneno', ranged: true },
     ],
     saves: { str: 4, dex: 1, con: 3, int: 1, wis: 2, cha: 2 },
   },
@@ -500,7 +501,7 @@ Object.assign(MONSTERS, {
   'Walking Tree': {
     name: 'Árbol despertado', img: 'arbol_despertado', ac: 13, hp: 59, dexMod: -2, xp: 450, ai: 'beast', noSleep: true,
     resist: ['contundente', 'perforante'], vuln: ['fuego'],
-    attacks: [{ name: 'Golpe de rama', bonus: 6, dice: '3d6+4', type: 'contundente' }], saves: { str: 4, dex: -2, con: 2, int: -2, wis: 0, cha: -2 },
+    attacks: [{ name: 'Golpe de rama', bonus: 6, dice: '3d6+4', type: 'contundente' }], saves: { str: 4, dex: -2, con: 2, int: 0, wis: 0, cha: -2 },
   },
   'Awakened Tree': {
     name: 'Nudo de raíz', img: 'nudo_de_raiz', ac: 12, hp: 12, dexMod: -2, xp: 0, ai: 'beast', noSleep: true, knot: true,
@@ -616,21 +617,22 @@ Object.assign(MONSTERS, {
   },
   // El Invierno del Dragón
   Kobold: {
-    name: 'Kobold', img: 'kobold', ac: 12, hp: 5, dexMod: 2, xp: 25, ai: 'goblin', packTactics: true,
+    // Guerrero kobold del SRD 5.2.1: solo lleva dagas, que también lanza.
+    name: 'Kobold', img: 'kobold', ac: 14, hp: 7, dexMod: 2, xp: 25, ai: 'goblin', packTactics: true,
     attacks: [
       { name: 'Daga', bonus: 4, dice: '1d4+2', type: 'perforante' },
-      { name: 'Honda', bonus: 4, dice: '1d4+2', type: 'contundente', ranged: true },
+      { name: 'Daga arrojadiza', bonus: 4, dice: '1d4+2', type: 'perforante', ranged: true },
     ],
     saves: { str: -2, dex: 2, con: -1, int: -1, wis: -2, cha: -1 },
   },
   'Ice Mephit': {
     name: 'Mefit de hielo', img: 'mefit_hielo', ac: 11, hp: 21, dexMod: 1, xp: 100, ai: 'beast', noSleep: true,
-    immune: ['frío', 'veneno'], vuln: ['contundente', 'fuego'],
+    immune: ['frío', 'veneno'], vuln: ['fuego'],
     attacks: [
-      { name: 'Aliento helado', bonus: 0, dice: '2d4', type: 'frío', save: { abil: 'dex', dc: 10, half: true, area: true, recharge: 6 } },
+      { name: 'Aliento de escarcha', bonus: 0, dice: '3d4', type: 'frío', save: { abil: 'con', dc: 10, half: true, area: true, recharge: 6 } },
       { name: 'Garras', bonus: 3, dice: '1d4+1', type: 'cortante', extra: { dice: '1d4', type: 'frío' } },
     ],
-    saves: { str: -2, dex: 1, con: 0, int: -1, wis: 0, cha: 0 },
+    saves: { str: -2, dex: 1, con: 0, int: -1, wis: 0, cha: 1 },
   },
   // Ogro del SRD con la imagen del antiguo yeti (el autor 2026-11-06: criaturas fieles al SRD).
   Ogre: {
@@ -641,16 +643,16 @@ Object.assign(MONSTERS, {
   'Winter Wolf': {
     name: 'Lobo invernal', img: 'lobo_invernal', ac: 13, hp: 75, dexMod: 1, xp: 700, ai: 'beast', packTactics: true, immune: ['frío'],
     attacks: [
-      { name: 'Aliento gélido', bonus: 0, dice: '4d8', type: 'frío', save: { abil: 'dex', dc: 12, half: true, area: true, recharge: 5 } },
+      { name: 'Aliento gélido', bonus: 0, dice: '4d8', type: 'frío', save: { abil: 'con', dc: 12, half: true, area: true, recharge: 5 } },
       { name: 'Mordisco', bonus: 6, dice: '2d6+4', type: 'perforante' },
     ],
-    saves: beast(4, 1, 2),
+    saves: { str: 4, dex: 1, con: 2, int: -2, wis: 1, cha: -1 },
   },
   'White Dragon Wyrmling': {
-    name: 'Cría de dragón blanco', img: 'cria_dragon_blanco', ac: 16, hp: 32, dexMod: 0, xp: 450, ai: 'beast', immune: ['frío'],
+    name: 'Cría de dragón blanco', img: 'cria_dragon_blanco', ac: 16, hp: 32, dexMod: 0, xp: 450, ai: 'beast', multi: 2, immune: ['frío'],
     attacks: [
       { name: 'Aliento helado', bonus: 0, dice: '5d8', type: 'frío', save: { abil: 'con', dc: 12, half: true, area: true, recharge: 5 } },
-      { name: 'Mordisco', bonus: 4, dice: '1d10+2', type: 'perforante', extra: { dice: '1d4', type: 'frío' } },
+      { name: 'Desgarro', bonus: 4, dice: '1d8+2', type: 'cortante', extra: { dice: '1d4', type: 'frío' } },
     ],
     saves: { str: 2, dex: 2, con: 2, int: -3, wis: 2, cha: 0 },
   },
