@@ -14,11 +14,11 @@ const {chromium}=require('playwright');
         const {startCombat,current,endTurn}=await import(`${root}/src/engine/combat.ts`);
         const {enterZone}=await import(`${root}/src/engine/dungeon.ts`);
         const {newItem,createAlly}=await import(`${root}/src/engine/rules.ts`);
-        const {setDev}=await import(`${root}/src/storage.web.ts`); setDev(false);
+        const {setDev}=await import(`${root}/src/storage.web.ts`); setDev(false);const {TUTO_KEYS}=await import(`${root}/src/ui/tutorial.ts`);
         window.flow={
           reset:()=>useStore.setState({screen:'title',combat:undefined,game:undefined}),
           prepare:(o)=>{
-            const g=newGame(7,'Prueba',o.cleric?'cleric':'fighter','human'); const c=g.party[0];
+            const g=newGame(7,'Prueba',o.cleric?'cleric':'fighter','human'); g.guide=TUTO_KEYS; const c=g.party[0];
             if(o.noSkills)c.secondWind=0;
             c.row=o.back?'back':'front'; c.hp=o.full?c.maxHp:Math.max(1,c.maxHp-3);
             if(o.surge){c.level=2;c.actionSurge=1;}

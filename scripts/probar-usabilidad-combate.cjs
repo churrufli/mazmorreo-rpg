@@ -18,11 +18,11 @@ const {chromium}=require('playwright');
         const {startCombat,current,endTurn}=await import(`${root}/src/engine/combat.ts`);
         const {enterZone}=await import(`${root}/src/engine/dungeon.ts`);
         const {newItem,createAlly}=await import(`${root}/src/engine/rules.ts`);
-        const {setDev}=await import(`${root}/src/storage.web.ts`);setDev(false);
+        const {setDev}=await import(`${root}/src/storage.web.ts`);setDev(false);const {TUTO_KEYS}=await import(`${root}/src/ui/tutorial.ts`);
         window.ux={
           reset:()=>useStore.setState({screen:'title',combat:undefined,game:undefined}),
           prepare:(party)=>{
-            const g=newGame(7,'Prueba','fighter','human'),c=g.party[0];c.secondWind=0;
+            const g=newGame(7,'Prueba','fighter','human'),c=g.party[0];g.guide=TUTO_KEYS;c.secondWind=0;
             c.items=[newItem('mace'),newItem('potion_healing')];c.hp=Math.max(1,c.maxHp-3);
             if(party)for(const id of ['anselmo','ivelle','telmo'])g.party.push(createAlly(id,5,6500,'corazon_hueco'));
             enterZone(g,'z1');const cb=startCombat(g,party?'z1_e06':'z1_e01');
