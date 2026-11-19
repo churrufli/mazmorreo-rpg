@@ -2,6 +2,14 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 19 de noviembre de 2026 — Objetos legibles, combate más claro y aviso legal
+
+- **Objetos**: tocar cualquier objeto enseña su descripción: tienda (también lo que no se puede pagar), venta, baúl, inventario y objetos ganados en cofres y escenas (los eventos `msg` llevan el id del objeto en `items`).
+- **Combate**: la probabilidad de acierto va arriba del cuadro de explicación, destacada; las armas se explican por apartados (`MASTERY_HELP`).
+- **Cartas**: tocar la carta ampliada abre su arte a pantalla completa; la ficha, con «Ver ficha» o deslizando.
+- **Mapa**: paredes oscurecidas (`wallDim`) en la tumba falsa y la tumba superior.
+- **Aviso legal** de Dungeons & Dragons y Wizards of the Coast en el README, NOTICE, la pantalla de inicio y Créditos. README y notas de la APK recomiendan jugar desde la web.
+
 ## 18 de noviembre de 2026 — Dracónido, tiefling, brujo y bárbaro elegible
 
 - **Especies** (`SPECIES`): dracónido y tiefling, según el SRD 5.2.1. El linaje del dracónido sale del color de su retrato (`DRACONIC`): aliento de 1d10 (2d10 a nivel 5) sobre una fila enemiga, tantos usos como su competencia, y resistencia a ese daño. El tiefling tiene legado infernal fijo: resistencia al fuego, Descarga de fuego con Carisma y Reprensión infernal automática una vez por descanso largo desde nivel 3. Los usos van en `Char.racial`.

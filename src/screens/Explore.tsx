@@ -127,7 +127,12 @@ const Ground = memo(function Ground({ zone, box, art, vis, pass, blocked, rooms,
             {walls.map(k => {
               const [q, r] = k.split(',').map(Number);
               const [x, y] = center(q, r);
-              return <Polygon key={`w${k}`} points={hexPts(X(x), Y(y))} fill="url(#wall)" stroke="#000" strokeWidth={1} />;
+              return (
+                <G key={`w${k}`}>
+                  <Polygon points={hexPts(X(x), Y(y))} fill="url(#wall)" stroke="#000" strokeWidth={1} />
+                  {art.wallDim ? <Polygon points={hexPts(X(x), Y(y))} fill="#000" opacity={art.wallDim} /> : null}
+                </G>
+              );
             })}
             {zp.cells.map(([q, r]) => {
               const k = hkey([q, r]);

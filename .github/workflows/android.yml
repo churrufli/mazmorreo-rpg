@@ -54,4 +54,7 @@ jobs:
           name: Mazmorreo v0.${{ env.N }} (prueba)
           prerelease: true
           files: mazmorreo-*.apk
-          body: APK de prueba. Instálalo en el móvil Android (permite instalar apps de origen desconocido).
+          body: |
+            APK de prueba. Instálalo en el móvil Android (permite instalar apps de origen desconocido).
+
+            La APK no se publica con la misma frecuencia ni continuidad que la versión web, que se actualiza mucho más a menudo. Recomendamos jugar desde la web: https://churrufli.github.io/mazmorreo-rpg/

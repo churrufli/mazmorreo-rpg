@@ -9,6 +9,7 @@ import type { DialogueLine, ShownRoll } from '../engine/dungeon';
 import type { Roll } from '../engine/combat';
 import { speaker } from '../engine/aventuras';
 import { dado } from '../sonido';
+import { ITEMS } from '../data/srd';
 import { DUR, EASE, fxFull, fxOn } from './movimiento';
 
 /** Retrato: recorte de la cara de la ilustración de la carta. */
@@ -249,7 +250,7 @@ export function Dialogue({ lines, hero, onDone, met, onMeet }: {
 }
 
 export interface MessageProps {
-  title: string; lines: string[]; table?: [string, string][]; intro?: string; img?: ImgKey; img2?: ImgKey; items?: ImgKey[]; portrait?: ImgKey; rolls?: ShownRoll[];
+  title: string; lines: string[]; table?: [string, string][]; intro?: string; img?: ImgKey; img2?: ImgKey; /** Objetos (id de ITEMS: al tocarlos se lee su descripción) o imágenes sueltas. */ items?: string[]; portrait?: ImgKey; rolls?: ShownRoll[];
   bg?: ImgKey; onDone?: () => void; children?: React.ReactNode;
   /** Victoria: rayos de luz tras el cuadro, título con un golpe de escala y las líneas apareciendo en cascada. */
   celebrate?: boolean;
@@ -284,6 +285,8 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
   const steps = (img2 ? 1 : 0) + rolls.length + 1;
   // Sin pasos animados (victoria, avisos) el texto sale desde el principio, sin esperar a ningún temporizador.
   const [k, setK] = useState(steps === 1 ? 1 : 0);
+  // Objeto tocado: se muestra su descripción bajo las imágenes.
+  const [look, setLook] = useState<string>();
   useEffect(() => { if (shown) Animated.spring(pop, { toValue: 1, friction: 7, tension: 70, useNativeDriver: true }).start(); }, [pop, shown]);
   useEffect(() => {
     // Con dos imágenes (cofre cerrado y abierto), la primera se ve un segundo largo antes de abrirse.
@@ -317,7 +320,11 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
             <View>
               {/* Textos largos (subida de nivel de todo el grupo): se desplazan y el botón queda siempre a la vista. */}
               <ScrollView style={{ maxHeight: height * (img || portrait ? 0.4 : 0.55) }}>
-              {items?.length ? <View style={st.items}>{items.map((it, i) => <PopIn key={i} delay={i * 90}><Image source={IMG[it]} style={st.itemImg} /></PopIn>)}</View> : null}
+              {items?.length ? <View style={st.items}>{items.map((it, i) => ITEMS[it]
+                ? <Pressable key={i} onPress={() => setLook(x => (x === it ? undefined : it))} accessibilityRole="button" accessibilityLabel={`Ver ${ITEMS[it].name}`}><PopIn delay={i * 90}><Image source={IMG[ITEMS[it].img]} style={[st.itemImg, look === it && st.itemSel]} /></PopIn></Pressable>
+                : <PopIn key={i} delay={i * 90}><Image source={IMG[it as ImgKey]} style={st.itemImg} /></PopIn>)}</View> : null}
+              {look && ITEMS[look] ? <View style={st.itemInfo}><Text style={st.itemInfoName}>{ITEMS[look].name}</Text><Text style={st.itemInfoTxt}>{ITEMS[look].desc}</Text></View> : null}
+              {!look && items?.some(it => ITEMS[it]) ? <Text style={st.itemHint}>Toca un objeto para leer qué hace.</Text> : null}
               {table?.map(([k, v]) => (
                 <View key={k} style={st.tRow}>
                   <Text style={st.tKey}>{k}</Text>
@@ -516,6 +523,11 @@ const st = StyleSheet.create({
   winTitle: { fontSize: 28, textShadowColor: '#e0b56e', textShadowRadius: 12 },
   items: { flexDirection: 'row', justifyContent: 'center', marginBottom: 6 },
   itemImg: { width: 56, height: 56, marginHorizontal: 6 },
+  itemSel: { borderWidth: 1.5, borderColor: C.gold, borderRadius: 6 },
+  itemInfo: { borderWidth: 1, borderColor: C.border, borderRadius: 6, padding: 8, marginBottom: 8, backgroundColor: 'rgba(0,0,0,0.35)' },
+  itemInfoName: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 15 },
+  itemInfoTxt: { fontFamily: F.rules, color: C.text, fontSize: 13.5, lineHeight: 19 },
+  itemHint: { fontFamily: F.italic, color: C.textDim, fontSize: 12, textAlign: 'center', marginBottom: 6 },
   msgLine: { fontFamily: F.text, color: C.text, fontSize: 17, lineHeight: 23, marginBottom: 6 },
   d20: { position: 'absolute', alignSelf: 'center', top: '36%', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.6)', padding: 12, borderRadius: 12 },
   d20Label: { fontFamily: F.text, color: C.text, fontSize: 15, marginTop: 4 },

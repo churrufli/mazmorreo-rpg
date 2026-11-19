@@ -40,7 +40,7 @@ export const COMO_FUNCIONA: { icon: string; title: string; text: string[] }[] = 
     'Con la tercera charla la afinidad llega al máximo y el aliado gana Inspiración heroica: una vez por aventura repite una tirada fallida (un ataque o una prueba), sin que tengas que hacer nada.',
   ] },
   { icon: mdiCardsOutline, title: 'Las cartas', text: [
-    'Cada personaje y enemigo es una carta: la ilustración por delante y la ficha por detrás (toca la ilustración para girarla).',
+    'Cada personaje y enemigo es una carta: la ilustración por delante y la ficha por detrás («Ver ficha» o desliza la carta para girarla). Toca la ilustración de la carta ampliada para ver el arte a pantalla completa.',
     'En la ficha, toca un objeto para ver sus datos. Un personaje puede dar objetos a otro desde su ficha.',
   ] },
   { icon: mdiSkullOutline, title: 'Caídos y muertos', text: [
@@ -93,6 +93,11 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Dracónidos, tieflings y brujos tienen ya retrato de hombre y de mujer: al elegir el sexo sale la imagen que toca.',
     'Aliados con más variedad: en el Corazón Hueco os espera Kallux, brujo tiefling; en la montaña, Ghaldra, guerrera dracónida de plata; y en la tumba, Iskarra, bárbara dracónida de latón. Teodor pasa a ser brujo.',
     'Vurka ya es orca de verdad: Aguante incansable (una vez por descanso largo se queda con 1 PG en vez de caer) y Descarga de adrenalina (PG temporales como acción adicional).',
+    'Objetos: al tocar cualquier objeto se lee su descripción. En la tienda, al tocarlo sale su ficha completa y desde ahí se compra o se vende; también se puede leer lo que aún no os podéis permitir. En los cofres y escenas, toca el objeto ganado para leer qué hace.',
+    'Combate: la probabilidad de acertar sale arriba del cuadro de explicación, destacada. La explicación de las armas va por apartados (arma, ataque y maestría), una regla por línea.',
+    'Cartas: toca la carta ampliada para ver su arte a pantalla completa. La ficha se abre con «Ver ficha» o deslizando la carta.',
+    'La tumba falsa y la tumba superior tienen las paredes más oscuras para distinguirlas del suelo.',
+    'Aviso legal de Dungeons & Dragons y Wizards of the Coast en la pantalla de inicio y en Créditos.',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',
@@ -410,6 +415,7 @@ export const PRIVACIDAD: string[] = [
 ];
 
 export const CREDITOS: string[] = [
+  'Aviso legal: Dungeons & Dragons, D&D, Dragones y Mazmorras y Wizards of the Coast son marcas de Wizards of the Coast LLC. Mazmorreo es un proyecto de fans no oficial y gratuito: no está patrocinado, aprobado ni afiliado a Wizards of the Coast. Las reglas proceden del SRD 5.2.1, que Wizards of the Coast publica con licencia CC BY 4.0.',
   'Reglas: este juego usa material del System Reference Document 5.2.1 (SRD 5.2.1) de Wizards of the Coast, disponible en https://www.dndbeyond.com/srd, bajo la licencia Creative Commons Atribución 4.0 Internacional (https://creativecommons.org/licenses/by/4.0/legalcode).',
   'Tipografías: Cinzel y Cormorant Garamond, licencia SIL Open Font License.',
   'Iconos: Material Design Icons (Pictogrammers), licencia Apache 2.0.',

@@ -87,6 +87,8 @@ export function Title() {
         {/* Mazmorreo es abierto: lleva a la guía para colaborar en GitHub. */}
         <Btn small label="Participa en el proyecto" onPress={() => Linking.openURL(COLABORAR)} />
         <Text style={st.version}>{BUILD ? `v0.${BUILD}${CAMBIOS ? `+${CAMBIOS}` : ''} · ` : ''}Versión de prueba · Tres aventuras</Text>
+        {/* Aviso legal breve; el completo está en Ajustes › Créditos (el autor 2026-11-19). */}
+        <Text style={st.legal}>Proyecto de fans no oficial, sin relación con Wizards of the Coast. Dungeons & Dragons es marca de Wizards of the Coast LLC.</Text>
       </FadeIn>
       {opts ? <Settings onClose={() => setOpts(false)} /> : null}
     </Bg>
@@ -385,6 +387,7 @@ const st = StyleSheet.create({
   titleWrap: { alignItems: 'center' },
   bottom: { flex: 1, justifyContent: 'flex-end', paddingHorizontal: 40 },
   version: { fontFamily: F.italic, color: C.textDim, textAlign: 'center', marginTop: 10, fontSize: 14 },
+  legal: { fontFamily: F.italic, color: C.textDim, textAlign: 'center', marginTop: 4, fontSize: 11, paddingHorizontal: 16 },
   trash: { padding: 6, alignSelf: 'flex-start' },
   delBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', padding: 20 },
   delInput: { fontFamily: F.titleBold, fontWeight: 'bold', color: C.goldHi, fontSize: 26, letterSpacing: 10, textAlign: 'center', borderWidth: 1, borderColor: C.border, borderRadius: 6, marginVertical: 12, paddingVertical: 8, backgroundColor: '#0008' },

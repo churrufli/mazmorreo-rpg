@@ -82,9 +82,9 @@ export const testChance = (c: Char, a: Ability, dc: number) => Math.max(0, Math.
 /** Aplica un efecto y devuelve las líneas que lo cuentan y el combate que empiece, si hay. */
 /** Sala en la que está el grupo ahora. */
 
-export function applyEffect(g: Game, e: Effect, who?: Char): { lines: string[]; items: ImgKey[]; fight?: string } {
+export function applyEffect(g: Game, e: Effect, who?: Char): { lines: string[]; items: string[]; fight?: string } {
   const lines: string[] = [];
-  const items: ImgKey[] = [];
+  const items: string[] = [];
   if (e.text) lines.push(e.text);
   if (e.gold) {
     const n = e.gold > 0 ? e.gold : -Math.min(g.gold, -e.gold);
@@ -97,7 +97,7 @@ export function applyEffect(g: Game, e: Effect, who?: Char): { lines: string[]; 
   }
   if (e.item) {
     const c = giveItem(g, e.item);
-    items.push(ITEMS[e.item].img);
+    items.push(e.item);
     if (c) lines.push(`${c.name} guarda: ${ITEMS[e.item].name}.`);
     else { const k = dropKey(g); g.drops = { ...g.drops, [k]: [...(g.drops?.[k] ?? []), newItem(e.item)] }; lines.push(`${ITEMS[e.item].name}: no cabe en las mochilas y queda en el suelo.`); }
   }

@@ -269,7 +269,7 @@ export type DialogueLine = { speaker: string; text: string };
 export type Ev =
   | { kind: 'combat'; id: string }
   | { kind: 'dialogue'; lines: DialogueLine[] }
-  | { kind: 'msg'; title: string; lines: string[]; table?: [string, string][]; intro?: string; bg?: ImgKey; img?: ImgKey; img2?: ImgKey; items?: ImgKey[]; portrait?: ImgKey; rolls?: ShownRoll[]; save?: boolean; pass?: string }
+  | { kind: 'msg'; title: string; lines: string[]; table?: [string, string][]; intro?: string; bg?: ImgKey; img?: ImgKey; img2?: ImgKey; /** Objetos (id de ITEMS, que se pueden tocar para leerlos) o imágenes sueltas. */ items?: string[]; portrait?: ImgKey; rolls?: ShownRoll[]; save?: boolean; pass?: string }
   | { kind: 'rest'; id: string; long: boolean; name: string; text: string }
   | { kind: 'scene'; id: string }
   /** Trampa vista antes de pisarla: se elige quién la desactiva, pasar con cuidado o volver atrás. */
@@ -587,8 +587,8 @@ function enterRoom(g: Game, room: Room): Ev[] {
         const speakerId = c.lines.find((l: any) => l.speaker !== 'hero' && l.speaker !== 'narrator')?.speaker ?? 'narrator';
         evs.push({ kind: 'dialogue', lines: [{ speaker: speakerId, text: gift.text }] });
         const who = giveItem(g, gift.item);
-        if (who) evs.push({ kind: 'msg', title: ITEMS[gift.item].name, items: [ITEMS[gift.item].img], lines: [`${who.name} guarda: ${ITEMS[gift.item].name}.`], save: true });
-        else { const k = dropKey(g); g.drops = { ...g.drops, [k]: [...(g.drops?.[k] ?? []), newItem(gift.item)] }; evs.push({ kind: 'msg', title: ITEMS[gift.item].name, items: [ITEMS[gift.item].img], lines: ['No cabe en las mochilas: queda en el suelo.'] }); }
+        if (who) evs.push({ kind: 'msg', title: ITEMS[gift.item].name, items: [gift.item], lines: [`${who.name} guarda: ${ITEMS[gift.item].name}.`], save: true });
+        else { const k = dropKey(g); g.drops = { ...g.drops, [k]: [...(g.drops?.[k] ?? []), newItem(gift.item)] }; evs.push({ kind: 'msg', title: ITEMS[gift.item].name, items: [gift.item], lines: ['No cabe en las mochilas: queda en el suelo.'] }); }
       }
     }
   }
@@ -679,7 +679,7 @@ function findKey(g: Game): Ev {
     g.drops = { ...g.drops, [k]: [...(g.drops?.[k] ?? []), newItem(id)] };
     lines.push('No hay sitio en las mochilas: queda en el suelo. Deja algo en el suelo (toca una carta del grupo) y recógela; lo que sobre lo puedes vender en la tienda del pueblo.');
   }
-  return { kind: 'msg', title: ITEMS[id].name, items: [ITEMS[id].img], lines, save: true };
+  return { kind: 'msg', title: ITEMS[id].name, items: [id], lines, save: true };
 }
 
 /** Si la salida de la zona sigue cerrada: la abre con la llave (y la gasta) o avisa de que falta. */
@@ -740,7 +740,7 @@ function exitLock(g: Game): { ev?: Ev; text?: string; closed: boolean } | undefi
   g.done.push(open);
   const it = holder!.items.find(i => i.id === id)!;
   holder!.items = holder!.items.filter(i => i !== it);
-  return { closed: false, ev: { kind: 'msg', title: 'Paso abierto', items: [ITEMS[id].img], lines: [KEY_TEXT[id].open(holder!.name)] } };
+  return { closed: false, ev: { kind: 'msg', title: 'Paso abierto', items: [id], lines: [KEY_TEXT[id].open(holder!.name)] } };
 }
 
 const chestVisible = (g: Game, id: string) =>
@@ -786,7 +786,7 @@ function obstacle(g: Game, id: string, o: Obstacle): { ev: Ev; open: boolean } {
     if (!who) continue;
     if (SPENT.includes(need)) { const i = who.items.findIndex(x => x.id === need); who.items.splice(i, 1); }
     const use = o.use.replace('{who}', who.name).replace('{item}', WITH[need] ?? ITEMS[need].name.toLowerCase());
-    return { open: true, ev: { kind: 'msg', title: o.title, img: o.img, items: [ITEMS[need].img], lines: [o.text, use, ...(SPENT_TXT[need] ? [SPENT_TXT[need]] : [])], save: true } };
+    return { open: true, ev: { kind: 'msg', title: o.title, img: o.img, items: [need], lines: [o.text, use, ...(SPENT_TXT[need] ? [SPENT_TXT[need]] : [])], save: true } };
   }
   const tried = `${id}_tried`;
   if (o.alt && !g.done.includes(tried)) {
@@ -820,12 +820,12 @@ function chest(g: Game, id: string): Ev {
   g.gold += c.gold;
   tally(g, { chests: 1, gold: c.gold });
   const lines = [`Dentro hay ${c.gold} monedas de oro.`];
-  const items: ImgKey[] = [];
+  const items: string[] = [];
   if (c.item) {
     const itemId = DESIGN_ITEM[c.item.id] ?? c.item.id;
     if (ITEMS[itemId]) {
       const who = giveItem(g, itemId);
-      items.push(ITEMS[itemId].img);
+      items.push(itemId);
       if (!who) g.chestLeft = { ...g.chestLeft, [id]: [itemId] };
       lines.push(isTrophy(itemId) ? `${ITEMS[itemId].name}: trofeo de la aventura. Se guardará en el baúl de la posada.` : who ? `${who.name} guarda: ${ITEMS[itemId].name}.` : NO_ROOM(ITEMS[itemId].name));
     }
@@ -846,7 +846,7 @@ function chestLeftovers(g: Game, id: string): Ev {
     else { keep.push(itemId); lines.push(NO_ROOM(ITEMS[itemId].name)); }
   }
   g.chestLeft = { ...g.chestLeft, [id]: keep };
-  return { kind: 'msg', title: 'Cofre', img: 'cofre_abierto', items: left.map(i => ITEMS[i].img), lines, save: true };
+  return { kind: 'msg', title: 'Cofre', img: 'cofre_abierto', items: left, lines, save: true };
 }
 
 /** Clave de una casilla para los objetos tirados en el suelo. */

@@ -41,3 +41,12 @@ export const ACTION_HELP: Record<string, string> = {
   infernal_bolt: 'Legado infernal del tiefling. Acción, sin espacios: d20 + competencia + Carisma contra CA; 1d10 de fuego (2d10 a nivel 5) contra cualquier enemigo.',
   flee: 'Acción: el grupo huye y retrocede una casilla. Los enemigos se quedan como estaban.',
 };
+
+/** Maestría de armas por apartados: el efecto de cada una y la regla común. */
+export const MASTERY_HELP: Record<'sap' | 'vex' | 'topple' | 'push' | 'all', string> = {
+  sap: 'Al impactar, el enemigo ataca con desventaja en su próximo ataque.',
+  vex: 'Al impactar, tienes ventaja en tu próximo ataque contra él.',
+  topple: 'Al impactar, el enemigo hace una salvación de Constitución o cae al suelo. Derribado, los ataques cuerpo a cuerpo contra él tienen ventaja y los de distancia, desventaja, hasta que se levante en su turno.',
+  push: 'Al impactar, lo mandas a la retaguardia si hay sitio.',
+  all: 'Las criaturas enormes no se derriban ni se empujan. Tienen Maestría de armas el guerrero, el pícaro, el paladín, el bárbaro y el explorador.',
+};
