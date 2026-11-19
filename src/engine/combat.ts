@@ -86,6 +86,8 @@ export interface Unit {
   concentration?: 'mark' | 'bless' | 'spiritual' | 'hex';
   /** Lo que el enemigo ha anunciado que hará en su turno. */
   plan?: Plan;
+  /** No muertos: la presa que persiguen hasta que cae. */
+  prey?: string;
 }
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
@@ -1005,7 +1007,8 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     .map(a => { const off = uselessWhy(g, cb, a); return off ? { ...a, off } : a; });
 }
 
-const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r).length < MAX_ROW + 1;
+// El grupo cabe entero en una fila (hasta 4); los enemigos, 3 por fila como mucho.
+const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r).length < (s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
 
 const CURE = 'cura el veneno';
 const COLD = 'resiste el frío';
@@ -1381,11 +1384,12 @@ export function enemyTurn(g: Game, cb: Combat) {
   if (u.prone) { u.prone = false; say(cb, `${u.name} se levanta del suelo.`, 'info'); }
   const m = MONSTERS[u.mon!];
   if (u.mon === 'Shrieker') { shriek(g, cb, u); if (!checkEnd(g, cb)) endTurn(g, cb); return; }
-  // Goblins malheridos huyen.
-  if (m.ai === 'goblin' && u.hp < u.maxHp * 0.25 && rand(g.rng) < 0.5) {
+  // Goblins malheridos huyen; sin su jefe, antes (a la mitad de sus PG).
+  const leaderless = leaderDown(cb, u);
+  if (m.ai === 'goblin' && u.hp < u.maxHp * (leaderless ? 0.5 : 0.25) && rand(g.rng) < 0.5) {
     u.fled = true;
     u.plan = undefined;
-    say(cb, `${u.name} huye despavorido.`, 'info');
+    say(cb, leaderless ? `${u.name} huye: sin su jefe, no piensa morir aquí.` : `${u.name} huye despavorido.`, 'info');
     if (goalOpen(cb, 'noflee')) goalDone(cb, false);
     if (checkEnd(g, cb)) return;
     endTurn(g, cb);
@@ -1396,8 +1400,16 @@ export function enemyTurn(g: Game, cb: Combat) {
   const p = u.plan && planOk(cb, u, u.plan) ? u.plan : decide(g, cb, u);
   u.plan = undefined;
   if (!p && u.mon === DRAGON) say(cb, `${u.name} observa desde atrás, tras sus siervos.`, 'info');
+  // Cuerpo a cuerpo detrás con la fila delantera llena: espera su hueco (y se dice, para que no parezca que no hace nada).
+  else if (!p && u.row === 'back' && m.attacks.some(a => !a.ranged && !a.save)) say(cb, `${u.name} espera detrás a que se abra un hueco.`, 'info');
   if (!p) { endTurn(g, cb); return; }
   if (p.move && p.move !== u.row) {
+    const mate = p.swap ? cb.units.find(x => x.key === p.swap && conscious(x) && x.row === p.move) : undefined;
+    if (mate && !rowSpace(cb, 'enemy', p.move)) {
+      mate.row = u.row;
+      mate.plan = undefined;
+      say(cb, `${mate.name} retrocede y deja su sitio a ${u.name}.`, 'info');
+    }
     u.row = p.move;
     say(cb, p.move === 'back' ? `${u.name} retrocede a la retaguardia.` : `${u.name} avanza a la fila delantera.`, 'info');
   }
@@ -1468,7 +1480,9 @@ export function enemyTurn(g: Game, cb: Combat) {
 }
 
 /** Lo que va a hacer un enemigo en su turno: se anuncia sobre su carta. */
-export interface Plan { kind: 'melee' | 'ranged' | 'area' | 'magic'; targets: string[]; move?: Row; guard?: boolean }
+export interface Plan { kind: 'melee' | 'ranged' | 'area' | 'magic'; targets: string[]; move?: Row; guard?: boolean;
+  /** Compañero de delante con arma a distancia que le cede el sitio. */
+  swap?: string }
 
 /** A quién alcanza un enemigo (cuerpo a cuerpo o a distancia), en la fila en que está. */
 function reach(cb: Combat, u: Unit, ranged: boolean, row: Row = u.row): Unit[] {
@@ -1487,7 +1501,7 @@ const isGuard = (cb: Combat, u: Unit, row: Row) => row === 'front' && u.maxHp >=
 const planOk = (cb: Combat, u: Unit, p: Plan) => {
   if (u.mon === DRAGON && (p.kind === 'area') !== breathRound(cb)) return false;
   if (p.kind === 'area') return cb.units.some(x => x.side === 'party' && conscious(x) && (x.row === 'front' || u.mon === DRAGON));
-  if (p.move && p.move !== u.row && !rowSpace(cb, 'enemy', p.move)) return false;
+  if (p.move && p.move !== u.row && !rowSpace(cb, 'enemy', p.move) && !(p.swap && cb.units.some(x => x.key === p.swap && conscious(x) && x.row === p.move))) return false;
   const pool = p.kind === 'magic' ? cb.units.filter(x => x.side === 'party' && conscious(x)) : reach(cb, u, p.kind === 'ranged', p.move ?? u.row);
   return p.targets.length > 0 && p.targets.every(k => pool.some(x => x.key === k));
 };
@@ -1516,7 +1530,13 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
   const partyFront = up.filter(x => x.row === 'front');
   if (area && u.recharge![area.name] !== false && (partyFront.length >= 2 || m.ai !== 'caster') && partyFront.length)
     return { kind: 'area', targets: partyFront.map(x => x.key) };
-  if (m.ai === 'caster') { const t = chooseTarget(g, cb, u, up, true); return t ? { kind: 'magic', targets: [t.key] } : undefined; }
+  // Lanzador delante con alguien que le cubra: se retira a la retaguardia y lanza desde allí.
+  const cover = cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'front');
+  if (m.ai === 'caster') {
+    const t = chooseTarget(g, cb, u, up, true);
+    if (!t) return undefined;
+    return { kind: 'magic', targets: [t.key], move: u.row === 'front' && cover && rowSpace(cb, 'enemy', 'back') ? 'back' : undefined };
+  }
   const melee = m.attacks.filter(a => !a.ranged && !a.save);
   const ranged = m.attacks.filter(a => a.ranged);
   let row = u.row;
@@ -1525,13 +1545,20 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
   if (row === 'front' && ranged.length && u.hp < u.maxHp / 2 && holds && rowSpace(cb, 'enemy', 'back')) row = 'back';
   const bow = !!u.weapon && /arco|ballesta|bow/i.test(u.weapon);
   const prefersRanged = !!ranged.length && (row === 'back' || bow);
-  // Los de cuerpo a cuerpo que están detrás avanzan a buscar el hueco.
-  if (!prefersRanged && row === 'back' && melee.length && rowSpace(cb, 'enemy', 'front')) row = 'front';
+  // Los de cuerpo a cuerpo que están detrás avanzan a buscar el hueco; si no lo hay, un tirador de delante se lo cede.
+  let swap: string | undefined;
+  if (!prefersRanged && row === 'back' && melee.length) {
+    if (rowSpace(cb, 'enemy', 'front')) row = 'front';
+    else {
+      swap = cb.units.find(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'front' && x.mon !== DRAGON && !MONSTERS[x.mon!].reach && MONSTERS[x.mon!].attacks.some(a => a.ranged))?.key;
+      if (swap) row = 'front';
+    }
+  }
   const useRanged = prefersRanged || row === 'back';
   if (useRanged ? !ranged.length : !melee.length) return undefined;
   const targets = picks(reach(cb, u, useRanged, row), useRanged);
   if (!targets.length) return undefined;
-  return { kind: useRanged ? 'ranged' : 'melee', targets, move: row !== u.row ? row : undefined, guard: isGuard(cb, u, row) };
+  return { kind: useRanged ? 'ranged' : 'melee', targets, move: row !== u.row ? row : undefined, guard: isGuard(cb, u, row), swap: row !== u.row ? swap : undefined };
 }
 
 /** Anuncia (o corrige) lo que harán los enemigos: se llama al empezar cada turno y tras cada acción. */
@@ -1542,6 +1569,11 @@ export function planAll(g: Game, cb: Combat) {
     else if (u.plan.kind === 'melee' || u.plan.kind === 'ranged') u.plan.guard = isGuard(cb, u, u.plan.move ?? u.row);
   }
 }
+
+/** Jefe de su grupo (jefe goblin, Orvane, la bruja…): varios ataques o conjuros. */
+const isLeader = (x: Unit) => !!x.mon && (MONSTERS[x.mon].ai === 'caster' || (MONSTERS[x.mon].multi ?? 1) >= 2);
+/** Ha caído el jefe de su misma familia (y él no es jefe). */
+const leaderDown = (cb: Combat, u: Unit) => !isLeader(u) && cb.units.some(x => x.side === 'enemy' && x.dead && isLeader(x) && MONSTERS[x.mon!].ai === MONSTERS[u.mon!].ai);
 
 const toOpts = (a: MonsterAttack): AtkOpts => {
   const m = a.dice.match(/^(.*?)([+-]\d+)?$/)!;
@@ -1567,9 +1599,20 @@ function chooseTarget(g: Game, cb: Combat, u: Unit, opts: Unit[], ranged = false
   if (MONSTERS[u.mon!].packTactics || (!ranged && !frontHeld(cb, 'party'))) return weakest(pool);
   if (ai === 'beast') return pool.find(x => x.key === u.lastHitBy) ?? pick(g.rng, pool);
   if (ai === 'caster') return [...pool].sort((a, b) => a.ac - b.ac || a.hp - b.hp)[0];
+  // Sectarios: defienden a su líder y van a por quien le ha herido.
+  if (ai === 'cultist') {
+    const lead = cb.units.find(x => x.side === 'enemy' && x !== u && alive(x) && isLeader(x) && x.lastHitBy);
+    const foe = lead && pool.find(x => x.key === lead.lastHitBy);
+    if (foe) return foe;
+  }
+  // No muertos: eligen al más cercano y no lo sueltan hasta que cae.
   if (ai === 'undead') {
+    const prey = pool.find(x => x.key === u.prey);
+    if (prey) return prey;
     const front = pool.filter(x => x.row === 'front');
-    return pick(g.rng, front.length ? front : pool);
+    const t = pick(g.rng, front.length ? front : pool);
+    u.prey = t.key;
+    return t;
   }
   return pick(g.rng, pool);
 }
