@@ -495,7 +495,8 @@
                   },
                   "fail": {
                     "text": "Aprovecha un descuido y huye sin decir nada."
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Quitarle las monedas",
@@ -503,7 +504,8 @@
                     "text": "Le quitas dos monedas. Huye hacia el campamento y alerta a otro goblin, que se prepara para luchar.",
                     "gold": 2,
                     "add": "z1_e05"
-                  }
+                  },
+                  "tone": "codicia"
                 },
                 {
                   "label": "Dejarle huir",
@@ -2056,7 +2058,8 @@
                   "fail": {
                     "text": "El goblin escapa dando voces. Sus compañeros estarán prevenidos.",
                     "add": "z2_e04"
-                  }
+                  },
+                  "tone": "dureza"
                 },
                 {
                   "label": "Dejarle y seguir",
@@ -2257,7 +2260,8 @@
                   "ok": {
                     "text": "Se van sin mirar atrás.",
                     "remove": "z2_e08"
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Exigirles el botín",
@@ -2271,7 +2275,8 @@
                   "fail": {
                     "text": "Se miran, recogen las armas y atacan.",
                     "fight": "z2_e08"
-                  }
+                  },
+                  "tone": "codicia"
                 },
                 {
                   "label": "Cerrarles el paso",
@@ -2279,7 +2284,8 @@
                     "text": "Les cerráis la salida. Piden auxilio y otro goblin acude; todos se disponen a luchar.",
                     "add": "z2_e08",
                     "fight": "z2_e08"
-                  }
+                  },
+                  "tone": "dureza"
                 }
               ]
             },
@@ -3403,7 +3409,8 @@
                   },
                   "fail": {
                     "text": "El escriba se desvanece sin creeros."
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Dejar 15 monedas de tributo",
@@ -3419,7 +3426,8 @@
                     "text": "El escriba se retira. Unos guardianes surgen entre las lápidas.",
                     "add": "z3_e06",
                     "fight": "z3_e06"
-                  }
+                  },
+                  "tone": "dureza"
                 },
                 {
                   "ally": "edmund",
@@ -4267,14 +4275,16 @@
                   "ok": {
                     "text": "El cultista confirma que Orvane mantiene cautivos. Os entrega una poción antes de escapar.",
                     "item": "potion_healing"
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Atacarle",
                   "ok": {
                     "text": "Recoge la daga del agua y se defiende.",
                     "fight": "z4_e08"
-                  }
+                  },
+                  "tone": "dureza"
                 }
               ]
             },
@@ -4838,7 +4848,8 @@
                     "text": "El cultista os revela dónde ocultaron un cofre y cómo evitar a uno de los guardianes de vapor. Después huye.",
                     "reveal": "z4_s01",
                     "sub": "z4_e04"
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Exigirle sus monedas",
@@ -4851,7 +4862,8 @@
                   "fail": {
                     "text": "El cultista huye y da la alarma. Un guardián de vapor más se prepara para combatir.",
                     "add": "z4_e04"
-                  }
+                  },
+                  "tone": "codicia"
                 },
                 {
                   "label": "Rechazar el trato",

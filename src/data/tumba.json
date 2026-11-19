@@ -392,7 +392,8 @@
                     "text": "El colmillo os muerde al sacarlo, pero el anillo es vuestro.",
                     "item": "fang_ring",
                     "damage": "1d6"
-                  }
+                  },
+                  "tone": "codicia"
                 },
                 {
                   "label": "Sacarlo con cuidado",
@@ -1407,7 +1408,8 @@
                   "ok": {
                     "text": "Apartáis las piedras. Sparamuntar se alza y no da las gracias.",
                     "fight": "s2_e02"
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Quemar el sarcófago",
@@ -1417,7 +1419,8 @@
                     "lose": "alchemists_fire",
                     "remove": "s2_e02",
                     "gold": 10
-                  }
+                  },
+                  "tone": "dureza"
                 },
                 {
                   "label": "Prender las vendas con una antorcha",
@@ -2313,14 +2316,16 @@
                   "ok": {
                     "text": "Soltáis la cadena. Baltoplat os besa la mano y os roba el aliento. Cuando os recuperáis, ya no está.",
                     "damage": "2d8"
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Luchar contra ella",
                   "ok": {
                     "text": "Su piel se vuelve roja y le salen alas.",
                     "fight": "s3_e04"
-                  }
+                  },
+                  "tone": "dureza"
                 },
                 {
                   "label": "Dejarla atada",

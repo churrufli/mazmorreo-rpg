@@ -3,6 +3,7 @@ import P from '../data/plano.json';
 import { ADVS, ADV_LIST, Design, TOWNS, advOf, speaker } from './aventuras';
 import type { ImgKey } from '../assets';
 import { DESIGN_ITEM, ITEMS } from '../data/srd';
+import { PLACE_LINES } from '../data/comentarios';
 import { die, pick, roll } from './rng';
 import {
   Char, MAX_ITEMS, abilMod, allyFor, createAlly, isDown, newItem, passivePerception, raiseTo, sightRadius, shortRest, longRest, needsRest,
@@ -1101,6 +1102,9 @@ export function enterZone(g: Game, zone: string): Ev[] {
   const low = living.reduce((a, c) => a + c.hp, 0) < living.reduce((a, c) => a + c.maxHp, 0) / 2;
   const line = low ? react(g, 'hurt') : undefined;
   if (line) evs.push(line);
+  // Un compañero comenta el lugar si es de su propia aventura (una sola vez por zona).
+  const local = g.party.find(c => !c.isHero && !isDown(c) && PLACE_LINES[c.id]?.[zone]);
+  if (local) evs.push({ kind: 'dialogue', lines: [{ speaker: local.id, text: PLACE_LINES[local.id][zone] }] });
   logEvs(g, evs);
   return [...evs, ...step(g, g.pos)];
 }
