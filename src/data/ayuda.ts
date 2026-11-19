@@ -98,6 +98,11 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Cartas: toca la carta ampliada para ver su arte a pantalla completa. La ficha se abre con «Ver ficha» o deslizando la carta.',
     'La tumba falsa y la tumba superior tienen las paredes más oscuras para distinguirlas del suelo.',
     'Aviso legal de Dungeons & Dragons y Wizards of the Coast en la pantalla de inicio y en Créditos.',
+    'Enemigos con su propio carácter: los goblins huyen antes si cae su jefe, los no muertos no sueltan a su presa, los sectarios van a por quien hiere a su líder y los lanzadores de conjuros se retiran detrás de sus guardias.',
+    'Ningún enemigo se queda sin hacer nada por error: si delante no cabe, un tirador le cede el sitio; y si tiene que esperar, el registro lo dice. Los enemigos ya no se ponen cuatro en una fila.',
+    'Primera partida guiada: en Hondaroca, la primera vez que os movéis, lucháis, veis una trampa, descansáis o tenéis que decidir, sale un consejo breve. Solo una vez.',
+    'Hondaroca: la inscripción de la cripta guarda una pista que sirve más adelante, en el monasterio. Si la aprovecháis, Maese Orvane llega con menos magia. Antes del combate se dice lo que habéis conseguido.',
+    'Los compañeros comentan algunas decisiones (perdonar, ser duros o cobrar) y los lugares de su propia aventura, con frases cortas.',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',
