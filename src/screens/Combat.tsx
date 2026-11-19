@@ -24,6 +24,7 @@ import { CombatGroup, groupOf, menuActionsFor, quickAttack } from '../ui/combatM
 import { slotsLeft } from '../engine/rules';
 import { ACTION_HELP as DESC, MASTERY_HELP } from '../data/actionHelp';
 import { AYUDA_COMBATE, GESTOS_COMBATE, ZONAS_COMBATE } from '../data/ayuda';
+import { BASIC, TUTO_IDS, TutoTarget, tutoKey, tutoStep } from '../ui/tutorial';
 
 const COST: Record<Action['cost'], string> = { action: 'Acción', bonus: 'Acción adicional', move: 'Movimiento', free: 'Sin acción' };
 /** El mismo símbolo en el indicador del turno y en cada botón: qué gasta. */
@@ -47,7 +48,7 @@ const GEAR_H = 44;
 const EMPTY_ROW = 28;
 
 export function Combat() {
-  const { game, combat, act, endTurn, enemyStep, closeCombat, devWin, reroll } = useStore();
+  const { game, combat, act, endTurn, enemyStep, closeCombat, devWin, reroll, edit } = useStore();
   const g = game!;
   const cb = combat!;
   const ins = useSafeAreaInsets();
@@ -83,6 +84,16 @@ export function Combat() {
   const auto = !cb.result && autoTurn(cb);
   // Presentación del encuentro con la iniciativa; nadie actúa hasta cerrarla.
   const [ready, setReady] = useState(false);
+  // Tutorial del campo de batalla: lo visto se guarda en la partida (una vez por partida, el autor 2026-11-19).
+  const tutoSeen = (k: string) => !!g.guide?.includes(k);
+  const tutoMark = (ids: string[]) => edit(gg => { gg.guide = [...new Set([...(gg.guide ?? []), ...ids.map(tutoKey)])]; });
+  const tuto = ready && !auto && !cb.result ? tutoStep(g, cb, me, tutoSeen) : undefined;
+  const lit = (t: TutoTarget) => (tuto?.target === t ? st.tutoLit : undefined);
+  const tutoNext = () => tutoMark(tuto ? [tuto.id] : []);
+  // Omitir el tutorial (con confirmación): no vuelve a salir ningún paso ni aviso en esta partida.
+  const [askSkip, setAskSkip] = useState(false);
+  // Atacar se da por aprendido en cuanto se usa la acción.
+  useEffect(() => { if (cb.acted && !tutoSeen(tutoKey('atacar'))) tutoMark(['atacar']); }, [cb.acted]); // eslint-disable-line react-hooks/exhaustive-deps
   // La ventana del final espera a que se vea la última tirada.
   const [endShown, setEndShown] = useState(false);
   const logRef = useRef<ScrollView>(null);
@@ -317,7 +328,7 @@ export function Combat() {
 
   // Lo que queda del turno, con los mismos símbolos que llevan los botones y su nombre al lado, en una línea propia.
   const budget = !auto && !cb.result && me.side === 'party' ? (
-    <View testID="combat-budget" style={st.budget}>
+    <View testID="combat-budget" style={[st.budget, lit('budget')]}>
       {BUDGET.map(([k, label]) => {
         const used = { action: cb.acted, bonus: cb.bonus, move: cb.moved }[k];
         return (
@@ -344,7 +355,7 @@ export function Combat() {
       );
     }
     return (
-      <View style={[st.row, st.rowBand, side === 'enemy' && st.rowEnemy, { minHeight: cardW * 1.5 + 2 }]}>
+      <View style={[st.row, st.rowBand, side === 'enemy' && st.rowEnemy, { minHeight: cardW * 1.5 + 2 }, lit(side === 'enemy' ? 'enemies' : 'partyRows')]}>
         <View pointerEvents="none" style={[st.rowLabelBox, { width: cardW * 1.5, left: 7 - cardW * 0.75, top: cardW * 0.75 - 6 }]}><Text numberOfLines={1} style={st.rowLabel}>{name}</Text></View>
         {us.map(u => {
           const isT = targets.includes(u.key);
@@ -392,7 +403,7 @@ export function Combat() {
       <View testID="combat-field" ref={rootRef} collapsable={false} style={{ flex: 1, minHeight: 0, overflow: 'hidden', paddingTop: ins.top + 4, paddingHorizontal: 6 }} onLayout={e => setArea(e.nativeEvent.layout.height - ins.top - 4)}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         {/* Orden de turnos arriba (maqueta aprobada por el autor 2026-11-06): asalto, retratos por iniciativa y engranaje. */}
-        <View style={st.turns}>
+        <View style={[st.turns, lit('turns')]}>
           <Text style={st.turnsRound}>{'Asalto\n'}{cb.round}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }} contentContainerStyle={{ alignItems: 'center', gap: 4, paddingHorizontal: 2 }}>
             {cb.order.map((k, i) => {
@@ -410,7 +421,7 @@ export function Combat() {
             })}
           </ScrollView>
           {fleeAct ? (
-            <Pressable disabled={!ready} onPress={tryFlee} accessibilityRole="button" accessibilityLabel="HUIR" hitSlop={8} style={[st.fleeBtn, !!fleeAct.off && { opacity: 0.45 }]}>
+            <Pressable disabled={!ready} onPress={tryFlee} accessibilityRole="button" accessibilityLabel="HUIR" hitSlop={8} style={[st.fleeBtn, !!fleeAct.off && { opacity: 0.45 }, lit('flee')]}>
               <Icon path={mdiRun} size={16} color={C.text} />
               <Text style={st.fleeTxt}>HUIR</Text>
             </Pressable>
@@ -434,7 +445,7 @@ export function Combat() {
           </View>
           {!sel ? budget : null}
           {cb.goal ? (
-            <View style={st.goal}>
+            <View style={[st.goal, lit('goal')]}>
               <Icon path={mdiBullseyeArrow} size={16} color={cb.goal.status === 'ok' ? '#7fcf8f' : cb.goal.status === 'fail' ? C.textDim : C.goldHi} />
               <Text style={[st.goalTxt, cb.goal.status === 'ok' && { color: '#7fcf8f' }, cb.goal.status === 'fail' && { color: C.textDim, textDecorationLine: 'line-through' }]} numberOfLines={2}>
                 {cb.goal.status === 'ok' ? '✓ ' : ''}{cb.goal.g.text}
@@ -452,6 +463,16 @@ export function Combat() {
         {renderRow('party', 'back')}
         </ScrollView>
         {shot ? <Projectile {...shot} t={fly} /> : null}
+        {tuto && !tip && !sel ? (
+          <View testID="combat-tutorial" style={[st.tuto, ['turns', 'enemies', 'goal', 'flee', 'budget'].includes(tuto.target) ? { bottom: 6 } : { top: ins.top + GEAR_H + 8 }]}>
+            <Text style={st.stripTitle}>{tuto.title}</Text>
+            <Text style={st.stripTxt}>{tuto.text}</Text>
+            <View style={st.stripBtns}>
+              <Pressable accessibilityRole="button" accessibilityLabel="Omitir tutorial" onPress={() => setAskSkip(true)} style={st.stripClose}><Text style={st.stripCloseTxt}>OMITIR TUTORIAL</Text></Pressable>
+              <Btn small primary label={tuto.basic && tuto.id !== BASIC[BASIC.length - 1].id ? 'Siguiente' : 'Entendido'} onPress={() => tutoNext()} style={{ flex: 1 }} />
+            </View>
+          </View>
+        ) : null}
       </View>
       <View testID="combat-controls" style={[st.actions, { height: landscape ? height : 240 + ins.bottom, width: controlsWidth, flexGrow: 0, flexShrink: 0, paddingTop: landscape ? ins.top + 4 : 3, paddingBottom: ins.bottom + 3 }]}>
         {auto ? (
@@ -459,22 +480,22 @@ export function Combat() {
         ) : !cb.result ? (
           <>
             {groups.length ? (
-              <View testID="combat-categories" style={st.categoryRow}>
+              <View testID="combat-categories" style={[st.categoryRow, lit('categories')]}>
                 {CATEGORIES.filter(([id]) => groups.includes(id)).map(([id, label]) => (
                   <Btn key={id} small combatTone="parent" tight={groups.length > 2} disabled={!ready} icon={{attack:mdiSwordCross,skills:mdiCreation,items:mdiSack}[id]} onInfo={() => showCategory(id)} onLongPress={() => showCategory(id)}  primary={activeGroup === id} off={menu.filter(a => groupOf(a) === id).every(a => !!a.off)}
                     label={label.toLocaleUpperCase('es-ES')}
                     onPress={() => { lastGroup.current[me.key] = id; setActionGroup(id); close(); }}
-                    style={st.categoryOrnate} />
+                    style={{ ...st.categoryOrnate, ...(tuto?.target === 'items' && id === 'items' ? st.tutoLit : null) }} />
                 ))}
               </View>
             ) : null}
             <ScrollView testID="combat-action-scroll" style={{ flex: 1 }} contentContainerStyle={st.actionGrid} nestedScrollEnabled>
               {grouped.map(a => <Btn key={a.id} small combatTone="child" icon={COST_ICON[a.cost]} disabled={!ready} onInfo={() => choose(a, true)} onLongPress={() => choose(a, true)} primary={sel?.id === a.id || tip?.a?.id === a.id} label={a.label.toLocaleUpperCase('es-ES')} off={!!a.off} onPress={() => choose(a)} style={st.gridBtn} />)}
             </ScrollView>
-            <View style={st.fixedRow}>
+            <View style={[st.fixedRow, lit('fixed')]}>
               {dodgeAct ? <Btn small combatTone="child" icon={COST_ICON[dodgeAct.cost]} disabled={!ready} onInfo={() => choose(dodgeAct, true)} onLongPress={() => choose(dodgeAct, true)} primary={tip?.a?.id === dodgeAct.id} label="ESQUIVAR" off={!!dodgeAct.off} onPress={() => choose(dodgeAct)} style={st.fixedBtn} /> : null}
               {rowAct ? <Btn small combatTone="child" icon={COST_ICON.move} disabled={!ready} label={rowAct.label.toLocaleUpperCase('es-ES')} off={!!rowAct.off} onInfo={() => choose(rowAct, true)} onLongPress={() => choose(rowAct, true)} onPress={() => rowAct.off ? choose(rowAct) : go(rowAct)} style={st.fixedBtn} /> : null}
-              <Btn small combatTone="child" label="TERMINAR TURNO" disabled={!ready} onPress={finishTurn} style={{...st.fixedBtn,width:'100%'}} />
+              <Btn small combatTone="child" label="TERMINAR TURNO" disabled={!ready} onPress={finishTurn} style={{...st.fixedBtn,width:'100%',...(tuto?.target === 'end' ? st.tutoLit : null)}} />
             </View>
 
           </>
@@ -539,6 +560,16 @@ export function Combat() {
       {showLog ? <LogModal title="Registro del combate" lines={cb.log.map(line => line.t)} combat={cb.log} onClose={() => setShowLog(false)} /> : null}
       {help ? <CombatHelp onClose={() => setHelp(false)} /> : null}
       {opts ? <Settings onClose={() => setOpts(false)} /> : null}
+      {askSkip && tuto ? (
+        <View style={st.confirmBg}>
+          <Panel style={{ width: '86%' }}>
+            <Text style={st.initTitle}>¿Omitir el tutorial?</Text>
+            <Text style={[st.stripTxt, { textAlign: 'center', marginBottom: 10 }]}>No volverá a salir en esta partida. Siempre podéis consultar «Cómo funciona el combate» en el botón de información.</Text>
+            <Btn label="Seguir con el tutorial" primary onPress={() => setAskSkip(false)} />
+            <Btn label="Omitir" danger onPress={() => { setAskSkip(false); tutoMark(TUTO_IDS); }} style={{ marginTop: 6 }} />
+          </Panel>
+        </View>
+      ) : null}
       {askFlee && fleeAct && !cb.result ? (
         <View style={st.confirmBg}>
             <Panel style={{ width: '86%' }}>
@@ -805,6 +836,9 @@ const st = StyleSheet.create({
   fleeBtn: { flexDirection: 'row', alignItems: 'center', gap: 2, borderWidth: 1, borderColor: C.border, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 4, marginLeft: 4 },
   fleeTxt: { fontFamily: F.titleBold, color: C.text, fontSize: 11 },
   confirmBg: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center' },
+  // Tutorial: lo que se explica brilla en dorado y el bocadillo flota sobre el campo.
+  tutoLit: { borderWidth: 2, borderColor: C.goldHi, borderRadius: 8, shadowColor: C.goldHi, shadowOpacity: 0.9, shadowRadius: 10, shadowOffset: { width: 0, height: 0 }, elevation: 8 },
+  tuto: { position: 'absolute', left: 10, right: 10, zIndex: 20, backgroundColor: '#1b140d', borderWidth: 2, borderColor: C.goldHi, borderRadius: 10, padding: 10 },
   budget: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 12 },
   budgetItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   budgetTxt: { fontFamily: F.rulesBold, color: C.text, fontSize: 11, lineHeight: 13 },

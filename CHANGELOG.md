@@ -6,7 +6,8 @@ Este documento resume hitos funcionales comprobados en el código y en las PR re
 
 - **IA enemiga por familias** (`decide` y `chooseTarget` en `combat.ts`): goblins sin su jefe (`leaderDown`) huyen a la mitad de PG; no muertos con presa fija (`Unit.prey`); sectarios contra quien hirió a su líder (`isLeader`); lanzadores que se retiran si alguien les cubre.
 - **Sin enemigos parados por error**: un cuerpo a cuerpo detrás con la fila llena cambia el sitio con un tirador (`Plan.swap`); si no puede, espera y se anota. `rowSpace` limita a 3 por fila a los enemigos.
-- **Consejos de la primera partida** (`guia.ts`, `Game.guide`): mover, combate, filas, objetivo, trampa, escena y descanso, una vez cada uno y solo en Hondaroca.
+- **Consejos de la primera partida** (`guia.ts`, `Game.guide`): mover, trampa, escena y descanso, una vez cada uno y solo en Hondaroca.
+- **Tutorial de combate** (`ui/tutorial.ts`): en el primer combate ilumina turnos, presupuesto del turno, enemigos, acciones, fijos y terminar turno; luego filas, objetivo y vida baja (poción o huida). Se guarda en `Game.guide` (una vez por partida) y se puede omitir con confirmación.
 - **Cadena de pistas en Hondaroca**: el diálogo `z3_d09` pone la marca `pista_agua` (campo `flag` en diálogos), que abre una vía en `z4_p01`; cerrar las compuertas (`z4_compuertas`) quita un Escudo a Orvane. `bossPrep` lo anuncia antes del jefe, junto al ritual cortado.
 - **Comentarios de compañeros** (`data/comentarios.ts`): opciones de escena con `tone` (piedad, dureza, codicia) y frases por lugar de su propia aventura.
 - **Lint** sin errores y en la validación de PR.

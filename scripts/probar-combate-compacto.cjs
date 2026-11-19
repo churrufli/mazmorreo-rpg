@@ -19,6 +19,8 @@ const { chromium } = require('playwright');
         const { setDev } = await import(`${root}/src/storage.web.ts`);
         setDev(true);
         const g = newGame(7,'Maren de prueba','ranger','elf');
+        // El tutorial del campo de batalla se da por visto: estas pruebas no lo recorren.
+        g.guide = (await import(`${root}/src/ui/tutorial.ts`)).TUTO_KEYS;
         const hero = g.party[0];
         hero.row='front'; hero.level=5; hero.slots=[3,1,1]; hero.channel=2; hero.hp=Math.max(1,hero.maxHp-3);
         hero.items=['mace','shortbow','potion_healing','potion_healing'].map(newItem);
