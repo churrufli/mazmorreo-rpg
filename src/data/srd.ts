@@ -144,13 +144,20 @@ export interface ItemDef {
   heal?: string;
   charges?: number;
   /** Arrojadizos: daño con salvación de Destreza, o apresar (red). */
-  thrown?: { dice?: string; type?: DmgType; undeadOnly?: boolean; restrain?: boolean; burn?: boolean };
+  thrown?: { dice?: string; type?: DmgType; undeadOnly?: boolean; restrain?: boolean; burn?: boolean; oil?: boolean };
   /** Varita que lanza Telaraña. */
   web?: boolean;
   resistPoison?: boolean;
   curePoison?: boolean;
   /** Resistencia al frío: la poción durante el combate; anillo y botas mientras se llevan. */
   resistCold?: boolean;
+  /** Poción de resistencia a un tipo de daño durante el combate. */
+  resist?: DmgType;
+  /** Consumible con efecto propio durante el combate (pociones y polvos del SRD). */
+  effect?: 'haste' | 'heroism' | 'growth' | 'giant' | 'elixir' | 'poison' | 'vanish';
+  /** Pergamino de conjuro: el conjuro que lanza y las clases que lo tienen en su lista. */
+  spell?: string;
+  scrollFor?: ClassId[];
   /** Foco mágico: suma a las tiradas de ataque de conjuro de quien lo lleva. */
   spellBonus?: number;
 }
@@ -229,6 +236,24 @@ export const ITEMS: Record<string, ItemDef> = {
   stone_egg: { name: 'Huevo de piedra cálido', kind: 'gear', img: 'huevo_piedra', value: 100, desc: 'Huevo de piedra que nunca se enfría. Tesoro: se puede vender.' },
   serpent_crown: { name: 'Corona de los Reyes Serpiente', kind: 'gear', img: 'corona_serpiente', value: 300, desc: 'Corona de oro y escamas del último imperio de los hombres serpiente. Trofeo: se guarda en el baúl de la posada.' },
   heart_fragment: { name: 'Astilla del Corazón', kind: 'gear', img: 'astilla_corazon', value: 150, desc: 'Astilla de madera petrificada del Corazón Hueco. Ya no tiene poder. Trofeo que se guarda en el baúl de la posada.' },
+  // Consumibles variados del SRD 5.2.1 (pociones, aceites, polvos y pergaminos) para cofres y tiendas.
+  potion_resistance_fire: { name: 'Poción de resistencia (fuego)', kind: 'potion', img: 'pocion_resistencia_frio', value: 50, desc: 'Resistencia al daño de fuego durante el combate. Beberla es una acción adicional.', resist: 'fuego' },
+  potion_resistance_necrotic: { name: 'Poción de resistencia (necrótico)', kind: 'potion', img: 'pocion_resistencia_veneno', value: 50, desc: 'Resistencia al daño necrótico durante el combate. Beberla es una acción adicional.', resist: 'necrótico' },
+  potion_resistance_acid: { name: 'Poción de resistencia (ácido)', kind: 'potion', img: 'pocion_resistencia_veneno', value: 50, desc: 'Resistencia al daño de ácido durante el combate. Beberla es una acción adicional.', resist: 'ácido' },
+  potion_growth: { name: 'Poción de crecimiento', kind: 'potion', img: 'pocion_curacion_mayor', value: 150, desc: 'Quien la bebe se agranda durante el combate: sus ataques con armas hacen 1d4 de daño más. Beberla es una acción adicional.', effect: 'growth' },
+  potion_giant_strength: { name: 'Poción de fuerza de gigante (colinas)', kind: 'potion', img: 'pocion_curacion_mayor', value: 150, desc: 'La Fuerza de quien la bebe pasa a ser 21 durante el combate (no hace nada si ya la tiene igual o mayor). Beberla es una acción adicional.', effect: 'giant' },
+  potion_heroism: { name: 'Poción de heroísmo', kind: 'potion', img: 'pocion_curacion_mayor', value: 300, desc: 'Durante el combate, 10 PG temporales y +1d4 a las tiradas de ataque y de salvación (como Bendición). Beberla es una acción adicional.', effect: 'heroism' },
+  potion_speed: { name: 'Poción de velocidad', kind: 'potion', img: 'pocion_curacion_mayor', value: 500, desc: 'Efecto de Acelerar durante el combate, sin somnolencia al acabar: +2 a la CA, ventaja en las salvaciones de Destreza y un ataque más en cada turno. Beberla es una acción adicional.', effect: 'haste' },
+  elixir_health: { name: 'Elixir de salud', kind: 'potion', img: 'antidoto', value: 300, desc: 'Quita los estados de envenenado y paralizado. Beberlo es una acción adicional.', effect: 'elixir' },
+  basic_poison: { name: 'Veneno básico', kind: 'potion', img: 'vial_acido', value: 100, desc: 'Se unta en el arma con una acción adicional: el siguiente golpe cortante o perforante hace 1d4 de daño de veneno más.', effect: 'poison' },
+  dust_disappearance: { name: 'Polvo de desaparición', kind: 'potion', img: 'red', value: 150, desc: 'Se esparce con una acción: todo el grupo se vuelve invisible (ventaja al atacar y los enemigos atacan con desventaja). Para cada uno se acaba al atacar, hacer daño o lanzar un conjuro.', effect: 'vanish' },
+  oil_flask: { name: 'Frasco de aceite', kind: 'throw', img: 'vial_acido', value: 1, desc: 'Se lanza a un enemigo: salvación de Destreza o queda empapado. La próxima vez que reciba daño de fuego, recibe 5 de fuego más.', thrown: { oil: true } },
+  scroll_cure_wounds: { name: 'Pergamino de curar heridas', kind: 'scroll', img: 'pergamino_escudo', value: 25, desc: 'Un clérigo, paladín o explorador lo lee para lanzar Curar heridas sin gastar espacio de conjuro.', spell: 'cure', scrollFor: ['cleric', 'paladin', 'ranger'] },
+  scroll_bless: { name: 'Pergamino de bendición', kind: 'scroll', img: 'pergamino_escudo', value: 25, desc: 'Un clérigo o paladín lo lee para lanzar Bendición sin gastar espacio de conjuro.', spell: 'bless', scrollFor: ['cleric', 'paladin'] },
+  scroll_guiding_bolt: { name: 'Pergamino de saeta guía', kind: 'scroll', img: 'pergamino_escudo', value: 25, desc: 'Un clérigo lo lee para lanzar Saeta guía sin gastar espacio de conjuro.', spell: 'guiding_bolt', scrollFor: ['cleric'] },
+  scroll_magic_missile: { name: 'Pergamino de proyectil mágico', kind: 'scroll', img: 'pergamino_escudo', value: 25, desc: 'Un mago lo lee para lanzar Proyectil mágico sin gastar espacio de conjuro.', spell: 'magic_missile', scrollFor: ['wizard'] },
+  scroll_sleep: { name: 'Pergamino de dormir', kind: 'scroll', img: 'pergamino_escudo', value: 25, desc: 'Un mago lo lee para lanzar Dormir sin gastar espacio de conjuro.', spell: 'sleep', scrollFor: ['wizard'] },
+  scroll_burning_hands: { name: 'Pergamino de manos ardientes', kind: 'scroll', img: 'pergamino_escudo', value: 25, desc: 'Un mago o un brujo lo lee para lanzar Manos ardientes sin gastar espacio de conjuro.', spell: 'burning_hands', scrollFor: ['wizard', 'warlock'] },
 };
 
 // Nombres del diseño (hondaroca.json) a objetos del juego.

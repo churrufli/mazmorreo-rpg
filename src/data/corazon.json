@@ -1110,7 +1110,7 @@
               "lock_dc": null,
               "gold": 11,
               "item": {
-                "id": "potion_healing"
+                "id": "scroll_cure_wounds"
               }
             },
             {
@@ -2053,7 +2053,7 @@
               "lock_dc": null,
               "gold": 6,
               "item": {
-                "id": "potion_healing"
+                "id": "potion_giant_strength"
               }
             },
             {
@@ -3420,7 +3420,7 @@
               "lock_dc": null,
               "gold": 12,
               "item": {
-                "id": "potion_healing"
+                "id": "oil_flask"
               }
             },
             {
@@ -3485,7 +3485,7 @@
               "lock_dc": null,
               "gold": 14,
               "item": {
-                "id": "potion_healing"
+                "id": "potion_resistance_necrotic"
               }
             },
             {
@@ -4504,7 +4504,7 @@
               "lock_dc": null,
               "gold": 23,
               "item": {
-                "id": "potion_healing"
+                "id": "potion_speed"
               }
             },
             {
@@ -4828,7 +4828,11 @@
       "shield",
       "alchemists_fire",
       "acid_vial",
-      "holy_water"
+      "holy_water",
+      "oil_flask",
+      "potion_resistance_fire",
+      "scroll_cure_wounds",
+      "scroll_magic_missile"
     ],
     "vegahumbria": [
       "dagger",
@@ -4836,7 +4840,10 @@
       "leather",
       "net",
       "holy_water",
-      "potion_poison_resistance"
+      "potion_poison_resistance",
+      "basic_poison",
+      "scroll_bless",
+      "scroll_sleep"
     ],
     "nota": "Iconos nuevos: alchemists_fire 6.27, acid_vial 6.28, holy_water 6.29, net 6.30, potion_poison_resistance 6.31, rope 6.19."
   }

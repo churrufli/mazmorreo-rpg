@@ -335,7 +335,7 @@
               "lock_dc": null,
               "gold": 4,
               "item": {
-                "id": "potion_healing"
+                "id": "oil_flask"
               }
             }
           ]
@@ -1142,7 +1142,7 @@
               "lock_dc": null,
               "gold": 18,
               "item": {
-                "id": "potion_greater_healing_1"
+                "id": "potion_heroism"
               }
             }
           ]
@@ -1331,7 +1331,7 @@
               "lock_dc": null,
               "gold": 25,
               "item": {
-                "id": "potion_healing"
+                "id": "potion_resistance_acid"
               }
             },
             {
@@ -2601,7 +2601,7 @@
               "lock_dc": null,
               "gold": 22,
               "item": {
-                "id": "potion_poison_resistance"
+                "id": "potion_resistance_necrotic"
               }
             }
           ]
@@ -3482,7 +3482,7 @@
               "lock_dc": null,
               "gold": 20,
               "item": {
-                "id": "potion_poison_resistance"
+                "id": "elixir_health"
               }
             }
           ]
@@ -3663,7 +3663,9 @@
     "arenaroja": [
       "alchemists_fire",
       "steel_mirror",
-      "potion_poison_resistance"
+      "potion_poison_resistance",
+      "potion_resistance_acid",
+      "potion_resistance_necrotic"
     ],
     "nota": "Arenaroja vende fuego de alquimista (percebes, momias y pozo de engendro), espejos de acero (basilisco) y pociones contra el veneno."
   },

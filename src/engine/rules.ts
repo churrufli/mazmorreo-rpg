@@ -46,13 +46,15 @@ export interface Char {
   relentless?: boolean;
   /** Brujo: ya ha usado Astucia mágica desde el último descanso largo. */
   cunning?: boolean;
+  /** Poción de fuerza de gigante bebida en el combate en curso. */
+  giantStr?: number;
 }
 
 export const MAX_ITEMS = 12;
 export const mod = (score: number) => Math.floor((score - 10) / 2);
-/** Puntuación efectiva: los guanteletes de fuerza de ogro dejan la Fuerza en 19. */
+/** Puntuación efectiva: los guanteletes de fuerza de ogro dejan la Fuerza en 19 y la poción de fuerza de gigante, en 21. */
 export const score = (c: Char, a: Ability) =>
-  a === 'str' && c.items.some(i => i.id === 'gauntlets_ogre_power') ? Math.max(19, c.abil.str) : c.abil[a];
+  a !== 'str' ? c.abil[a] : Math.max(c.abil.str, c.giantStr ?? 0, c.items.some(i => i.id === 'gauntlets_ogre_power') ? 19 : 0);
 export const abilMod = (c: Char, a: Ability) => mod(score(c, a));
 const half = (cls: ClassId) => cls === 'ranger' || cls === 'paladin';
 /** Magia del pacto del brujo (SRD 5.2.1): pocos espacios, todos del mismo nivel. */
