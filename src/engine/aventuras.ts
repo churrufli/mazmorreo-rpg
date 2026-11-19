@@ -9,7 +9,8 @@ import type { ImgKey } from '../assets';
 export type AdvId = 'hondaroca' | 'corazon_hueco' | 'montana' | 'tumba';
 export type TownId = 'valdescarcha' | 'vegahumbria' | 'cumbrenieve' | 'arenaroja';
 export type Design = typeof H;
-type Art = { bg: ImgKey; combat: ImgKey; floor: ImgKey; wall: ImgKey };
+/** wallDim: oscurece las paredes (0-1) cuando se confunden con el suelo. */
+type Art = { bg: ImgKey; combat: ImgKey; floor: ImgKey; wall: ImgKey; wallDim?: number };
 
 export interface Adv {
   id: AdvId;
@@ -102,7 +103,8 @@ export const ADVS: Record<AdvId, Adv> = {
     victoryText: 'Xiximanter cae entre sus frascos y la luz morada se apaga. Los prisioneros vuelven a Arenaroja y nadie más soñará con la voz que sisea. Encontráis 150 monedas de oro y la Corona de los Reyes Serpiente.',
     defeatText: 'Todo el grupo ha caído en la tumba. Xiximanter añade nuevos frascos a su colección.',
     reward: { gold: 150, item: 'serpent_crown' },
-    art: { s1: art('tumba_falsa'), s2: art('tumba_superior'), s3: art('salas_sacrificio'), s4: art('madrigueras') },
+    // Desierto y tumba superior: paredes más oscuras para distinguirlas del suelo (el autor 2026-11-19).
+    art: { s1: { ...art('tumba_falsa'), wallDim: 0.6 }, s2: { ...art('tumba_superior'), wallDim: 0.45 }, s3: art('salas_sacrificio'), s4: art('madrigueras') },
     allyImg: { zeyna: 'ally_zeyna', hassim: 'ally_hassim', yara: 'ally_iskarra', teodor: 'ally_teodor' },
     speakers: { ...Object.fromEntries(TD.allies.map(a => [a.id, a.name])), [TD.npc.id]: TD.npc.name, xiximanter: TD.boss.name },
     faces: { zeyna: 'ally_zeyna', hassim: 'ally_hassim', yara: 'ally_iskarra', teodor: 'ally_teodor', baltoplat: 'baltoplat', xiximanter: 'xiximanter' },

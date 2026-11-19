@@ -2,13 +2,15 @@
 
 <p align="center">
   <a href="https://churrufli.github.io/mazmorreo-rpg/"><b>Jugar en el navegador</b></a> ·
-  <a href="../../releases">Descargar APK</a> ·
+  <a href="../../releases">Descargar APK</a> (se actualiza menos que la web) ·
   <a href="CONTRIBUTING.md"><b>Participa en el proyecto</b></a>
 </p>
 
 <p align="center">
   <a href="https://discord.gg/VvKXn7ZMEG"><img src="https://img.shields.io/badge/%C3%9Anete%20a%20nuestro%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Únete a nuestro Discord" height="44"></a>
 </p>
+
+<p align="center"><b>Hecho para jugar en español, pensado para quienes juegan a Dragones y Mazmorras en español.</b></p>
 
 <p align="center"><b>Proyecto abierto: colabora en código, narrativa, arte, mapas o combate, también con tu IA.</b></p>
 
@@ -22,6 +24,8 @@
 # Mazmorreo
 
 **RPG de fantasía medieval para Android**, pensado para jugar con el móvil en vertical y diseñado para jugar en solitario, sin director de juego. Crea un héroe, explora mazmorras y territorios mediante mapas de casillas hexagonales, toma decisiones con consecuencias y combate por turnos junto a los aliados que elijas.
+
+El juego está **pensado para jugar en español** y se dirige sobre todo a quienes juegan a **Dragones y Mazmorras en español**: textos, reglas y nombres están en castellano, sin traducciones a otros idiomas por ahora.
 
 El sistema parte de las reglas de quinta edición del **SRD 5.2.1** (2024), adaptadas a una experiencia táctil y a grupos de uno a cuatro personajes. Es un proyecto independiente, en desarrollo, y los APK publicados son **versiones de prueba**. La versión web es para probarlo en el navegador; la experiencia de referencia es Android con el móvil en vertical (el modo horizontal queda para más adelante).
 
@@ -68,9 +72,11 @@ La revisión narrativa de las tres aventuras incluye introducciones de escenas, 
 
 ## Versión para navegador
 
-La adaptación web reutiliza el juego con React Native Web. Incluye guardado local, ilustraciones, fuentes y audio. Se puede jugar en **[churrufli.github.io/mazmorreo-rpg](https://churrufli.github.io/mazmorreo-rpg/)**; las partidas se guardan en tu navegador, sin cuentas ni registro. Consulta [la guía web](docs/WEB.md) para ejecución, pruebas y publicación.
+La adaptación web reutiliza el juego con React Native Web. Incluye guardado local, ilustraciones, fuentes y audio. Se puede jugar en **[churrufli.github.io/mazmorreo-rpg](https://churrufli.github.io/mazmorreo-rpg/)**, y es **la forma recomendada de jugar**: la web recibe las novedades antes y con más frecuencia que la APK. Las partidas se guardan en tu navegador, sin cuentas ni registro. Consulta [la guía web](docs/WEB.md) para ejecución, pruebas y publicación.
 
 ## Descargar e instalar en Android
+
+> **La APK no se publica con la misma frecuencia ni continuidad que la versión web.** La web se actualiza mucho más a menudo, así que recomendamos jugar desde **[el navegador](https://churrufli.github.io/mazmorreo-rpg/)**.
 
 1. Abre **[Releases](../../releases)** y descarga el último archivo `mazmorreo-N.apk`.
 2. Instálalo en tu móvil Android; si el sistema lo solicita, autoriza la instalación desde esa fuente.
@@ -157,4 +163,12 @@ Repositorio: [github.com/churrufli/mazmorreo-rpg](https://github.com/churrufli/m
 - **Reglas:** SRD 5.2.1 de Wizards of the Coast, CC BY 4.0 ([NOTICE.md](NOTICE.md)).
 - **Tipografías, iconos, música y sonido:** ver [CREDITS.md](CREDITS.md). La música está hecha con Suno y queda fuera de las licencias del proyecto (solo uso no comercial); ambientes y efectos son CC0 o CC BY.
 
-Las ilustraciones se generaron con IA (ChatGPT) y se revisaron a mano. Mazmorreo es un proyecto independiente, sin relación con Wizards of the Coast.
+Las ilustraciones se generaron con IA (ChatGPT) y se revisaron a mano.
+
+## Aviso legal
+
+Dungeons & Dragons, D&D, Dragones y Mazmorras y Wizards of the Coast son marcas de Wizards of the Coast LLC. Mazmorreo es un proyecto de fans no oficial y gratuito: no está patrocinado, aprobado ni afiliado a Wizards of the Coast. Las reglas proceden del SRD 5.2.1, que Wizards of the Coast publica con licencia CC BY 4.0.
+
+*Dungeons & Dragons, D&D and Wizards of the Coast are trademarks of Wizards of the Coast LLC. Mazmorreo is unofficial fan content, free of charge, and is not sponsored, approved or affiliated with Wizards of the Coast. Rules come from the SRD 5.2.1, licensed by Wizards of the Coast under CC BY 4.0.*
+
+Atribución del SRD: *This work includes material from the System Reference Document 5.2.1 ("SRD 5.2.1") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.*

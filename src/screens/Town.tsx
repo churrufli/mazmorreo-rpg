@@ -183,10 +183,12 @@ export function Town() {
             {buyer.items.length >= MAX_ITEMS ? <Text style={st.full}>Inventario lleno: {buyer.name.split(' ')[0]} no puede llevar más objetos. Vende algo o elige a otro.</Text> : null}
             {stock.map(id => buying === id ? (
               <View key={id} style={st.confirm}>
+                <ItemHead id={id} />
                 <Text style={st.itemName}>¿Comprar {ITEMS[id].name} para {buyer.name.split(' ')[0]} por {pay(ITEMS[id].value)} po?</Text>
                 <Text style={st.itemDesc}>{itemOwnership([...g.party, ...(g.bench ?? []), ...(g.captive ? [g.captive] : [])], id)}</Text>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <Btn small primary label="Comprar" onPress={() => {
+                  <Btn small primary label="Comprar" disabled={!afford(ITEMS[id].value) || buyer.items.length >= MAX_ITEMS} onPress={() => {
+                    if (!afford(ITEMS[id].value) || buyer.items.length >= MAX_ITEMS) return;
                     edit(gg => {
                       gg.gold -= pay(ITEMS[id].value);
                       gg.party.find(c => c.id === buyer.id)!.items.push(newItem(id));
@@ -211,6 +213,7 @@ export function Town() {
               const v = sellPrice(ITEMS[it.id].value);
               return selling === it.uid ? (
                 <View key={it.uid} style={st.confirm}>
+                  <ItemHead id={it.id} />
                   <Text style={st.itemName}>¿Vender {ITEMS[it.id].name} por {v} po?</Text>
                   <View style={{ flexDirection: 'row', gap: 8 }}>
                     <Btn small primary label="Vender" onPress={() => {
@@ -227,7 +230,7 @@ export function Town() {
                   </View>
                 </View>
               ) : (
-                <ItemRow key={it.uid} img={ITEMS[it.id].img} name={ITEMS[it.id].name} desc="" price={`+${v} po`} onPress={() => setSelling(it.uid)} />
+                <ItemRow key={it.uid} img={ITEMS[it.id].img} name={ITEMS[it.id].name} desc={ITEMS[it.id].desc} price={`+${v} po`} onPress={() => setSelling(it.uid)} />
               );
             })}
             {buyer.items.some(keeps) ? <Text style={st.itemDesc}>Las llaves no se venden.</Text> : null}
@@ -281,6 +284,7 @@ export function Town() {
                 </Pressable>;
               })}
             </View>
+            {buyer.items.find(i => i.uid === bagSel) ? <Text style={st.itemDesc}>{ITEMS[buyer.items.find(i => i.uid === bagSel)!.id].desc}</Text> : null}
             {buyer.items.find(i => i.uid === bagSel) ? <Btn small label={`Guardar ${ITEMS[buyer.items.find(i => i.uid === bagSel)!.id].name} ↓`}
               onPress={() => { const uid = bagSel!; edit(gg => { const c = gg.party.find(x => x.id === buyer.id)!; const it = c.items.find(x => x.uid === uid); if (!it || keeps(it)) return; c.items = c.items.filter(x => x.uid !== uid); gg.chest = [...(gg.chest ?? []), it]; }, true); setBagSel(undefined); }} /> : null}
             <Text style={st.itemDesc}>Baúl · {(g.chest ?? []).length} objetos. Selecciona uno para sacarlo al inventario del personaje elegido.</Text>
@@ -398,9 +402,23 @@ function Diary() {
   );
 }
 
+/** Objeto elegido en la tienda: imagen, nombre y descripción completa antes de comprar o vender (el autor 2026-11-19). */
+function ItemHead({ id }: { id: string }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+      <Image source={IMG[ITEMS[id].img]} style={{ width: 56, height: 56 }} />
+      <View style={{ flex: 1 }}>
+        <Text style={st.itemName}>{ITEMS[id].name}</Text>
+        <Text style={st.itemDesc}>{ITEMS[id].desc}</Text>
+      </View>
+    </View>
+  );
+}
+
 function ItemRow({ img, name, desc, price, onPress, disabled }: { img: ImgKey; name: string; desc: string; price: string; onPress: () => void; disabled?: boolean }) {
   return (
-    <Pressable onPress={onPress} disabled={disabled} style={({ pressed }) => [st.item, pressed && { backgroundColor: C.panelHi }, disabled && { opacity: 0.4 }]} accessibilityRole="button" accessibilityLabel={`${name}, ${price}`}>
+    // Aunque no se pueda comprar, al tocarlo se lee su descripción.
+    <Pressable onPress={onPress} style={({ pressed }) => [st.item, pressed && { backgroundColor: C.panelHi }, disabled && { opacity: 0.4 }]} accessibilityRole="button" accessibilityLabel={`${name}, ${price}`}>
       <Image source={IMG[img]} style={{ width: 40, height: 40 }} />
       <View style={{ flex: 1, marginLeft: 8 }}>
         <Text style={st.itemName}>{name}</Text>

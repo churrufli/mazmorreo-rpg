@@ -6,7 +6,7 @@ This work includes material from the System Reference Document 5.2.1 ("SRD 5.2.1
 
 En español: esta obra incluye material del System Reference Document 5.2.1 («SRD 5.2.1») de Wizards of the Coast LLC, disponible en https://www.dndbeyond.com/srd, con licencia Creative Commons Atribución 4.0 Internacional.
 
-Mazmorreo es un proyecto independiente. No está patrocinado, aprobado ni afiliado a Wizards of the Coast. El mundo, los personajes, los lugares y las historias (Valdescarcha, Vegaumbría, Cumbrenieve, Maese Orvane, el Corazón Hueco, Vharzûl…) son originales del proyecto, salvo la cuarta aventura, basada en la obra que se cita abajo.
+Dungeons & Dragons, D&D, Dragones y Mazmorras y Wizards of the Coast son marcas de Wizards of the Coast LLC. Mazmorreo es un proyecto de fans no oficial y gratuito. No está patrocinado, aprobado ni afiliado a Wizards of the Coast. El mundo, los personajes, los lugares y las historias (Valdescarcha, Vegaumbría, Cumbrenieve, Maese Orvane, el Corazón Hueco, Vharzûl…) son originales del proyecto, salvo la cuarta aventura, basada en la obra que se cita abajo.
 
 ## Tomb of the Serpent Kings
 

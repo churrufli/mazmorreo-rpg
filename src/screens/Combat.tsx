@@ -22,7 +22,7 @@ import { Icon, Panel } from '../ui/kit';
 import { mdiAutoFix, mdiBowArrow, mdiBullseyeArrow, mdiCardsOutline, mdiCogOutline, mdiFire, mdiGestureTap, mdiInformationOutline, mdiShieldSword, mdiSword, mdiCircle, mdiRhombus, mdiSwapVertical, mdiLightningBolt, mdiRun, mdiScriptTextOutline, mdiSwordCross, mdiCreation, mdiSack } from '@mdi/js';
 import { CombatGroup, groupOf, menuActionsFor, quickAttack } from '../ui/combatMenu';
 import { slotsLeft } from '../engine/rules';
-import { ACTION_HELP as DESC } from '../data/actionHelp';
+import { ACTION_HELP as DESC, MASTERY_HELP } from '../data/actionHelp';
 import { AYUDA_COMBATE, GESTOS_COMBATE, ZONAS_COMBATE } from '../data/ayuda';
 
 const COST: Record<Action['cost'], string> = { action: 'Acción', bonus: 'Acción adicional', move: 'Movimiento', free: 'Sin acción' };
@@ -35,6 +35,10 @@ const CATEGORY_HELP: Record<string, string> = {
   skills: 'Rasgos y conjuros disponibles. Con un único objetivo se usan al tocarlos; con varios, eliges la carta. Mantén pulsado un botón para leer qué hace sin usarlo.',
   items: 'Objetos consumibles del personaje. Con un único objetivo se usan al tocarlos; con varios, eliges la carta. Mantén pulsado un botón para leer qué hace sin gastarlo.',
 };
+type TipPart = { h?: string; t: string };
+type Tip = { title: string; text: string; parts?: TipPart[]; odds?: { title: string; rows: { name: string; pct: number; why: string }[] }; a?: Action };
+/** Parte un texto de reglas en frases, una por línea, para leerlo mejor en el móvil. */
+const bullets = (t: string) => t.split(/\.\s+(?=[A-ZÁÉÍÓÚÑ¿¡])/).map((x, i, a) => (i < a.length - 1 ? `${x}.` : x)).filter(Boolean);
 const CATEGORIES = [['attack', 'Atacar'], ['skills', 'Habilidades'], ['items', 'Objetos']] as const;
 
 /** Alto de la franja de arriba con el engranaje de Ajustes. */
@@ -62,7 +66,7 @@ export function Combat() {
   const [help, setHelp] = useState(false);
   const [showLog, setShowLog] = useState(false);
   // Cuadro de explicación superpuesto a los botones (pulsación prolongada, como en las primeras versiones).
-  const [tip, setTip] = useState<{ title: string; text: string; a?: Action }>();
+  const [tip, setTip] = useState<Tip>();
   const [targetFeedback, setTargetFeedback] = useState<string>();
   // Ajustes encima del combate: mientras están abiertos, el combate se para (el autor 2026-11-05).
   const [opts, setOpts] = useState(false);
@@ -233,14 +237,15 @@ export function Combat() {
     endTurn();
   };
   // Probabilidad aproximada contra cada objetivo, con las mismas reglas que la tirada (no la cambia).
-  const odds = (a: Action) => {
-    if (a.off || (a.target !== 'enemy' && a.target !== 'enemy-melee')) return '';
+  // Va arriba del cuadro y destacada (el autor 2026-11-19).
+  const odds = (a: Action): Tip['odds'] => {
+    if (a.off || (a.target !== 'enemy' && a.target !== 'enemy-melee')) return undefined;
     const rows = targetsFor(cb, a).map(t => ({ t, p: preview(g, cb, a, t) })).filter(x => x.p);
-    if (!rows.length) return '';
-    const verb = rows[0].p!.save ? 'Probabilidad de que falle la salvación' : 'Probabilidad aproximada de impactar';
-    return `\n\n${verb}:\n${rows.map(({ t, p }) => `· ${t.name}: ${p!.pct} %${p!.why.length ? ` (${p!.why.join('; ')})` : ''}`).join('\n')}`;
+    if (!rows.length) return undefined;
+    const title = rows[0].p!.save ? 'Probabilidad de que falle la salvación' : 'Probabilidad aproximada de impactar';
+    return { title, rows: rows.map(({ t, p }) => ({ name: t.name, pct: p!.pct, why: p!.why.join('; ') })) };
   };
-  const explain = (a: Action) => { setSel(undefined); setTip({ title: a.label.toLocaleUpperCase('es-ES'), text: (descOf(a) ?? '') + odds(a), a }); };
+  const explain = (a: Action) => { setSel(undefined); setTip({ title: a.label.toLocaleUpperCase('es-ES'), text: '', parts: descOf(a), odds: odds(a), a }); };
   // Imagen del objeto del que depende la acción (arma, poción, arrojadizo, varita o pergamino).
   const imgOf = (a: Action) => {
     const [k, arg] = a.id.split(':');
@@ -285,11 +290,15 @@ export function Combat() {
     setAskFlee(true);
   };
   // Los objetos se explican con su propia ficha (antídoto, pociones, arrojadizos…).
-  const descOf = (a: Action) => {
+  // Por apartados (arma, ataque, maestría…) para que no sea un solo párrafo (el autor 2026-11-19).
+  const descOf = (a: Action): TipPart[] => {
     const [k, arg] = a.id.split(':');
     const it = ['potion', 'throw', 'web', 'wand', 'scroll'].includes(k) ? g.party.flatMap(c => c.items).find(i => i.uid === arg) : undefined;
     const mastery = k === 'atk' && meChar ? masteryOf(meChar, arg) : undefined;
-    return k === 'atk' ? `${ITEMS[arg]?.desc ?? ''} ${DESC.atk}${mastery ? ` Maestría: ${MASTERY_NAME[mastery]}. ${DESC.mastery}` : ''}` : it ? `${ITEMS[it.id].desc} ${DESC[k] ?? ''}` : DESC[k];
+    const parts: TipPart[] = k === 'atk'
+      ? [{ h: ITEMS[arg]?.name ?? 'Arma', t: ITEMS[arg]?.desc ?? '' }, { h: 'Ataque', t: DESC.atk }, ...(mastery ? [{ h: `Maestría: ${MASTERY_NAME[mastery]}`, t: `${MASTERY_HELP[mastery]} ${MASTERY_HELP.all}` }] : [])]
+      : it ? [{ h: ITEMS[it.id].name, t: ITEMS[it.id].desc }, { h: 'Uso', t: DESC[k] ?? '' }] : [{ t: DESC[k] ?? '' }];
+    return parts.filter(p => p.t);
   };
 
   const info = (u: Unit): CardInfo => {
@@ -477,9 +486,23 @@ export function Combat() {
               {tip.a && imgOf(tip.a) ? <Image source={imgOf(tip.a)!} style={st.stripImg} /> : null}
               <Text style={[st.stripTitle, { flex: 1 }]}>{tip.title}{tip.a ? <Text style={st.stripCost}>{[COST[tip.a.cost], tip.a.detail].filter(Boolean).map(x => `  ·  ${x}`).join('')}</Text> : null}</Text>
             </View>
-            <ScrollView style={{ maxHeight: 130, flexGrow: 0 }} nestedScrollEnabled>
+            {tip.odds ? (
+              <View testID="combat-odds" style={st.odds}>
+                <Text style={st.oddsTitle}>{tip.odds.title}</Text>
+                {tip.odds.rows.map((r, i) => (
+                  <Text key={i} style={st.oddsRow}><Text style={st.oddsPct}>{r.pct} %</Text>  {r.name}{r.why ? <Text style={st.oddsWhy}>  ({r.why})</Text> : null}</Text>
+                ))}
+              </View>
+            ) : null}
+            <ScrollView style={{ maxHeight: tip.odds ? 110 : 150, flexGrow: 0 }} nestedScrollEnabled>
               {tip.a?.off ? <Text style={st.stripOff}>{tip.a.off}</Text> : null}
               {tip.text ? <Text style={st.stripTxt}>{tip.text}</Text> : null}
+              {tip.parts?.map((p, i) => (
+                <View key={i} style={{ marginTop: i ? 6 : 2 }}>
+                  {p.h ? <Text style={st.stripHead}>{p.h}</Text> : null}
+                  {bullets(p.t).map((l, j, all) => <Text key={j} style={st.stripTxt}>{all.length > 1 ? `•  ${l}` : l}</Text>)}
+                </View>
+              ))}
             </ScrollView>
             <View style={st.stripBtns}>
               {tip.a && !tip.a.off && !auto ? <Btn small primary label="Usar" onPress={useTip} style={{ flex: 1 }} /> : null}
@@ -816,6 +839,12 @@ const st = StyleSheet.create({
   blink: { position: 'absolute', left: -3, right: -3, top: -3, bottom: -3, borderRadius: 10, borderWidth: 3, borderColor: C.goldHi, zIndex: 3 },
   blinkActive: { left: -7, right: -7, top: -7, bottom: -7, borderRadius: 12, borderColor: '#ffffff', zIndex: 6 },
   stripCost: { fontFamily: F.rules, color: C.textDim, fontSize: 12 },
+  stripHead: { fontFamily: F.rulesBold, color: C.goldHi, fontSize: 13.5, marginTop: 2 },
+  odds: { marginTop: 6, marginBottom: 4, paddingVertical: 6, paddingHorizontal: 8, borderWidth: 1, borderColor: C.gold, borderRadius: 6, backgroundColor: 'rgba(201,162,74,0.14)' },
+  oddsTitle: { fontFamily: F.rulesBold, color: C.goldHi, fontSize: 13, marginBottom: 2 },
+  oddsRow: { fontFamily: F.rules, color: C.text, fontSize: 14, lineHeight: 21 },
+  oddsPct: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 19 },
+  oddsWhy: { fontFamily: F.rules, color: C.textDim, fontSize: 12 },
   stripTxt: { fontFamily: F.rules, color: C.text, fontSize: 13.5, lineHeight: 19, marginTop: 2 },
   stripAsk: { fontFamily: F.italic, color: C.goldHi, fontSize: 15, marginTop: 4 },
   stripOff: { fontFamily: F.rulesBold, color: '#e8796b', fontSize: 13.5, marginTop: 4 },

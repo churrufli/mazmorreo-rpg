@@ -333,6 +333,8 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
   const rot = useRef(new Animated.Value(0)).current;
   const pop = useRef(new Animated.Value(0)).current;
   const [back, setBack] = useState(false);
+  // Arte a pantalla completa: tocar la carta ampliada la enseña entera (el autor 2026-11-19).
+  const [art, setArt] = useState(false);
   const { width, height } = useWindowDimensions();
   useEffect(() => {
     Animated.timing(rot, { toValue: back ? 1 : 0, duration: 380, useNativeDriver: true }).start();
@@ -354,12 +356,12 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
   const stripH = strip ? miniW * 1.5 + 14 : 0;
   const W = Math.min(width - 24, (height - 135 - stripH - sts.length * 46) / 1.5);
   return (
-    <Modal transparent animationType="fade" onRequestClose={onClose}>
+    <Modal transparent animationType="fade" onRequestClose={art ? () => setArt(false) : onClose}>
       <View style={st.modalBg}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Cerrar" />
         <Animated.View nativeID="character-card-flip" {...swipe.panHandlers} style={{ width: W, height: W * 1.5, transform: [{ scale }] }}>
           <Animated.View style={[st.face, { transform: [{ perspective: 1000 }, { rotateY: front }] }]} pointerEvents={back ? 'none' : 'auto'}>
-            <Card info={info} width={W} full intent={intent} onPress={() => setBack(true)} />
+            <Card info={info} width={W} full intent={intent} onPress={() => setArt(true)} interactionHint="Toca para ver el arte a pantalla completa." />
           </Animated.View>
           <Animated.View style={[st.face, st.backFace, { transform: [{ perspective: 1000 }, { rotateY: rear }] }]} pointerEvents={back ? 'auto' : 'none'}>
             {char ? <Sheet c={char} party={party} onGive={onGive} onDrop={onDrop} onUse={onUse} onFlip={() => setBack(false)} /> : <MonsterSheet id={monster!} info={info} onFlip={() => setBack(false)} />}
@@ -391,6 +393,13 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
               <Card key={o.key} info={o.info} width={miniW} onPress={() => onPick!(o.key)} />
             ))}
           </View>
+        ) : null}
+        {art ? (
+          <Pressable testID="card-art" style={st.artBg} onPress={() => setArt(false)} accessibilityRole="button" accessibilityLabel={`Arte de ${info.name}. Toca para volver a la carta.`}>
+            <Image source={IMG[info.img]} style={{ width: width - 16, height: height - 90 }} resizeMode="contain" />
+            <Text style={st.artName}>{info.name}</Text>
+            <Text style={st.artHint}>Toca para volver a la carta</Text>
+          </Pressable>
         ) : null}
       </View>
     </Modal>
@@ -683,6 +692,9 @@ const st = StyleSheet.create({
   missTxt: { fontFamily: F.titleBold, color: '#d8d2c4', letterSpacing: 1, textShadowColor: '#000', textShadowRadius: 5 },
   downTxt: { position: 'absolute', top: '40%', alignSelf: 'center', maxWidth: '90%', textAlign: 'center', fontFamily: F.titleBold, color: C.damage, fontSize: 14 },
   modalBtn: { flex: 1, minHeight: 32, paddingVertical: 2, paddingHorizontal: 10, marginVertical: 2 },
+  artBg: { ...StyleSheet.absoluteFillObject, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' },
+  artName: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 18, marginTop: 4 },
+  artHint: { fontFamily: F.italic, color: C.textDim, fontSize: 13 },
   modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', alignItems: 'center', justifyContent: 'center' },
   face: { position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden' },
   backFace: { borderRadius: 10, overflow: 'hidden', borderWidth: 2, borderColor: C.gold },
