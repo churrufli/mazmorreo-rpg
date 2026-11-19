@@ -855,7 +855,6 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
   } else if (result === 'fled') {
     for (const id of cb.encounters) {
       g.enemyHp[id] = [];
-      const e = encounterById(id)!;
       let n = 0;
       for (const en of enemiesOf(g, id)) for (let i = 0; i < en.count; i++, n++) {
         const u = cb.units.find(x => x.key === `e_${id}_${n}`);

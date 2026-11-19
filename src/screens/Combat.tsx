@@ -15,7 +15,7 @@ import { FaceImage } from '../ui/FaceImage';
 import { fxFull } from '../ui/movimiento';
 import { getDev, getFlag, markAction, seenAction } from '../storage';
 import { D20, FadeIn, Message, MiniDie, rollMs } from '../ui/Overlays';
-import { CLASSES, DmgType, ITEMS, MONSTERS } from '../data/srd';
+import { CLASSES, DmgType, ITEMS } from '../data/srd';
 import { Settings } from '../ui/Settings';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 import { Icon, Panel } from '../ui/kit';

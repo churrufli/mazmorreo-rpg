@@ -989,7 +989,7 @@ export function handOver(g: Game, c: Char): string[] {
 export const usableOutside = (id: string) => !!ITEMS[id]?.heal;
 
 /** Usa fuera de combate un objeto que cura (el autor 2026-11-06). Devuelve lo que pasa. */
-export function useOutside(g: Game, fromId: string, uid: string, toId: string): string {
+export function itemOutside(g: Game, fromId: string, uid: string, toId: string): string {
   const from = g.party.find(c => c.id === fromId), to = g.party.find(c => c.id === toId);
   const it = from?.items.find(i => i.uid === uid);
   if (!from || !to || !it || to.dead || !usableOutside(it.id)) return '';

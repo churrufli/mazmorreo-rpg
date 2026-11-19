@@ -4,8 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
 import { useStore } from '../store';
-import { Bg, Btn, Icon, Panel, T } from '../ui/kit';
-import { mdiCardAccountDetailsOutline } from '@mdi/js';
+import { Bg, Btn, Panel, T } from '../ui/kit';
 import { ITEMS } from '../data/srd';
 import { MAX_ITEMS, itemOwnership, keeps, longRest, needsRest, newItem, shortRest } from '../engine/rules';
 import { reopenScenes, sceneSpent } from '../engine/escenas';
@@ -17,7 +16,7 @@ import { FaceImage } from '../ui/FaceImage';
 import { FadeIn, PopIn, Portrait } from '../ui/Overlays';
 import { EASE, fxOn } from '../ui/movimiento';
 import { ADV_LIST, ADVS, MEJORES, TOWNS, TownId, advOf, speaker, wonAdv } from '../engine/aventuras';
-import { pendingNotes, useOutside } from '../engine/dungeon';
+import { pendingNotes, itemOutside } from '../engine/dungeon';
 import { entryLevel } from '../engine/desarrollador';
 import { allyCap, finishTalk, nextTalk, short, talkLines, talksDone } from '../engine/posada';
 import { Dialogue } from '../ui/Overlays';
@@ -345,7 +344,7 @@ export function Town() {
       </ScrollView>
       {sheet ? (
         <CardModal key={sheet} char={g.party.find(c => c.id === sheet)} info={charInfo(g.party.find(c => c.id === sheet)!)} party={g.party} others={g.party.filter(c => c.id !== sheet).map(c => ({ key: c.id, info: charInfo(c) }))} onPick={setSheet} town={town.name} onClose={() => setSheet(undefined)}
-          onUse={(uid, to) => { let t = ''; edit(gg => { t = useOutside(gg, sheet, uid, to); }, true); say(t); }}
+          onUse={(uid, to) => { let t = ''; edit(gg => { t = itemOutside(gg, sheet, uid, to); }, true); say(t); }}
           onGive={(uid, to) => edit(gg => {
             const from = gg.party.find(c => c.id === sheet)!;
             const dest = gg.party.find(c => c.id === to)!;
