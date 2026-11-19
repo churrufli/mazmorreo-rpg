@@ -1110,7 +1110,7 @@
               "lock_dc": null,
               "gold": 11,
               "item": {
-                "id": "scroll_cure_wounds"
+                "id": "potion_healing"
               }
             },
             {
@@ -1386,7 +1386,7 @@
               "lock_dc": null,
               "gold": 6,
               "item": {
-                "id": "potion_healing"
+                "id": "scroll_cure_wounds"
               },
               "obstacle": {
                 "title": "Zarzas",
