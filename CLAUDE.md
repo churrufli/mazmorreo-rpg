@@ -29,6 +29,7 @@ Ejecuta `/validar` (o lo mismo a mano):
 
 ```bash
 npx tsc --noEmit
+npm run lint
 npm test -- --ci --runInBand
 node scripts/validar-aventuras.mjs src/data/hondaroca.json src/data/corazon.json src/data/montana.json src/data/tumba.json
 npm run web:build

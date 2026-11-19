@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Modal, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { mdiCogOutline, mdiInformationOutline, mdiSwordCross, mdiHomeVariant, mdiKeyVariant, mdiScriptTextOutline } from '@mdi/js';
 import { LogModal } from '../ui/LogModal';
 import { Settings } from '../ui/Settings';
@@ -12,7 +12,7 @@ import { hasPortraitFrame } from '../data/portraitFrames';
 import { SvgFaceImage } from '../ui/FaceImage';
 import { Escena } from '../ui/Escena';
 import { sceneById, sceneSpent } from '../engine/escenas';
-import { townRest, rereadAt, sceneOn, sceneFight, wonCell, useOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atRest, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, encounterById, hkey, rolledEnemies, passable, disarmBonus, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
+import { townRest, rereadAt, sceneOn, sceneFight, wonCell, itemOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, hkey, rolledEnemies, passable, disarmBonus, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
 import { ITEMS } from '../data/srd';
 import { MONSTERS } from '../data/srd';
@@ -687,7 +687,7 @@ export function Explore() {
           onClose={() => setSheet(undefined)}
           town={townName}
           onDrop={uid => { drop(sheetChar.id, uid); setSheet(undefined); }}
-          onUse={(uid, to) => edit(gg => { gg.note = useOutside(gg, sheetChar.id, uid, to); }, true)}
+          onUse={(uid, to) => edit(gg => { gg.note = itemOutside(gg, sheetChar.id, uid, to); }, true)}
           onGive={(uid, to) => edit(gg => {
             const from = gg.party.find(c => c.id === sheetChar.id)!;
             const dest = gg.party.find(c => c.id === to)!;

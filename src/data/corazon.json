@@ -424,7 +424,8 @@
                   "ok": {
                     "text": "Le vendas el brazo. «Los leñadores marcaron un escondite cerca de unas campanillas», confiesa. Después, se marcha.",
                     "reveal": "b1_s02"
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Pedirle información sobre el bosque",
@@ -2782,7 +2783,8 @@
                   "ok": {
                     "text": "«Decid en Vegaumbría que sigo vivo», suplica. Os entrega sus monedas antes de iniciar el regreso.",
                     "gold": 4
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Que siga su camino",
@@ -3058,7 +3060,8 @@
                   },
                   "fail": {
                     "text": "La semilla permanece inmóvil sobre la losa."
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Dejar una poción como ofrenda",

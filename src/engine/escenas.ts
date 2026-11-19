@@ -3,10 +3,11 @@
 import type { ImgKey } from '../assets';
 import { ABIL_NAME, Ability, ITEMS, MONSTERS } from '../data/srd';
 import { GOALS } from '../data/objetivos';
+import { TONE_LINES, Tone } from '../data/comentarios';
 import { ADVS, advOf } from './aventuras';
 import { logEvs, reached, contentById, dropKey, encounterById, rolledEnemies, Ev, giveItem, ShownRoll } from './dungeon';
 import type { Game } from './game';
-import { die, roll } from './rng';
+import { die, pick, roll } from './rng';
 import { setElems } from './elementos';
 import { Char, abilMod, isDown, newItem } from './rules';
 
@@ -40,6 +41,8 @@ export interface SceneOpt { label: string; attr?: Ability; dc?: number; needs?: 
   ally?: string;
   /** Vía que solo sale si ya pasó algo antes (un objetivo cumplido, una marca, una sala vista): consecuencia de otra decisión. */
   if?: string;
+  /** Cómo la leen los compañeros (perdonar, ser duro, cobrar): uno de ellos comenta la decisión. */
+  tone?: Tone;
   ok: Effect; fail?: Effect }
 export interface Scene {
   id: string; title: string; img?: ImgKey; text: string; question?: string;
@@ -305,9 +308,20 @@ export function chooseOption(g: Game, id: string, i: number, charId?: string, fo
   logEvs(g, evs);
   // Lo que se acaba de descubrir se enseña en el mapa antes de seguir (y antes del combate, si lo hay).
   for (const f of g.found.slice(found0)) evs.push({ kind: 'look', id: f });
+  // Un compañero comenta la decisión, si tiene algo que decir (antes del combate, si lo hay).
+  const said = o.tone && finished ? toneLine(g, o.tone) : undefined;
+  if (said) evs.push(said);
   if (r.fight) evs.push({ kind: 'combat', id: r.fight });
   else if (!finished && !spent) evs.push({ kind: 'scene', id });
   return evs;
+}
+
+/** Frase de un compañero en pie (no el héroe) sobre una decisión de ese tono. */
+function toneLine(g: Game, tone: Tone): Ev | undefined {
+  const who = g.party.filter(c => !c.isHero && !isDown(c) && TONE_LINES[c.id]);
+  if (!who.length) return undefined;
+  const c = pick(g.rng, who);
+  return { kind: 'dialogue', lines: [{ speaker: c.id, text: TONE_LINES[c.id][tone] }] };
 }
 
 const RETRY = 'Tras un descanso largo en la posada podréis volver a intentarlo.';

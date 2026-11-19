@@ -316,7 +316,8 @@
                   "ok": {
                     "text": "Huye ladera abajo. Al pasar suelta la bolsa del tributo.",
                     "gold": 4
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Exigirle información",
@@ -328,7 +329,8 @@
                   },
                   "fail": {
                     "text": "Se escabulle sin decir nada."
-                  }
+                  },
+                  "tone": "dureza"
                 },
                 {
                   "label": "Dejarle donde está",
@@ -2516,7 +2518,8 @@
                   "ok": {
                     "text": "Se marcha a avisar a otro porteador para que abandone la fortaleza. Uno menos se interpondrá.",
                     "sub": "m3_pat01"
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Ignorarle",
@@ -3007,7 +3010,8 @@
                   },
                   "fail": {
                     "text": "Huye con los sellos."
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Comprarle los sellos",
@@ -3015,7 +3019,8 @@
                   "ok": {
                     "text": "Los sellos convencen a un porteador de que puede dejar de vigilaros.",
                     "sub": "m3_pat01"
-                  }
+                  },
+                  "tone": "codicia"
                 },
                 {
                   "label": "Dejarle marchar",
@@ -3996,7 +4001,8 @@
                   "fail": {
                     "text": "El kobold sacude la cuerda y hace sonar la campanilla.",
                     "fight": "m4_e06"
-                  }
+                  },
+                  "tone": "piedad"
                 },
                 {
                   "label": "Pagar por su silencio",
@@ -4017,7 +4023,8 @@
                   "fail": {
                     "text": "El kobold golpea la campanilla antes de que puedas detenerlo.",
                     "fight": "m4_e06"
-                  }
+                  },
+                  "tone": "dureza"
                 }
               ]
             },

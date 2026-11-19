@@ -5,7 +5,8 @@ import { afterDefeat, clone, Game, newGame } from './engine/game';
 import { chooseOption, leaveScene, sceneSpent, spentMsg } from './engine/escenas';
 import { allyCap, endAdventure, sendToInn } from './engine/posada';
 import { migrateElements } from './engine/elementos';
-import { markReturn, react, atEntrance, atRest, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, devPass, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step, trap, logEvs } from './engine/dungeon';
+import { guide } from './engine/guia';
+import { markReturn, react, atEntrance, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, devPass, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step, trap, logEvs } from './engine/dungeon';
 import { ADVS, ADV_LIST, AdvId, TOWNS, TownId, advOf, firstZone, wonAdv } from './engine/aventuras';
 import { ITEMS } from './data/srd';
 import { Action, actionsFor, autoTurn, Combat, devWin, endTurn, enemyTurn, perform, startCombat, withDice, useInspiration } from './engine/combat';
@@ -121,7 +122,7 @@ export const useStore = create<State>((set, get) => {
 
   /** Resuelve los eventos automáticos (combate, cambio de zona) de la cola. */
   const advance = (g: Game, queue: Ev[]): Partial<State> => {
-    const q = [...queue];
+    const q = guide(g, queue);
     while (q.length) {
       const ev = q[0];
       if (ev.kind === 'back') {

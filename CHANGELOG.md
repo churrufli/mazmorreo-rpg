@@ -2,6 +2,15 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 19 de noviembre de 2026 — Enemigos con carácter, primera partida guiada y pistas
+
+- **IA enemiga por familias** (`decide` y `chooseTarget` en `combat.ts`): goblins sin su jefe (`leaderDown`) huyen a la mitad de PG; no muertos con presa fija (`Unit.prey`); sectarios contra quien hirió a su líder (`isLeader`); lanzadores que se retiran si alguien les cubre.
+- **Sin enemigos parados por error**: un cuerpo a cuerpo detrás con la fila llena cambia el sitio con un tirador (`Plan.swap`); si no puede, espera y se anota. `rowSpace` limita a 3 por fila a los enemigos.
+- **Consejos de la primera partida** (`guia.ts`, `Game.guide`): mover, combate, filas, objetivo, trampa, escena y descanso, una vez cada uno y solo en Hondaroca.
+- **Cadena de pistas en Hondaroca**: el diálogo `z3_d09` pone la marca `pista_agua` (campo `flag` en diálogos), que abre una vía en `z4_p01`; cerrar las compuertas (`z4_compuertas`) quita un Escudo a Orvane. `bossPrep` lo anuncia antes del jefe, junto al ritual cortado.
+- **Comentarios de compañeros** (`data/comentarios.ts`): opciones de escena con `tone` (piedad, dureza, codicia) y frases por lugar de su propia aventura.
+- **Lint** sin errores y en la validación de PR.
+
 ## 19 de noviembre de 2026 — Objetos legibles, combate más claro y aviso legal
 
 - **Objetos**: tocar cualquier objeto enseña su descripción: tienda (también lo que no se puede pagar), venta, baúl, inventario y objetos ganados en cofres y escenas (los eventos `msg` llevan el id del objeto en `items`).

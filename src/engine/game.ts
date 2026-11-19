@@ -40,6 +40,8 @@ export interface Game {
   restSeen?: boolean;
   /** Aventuras en las que el grupo ya ha comentado que le falta una antorcha. */
   darkTip?: AdvId[];
+  /** Consejos de la primera partida ya vistos (guia.ts). */
+  guide?: string[];
   /** Personajes con los que ya se ha hablado (su primera intervención sale a pantalla completa). */
   met?: string[];
   won: boolean;

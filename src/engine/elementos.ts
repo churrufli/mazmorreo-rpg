@@ -119,12 +119,12 @@ export function bumpElement(g: Game, el: ElemDef): Ev[] {
   const st = elemState(g, el);
   if (el.scene && !g.done.includes(el.scene) && D.contentById(el.scene)) return [{ kind: 'scene', id: el.scene }];
   const use = el.use?.find(u => u.from === st);
-  if (use) return useElement(g, el, use);
+  if (use) return applyElemUse(g, el, use);
   g.note = el.texts?.[st] ?? `${el.name}: no se puede pasar.`;
   return [];
 }
 
-function useElement(g: Game, el: ElemDef, use: ElemUse): Ev[] {
+function applyElemUse(g: Game, el: ElemDef, use: ElemUse): Ev[] {
   g.elems = { ...g.elems, [el.id]: use.to };
   setElems(g, use.set);
   return [{ kind: 'msg', title: use.title ?? el.name, lines: [use.text], save: true }];
@@ -134,7 +134,7 @@ function useElement(g: Game, el: ElemDef, use: ElemUse): Ev[] {
 export function enterElement(g: Game, el: ElemDef): { evs: Ev[]; warp?: string } {
   const st = elemState(g, el);
   const use = el.use?.find(u => u.from === st);
-  if (use) return { evs: useElement(g, el, use) };
+  if (use) return { evs: applyElemUse(g, el, use) };
   if (el.type === 'portal' && st === 'activo' && el.to) return { evs: [], warp: el.to };
   const t = el.texts?.[st];
   if (t) g.note = t;
