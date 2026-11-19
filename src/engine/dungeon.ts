@@ -581,6 +581,8 @@ function enterRoom(g: Game, room: Room): Ev[] {
       const unmet = (c as any).if_unmet as { who: string; lines: DialogueLine[] } | undefined;
       if (unmet && !g.diary?.some(d => d.s === unmet.who)) evs.push({ kind: 'dialogue', lines: unmet.lines });
       evs.push({ kind: 'dialogue', lines: c.lines });
+      // Pista: lo que se ha leído aquí abre opciones más adelante (opciones con «if»).
+      if (c.flag && !g.flags?.includes(c.flag)) g.flags = [...(g.flags ?? []), c.flag];
       // Regalo de quien habla si nadie lleva ya algo que sirva (la abuela da un antídoto antes de las arañas).
       const gift = c.gift as { item: string; unless: string[]; text: string } | undefined;
       if (gift && !g.party.some(p => !p.dead && p.items.some(i => gift.unless.includes(i.id)))) {
@@ -600,6 +602,8 @@ function enterRoom(g: Game, room: Room): Ev[] {
     // Al jefe se llega siempre con el nivel objetivo de la aventura (2, 3 y 4), aunque se hayan saltado combates.
     const up = g.party.flatMap(c => raiseTo(c, adv.level));
     if (up.length) evs.push({ kind: 'msg', title: `Nivel ${adv.level}`, lines: up });
+    const prep = bossPrep(g, adv.boss);
+    if (prep.length) evs.push({ kind: 'msg', title: 'Lo que habéis conseguido', lines: prep });
   }
   const seen = (room.contents as Content[]).find(c => c.type === 'encounter' && c.trigger === 'seen' && !g.done.includes(c.id) && !g.fled.includes(c.id));
   if (seen) evs.push({ kind: 'combat', id: seen.id });
@@ -1194,6 +1198,15 @@ export function react(g: Game, why: 'hurt' | 'clear' | 'close'): Ev | undefined 
   const allies = awake.filter(c => !c.isHero);
   const who = allies.length ? pick(g.rng, allies) : awake[0];
   return { kind: 'dialogue', lines: [{ speaker: who.isHero ? 'hero' : who.id, text: pick(g.rng, REACT[why === 'close' && g.party.some(c => c.dead) ? 'closeDead' : why]) }] };
+}
+
+/** Lo que las decisiones anteriores cambian en el combate contra el jefe (por ahora, Maese Orvane). */
+export function bossPrep(g: Game, boss: string): string[] {
+  if (boss !== 'Orvane') return [];
+  const out: string[] = [];
+  if (g.flags?.includes('z4_compuertas')) out.push('El agua vuelve a cubrir el cristal: Orvane no podrá sacar de él tanta magia. Tendrá un Escudo menos.');
+  if (g.goals?.z4_e03 === 'ok') out.push('Cortasteis su ritual: tendrá un Rayo abrasador menos.');
+  return out;
 }
 
 /** Comentario de un personaje cuando el grupo camina con poca luz (una vez por aventura). */

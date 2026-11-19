@@ -3477,7 +3477,8 @@
                   "speaker": "hero",
                   "text": "Orvane ha venido precisamente a romper la prohibición de Aldric."
                 }
-              ]
+              ],
+              "flag": "pista_agua"
             },
             {
               "type": "scene",
@@ -4617,6 +4618,15 @@
               "text": "Entre las ruinas inundadas, la luz violeta permite distinguir unas monedas bajo el agua. La corriente dificulta alcanzarlas.",
               "question": "¿Cómo recuperáis las monedas?",
               "options": [
+                {
+                  "if": "pista_agua",
+                  "label": "Cerrar las compuertas, como mandaba Aldric",
+                  "ok": {
+                    "text": "Recordáis la inscripción de la cripta: «encerrad el cristal bajo el agua». Movéis las compuertas y el agua vuelve a cubrir el cristal. En el canal vaciado brillan las monedas.",
+                    "gold": 9,
+                    "flag": "z4_compuertas"
+                  }
+                },
                 {
                   "label": "Alcanzarlas desde el borde de piedra",
                   "attr": "dex",

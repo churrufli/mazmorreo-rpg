@@ -656,7 +656,9 @@ function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean 
       key: `e_${id}_${n}`, side: 'enemy', mon: e.srd_creature, name: e.count > 1 ? `${e.name} ${i + 1}` : e.name,
       img: e.srd_creature === 'Goblin Warrior' && /arco|ballesta/i.test(e.weapon ?? '') ? 'goblin_arquero' : m.img, hp, maxHp: m.hp, ac: m.ac, row: e.row === 'back' ? 'back' : 'front', init: 0, encounter: id,
       enemyIdx: n, weapon: e.weapon, // Los enemigos ya no sueltan armas normales, solo oro (el autor 2026-11-03, punto 41).
-      shieldSlots: m.shieldSlots, rays: e.srd_creature === 'Orvane' ? (g.goals?.z4_e03 === 'ok' ? 1 : 2) : 0, recharge: {},
+      // Orvane: cortar el ritual (objetivo de z4_e03) le quita un rayo; cerrar las compuertas (z4_p01), un Escudo.
+      shieldSlots: e.srd_creature === 'Orvane' && g.flags?.includes('z4_compuertas') ? m.shieldSlots! - 1 : m.shieldSlots,
+      rays: e.srd_creature === 'Orvane' ? (g.goals?.z4_e03 === 'ok' ? 1 : 2) : 0, recharge: {},
     });
   }
   const count = (r: Row) => cb.units.filter(u => u.side === 'enemy' && alive(u) && u.row === r).length;
