@@ -18,6 +18,7 @@ import { EASE, fxOn } from '../ui/movimiento';
 import { ADV_LIST, ADVS, MEJORES, TOWNS, TownId, advOf, speaker, wonAdv } from '../engine/aventuras';
 import { pendingNotes, itemOutside } from '../engine/dungeon';
 import { entryLevel } from '../engine/desarrollador';
+import { shopStock } from '../engine/botin';
 import { allyCap, finishTalk, nextTalk, short, talkLines, talksDone } from '../engine/posada';
 import { Dialogue } from '../ui/Overlays';
 import { Galeria } from './Galeria';
@@ -73,7 +74,9 @@ export function Town() {
   const afford = (n: number) => dev || g.gold >= n;
   const sold = g.sold?.[townId] ?? [];
   const firstDone = g.won || !!g.wins?.length;
-  const stock = [...town.stock, ...(firstDone ? MEJORES : []), ...sold.filter((id, i) => !town.stock.includes(id) && !(firstDone && MEJORES.includes(id)) && sold.indexOf(id) === i)];
+  // Lo que se vende depende de los enemigos de la aventura del pueblo (el autor 2026-11-20).
+  const base = shopStock(townId);
+  const stock = [...base, ...(firstDone ? MEJORES : []), ...sold.filter((id, i) => !base.includes(id) && !(firstDone && MEJORES.includes(id)) && sold.indexOf(id) === i)];
   const started = !!g.saved?.[adv.data.zones[0].id] || (advOf(g.zone) === town.adv && g.visited.length > 0);
   const prevOf = (t: TownId) => ADVS[TOWNS[t].adv].prev;
   // La siguiente aventura se abre al vencer al jefe de la anterior (el autor 2026-11-06).
@@ -364,7 +367,7 @@ export function Town() {
 
 /** Diario: diálogos vividos en cada aventura, con el retrato de quien habla, y la intro para volver a verla. */
 function Diary() {
-  const { game, showIntro } = useStore();
+  const { game, showIntro, showEnding } = useStore();
   const g = game!;
   const hero = g.party.find(c => c.isHero) ?? g.party[0];
   const played = ADV_LIST.filter(a => a.id === 'hondaroca' || advOf(g.zone) === a.id || g.saved?.[a.data.zones[0].id] || g.diary?.some(d => d.a === a.id));
@@ -376,6 +379,7 @@ function Diary() {
           <Panel key={a.id} style={{ marginBottom: 10 }}>
             <Text style={st.h}>{a.name}</Text>
             <Btn small label="Ver la introducción" onPress={() => showIntro(a.id)} />
+            {wonAdv(g, a.id) ? <Btn small label="Ver el final de la aventura" onPress={() => showEnding(a.id)} /> : null}
             {pendingNotes(g, a.id).length ? (
               <View style={{ marginVertical: 6 }}>
                 <Text style={st.diaryWho}>Pendientes</Text>
@@ -434,11 +438,12 @@ function ItemRow({ img, name, desc, price, onPress, disabled }: { img: ImgKey; n
  * el desenlace aparece letra a letra, como la narración del inicio.
  */
 export function Victory() {
-  const { toTown, game } = useStore();
+  const { toTown, game, ending, showEnding } = useStore();
   const ins = useSafeAreaInsets();
-  const A = ADVS[advOf(game!.zone)];
+  // Desde el diario se vuelve a ver el final de una aventura ya completada (el autor 2026-11-20).
+  const A = ADVS[ending ?? advOf(game!.zone)];
   const team = game!.party.filter(c => !c.dead);
-  const full = `${A.victoryText}\n\nTodo el grupo llega al menos a nivel ${A.level}.`;
+  const full = ending ? A.victoryText : `${A.victoryText}\n\nTodo el grupo llega al menos a nivel ${A.level}.`;
   const [shown, setShown] = useState(false);
   const [n, setN] = useState(0);
   useEffect(() => {
@@ -475,7 +480,9 @@ export function Victory() {
             <Panel>
               <T>{full.slice(0, n)}</T>
               {done
-                ? <Btn label={`Volver a ${TOWNS[A.town].name}`} onPress={toTown} style={{ marginTop: 10 }} />
+                ? ending
+                  ? <Btn label="Volver" onPress={() => showEnding()} style={{ marginTop: 10 }} />
+                  : <Btn label={`Volver a ${TOWNS[A.town].name}`} onPress={toTown} style={{ marginTop: 10 }} />
                 : <Text style={st.endHint}>Toca para acelerar</Text>}
             </Panel>
           </FadeIn>

@@ -27,6 +27,9 @@ interface State {
   intro?: { adv: AdvId; replay?: boolean };
   showIntro: (adv: AdvId) => void;
   closeIntro: () => void;
+  /** Final de una aventura completada que se vuelve a ver desde el diario. */
+  ending?: AdvId;
+  showEnding: (adv?: AdvId) => void;
   walking: Hex[];
   /** Casilla lejana o sin explorar hacia la que se avanza solo. */
   goal?: Hex;
@@ -161,6 +164,7 @@ export const useStore = create<State>((set, get) => {
     setZoom: zoom => { storage.setZoom(zoom); set({ zoom }); },
     go: screen => set({ screen }),
     showIntro: adv => set({ screen: 'intro', intro: { adv, replay: true } }),
+    showEnding: adv => set(adv ? { screen: 'victory', ending: adv } : { screen: 'game', ending: undefined }),
     closeIntro: () => (get().intro ? set({ screen: 'game', intro: undefined }) : get().enterDungeon()),
     pickSlot: slotMode => set({ slotMode, screen: 'slots' }),
     chooseNewSlot: newSlot => set({ newSlot, screen: 'create' }),

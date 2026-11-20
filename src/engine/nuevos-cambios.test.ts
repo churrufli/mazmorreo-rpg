@@ -102,6 +102,9 @@ describe('cambio de fila', () => {
 describe('vanguardia vacía', () => {
   it('el último de delante puede ir atrás y los enemigos le siguen alcanzando', () => {
     const g = newGame(5, 'Prueba', 'fighter', 'human');
+    // Semilla fija: con la de la hora, a veces las ratas fallan todos sus ataques y el héroe no recibe daño.
+    g.rng.seed = 7919;
+    g.variant = 1;
     enterZone(g, 'z1');
     const cb = startCombat(g, 'z1_e01');
     const hero = cb.units.find(u => u.side === 'party')!;

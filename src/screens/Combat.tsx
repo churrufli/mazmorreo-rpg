@@ -19,7 +19,7 @@ import { CLASSES, DmgType, ITEMS } from '../data/srd';
 import { Settings } from '../ui/Settings';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 import { Icon, Panel } from '../ui/kit';
-import { mdiAutoFix, mdiBowArrow, mdiBullseyeArrow, mdiCardsOutline, mdiCogOutline, mdiFire, mdiGestureTap, mdiInformationOutline, mdiShieldSword, mdiSword, mdiCircle, mdiRhombus, mdiSwapVertical, mdiLightningBolt, mdiRun, mdiScriptTextOutline, mdiSwordCross, mdiCreation, mdiSack } from '@mdi/js';
+import { mdiAutoFix, mdiBowArrow, mdiBullseyeArrow, mdiCardsOutline, mdiCogOutline, mdiFire, mdiGestureTap, mdiInformationOutline, mdiShieldSword, mdiSword, mdiCircle, mdiRhombus, mdiSwapVertical, mdiLightningBolt, mdiRun, mdiScriptTextOutline, mdiSwordCross, mdiCreation, mdiSack, mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import { CombatGroup, groupOf, menuActionsFor, quickAttack } from '../ui/combatMenu';
 import { slotsLeft } from '../engine/rules';
 import { ACTION_HELP as DESC, MASTERY_HELP } from '../data/actionHelp';
@@ -63,9 +63,12 @@ export function Combat() {
   // Última categoría abierta por cada personaje.
   const lastGroup = useRef<Record<string, CombatGroup>>({});
   const [askFlee, setAskFlee] = useState(false);
+  const [askEnd, setAskEnd] = useState(false);
   const [sheet, setSheet] = useState<Unit>();
   const [help, setHelp] = useState(false);
   const [showLog, setShowLog] = useState(false);
+  // Registro en dos líneas; se despliega con la flecha para leer más sin abrir el registro completo (el autor 2026-11-20).
+  const [logOpen, setLogOpen] = useState(false);
   // Cuadro de explicación superpuesto a los botones (pulsación prolongada, como en las primeras versiones).
   const [tip, setTip] = useState<Tip>();
   const [targetFeedback, setTargetFeedback] = useState<string>();
@@ -168,7 +171,7 @@ export function Combat() {
   }, [ready, cb.round]); // eslint-disable-line react-hooks/exhaustive-deps
   // El cartel del asalto no bloquea al jugador; los enemigos sí esperan a que acabe (el autor 2026-11-10).
   const busy = opts || help || !!sheet || showLog;
-  const paused = busy || !!banner || !!sel || !!tip || askFlee;
+  const paused = busy || !!banner || !!sel || !!tip || askFlee || askEnd;
 
   useEffect(() => {
     if (!auto || !ready || paused) return;
@@ -227,8 +230,6 @@ export function Combat() {
   const cardW = Math.max(30, Math.min((boardWidth - 12) / Math.max(2.2, ...counts) - 6, free / Math.max(2, counts.length) / 1.5));
 
   const close = () => { setTip(undefined); setTargetFeedback(undefined); setSel(undefined); };
-  // Los objetivos indistinguibles siguen sin exigir una pulsación adicional.
-  const same = (ts: Unit[]) => ts.length > 1 && ts.every(t => t.side === 'enemy' && t.mon === ts[0].mon && t.hp === ts[0].hp && t.row === ts[0].row && !statesOf(cb, t).length);
   const go = (a: Action, t?: string) => {
     if (busy || Date.now() - lastCommit.current < 300) return;
     const live = useStore.getState();
@@ -239,10 +240,13 @@ export function Combat() {
     act(allowed, t);
     close();
   };
-  const finishTurn = () => {
+  const finishTurn = (sure = false) => {
     if (busy || Date.now() - lastCommit.current < 300) return;
     const live = useStore.getState().combat;
     if (!live || live.result || autoTurn(live) || live.turn !== cb.turn || live.round !== cb.round || current(live).key !== me.key) return;
+    // Sin haber gastado nada del turno y con algo útil por hacer, seguramente es un error: se pregunta (el autor 2026-11-20).
+    if (!sure && !live.acted && !live.bonus && !live.moved && hasUseful(g, live)) { close(); return setAskEnd(true); }
+    setAskEnd(false);
     lastCommit.current = Date.now();
     close();
     endTurn();
@@ -279,7 +283,7 @@ export function Combat() {
       return explain(a);
     }
     const ts = targetsFor(cb, a);
-    if (ts.length === 1 || same(ts)) return go(a, ts[0].key);
+    if (ts.length === 1) return go(a, ts[0].key); // Con varios, elige el jugador aunque tengan los mismos PG (el autor 2026-11-20).
     if (sel?.id === a.id) return close();
     setTip(undefined);
     setSel(a);
@@ -290,7 +294,7 @@ export function Combat() {
     if (!a || a.off) return;
     if (a.target === 'none') return go(a);
     const ts = targetsFor(cb, a);
-    if (ts.length === 1 || same(ts)) return go(a, ts[0].key);
+    if (ts.length === 1) return go(a, ts[0].key);
     setTip(undefined);
     setSel(a);
   };
@@ -437,6 +441,7 @@ export function Combat() {
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text accessibilityLiveRegion="polite" style={[st.round, { flex: 1 }, !!sel && { color: C.goldHi }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{!sel ? `Turno de ${me.name}`
               : `${sel.label}: ${targetFeedback ?? `toca ${sel.target === 'ally' ? 'un aliado' : 'un objetivo'}`}`}</Text>
+            <Pressable onPress={() => setLogOpen(o => !o)} accessibilityRole="button" accessibilityLabel={logOpen ? 'Plegar el registro' : 'Desplegar el registro'} hitSlop={6} style={{ padding: 4 }}><Icon path={logOpen ? mdiChevronUp : mdiChevronDown} size={20} /></Pressable>
             <Pressable onPress={() => setShowLog(true)} accessibilityRole="button" accessibilityLabel="Registro del combate" style={{ padding: 4 }}><Icon path={mdiScriptTextOutline} size={20} /></Pressable>
             {sel && !tip ? <Pressable accessibilityRole="button" accessibilityLabel="CANCELAR ACCIÓN" onPress={close} hitSlop={8} style={{ padding: 5, minHeight: 28, justifyContent: 'center' }}><Text style={st.devText}>CANCELAR</Text></Pressable> : null}
             <Pressable onPress={() => setHelp(true)} accessibilityRole="button" accessibilityLabel="Cómo funciona el combate" hitSlop={12}>
@@ -453,7 +458,7 @@ export function Combat() {
             </View>
           ) : null}
           {/* Desliza para ver todo el registro del combate. En pantallas bajas, una línea menos cuando se ve lo que queda del turno. */}
-          <ScrollView ref={logRef} style={{ height: height < 700 ? (budget && !sel ? 17 : 28) : 52, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
+          <ScrollView ref={logRef} style={{ height: logOpen ? 85 : height < 700 && budget && !sel ? 17 : 34, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
             {cb.log.map((l, i) => (
               <Text key={i} style={[st.logLine, l.c === 'dmg' && { color: '#e8796b' }, l.c === 'heal' && { color: '#7fcf8f' }, l.c === 'big' && { color: C.goldHi }, l.c === 'miss' && { color: C.textDim }]}>{l.t}</Text>
             ))}
@@ -474,7 +479,7 @@ export function Combat() {
           </View>
         ) : null}
       </View>
-      <View testID="combat-controls" style={[st.actions, { height: landscape ? height : 240 + ins.bottom, width: controlsWidth, flexGrow: 0, flexShrink: 0, paddingTop: landscape ? ins.top + 4 : 3, paddingBottom: ins.bottom + 3 }]}>
+      <View testID="combat-controls" style={[st.actions, { height: landscape ? height : 204 + ins.bottom, width: controlsWidth, flexGrow: 0, flexShrink: 0, paddingTop: landscape ? ins.top + 4 : 3, paddingBottom: ins.bottom + 3 }]}>
         {auto ? (
           <Text style={st.wait}>{me.side === 'enemy' ? `${me.name} actúa…` : me.paralyzed ? `${me.name} está paralizado y no puede actuar…` : `${me.name} no puede actuar…`}</Text>
         ) : !cb.result ? (
@@ -493,9 +498,9 @@ export function Combat() {
               {grouped.map(a => <Btn key={a.id} small combatTone="child" icon={COST_ICON[a.cost]} disabled={!ready} onInfo={() => choose(a, true)} onLongPress={() => choose(a, true)} primary={sel?.id === a.id || tip?.a?.id === a.id} label={a.label.toLocaleUpperCase('es-ES')} off={!!a.off} onPress={() => choose(a)} style={st.gridBtn} />)}
             </ScrollView>
             <View style={[st.fixedRow, lit('fixed')]}>
-              {dodgeAct ? <Btn small combatTone="child" icon={COST_ICON[dodgeAct.cost]} disabled={!ready} onInfo={() => choose(dodgeAct, true)} onLongPress={() => choose(dodgeAct, true)} primary={tip?.a?.id === dodgeAct.id} label="ESQUIVAR" off={!!dodgeAct.off} onPress={() => choose(dodgeAct)} style={st.fixedBtn} /> : null}
-              {rowAct ? <Btn small combatTone="child" icon={COST_ICON.move} disabled={!ready} label={rowAct.label.toLocaleUpperCase('es-ES')} off={!!rowAct.off} onInfo={() => choose(rowAct, true)} onLongPress={() => choose(rowAct, true)} onPress={() => rowAct.off ? choose(rowAct) : go(rowAct)} style={st.fixedBtn} /> : null}
-              <Btn small combatTone="child" label="TERMINAR TURNO" disabled={!ready} onPress={finishTurn} style={{...st.fixedBtn,width:'100%',...(tuto?.target === 'end' ? st.tutoLit : null)}} />
+              {dodgeAct ? <Btn small combatTone="child" icon={COST_ICON[dodgeAct.cost]} disabled={!ready} onInfo={() => choose(dodgeAct, true)} onLongPress={() => choose(dodgeAct, true)} primary={tip?.a?.id === dodgeAct.id} label="ESQUIVAR" tight off={!!dodgeAct.off} onPress={() => choose(dodgeAct)} style={st.fixedBtn} /> : null}
+              {rowAct ? <Btn small combatTone="child" icon={COST_ICON.move} disabled={!ready} label={rowAct.label.toLocaleUpperCase('es-ES')} tight off={!!rowAct.off} onInfo={() => choose(rowAct, true)} onLongPress={() => choose(rowAct, true)} onPress={() => rowAct.off ? choose(rowAct) : go(rowAct)} style={st.fixedBtn} /> : null}
+              <Btn small combatTone="child" label="TERMINAR TURNO" tight disabled={!ready} onPress={() => finishTurn()} style={{ ...st.fixedBtn, ...(tuto?.target === 'end' ? st.tutoLit : null) }} />
             </View>
 
           </>
@@ -567,6 +572,16 @@ export function Combat() {
             <Text style={[st.stripTxt, { textAlign: 'center', marginBottom: 10 }]}>No volverá a salir en esta partida. Siempre podéis consultar «Cómo funciona el combate» en el botón de información.</Text>
             <Btn label="Seguir con el tutorial" primary onPress={() => setAskSkip(false)} />
             <Btn label="Omitir" danger onPress={() => { setAskSkip(false); tutoMark(TUTO_IDS); }} style={{ marginTop: 6 }} />
+          </Panel>
+        </View>
+      ) : null}
+      {askEnd && !cb.result && !auto ? (
+        <View style={st.confirmBg}>
+          <Panel style={{ width: '86%' }}>
+            <Text style={st.initTitle}>¿Terminar el turno?</Text>
+            <Text style={[st.stripTxt, { textAlign: 'center', marginBottom: 10 }]}>{`${me.name} aún no ha usado su acción, su acción adicional ni su movimiento.`}</Text>
+            <Btn label="Seguir con el turno" primary onPress={() => setAskEnd(false)} />
+            <Btn label="Terminar turno" danger onPress={() => finishTurn(true)} style={{ marginTop: 6 }} />
           </Panel>
         </View>
       ) : null}
@@ -820,8 +835,9 @@ const st = StyleSheet.create({
   initName: { fontFamily: F.textBold, color: C.text, fontSize: 16, flex: 1, marginLeft: 8 },
   initVal: { fontFamily: F.text, color: C.textDim, fontSize: 16 },
   btn: { width: '31.5%' },
-  fixedRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', paddingHorizontal: 2, marginTop: 2, gap: 2 },
-  fixedBtn: { width: '49%', flexGrow: 0, flexShrink: 0, minWidth: 0, marginHorizontal: 0, marginVertical: 0 },
+  // Botones fijos en una sola fila (el autor 2026-11-20).
+  fixedRow: { flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 2, marginTop: 2, gap: 2 },
+  fixedBtn: { flex: 1, flexBasis: 0, minWidth: 0, marginHorizontal: 0, marginVertical: 0 },
   devControl: { alignSelf: 'flex-end', paddingHorizontal: 8, minHeight: 24, justifyContent: 'center' },
   devText: { fontFamily: F.titleBold, fontSize: 11, color: C.textDim },
   hint: { width: '100%', fontFamily: F.italic, color: C.textDim, fontSize: 11, textAlign: 'center', marginTop: 2 },

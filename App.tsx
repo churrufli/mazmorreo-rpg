@@ -29,6 +29,8 @@ function Router() {
   const game = useStore(s => s.game);
   const combat = useStore(s => s.combat);
   const go = useStore(s => s.go);
+  const ending = useStore(s => s.ending);
+  const showEnding = useStore(s => s.showEnding);
 
   const [askExit, setAskExit] = useState(false);
   // Contador de tiempo jugado: suma solo con una partida abierta y la app delante. Se guarda con la partida.
@@ -53,11 +55,13 @@ function Router() {
         return true;
       }
       if (inAdventure) setAskExit(a => !a);
+      // Final repetido desde el diario: Atrás vuelve al pueblo.
+      else if (screen === 'victory' && ending) showEnding();
       else go(screen === 'create' ? 'slots' : 'title');
       return true;
     });
     return () => sub.remove();
-  }, [screen, inAdventure, go]);
+  }, [screen, inAdventure, go, ending, showEnding]);
   const exit = () => {
     // Fuera de combate se guarda dónde está el grupo; en combate se vuelve al último guardado.
     if (screen === 'game' && game && !combat) storage.save(game);

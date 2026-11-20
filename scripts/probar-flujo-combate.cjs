@@ -100,6 +100,8 @@ const {chromium}=require('playwright');
       // Terminar el turno durante la elección tampoco ejecuta el ataque, ni se duplica por doble toque.
       await prepare({many:true});await button('MAZA').click();
       const pendingData=await data(),expectedActor=await page.evaluate(()=>window.flow.nextActor());await button('TERMINAR TURNO').dblclick();
+      // Sin haber gastado nada del turno se pide confirmación (el autor 2026-11-20).
+      await button('Terminar turno').click();await page.waitForTimeout(350);
       const ended=await data();assert.equal(ended.actor,expectedActor,'Doble toque en TERMINAR TURNO solo avanza un participante');assert.equal(ended.roll,pendingData.roll);
       assert.deepEqual(ended.units.filter(u=>u.side==='enemy').map(u=>u.hp),pendingData.units.filter(u=>u.side==='enemy').map(u=>u.hp));
       // Leer una explicación detiene el cierre automático de un turno sin opciones útiles.

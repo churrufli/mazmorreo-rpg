@@ -564,6 +564,16 @@ export function Explore() {
               return <PathGlow key={`${k}:${n}`} points={hexPts(X(x), Y(y), S + 1)} />;
             })}
           </Svg> : null}
+          {/* Árboles: se cruzan por debajo; el personaje va encima y nunca se ve transparente (el autor 2026-11-20). */}
+          <Svg width={box.w} height={box.h} style={StyleSheet.absoluteFill} pointerEvents="none">
+            {zp.marks.map((m, i) => {
+              const k = `${m.q},${m.r}`;
+              if (m.kind !== 'prop' || !OVER_PROPS.has(m.id) || !vis.has(k)) return null;
+              const [x, y] = center(m.q, m.r);
+              const sz = S * 1.6;
+              return <SvgImage key={i} href={IMG[PROP[m.id]]} x={X(x) - sz / 2} y={Y(y) - sz * 0.6} width={sz} height={sz} />;
+            })}
+          </Svg>
           {/* El personaje: la misma ficha que los aliados (fondo, encuadre y aro dorado). */}
           <Animated.View pointerEvents="none" style={[st.token, { transform: [{ translateX: Animated.add(hx, -S) }, { translateY: Animated.add(Animated.add(hy, -S), bob.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -S * 0.12, 0] })) }, { scale: bob.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 1.05, 1] }) }] }]}>
             <Svg width={S * 2} height={S * 2}>
@@ -575,16 +585,6 @@ export function Explore() {
               </G>
             </Svg>
           </Animated.View>
-          {/* Árboles: se cruzan por debajo; van encima del grupo y se aclaran cuando el héroe está bajo ellos. */}
-          <Svg width={box.w} height={box.h} style={StyleSheet.absoluteFill} pointerEvents="none">
-            {zp.marks.map((m, i) => {
-              const k = `${m.q},${m.r}`;
-              if (m.kind !== 'prop' || !OVER_PROPS.has(m.id) || !vis.has(k)) return null;
-              const [x, y] = center(m.q, m.r);
-              const sz = S * 1.6;
-              return <SvgImage key={i} href={IMG[PROP[m.id]]} x={X(x) - sz / 2} y={Y(y) - sz * 0.6} width={sz} height={sz} opacity={k === hkey(g.pos) ? 0.5 : 1} />;
-            })}
-          </Svg>
           <AmbienteAire {...amb} focus={lastPos} reach={reach} />
         </Animated.View>
         <View pointerEvents="none" style={StyleSheet.absoluteFill}><Vineta zone={g.zone} w={view.w} h={view.h} mode={fx} /></View>
