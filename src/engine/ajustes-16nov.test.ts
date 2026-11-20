@@ -3,7 +3,7 @@ import { newGame } from './game';
 import { newItem } from './rules';
 import { actionsFor, current, enemyTurn, startCombat, withDice } from './combat';
 import { allyCap } from './posada';
-import { blockedCells, neighbors, npcSpots, plan } from './dungeon';
+import { blockedCells, cellMap, neighbors, npcSpots, plan, zoneById } from './dungeon';
 
 describe('compañeros según la zona', () => {
   it('sin aventura empezada caben tres; a mitad, uno por zona', () => {
@@ -31,6 +31,21 @@ describe('personajes del mapa', () => {
     const g = newGame(1, 'Prueba', 'fighter', 'human');
     g.zone = 'm1';
     expect(npcSpots(g).some(s => s.img === 'ally_telmo')).toBe(true);
+  });
+  it('la abuela Brezna sale en el mapa y sigue ahí mientras se habla con ella en su sala', () => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    g.zone = 'b1';
+    const spot = npcSpots(g).find(s => s.img === 'abuela_ortiga')!;
+    expect(spot).toBeDefined();
+    const idx = cellMap('b1').get(spot.cell)!;
+    const room = zoneById('b1').rooms[idx];
+    g.done.push(room.id);
+    g.pos = spot.cell.split(',').map(Number) as [number, number];
+    expect(npcSpots(g).some(s => s.img === 'abuela_ortiga')).toBe(true);
+    // Al salir de la sala ya no espera.
+    const out = plan('b1').cells.find(([, , i]) => i !== idx)!;
+    g.pos = [out[0], out[1]];
+    expect(npcSpots(g).some(s => s.img === 'abuela_ortiga')).toBe(false);
   });
 });
 

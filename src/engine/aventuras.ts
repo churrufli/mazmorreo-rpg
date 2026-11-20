@@ -103,8 +103,8 @@ export const ADVS: Record<AdvId, Adv> = {
     victoryText: 'Xiximanter cae entre sus frascos y la luz morada se apaga. Los prisioneros vuelven a Arenaroja y nadie más soñará con la voz que sisea. Encontráis 150 monedas de oro y la Corona de los Reyes Serpiente.',
     defeatText: 'Todo el grupo ha caído en la tumba. Xiximanter añade nuevos frascos a su colección.',
     reward: { gold: 150, item: 'serpent_crown' },
-    // Desierto y tumba superior: paredes más oscuras para distinguirlas del suelo (el autor 2026-11-19).
-    art: { s1: { ...art('tumba_falsa'), wallDim: 0.6 }, s2: { ...art('tumba_superior'), wallDim: 0.45 }, s3: art('salas_sacrificio'), s4: art('madrigueras') },
+    // Paredes más oscuras en todas las zonas para distinguirlas del suelo (el autor 2026-11-19 y 2026-11-20).
+    art: { s1: { ...art('tumba_falsa'), wallDim: 0.6 }, s2: { ...art('tumba_superior'), wallDim: 0.45 }, s3: { ...art('salas_sacrificio'), wallDim: 0.5 }, s4: { ...art('madrigueras'), wallDim: 0.5 } },
     allyImg: { zeyna: 'ally_zeyna', hassim: 'ally_hassim', yara: 'ally_iskarra', teodor: 'ally_teodor' },
     speakers: { ...Object.fromEntries(TD.allies.map(a => [a.id, a.name])), [TD.npc.id]: TD.npc.name, xiximanter: TD.boss.name },
     faces: { zeyna: 'ally_zeyna', hassim: 'ally_hassim', yara: 'ally_iskarra', teodor: 'ally_teodor', baltoplat: 'baltoplat', xiximanter: 'xiximanter' },

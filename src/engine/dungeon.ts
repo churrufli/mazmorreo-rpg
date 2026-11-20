@@ -713,14 +713,18 @@ export function pendingAllies(g: Game): { cell: string; img: ImgKey; id: string 
 /** Personajes no jugadores de las aventuras (no son aliados): la abuela Brezna y el sabio de la montaña. */
 const NPCS = ['ortiga', 'sabio'];
 
-/** Cada personaje no jugador espera en el mapa (aro de plata) en la sala donde habla, hasta que se llega a él. */
+/**
+ * Cada personaje no jugador espera en el mapa (aro de plata) en la sala donde habla. Sigue a la vista
+ * mientras el grupo está en esa sala, también durante la charla (el autor 2026-11-20).
+ */
 export function npcSpots(g: Game): { cell: string; img: ImgKey; id: string }[] {
   const p = plan(g.zone);
   const taken = new Set(p.marks.map(m => `${m.q},${m.r}`));
+  const here = cellMap(g.zone).get(hkey(g.pos));
   const out: { cell: string; img: ImgKey; id: string }[] = [];
   zoneById(g.zone).rooms.forEach((room, idx) => {
     const d = (room.contents as Content[]).find(x => x.type === 'dialogue' && x.lines.some((l: any) => NPCS.includes(l.speaker)));
-    if (!d || g.done.includes(room.id)) return;
+    if (!d || (g.done.includes(room.id) && here !== idx)) return;
     const who = (d as any).lines.find((l: any) => NPCS.includes(l.speaker)).speaker as string;
     const face = ADVS[advOf(g.zone)].faces[who];
     if (!face) return;
