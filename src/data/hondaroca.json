@@ -2444,7 +2444,7 @@
               "lock_dc": null,
               "gold": 16,
               "item": {
-                "id": "potion_healing"
+                "id": "basic_poison"
               }
             },
             {
@@ -2651,7 +2651,7 @@
               "lock_dc": null,
               "gold": 7,
               "item": {
-                "id": "potion_healing"
+                "id": "oil_flask"
               },
               "obstacle": {
                 "title": "Espíritu inquieto",
@@ -3532,7 +3532,7 @@
               "lock_dc": null,
               "gold": 7,
               "item": {
-                "id": "potion_healing"
+                "id": "potion_growth"
               }
             },
             {
@@ -3802,7 +3802,7 @@
               "lock_dc": null,
               "gold": 11,
               "item": {
-                "id": "potion_healing"
+                "id": "potion_resistance_fire"
               },
               "obstacle": {
                 "title": "El islote",
@@ -4950,7 +4950,7 @@
               "lock_dc": null,
               "gold": 22,
               "item": {
-                "id": "potion_greater_healing_1"
+                "id": "potion_heroism"
               }
             },
             {

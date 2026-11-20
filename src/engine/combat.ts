@@ -6,7 +6,7 @@ import { ABIL_NAME, Ability, CLASSES, DmgType, draconic, ITEMS, MONSTERS, Monste
 import B from '../data/corazon.json';
 import { die, pick, rand, roll, tray } from './rng';
 import {
-  Char, abilMod, armorClass, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft, slotsAt,
+  Char, abilMod, armorClass, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft, slotsAt, score,
 } from './rules';
 import { prof } from '../data/srd';
 import type { Game } from './game';
@@ -71,6 +71,20 @@ export interface Unit {
   /** Turnos que le quedan ardiendo (fuego de alquimista). */
   burn?: number;
   resPoison?: boolean;
+  /** Resistencias de pociones bebidas en este combate (fuego, necrótico, ácido). */
+  res?: DmgType[];
+  /** Poción de velocidad: +2 CA, ventaja en salvaciones de Destreza y un ataque más por turno. */
+  haste?: boolean;
+  /** Poción de heroísmo: +1d4 a ataques y salvaciones, como Bendición pero sin concentración. */
+  heroism?: boolean;
+  /** Poción de crecimiento: +1d4 al daño con armas. */
+  grow?: boolean;
+  /** Veneno básico untado: el próximo golpe cortante o perforante hace 1d4 de veneno más. */
+  poisonBlade?: boolean;
+  /** Empapado de aceite: el próximo daño de fuego hace 5 más. */
+  oiled?: boolean;
+  /** Polvo de desaparición: invisible hasta que ataque, haga daño o lance un conjuro. */
+  invisible?: boolean;
   /** Bebió la poción de resistencia al frío. */
   resCold?: boolean;
   /** Bárbaro en Furia: +2 al daño cuerpo a cuerpo y resiste el daño físico. */
@@ -116,6 +130,8 @@ export interface Combat {
   smiteHit?: { attacker: string; target: string; crit: boolean };
   /** Atacante salvaje ya usado en este turno. */
   savageUsed?: boolean;
+  /** Ya ha hecho este turno el ataque de más de la poción de velocidad. */
+  hasteUsed?: boolean;
   log: LogLine[];
   roll?: Roll;
   /** Último efecto visual por carta (golpe, conjuro, crítico, curación). */
@@ -242,7 +258,9 @@ function endConcentration(cb: Combat, caster: Unit) {
 export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: DmgType, from: Unit, crit = false) {
   const m = target.mon ? MONSTERS[target.mon] : undefined;
   if (m?.immune?.includes(type)) { say(cb, `${target.name} es inmune al daño de ${type}.`, 'info'); return; }
+  if (type === 'fuego' && target.oiled) { target.oiled = false; amount += 5; say(cb, `El aceite prende: ${target.name} recibe 5 de fuego más.`, 'info'); }
   if (m?.resist?.includes(type)) amount = Math.floor(amount / 2);
+  if (target.res?.includes(type)) amount = Math.floor(amount / 2);
   if (m?.vuln?.includes(type)) amount *= 2;
   if (target.side === 'party' && type === 'veneno' && (charOf(g, target).species === 'dwarf' || target.resPoison)) amount = Math.floor(amount / 2);
   if (target.mon === 'Treant' && type !== 'psíquico' && knotsUp(cb)) amount = Math.floor(amount / 2);
@@ -472,6 +490,8 @@ function advFor(cb: Combat, a: Unit, t: Unit, ranged: boolean): { up: string[]; 
   if (a.restrained) down.push('apresado');
   if (a.poisoned) down.push('envenenado');
   if (a.hidden) up.push('escondido');
+  if (a.invisible) up.push('invisible');
+  if (t.invisible) down.push('objetivo invisible');
   if (t.asleep || t.paralyzed || t.hp <= 0) up.push('objetivo indefenso');
   if (a.mon && MONSTERS[a.mon].packTactics && cb.units.some(u => u !== a && u.side === a.side && conscious(u) && u.row === 'front')) up.push('en manada');
   if (a.side === 'party' && t.helped && t.helped !== a.key) up.push('Ayudar');
@@ -491,6 +511,7 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     // Lo que se gasta con este ataque.
     t.guided = false;
     a.hidden = undefined;
+    a.invisible = undefined;
     if (a.side === 'party' && t.helped && t.helped !== a.key) t.helped = undefined;
     a.sapped = undefined;
     if (a.vex === t.key) a.vex = undefined;
@@ -499,7 +520,7 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   const adv = o.rerollAdv ?? (up.length && down.length ? 0 : up.length ? 1 : down.length ? -1 : 0);
   const cover = coverOf(cb, a, t);
   let d20 = rollD20(g, adv, isHalfling(g, a));
-  const bless = a.bless ? die(g.rng, 4) : 0;
+  const bless = a.bless || a.heroism ? die(g.rng, 4) : 0;
   let total = d20 + o.toHit + bless;
   const champ = a.side === 'party' && charOf(g, a).cls === 'fighter' && charOf(g, a).level >= 3 && !o.spell;
   const critOf = (d: number) => d === 20 || (champ && d === 19) || (!o.ranged && (t.paralyzed || t.asleep || t.hp <= 0) && d !== 1);
@@ -533,6 +554,7 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   }
   let dmg = Math.max(1, dice + o.bonus);
   if (a.rage && !o.ranged && !o.spell) dmg += 2;
+  if (a.grow && !o.spell) dmg += roll(g.rng, '1d4', crit);
   if (o.sneak && !cb.sneakUsed && a.side === 'party') {
     const c = charOf(g, a);
     const ally = cb.units.some(u => u !== a && u.side === 'party' && conscious(u) && u.row === 'front') && t.row === 'front';
@@ -545,6 +567,10 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   }
   applyDamage(g, cb, t, dmg, o.type, a, crit);
   if (o.extra && alive(t)) applyDamage(g, cb, t, Math.max(0, roll(g.rng, o.extra.dice, crit)), o.extra.type, a, crit);
+  if (a.poisonBlade && !o.spell && (o.type === 'cortante' || o.type === 'perforante')) {
+    a.poisonBlade = false;
+    if (alive(t)) { say(cb, `Veneno básico: +1d4 de veneno.`, 'info'); applyDamage(g, cb, t, roll(g.rng, '1d4', crit), 'veneno', a, crit); }
+  }
   if (a.concentration === 'mark' && a.mark === t.key && !o.spell) { const bonus = roll(g.rng, '1d6', crit); say(cb, `Marca del cazador: +${bonus} de fuerza.`, 'info'); if (alive(t)) applyDamage(g, cb, t, bonus, 'fuerza', a, crit); }
   if (a.concentration === 'hex' && a.hex === t.key && alive(t)) { const bonus = roll(g.rng, '1d6', crit); say(cb, `Maleficio: +${bonus} necrótico.`, 'info'); applyDamage(g, cb, t, bonus, 'necrótico', a, crit); }
   if (o.mastery && conscious(t)) masteryHit(g, cb, a, t, o.mastery, o.masteryDc ?? 10);
@@ -593,9 +619,9 @@ function spot(g: Game, cb: Combat, e: Unit, t: Unit): boolean {
 function saveRoll(g: Game, cb: Combat, t: Unit, abil: Ability, dc: number, label: string): boolean {
   let bonus: number;
   let adv = 0;
-  if (t.side === 'party') { bonus = saveBonus(charOf(g, t), abil); if (abil === 'dex' && t.dodge) adv = 1; }
+  if (t.side === 'party') { bonus = saveBonus(charOf(g, t), abil); if (abil === 'dex' && (t.dodge || t.haste)) adv = 1; }
   else bonus = MONSTERS[t.mon!].saves[abil] ?? 0;
-  if (t.bless) bonus += die(g.rng, 4);
+  if (t.bless || t.heroism) bonus += die(g.rng, 4);
   if (t.side === 'party') bonus += aura(g, cb);
   const d20 = rollD20(g, adv, isHalfling(g, t));
   const ok = d20 + bonus >= dc;
@@ -677,7 +703,7 @@ function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean 
 function startTurn(g: Game, cb: Combat) {
   const u = current(cb);
   planAll(g, cb);
-  cb.moved = cb.acted = cb.bonus = cb.sneakUsed = false;
+  cb.moved = cb.acted = cb.bonus = cb.sneakUsed = cb.hasteUsed = false;
   cb.smiteHit = undefined;
   cb.reroll = undefined;
   // Ayudar y Debilitar duran hasta el principio del siguiente turno de quien los hizo; Hostigar, hasta el final.
@@ -777,6 +803,8 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
   const lastEvent = [...cb.log].reverse().find(l => l.c === 'big' || /huye|se rinde|se desvanece|cae /.test(l.t))?.t;
   cb.result = result;
   syncParty(g, cb);
+  // La poción de fuerza de gigante dura el combate.
+  for (const c of g.party) c.giantStr = undefined;
   const msgs: string[] = [];
   const fledFoes = cb.units.filter(u => u.side === 'enemy' && u.fled).length;
   if (result === 'win') {
@@ -879,12 +907,14 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
 export type Target = 'enemy-melee' | 'enemy' | 'ally' | 'ally-down' | 'none';
 export interface Action {
   id: string; label: string; cost: 'action' | 'bonus' | 'move' | 'free'; target: Target; detail?: string;
+  /** Cura: solo se ofrece a quien le falta vida. */
+  heal?: boolean;
   /** Si no sirve de nada ahora: el motivo (el botón sale apagado y lo explica). */
   off?: string;
 }
 
 const HEALS = ['cure', 'healing_word', 'spark', 'lay', 'mass_heal'];
-const isHeal = (c: Char, a: Action) => HEALS.includes(a.id) || (a.id.startsWith('potion:') && !!ITEMS[c.items.find(i => i.uid === a.id.slice(7))?.id ?? '']?.heal);
+const isHeal = (c: Char, a: Action) => HEALS.includes(a.id) || !!a.heal;
 /** Aliados a los que les falta vida (también los caídos que aún no han muerto). */
 const hurt = (cb: Combat) => cb.units.filter(u => u.side === 'party' && alive(u) && u.hp < u.maxHp);
 
@@ -899,9 +929,11 @@ function uselessWhy(g: Game, cb: Combat, a: Action): string | undefined {
   if (a.id === 'hide' && u.row !== 'back') return 'Solo puedes esconderte desde la retaguardia.';
   if (a.id === 'help' && !cb.units.some(x => x.side === 'party' && x !== u && conscious(x))) return 'No hay ningún aliado que pueda aprovechar la ayuda.';
   // Ir atrás se permite aunque la vanguardia quede vacía (el autor 2026-11-10): sin nadie delante, te alcanzan igual.
-  if (a.id.startsWith('potion:') && a.detail !== CURE && a.detail !== COLD && !isHeal(c, a) && cb.units.filter(x => x.side === 'party' && alive(x)).every(x => x.resPoison)) return 'No es necesario: todos resistís ya el veneno.';
+  if (a.detail === 'resiste veneno' && cb.units.filter(x => x.side === 'party' && alive(x)).every(x => x.resPoison)) return 'No es necesario: todos resistís ya el veneno.';
   if (a.detail === COLD && cb.units.filter(x => x.side === 'party' && alive(x)).every(x => coldProof(g, x))) return 'No es necesario: todos resistís ya el frío.';
   if (a.detail === CURE && !targetsFor(cb, a).length) return 'No es necesario: nadie está envenenado.';
+  if (a.detail === ELIXIR && !targetsFor(cb, a).length) return 'No es necesario: nadie está envenenado ni paralizado.';
+  if (a.id.startsWith('dust:') && cb.units.filter(x => x.side === 'party' && conscious(x)).every(x => x.invisible)) return 'No es necesario: ya sois invisibles.';
   if (a.target !== 'none' && !targetsFor(cb, a).length) {
     return a.target === 'enemy-melee' && u.row !== 'front' ? 'Desde la retaguardia no alcanzas cuerpo a cuerpo: pasa delante primero.' : 'No hay ningún objetivo a tu alcance.';
   }
@@ -923,6 +955,8 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     const s = weaponStat(c, w.id);
     const m = masteryOf(c, w.id);
     A.push({ id: `atk:${w.id}`, label: def.name, cost: 'action', target: def.weapon!.ranged ? 'enemy' : 'enemy-melee', detail: `+${s.toHit} · ${def.weapon!.dice}${s.dmgBonus >= 0 ? '+' : ''}${s.dmgBonus}${m ? ` · ${MASTERY_NAME[m]}` : ''}` });
+    // Poción de velocidad: la acción de más solo sirve para un ataque (SRD 5.2.1, Acelerar).
+    if (u.haste && cb.acted && !cb.hasteUsed) A.push({ id: `haste:${w.id}`, label: `${def.name} (velocidad)`, cost: 'free', target: def.weapon!.ranged ? 'enemy' : 'enemy-melee', detail: 'un ataque más' });
   }
   if (c.cls === 'cleric') {
     A.push({ id: 'sacred_flame', label: 'Llama sagrada', cost: 'action', target: 'enemy', detail: `DES CD ${spellDc(c)} · ${c.level >= 5 ? '2d8' : '1d8'}` });
@@ -991,13 +1025,16 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     const n = c.items.filter(x => x.id === it.id).length;
     const short = SHORT[it.id] ?? d.name;
     const name = n > 1 ? `${short} ×${n}` : short;
-    if (d.kind === 'potion' && (d.heal || d.resistPoison || d.curePoison || d.resistCold)) A.push({ id: `potion:${it.uid}`, label: name, cost: 'bonus', target: 'ally', detail: d.heal ?? (d.curePoison ? CURE : d.resistCold ? COLD : 'resiste veneno') });
+    if (d.kind === 'potion' && (d.heal || d.resistPoison || d.curePoison || d.resistCold)) A.push({ id: `potion:${it.uid}`, label: name, cost: 'bonus', target: 'ally', detail: d.heal ?? (d.curePoison ? CURE : d.resistCold ? COLD : 'resiste veneno'), heal: !!d.heal || undefined });
+    if (d.kind === 'potion' && (d.resist || (d.effect && d.effect !== 'vanish'))) A.push({ id: `potion:${it.uid}`, label: name, cost: 'bonus', target: 'ally', detail: d.resist ? `resiste ${d.resist}` : EFFECT[d.effect!] });
+    if (d.effect === 'vanish') A.push({ id: `dust:${it.uid}`, label: name, cost: 'action', target: 'none', detail: 'el grupo, invisible' });
     // El agua bendita solo sale si hay algún no muerto en pie.
     if (d.kind === 'throw' && d.thrown?.undeadOnly && !cb.units.some(x => x.side === 'enemy' && alive(x) && MONSTERS[x.mon!]?.ai === 'undead')) continue;
-    if (d.kind === 'throw') A.push({ id: `throw:${it.uid}`, label: name, cost: 'action', target: 'enemy', detail: d.thrown!.dice ?? 'apresa' });
+    if (d.kind === 'throw') A.push({ id: `throw:${it.uid}`, label: name, cost: 'action', target: 'enemy', detail: d.thrown!.dice ?? (d.thrown!.oil ? 'empapa: +5 de fuego' : 'apresa') });
     if (d.web && (it.charges ?? 0) > 0 && CLASSES[c.cls].spell) A.push({ id: `web:${it.uid}`, label: 'Varita de telarañas', cost: 'action', target: 'enemy', detail: `una fila · ${it.charges} cargas` });
     if (d.kind === 'wand' && !d.web && (it.charges ?? 0) > 0) A.push({ id: `wand:${it.uid}`, label: 'Varita', cost: 'action', target: 'enemy', detail: `${it.charges} cargas` });
-    if (d.kind === 'scroll' && c.cls === 'wizard') A.push({ id: `scroll:${it.uid}`, label: 'Pergamino de escudo', cost: 'action', target: 'none', detail: '+5 CA' });
+    if (d.kind === 'scroll' && d.spell && d.scrollFor?.includes(c.cls)) A.push({ id: `scroll:${it.uid}`, label: name, cost: 'action', ...SCROLL[d.spell], heal: d.spell === 'cure' || undefined });
+    if (d.kind === 'scroll' && !d.spell && c.cls === 'wizard') A.push({ id: `scroll:${it.uid}`, label: 'Pergamino de escudo', cost: 'action', target: 'none', detail: '+5 CA' });
   }
   A.push({ id: 'help', label: 'Ayudar', cost: 'action', target: 'enemy-melee', detail: 'ventaja a un aliado' });
   A.push({ id: 'dodge', label: 'Esquivar', cost: 'action', target: 'none' });
@@ -1012,8 +1049,18 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
 // El grupo cabe entero en una fila (hasta 4); los enemigos, 3 por fila como mucho.
 const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r).length < (s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
 
+const KEEP_INVISIBLE = ['dodge', 'help', 'row', 'potion', 'dust', 'surge', 'second_wind', 'rage', 'hide', 'adrenaline'];
 const CURE = 'cura el veneno';
 const COLD = 'resiste el frío';
+const ELIXIR = 'quita veneno y parálisis';
+const EFFECT: Record<string, string> = {
+  haste: '+2 CA y un ataque más', heroism: '10 PG temporales y +1d4', growth: '+1d4 al daño con armas', giant: 'Fuerza 21', elixir: ELIXIR, poison: '+1d4 de veneno al golpear',
+};
+/** Objetivo y resumen de cada conjuro que se lanza con pergamino. */
+const SCROLL: Record<string, { target: Target; detail: string }> = {
+  cure: { target: 'ally', detail: '2d8 + mod.' }, bless: { target: 'none', detail: '+1d4 al grupo' }, guiding_bolt: { target: 'enemy', detail: '4d6' },
+  magic_missile: { target: 'enemy', detail: '3×(1d4+1)' }, sleep: { target: 'enemy', detail: 'una fila, SAB' }, burning_hands: { target: 'none', detail: 'fila delantera 3d6' },
+};
 
 export function targetsFor(cb: Combat, a: Action): Unit[] {
   const u = current(cb);
@@ -1024,7 +1071,8 @@ export function targetsFor(cb: Combat, a: Action): Unit[] {
   }
   if (a.detail === CURE) return cb.units.filter(x => x.side === 'party' && alive(x) && x.poisoned);
   // Las curaciones solo se ofrecen a quien le falta vida.
-  if (a.target === 'ally' && (HEALS.includes(a.id) || a.detail !== 'resiste veneno' && a.detail !== COLD && a.id.startsWith('potion:'))) return hurt(cb);
+  if (a.detail === ELIXIR) return cb.units.filter(x => x.side === 'party' && alive(x) && (x.poisoned || x.paralyzed));
+  if (a.target === 'ally' && (HEALS.includes(a.id) || a.heal)) return hurt(cb);
   if (a.target === 'ally' || a.target === 'ally-down') return validTargets(cb, u, 'ally');
   return [];
 }
@@ -1125,13 +1173,34 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
   if (a.cost === 'action') cb.acted = true;
   if (a.cost === 'bonus') cb.bonus = true;
   if (a.cost === 'move') cb.moved = true;
-  const [kind, arg] = a.id.split(':');
+  let [kind, arg] = a.id.split(':');
+  // Pergamino de conjuro: se gasta y el conjuro sale sin gastar espacio (se presta uno para el cálculo de siempre).
+  const scroll = kind === 'scroll' ? ITEMS[c.items.find(i => i.uid === arg)?.id ?? ''] : undefined;
+  if (scroll?.spell) {
+    c.items = c.items.filter(i => i.uid !== arg);
+    c.slots[0]++;
+    say(cb, `${u.name} lee ${scroll.name}.`, 'info');
+    kind = scroll.spell;
+  }
   switch (kind) {
     case 'atk': {
       const w = ITEMS[arg].weapon!;
       const s = weaponStat(c, arg);
       attack(g, cb, u, t!, { name: ITEMS[arg].name, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus, type: w.type, ranged: !!w.ranged, sneak: !!(w.finesse || w.ranged), ...masteryOpts(c, arg) });
       extraAttack(g, cb, u, c, t!, arg);
+      break;
+    }
+    case 'haste': {
+      const w = ITEMS[arg].weapon!;
+      const s = weaponStat(c, arg);
+      cb.hasteUsed = true;
+      attack(g, cb, u, t!, { name: ITEMS[arg].name, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus, type: w.type, ranged: !!w.ranged, sneak: !!(w.finesse || w.ranged), ...masteryOpts(c, arg) });
+      break;
+    }
+    case 'dust': {
+      c.items = c.items.filter(i => i.uid !== arg);
+      for (const x of cb.units.filter(x => x.side === 'party' && alive(x))) x.invisible = true;
+      say(cb, `${u.name} esparce el polvo de desaparición: el grupo se vuelve invisible.`, 'big');
       break;
     }
     case 'sacred_flame':
@@ -1175,6 +1244,7 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       if (d.undeadOnly && MONSTERS[t!.mon!]?.ai !== 'undead') { say(cb, `No le hace nada: ${t!.name} no es un no muerto.`, 'miss'); break; }
       if (saveRoll(g, cb, t!, 'dex', 8 + abilMod(c, 'dex') + 2, 'Destreza')) break;
       if (d.restrain) { t!.restrained = 10; say(cb, `${t!.name} queda apresado en la red.`, 'big'); }
+      if (d.oil) { t!.oiled = true; say(cb, `${t!.name} queda empapado de aceite: el fuego le hará 5 más.`, 'info'); }
       if (d.dice) applyDamage(g, cb, t!, roll(g.rng, d.dice), d.type!, u);
       if (d.burn && alive(t!)) { t!.burn = 2; say(cb, `${t!.name} arde.`, 'info'); }
       break;
@@ -1318,6 +1388,17 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       if (d.resistPoison) { dst.resPoison = true; say(cb, `${dst.name} resiste el veneno durante el combate.`, 'info'); }
       if (d.resistCold) { dst.resCold = true; say(cb, `${dst.name} resiste el frío durante el combate.`, 'info'); }
       if (d.curePoison) { dst.poisoned = false; say(cb, `${dst.name} ya no está envenenado.`, 'heal'); }
+      if (d.resist) { dst.res = [...(dst.res ?? []), d.resist]; say(cb, `${dst.name} resiste el daño de ${d.resist} durante el combate.`, 'info'); }
+      if (d.effect === 'growth') { dst.grow = true; say(cb, `${dst.name} se agranda: sus armas hacen 1d4 de daño más.`, 'info'); }
+      if (d.effect === 'giant') {
+        const dc = charOf(g, dst);
+        if (score(dc, 'str') >= 21) say(cb, `La poción no hace nada: ${dst.name} ya es igual de fuerte.`, 'info');
+        else { dc.giantStr = 21; say(cb, `${dst.name} tiene la fuerza de un gigante de las colinas: Fuerza 21 durante el combate.`, 'info'); }
+      }
+      if (d.effect === 'heroism') { dst.temp = Math.max(dst.temp ?? 0, 10); dst.heroism = true; say(cb, `${dst.name} se siente heroico: 10 PG temporales y +1d4 a ataques y salvaciones.`, 'info'); }
+      if (d.effect === 'haste' && !dst.haste) { dst.haste = true; dst.ac += 2; say(cb, `${dst.name} se acelera: +2 CA y un ataque más en cada turno.`, 'big'); }
+      if (d.effect === 'elixir') { dst.poisoned = false; dst.paralyzed = false; say(cb, `${dst.name} ya no está envenenado ni paralizado.`, 'heal'); }
+      if (d.effect === 'poison') { dst.poisonBlade = true; say(cb, `${dst.name} unta su arma con veneno.`, 'info'); }
       break;
     }
     case 'dodge': u.dodge = true; say(cb, `${u.name} se pone a la defensiva.`, 'info'); break;
@@ -1342,6 +1423,8 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       finish(g, cb, 'fled');
       return;
   }
+  // Polvo de desaparición: lanzar un conjuro o hacer daño también acaba con la invisibilidad.
+  if (u.invisible && !KEEP_INVISIBLE.includes(kind)) u.invisible = undefined;
   if (!checkEnd(g, cb)) planAll(g, cb);
 }
 

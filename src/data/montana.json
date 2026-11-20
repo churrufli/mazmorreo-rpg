@@ -494,7 +494,7 @@
               "lock_dc": null,
               "gold": 4,
               "item": {
-                "id": "potion_healing_2",
+                "id": "scroll_magic_missile",
                 "name": "Poción de curación",
                 "srd_item": "Potion of Healing",
                 "description": "Recupera 2d4 + 2 puntos de golpe."
@@ -1019,7 +1019,7 @@
               "lock_dc": null,
               "gold": 8,
               "item": {
-                "id": "potion_greater_healing_1"
+                "id": "dust_disappearance"
               }
             },
             {
@@ -2011,7 +2011,7 @@
               "lock_dc": null,
               "gold": 10,
               "item": {
-                "id": "potion_greater_healing_1"
+                "id": "potion_growth"
               }
             },
             {
@@ -3093,7 +3093,7 @@
               "lock_dc": null,
               "gold": 16,
               "item": {
-                "id": "potion_greater_healing_1"
+                "id": "potion_speed"
               }
             },
             {
@@ -4417,7 +4417,9 @@
     "cumbrenieve": [
       "hide_armor",
       "spear",
-      "cold_resistance_potion"
+      "cold_resistance_potion",
+      "scroll_guiding_bolt",
+      "scroll_burning_hands"
     ],
     "prices_gp": {
       "hide_armor": 10,

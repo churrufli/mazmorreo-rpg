@@ -105,6 +105,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Hondaroca: la inscripción de la cripta guarda una pista que sirve más adelante, en el monasterio. Si la aprovecháis, Maese Orvane llega con menos magia. Antes del combate se dice lo que habéis conseguido.',
     'Los compañeros comentan algunas decisiones (perdonar, ser duros o cobrar) y los lugares de su propia aventura, con frases cortas.',
     'Fichas de enemigos revisadas contra el SRD 5.2.1: el kobold, la cría de dragón blanco, el mefit de hielo, el lobo invernal, el arbusto despertado, el espectro, el fuego fatuo, la dríade, la bruja verde, el necrófago, el jabalí gigante y algunas salvaciones de bestias ya tienen los valores de 2024.',
+    'Objetos nuevos del SRD 5.2.1 en los cofres, en lugar de algunas pociones de curación: pociones de velocidad (un ataque más cada turno), heroísmo, crecimiento, fuerza de gigante y resistencia al fuego, al necrótico o al ácido; elixir de salud, veneno para el arma, frasco de aceite (el fuego le hace 5 más), polvo de desaparición y pergaminos de conjuro. Los más sencillos también se venden en las tiendas.',
   ] },
   { version: 'v0.146', items: [
     'Combate con más fuerza: tajos y chispas al golpear, críticos con doble tajo dorado y destello, sacudida mayor con los golpes fuertes y «Fallo» cuando un ataque no acierta.',

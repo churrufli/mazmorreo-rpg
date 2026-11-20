@@ -7,9 +7,9 @@ export type CombatGroup = 'attack' | 'skills' | 'items' | 'other';
 const CANTRIPS = ['sacred_flame', 'fire_bolt', 'ray_frost', 'eldritch', 'infernal_bolt'];
 export function groupOf(a: Action): CombatGroup {
   const id = a.id.split(':')[0];
-  if (['potion', 'throw', 'web', 'wand', 'scroll'].includes(id)) return 'items';
+  if (['potion', 'throw', 'web', 'wand', 'scroll', 'dust'].includes(id)) return 'items';
   if (['dodge', 'row', 'flee'].includes(id)) return 'other';
-  return id === 'atk' || CANTRIPS.includes(id) ? 'attack' : 'skills';
+  return id === 'atk' || id === 'haste' || CANTRIPS.includes(id) ? 'attack' : 'skills';
 }
 
 /** Presentación únicamente: conserva las opciones gastadas, pero nunca las habilita. */
@@ -37,6 +37,6 @@ export function menuActionsFor(g: Game, cb: Combat): Action[] {
 /** Ataque con arma que se usa al tocar directamente a un enemigo: el primero que lo alcance, cuerpo a cuerpo antes. */
 export function quickAttack(g: Game, cb: Combat, targetKey: string): Action | undefined {
   if (cb.result || autoTurn(cb)) return undefined;
-  const atks = actionsFor(g, cb).filter(a => a.id.startsWith('atk:') && !a.off && targetsFor(cb, a).some(t => t.key === targetKey));
+  const atks = actionsFor(g, cb).filter(a => (a.id.startsWith('atk:') || a.id.startsWith('haste:')) && !a.off && targetsFor(cb, a).some(t => t.key === targetKey));
   return atks.find(a => a.target === 'enemy-melee') ?? atks[0];
 }

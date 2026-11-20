@@ -37,7 +37,7 @@ function fight(g: Game, id: string): Combat {
       const mv = actionsFor(g, cb).find(a => a.id === 'row');
       if (mv) perform_(g, cb, mv);
     }
-    const heal = acts.find(a => (a.id.startsWith('potion') || a.id === 'second_wind') && u.hp < u.maxHp / 2);
+    const heal = acts.find(a => ((a.id.startsWith('potion') && a.heal) || a.id === 'second_wind') && u.hp < u.maxHp / 2);
     if (heal) perform_(g, cb, heal);
     // En el estudio el bot se cura con conjuros cuando va mal y usa Dormir contra filas de 2 o más (como una persona).
     if (REC.cur) {
