@@ -26,11 +26,11 @@ export interface Goal {
 }
 
 export const GOALS: Goal[] = [
-  { enc: 'z1_e06', kind: 'kill', who: 'Vigía goblin', by: 3, text: 'Que el vigía no baje al pozo a avisar: derribadlo antes del asalto 3.', leave: 'baja por el pozo a dar la alarma', ok: 'El vigía no ha podido avisar a nadie. En su zurrón hay oro y una poción.', gold: 10, items: ['potion_healing'],
-    failFx: { text: 'El vigía ha dado la alarma: en la prisión de abajo os esperan con refuerzos.', add: 'z2_e01', flag: 'z1_alarma' } },
-  { enc: 'z2_e01', kind: 'win', by: 4, text: 'Salvad al preso: venced antes del asalto 4.', ok: 'Llegáis a tiempo: el preso os da una poción que escondía en la celda.', gold: 15, items: ['potion_healing'] },
-  { enc: 'z3_e04', kind: 'win', by: 4, text: 'Venced antes del asalto 4, antes de que se cierre la losa de la cámara sellada.', ok: 'La losa sigue abierta: dentro hay oro y un frasco de agua bendita.', gold: 30, items: ['holy_water'] },
-  { enc: 'z4_e03', kind: 'kill', who: 'Devoto de retaguardia', by: 3, text: 'Cortad el ritual: derribad al devoto de retaguardia antes del asalto 3.', ok: 'El ritual queda a medias: Orvane tendrá un rayo abrasador menos.', gold: 0, items: ['potion_healing'] },
+  { enc: 'z1_e06', kind: 'kill', who: 'Vigía goblin', by: 3, text: 'Impedid que el vigía dé la alarma: derribadlo antes del asalto 3.', leave: 'baja por el pozo a dar la alarma', ok: 'El vigía no ha podido avisar a nadie. En su zurrón hay oro y una poción.', gold: 10, items: ['potion_healing'],
+    failFx: { text: 'El vigía ha avisado a los carceleros de las ruinas. La prisión estará reforzada.', add: 'z2_e01', flag: 'z1_alarma' } },
+  { enc: 'z2_e01', kind: 'win', by: 4, text: 'Llegad a tiempo de proteger al prisionero: venced antes del asalto 4.', ok: 'Llegáis a tiempo: el preso os da una poción que escondía en la celda.', gold: 15, items: ['potion_healing'] },
+  { enc: 'z3_e04', kind: 'win', by: 4, text: 'Venced antes del asalto 4, cuando la losa protectora cierre la cámara sellada.', ok: 'La losa sigue abierta: dentro hay oro y un frasco de agua bendita.', gold: 30, items: ['holy_water'] },
+  { enc: 'z4_e03', kind: 'kill', who: 'Devoto de retaguardia', by: 3, text: 'Cortad el ritual de Orvane: derribad al devoto de retaguardia antes del asalto 3.', ok: 'La invocación queda incompleta. Orvane dispondrá de un rayo abrasador menos.', gold: 0, items: ['potion_healing'] },
   { enc: 'b1_e03', kind: 'noflee', text: 'Que no huya ningún bandido.', ok: 'Los bandidos no escapan: uno de ellos os entrega su bolsa y un frasco de fuego de alquimista.', gold: 25, items: ['alchemists_fire'] },
   { enc: 'b2_e08', kind: 'win', by: 4, text: 'Venced a la araña antes del asalto 4, antes de que se cierre el capullo del resinero.', ok: 'Sacáis al resinero del capullo: os regala fuego de alquimista y un antídoto.', gold: 0, items: ['alchemists_fire', 'antidote'],
     okFx: { text: 'El resinero conoce el anillo de resina: si pasáis por allí, os enseñará a abrir su caja.', flag: 'b2_resinero' } },

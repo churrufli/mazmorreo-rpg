@@ -60,7 +60,7 @@ export const ADVS: Record<AdvId, Adv> = {
   hondaroca: {
     id: 'hondaroca', name: H.dungeon.name, data: H, town: 'valdescarcha', boss: 'Orvane', sub: 'brunna',
     intro: 'intro', victoryImg: 'victoria_hondaroca', defeatImg: 'derrota',
-    victoryText: H.boss.victory_reward, defeatText: 'Todo el grupo ha caído en la oscuridad de Hondaroca.',
+    victoryText: H.boss.victory_reward, defeatText: 'El grupo cae bajo Hondaroca. El ritual de Orvane continúa mientras los cautivos esperan una ayuda que no llega.',
     reward: { gold: 150 },
     art: { z1: art('mina'), z2: art('ruinas'), z3: art('cripta'), z4: art('monasterio') },
     allyImg: { brunna: 'ally_brunna', tiko: 'ally_tiko', edmund: 'ally_edmund', liss: 'ally_liss' },
