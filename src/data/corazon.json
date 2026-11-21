@@ -2,23 +2,23 @@
   "dungeon": {
     "id": "corazon_hueco",
     "name": "El Corazón Hueco",
-    "summary": "En el bosque de Umbría desaparecen vecinos de Vegaumbría. Muchos siguieron voces familiares y no regresaron. Las raíces cierran caminos y esconden a los cautivos. Una anciana ofrece ayuda, pero alguien utiliza al Corazón Hueco, el antiguo protector del bosque, para atraer nuevas víctimas. Tendréis que descubrir el engaño y liberar a los desaparecidos."
+    "summary": "En Umbría desaparecen vecinos de Vegaumbría. Algunos siguieron voces familiares y no regresaron. Las raíces cierran los caminos. Tendréis que encontrarlos."
   },
   "zones": [
     {
       "id": "b1",
       "order": 1,
       "name": "Linde del bosque",
-      "description": "En la linde de Umbría, las huellas de los desaparecidos terminan junto a raíces que se mueven.",
+      "description": "Las huellas terminan ante unas raíces que se mueven. El rastro de los desaparecidos continúa hacia el interior del bosque.",
       "expected_party_level": 2,
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "La luna ilumina un carro abandonado y un farol aún encendido. Más allá, la niebla oculta el bosque de Umbría. En Vegaumbría faltan cazadores, leñadores y viajeros."
+          "text": "La luna ilumina un carro abandonado y un farol encendido. La niebla cubre el bosque. Faltan cazadores, leñadores y viajeros."
         },
         {
           "speaker": "hero",
-          "text": "Voy a buscar a los desaparecidos. Dicen que siguieron voces conocidas entre los árboles. Averiguaré quién los llama."
+          "text": "Voy a buscar a los desaparecidos. Las voces los atrajeron hasta aquí. Seguiré sus huellas para descubrir qué les ocurrió."
         }
       ],
       "rooms": [
@@ -70,7 +70,7 @@
               "type": "trap",
               "id": "b1_t01",
               "name": "Lazo de cazador",
-              "description": "Algo cruje bajo tus pies…",
+              "description": "Algo cruje bajo vuestros pies…",
               "detect_dc": 12,
               "disarm_dc": 12,
               "save_ability": "DEX",
@@ -108,14 +108,14 @@
               "near": "b1_t01",
               "before": "b1_t01",
               "text": "Entre las raíces y las hojas del sendero hay un lazo de cazador. Desactivarlo permitirá pasar sin sufrir la trampa.",
-              "question": "¿Cómo desactivas el lazo?",
+              "question": "¿Cómo desactiváis el lazo?",
               "options": [
                 {
                   "label": "Buscar la cuerda entre las raíces",
                   "attr": "wis",
                   "dc": 11,
                   "ok": {
-                    "text": "Localizas la cuerda y desmontas el lazo. La trampa del camino queda desactivada.",
+                    "text": "Localizáis la cuerda y desmontáis el lazo. La trampa del camino queda desactivada.",
                     "open": "b1_t01"
                   },
                   "fail": {
@@ -127,11 +127,11 @@
                   "attr": "dex",
                   "dc": 12,
                   "ok": {
-                    "text": "Sueltas el lazo sin tensarlo. La trampa del camino queda desactivada.",
+                    "text": "Soltáis el lazo sin tensarlo. La trampa del camino queda desactivada.",
                     "open": "b1_t01"
                   },
                   "fail": {
-                    "text": "El lazo se tensa de golpe y te hiere.",
+                    "text": "El lazo se tensa y os hiere.",
                     "damage": "1d4"
                   }
                 },
@@ -140,7 +140,7 @@
                   "attr": "int",
                   "dc": 12,
                   "ok": {
-                    "text": "Aflojas el nudo que mantiene tenso el lazo. La trampa del camino queda desactivada.",
+                    "text": "Aflojáis el nudo que mantiene tenso el lazo. La trampa del camino queda desactivada.",
                     "open": "b1_t01"
                   },
                   "fail": {
@@ -149,7 +149,7 @@
                 }
               ],
               "fallback": {
-                "text": "El lazo sigue armado. Te alejas de la trampa sin tocarla."
+                "text": "El lazo sigue armado. Os alejáis sin tocarlo."
               }
             },
             {
@@ -242,7 +242,7 @@
                   "crowbar"
                 ],
                 "use": "{who} arranca los clavos con la palanqueta.",
-                "missing": "Necesitas una palanqueta para liberar el arcón. Puedes comprarla en Vegaumbría.",
+                "missing": "Necesitáis una palanqueta para liberar el arcón. Podéis comprarla en Vegaumbría.",
                 "alt": {
                   "abil": "str",
                   "dc": 12,
@@ -293,7 +293,7 @@
                 },
                 {
                   "speaker": "ortiga",
-                  "text": "Me llaman abuela Brezna. Conozco este bosque desde antes de que nacieras."
+                  "text": "Me llaman abuela Brezna. Conozco este bosque desde hace mucho tiempo."
                 },
                 {
                   "speaker": "hero",
@@ -301,7 +301,7 @@
                 },
                 {
                   "speaker": "ortiga",
-                  "text": "Aquí las raíces guardan lo que encuentran. Y si escuchas una voz querida, no la sigas. El bosque sabe imitarla."
+                  "text": "Las raíces guardan lo que encuentran. Si oís una voz querida, no la sigáis. El bosque sabe imitarla."
                 }
               ]
             },
@@ -313,14 +313,14 @@
               "on_return": true,
               "after": "b2_r01",
               "text": "Un leñador herido intenta mantenerse despierto. «Las raíces me sujetaron. Solo pude escapar cuando dejaron de moverse».",
-              "question": "¿Qué haces?",
+              "question": "¿Qué hacéis?",
               "options": [
                 {
                   "label": "Darle una poción de curación",
                   "needs": "potion_healing",
                   "ok": {
                     "lose": "potion_healing",
-                    "text": "La poción le devuelve las fuerzas. «Toma mi paga. Me has salvado», dice antes de regresar a Vegaumbría.",
+                    "text": "La poción le devuelve las fuerzas. «Tomad mi paga. Me habéis salvado», dice antes de regresar a Vegaumbría.",
                     "gold": 7
                   }
                 },
@@ -329,7 +329,7 @@
                   "attr": "wis",
                   "dc": 11,
                   "ok": {
-                    "text": "Le vendas la herida y le muestras un camino seguro. Te entrega su paga, agradecido.",
+                    "text": "Le ponéis un vendaje y le mostráis un camino seguro. Os entrega su paga, agradecido.",
                     "gold": 7
                   },
                   "fail": {
@@ -401,7 +401,7 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Unos bandidos te salen al paso. Robaban a los viajeros, pero ahora también ellos están perdidos. Apuntan con manos temblorosas."
+                  "text": "Unos bandidos os cortan el paso. Robaban a los viajeros, pero ahora están perdidos. Os apuntan con manos temblorosas."
                 },
                 {
                   "speaker": "hero",
@@ -417,12 +417,12 @@
               "decision": true,
               "after": "b1_e02",
               "text": "Un bandido herido se apoya contra las raíces de un roble. Su brazo sangra y aún sostiene una daga.",
-              "question": "¿Qué haces con él?",
+              "question": "¿Qué hacéis con él?",
               "options": [
                 {
                   "label": "Vendarle el brazo y dejarle ir",
                   "ok": {
-                    "text": "Le vendas el brazo. «Los leñadores marcaron un escondite cerca de unas campanillas», confiesa. Después, se marcha.",
+                    "text": "Le curáis el brazo. «Los leñadores marcaron un escondite junto a unas campanillas», confiesa. Después se marcha.",
                     "reveal": "b1_s02"
                   },
                   "tone": "piedad"
@@ -432,7 +432,7 @@
                   "attr": "cha",
                   "dc": 12,
                   "ok": {
-                    "text": "«Robábamos a los viajeros. Luego el bosque cerró la salida». Te entrega sus monedas a cambio de que le dejes marchar.",
+                    "text": "«Robábamos a viajeros, hasta que las raíces cerraron la salida». Os entrega sus monedas a cambio de que lo dejéis marchar.",
                     "gold": 7
                   },
                   "fail": {
@@ -509,11 +509,11 @@
                   "attr": "wis",
                   "dc": 12,
                   "ok": {
-                    "text": "Sigues el aire, levantas la corteza y descubres un cofre escondido.",
+                    "text": "Seguís el aire, levantáis la corteza y descubrís un cofre escondido.",
                     "reveal": "b1_s01"
                   },
                   "fail": {
-                    "text": "No das con ello por ahí."
+                    "text": "No dais con ello por ahí."
                   }
                 },
                 {
@@ -521,11 +521,11 @@
                   "attr": "int",
                   "dc": 12,
                   "ok": {
-                    "text": "El eco revela una cavidad tras la corteza. Dentro encuentras un cofre escondido.",
+                    "text": "El eco revela una cavidad tras la corteza. Dentro encontráis un cofre escondido.",
                     "reveal": "b1_s01"
                   },
                   "fail": {
-                    "text": "No das con ello por ahí."
+                    "text": "No dais con ello por ahí."
                   }
                 }
               ]
@@ -653,7 +653,7 @@
                   "alchemists_fire"
                 ],
                 "use": "{who} prende las ramas con {item}; cuando se apagan, el paso queda libre.",
-                "missing": "Las ramas están fuertemente atadas. Puedes quemarlas con una antorcha o con fuego de alquimista."
+                "missing": "Las ramas están muy atadas. Podéis quemarlas con una antorcha o con fuego de alquimista."
               }
             },
             {
@@ -664,12 +664,12 @@
               "decision": true,
               "after": "b1_e03",
               "text": "Tras la pelea, una antorcha caída prende los troncos de la barricada. Un bandido queda atrapado debajo.",
-              "question": "¿Qué haces?",
+              "question": "¿Qué hacéis?",
               "options": [
                 {
                   "label": "Apagar la antorcha y sacarle",
                   "ok": {
-                    "text": "Apagas el fuego y lo liberas. «Alejaré al lobo que merodea por aquí», promete antes de marcharse.",
+                    "text": "Apagáis el fuego y lo liberáis. «Alejaré al lobo que merodea por aquí», promete antes de marcharse.",
                     "remove": "b1_e04"
                   }
                 },
@@ -678,11 +678,11 @@
                   "attr": "str",
                   "dc": 12,
                   "ok": {
-                    "text": "Levantas los troncos y lo liberas. Te ofrece una poción de curación como agradecimiento.",
+                    "text": "Levantáis los troncos y lo liberáis. Os ofrece una poción de curación como agradecimiento.",
                     "item": "potion_healing"
                   },
                   "fail": {
-                    "text": "Los troncos caen con estrépito. Consigues sacarlo, pero el ruido atrae a otro lobo.",
+                    "text": "Los troncos caen con estrépito. Lográis sacarlo, pero el ruido atrae a otro lobo.",
                     "add": "b1_e04"
                   }
                 }
@@ -787,11 +787,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Del otro lado del barranco llega una súplica con la voz de una persona desaparecida. No ves a nadie."
+                  "text": "Una voz de alguien desaparecido pide ayuda desde el barranco. No veis a nadie, pero las raíces se mueven."
                 },
                 {
                   "speaker": "hero",
-                  "text": "La voz sale de las raíces. Así atraen a la gente."
+                  "text": "La voz viene de las raíces. Las usan para atraer a quienes buscan a los desaparecidos."
                 }
               ]
             },
@@ -800,19 +800,19 @@
               "id": "b1_p04",
               "title": "El zurrón entre las raíces",
               "text": "Un zurrón de provisiones se ha enganchado en las raíces junto al sendero. Una correa sobresale entre las hojas.",
-              "question": "¿Cómo intentas recuperarlo?",
+              "question": "¿Cómo intentáis recuperarlo?",
               "options": [
                 {
                   "label": "Tirar de la correa entre las raíces",
                   "attr": "str",
                   "dc": 12,
                   "ok": {
-                    "text": "Tiras de la correa hasta liberar el zurrón y sus provisiones.",
+                    "text": "Tiráis de la correa y liberáis el zurrón con sus provisiones.",
                     "item": "potion_healing",
                     "gold": 4
                   },
                   "fail": {
-                    "text": "Las raíces ceden y te hacen perder el equilibrio.",
+                    "text": "Las raíces ceden y os hacen perder el equilibrio.",
                     "damage": "1d4"
                   }
                 },
@@ -821,17 +821,17 @@
                   "attr": "dex",
                   "dc": 12,
                   "ok": {
-                    "text": "Apartas las hojas y desenganchas el zurrón con la rama.",
+                    "text": "Apartáis las hojas y desengancháis el zurrón con la rama.",
                     "item": "potion_healing",
                     "gold": 4
                   },
                   "fail": {
-                    "text": "Las raíces ceden y te hacen perder el equilibrio."
+                    "text": "Las raíces ceden y os hacen perder el equilibrio."
                   }
                 }
               ],
               "fallback": {
-                "text": "No consigues recuperar lo que buscabas y te retiras."
+                "text": "No conseguís recuperar el zurrón y os retiráis."
               }
             },
             {
@@ -855,8 +855,8 @@
               "type": "scene",
               "id": "b1_pat01_paso",
               "title": "Patrulla de la linde",
-              "text": "Unos bandidos hambrientos, atrapados en la linde, te exigen provisiones para dejarte pasar.",
-              "question": "¿Qué haces?",
+              "text": "Unos bandidos hambrientos, atrapados en la linde, os exigen provisiones para dejaros pasar.",
+              "question": "¿Qué hacéis?",
               "on_return": true,
               "after": "b2_r01",
               "options": [
@@ -872,11 +872,11 @@
                   "attr": "dex",
                   "dc": 12,
                   "ok": {
-                    "text": "Cruzas tras los helechos mientras ellos discuten.",
+                    "text": "Cruzáis tras los helechos mientras ellos discuten.",
                     "remove": "b1_pat01"
                   },
                   "fail": {
-                    "text": "Te descubren.",
+                    "text": "Os descubren.",
                     "fight": "b1_pat01"
                   }
                 },
@@ -885,7 +885,7 @@
                   "attr": "cha",
                   "dc": 12,
                   "ok": {
-                    "text": "Les haces creer que vienen refuerzos por el sendero. Retroceden y desaparecen.",
+                    "text": "Les hacéis creer que vienen refuerzos por el sendero. Retroceden y desaparecen.",
                     "remove": "b1_pat01"
                   },
                   "fail": {
@@ -929,7 +929,7 @@
               "id": "b1_s02_pista",
               "title": "Las marcas del sendero",
               "text": "Unas campanillas de hueso y madera cuelgan entre los árboles. Debajo hay muescas antiguas y huellas de leñadores.",
-              "question": "¿Cómo buscas el escondite?",
+              "question": "¿Cómo buscáis el escondite?",
               "reveals": "b1_s02",
               "options": [
                 {
@@ -941,7 +941,7 @@
                     "reveal": "b1_s02"
                   },
                   "fail": {
-                    "text": "No das con ello por ahí."
+                    "text": "No dais con ello por ahí."
                   }
                 },
                 {
@@ -953,7 +953,7 @@
                     "reveal": "b1_s02"
                   },
                   "fail": {
-                    "text": "No das con ello por ahí."
+                    "text": "No dais con ello por ahí."
                   }
                 },
                 {
@@ -1005,7 +1005,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "No siguieron voces al azar. Alguien conocía sus nombres."
+                  "text": "La lista registra cuándo escucharon sus nombres. Las voces no son simples ecos: alguien las usa para atraerlos."
                 }
               ]
             },
@@ -1076,7 +1076,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Así que debo desconfiar incluso de las voces que reconozca."
+                  "text": "Los leñadores también lo advirtieron. No seguiremos ninguna voz que nos llame desde los árboles."
                 }
               ]
             },
@@ -1163,11 +1163,11 @@
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "El bosque se vuelve más oscuro. Las raíces se enredan entre los troncos y hay restos de campamentos abandonados."
+          "text": "Os adentráis en Umbría. Entre campamentos abandonados, las raíces se enredan y cambian el camino. Aún no hay rastro de los cautivos."
         },
         {
           "speaker": "hero",
-          "text": "Si los desaparecidos siguen vivos, las raíces podrían tenerlos atrapados. Debemos encontrar de dónde salen."
+          "text": "Las raíces arrastraron a los leñadores hacia el interior. Si siguen vivos, debemos seguir ese rastro."
         }
       ],
       "rooms": [
@@ -1199,21 +1199,21 @@
               "default_scene": [
                 {
                   "speaker": "maren",
-                  "text": "Soy Maren, cazadora de Vegaumbría. Mi hermano desapareció entre estos árboles. No me marcharé sin encontrarlo."
+                  "text": "Soy Maren, cazadora de Vegaumbría. Mi hermano entró a talar y desapareció. Seguiré buscando hasta encontrarlo."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Buscamos a los mismos cautivos. Ven con nosotros."
+                  "text": "También buscamos a los desaparecidos. Ven con nosotros; las huellas nos han traído hasta aquí."
                 }
               ],
               "brunna_scene": [
                 {
                   "speaker": "telmo",
-                  "text": "Soy Corvalen, estudioso de Vegaumbría. Las raíces bloquearon mi regreso cuando investigaba las desapariciones."
+                  "text": "Soy Corvalen, estudioso de Vegaumbría. Investigaba las desapariciones cuando las raíces bloquearon mi regreso. He seguido sus movimientos."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Tus conocimientos nos vendrán bien. Acompáñanos."
+                  "text": "Conoces estas raíces y nosotros buscamos a los cautivos. Acompáñanos."
                 }
               ]
             },
@@ -1297,7 +1297,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "No podemos abrirla desde aquí. Busquemos cómo aflojarla por el otro lado."
+                  "text": "El paso está cerrado desde este lado. Tendremos que encontrar el mecanismo al otro lado de la verja."
                 }
               ]
             }
@@ -1521,15 +1521,15 @@
               "lines": [
                 {
                   "speaker": "ortiga",
-                  "text": "Veo que seguís con vida. Es bueno encontrar caras conocidas en un bosque tan peligroso."
+                  "text": "Veo que seguís con vida. Los caminos se cierran, pero todavía podéis continuar hacia el interior."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Siempre apareces donde vamos. ¿Cómo encuentras el camino?"
+                  "text": "Conoces estas raíces demasiado bien. ¿Cómo encuentras el camino cuando ellas lo cierran?"
                 },
                 {
                   "speaker": "ortiga",
-                  "text": "Conozco las raíces mejor que nadie. Os conviene hacerme caso: más adelante aguarda un nido de arañas."
+                  "text": "Conozco las raíces mejor que nadie. Escuchadme: más adelante encontraréis un nido de arañas."
                 }
               ],
               "gift": {
@@ -1538,7 +1538,7 @@
                   "antidote",
                   "potion_poison_resistance"
                 ],
-                "text": "Tomad este antídoto. Prefiero que lleguéis sanos hasta lo más hondo del bosque."
+                "text": "Tomad este antídoto. Os hará falta si seguís hacia lo más hondo del bosque."
               }
             },
             {
@@ -1703,7 +1703,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Si alcanzamos el mecanismo, podremos abrir el atajo de las raíces."
+                  "text": "El mapa confirma que hay un mecanismo al otro lado de la verja. Busquemos su acceso."
                 }
               ]
             }
@@ -1991,7 +1991,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Si limpiamos las marcas, quizá encontremos su antiguo refugio."
+                  "text": "Las marcas de los resineros podrían señalar su antiguo refugio. Merece la pena descifrarlas."
                 }
               ]
             },
@@ -2100,7 +2100,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Las raíces no pedían ayuda. Usaban las voces de otras personas."
+                  "text": "La carta confirma las voces de la linde. Las raíces repiten súplicas de los cautivos para atraer a más gente."
                 }
               ]
             },
@@ -2219,7 +2219,7 @@
                   "attr": "wis",
                   "dc": 12,
                   "ok": {
-                    "text": "Comparáis las muescas con las huellas del suelo. Agradecido, el leñador os da un antídoto de resina y os muestra un paso hacia una charca apartada.",
+                    "text": "Comparáis las muescas con las huellas. El leñador os da un antídoto y os muestra un paso hacia la charca apartada.",
                     "reveal": "b2_s01",
                     "item": "antidote"
                   },
@@ -2285,7 +2285,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ese aprendiz también escuchó una voz conocida. Era otra trampa del bosque."
+                  "text": "La nota cuenta lo mismo que las huellas: una voz familiar los llevó hasta las raíces."
                 }
               ]
             },
@@ -2366,11 +2366,11 @@
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "Entráis en una ciénaga de árboles muertos y aguas oscuras. Entre los juncos brillan luces azules. Algunas raíces parecen latir."
+          "text": "Las raíces os conducen hasta una ciénaga de aguas negras. Luces azules flotan entre los juncos y asoman antiguos puestos de vigilancia."
         },
         {
           "speaker": "hero",
-          "text": "Las raíces llegan hasta aquí. El origen de las desapariciones debe de estar más adentro."
+          "text": "Las voces nos guiaron hasta las raíces de la ciénaga. Si los cautivos siguen vivos, están más adentro."
         }
       ],
       "rooms": [
@@ -2402,21 +2402,21 @@
               "default_scene": [
                 {
                   "speaker": "anselmo",
-                  "text": "Me llamo Kallux. Me escondo en esta ermita de quien me prestó este fuego. Al menos mantiene lejos a los fuegos fatuos."
+                  "text": "Soy Kallux. Huyo de un pacto y me refugio en esta ermita. Este fuego mantiene alejados a los fuegos fatuos."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ven con nosotros. Hay personas atrapadas más allá de la ciénaga."
+                  "text": "Ven con nosotros. Tu fuego puede ayudarnos a cruzar y buscar a los cautivos."
                 }
               ],
               "brunna_scene": [
                 {
                   "speaker": "telmo",
-                  "text": "Soy Corvalen. He seguido las raíces hasta esta ciénaga. Mi luz mantiene a raya a los fuegos fatuos."
+                  "text": "Soy Corvalen. Seguí el rastro de las raíces hasta la ciénaga. Mi luz mantiene a raya a los fuegos fatuos."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Necesitaremos esa luz. Acompáñanos."
+                  "text": "Esa luz nos ayudará a atravesar la ciénaga. Acompáñanos hasta encontrar a los cautivos."
                 }
               ]
             },
@@ -2580,7 +2580,7 @@
               "img": "escena_voz_agua",
               "decision": true,
               "after": "b3_e01",
-              "text": "Una luz azul flota sobre el agua. Entre la niebla aparece una sombra encapuchada. Una voz familiar pide auxilio.",
+              "text": "Entre los juncos queda una luz azul. La niebla dibuja una sombra encapuchada y una voz familiar pide auxilio.",
               "question": "¿Qué hacéis ante la voz?",
               "options": [
                 {
@@ -2756,15 +2756,15 @@
               "lines": [
                 {
                   "speaker": "ortiga",
-                  "text": "Ya estáis cerca. El bosque guarda muchas voces bajo estas aguas. Algunas pertenecen a quienes todavía siguen vivos."
+                  "text": "Ya estáis cerca. Las voces que habéis oído pertenecen a personas que las raíces aún mantienen con vida."
                 },
                 {
                   "speaker": "hero",
-                  "text": "¿Cómo puedes saber que siguen vivos?"
+                  "text": "¿Cómo sabes que siguen vivos? ¿Los has visto?"
                 },
                 {
                   "speaker": "ortiga",
-                  "text": "Las raíces conservan su fuerza. Mientras el Corazón las sujete, no podrán marcharse."
+                  "text": "El Corazón Hueco los mantiene entre sus raíces. Allí conservan su fuerza, pero no pueden marcharse."
                 }
               ]
             },
@@ -2956,7 +2956,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Así que el Corazón no siempre encerró a la gente. Alguien cambió su propósito."
+                  "text": "Esta inscripción habla de libertad, no de cautiverio. Lo que hace ahora el Corazón contradice su promesa."
                 }
               ]
             },
@@ -3046,7 +3046,7 @@
               "title": "La ofrenda del Corazón",
               "img": "escena_ofrenda_guardian",
               "decision": true,
-              "text": "Bajo un dolmen, una semilla dorada descansa sobre una losa de piedra. La inscripción habla del Corazón Hueco.",
+              "text": "Bajo una losa se distingue una semilla dorada entre las raíces. Una inscripción habla de la antigua promesa del Corazón Hueco.",
               "question": "¿Qué hacéis ante la ofrenda?",
               "options": [
                 {
@@ -3054,12 +3054,12 @@
                   "attr": "cha",
                   "dc": 13,
                   "ok": {
-                    "text": "La semilla brilla al oír vuestra promesa. Su calor alivia vuestras heridas y su luz señala un cofre oculto bajo la losa.",
+                    "text": "La semilla brilla entre las raíces. Su calor alivia vuestras heridas y la luz revela el cofre bajo la losa.",
                     "reveal": "b3_s01",
                     "heal": 3
                   },
                   "fail": {
-                    "text": "La semilla permanece inmóvil sobre la losa."
+                    "text": "La semilla no responde entre las raíces."
                   },
                   "tone": "piedad"
                 },
@@ -3068,14 +3068,14 @@
                   "needs": "potion_healing",
                   "ok": {
                     "lose": "potion_healing",
-                    "text": "Dejáis la poción sobre la piedra. La semilla desprende una luz cálida que alivia las heridas del grupo.",
+                    "text": "Dejáis la poción sobre la piedra. La semilla brilla bajo la losa y alivia las heridas del grupo.",
                     "heal": 5
                   }
                 },
                 {
                   "label": "Dejarla como está",
                   "ok": {
-                    "text": "Dejáis la semilla en su lugar y seguís adelante."
+                    "text": "Dejáis la semilla entre las raíces y seguís adelante."
                   }
                 },
                 {
@@ -3256,11 +3256,11 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "Unos monolitos sostienen un arco de madera petrificada. En sus piedras se lee la promesa original del Corazón Hueco."
+                  "text": "Los monolitos repiten la promesa del Corazón: proteger a quienes cruzan Umbría y dejarlos regresar."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "«Proteger a quienes entran y permitirles regresar». Eso era lo que debía cumplir."
+                  "text": "Esa promesa explica los antiguos puestos de vigilancia. Su misión era proteger a los viajeros, nunca retenerlos."
                 }
               ]
             },
@@ -3388,11 +3388,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "En un antiguo puesto hay un relato: «Un druida entregó su vida al bosque y se convirtió en el Corazón Hueco»."
+                  "text": "Un relato del antiguo puesto cuenta: «Un druida entregó su vida al bosque y se convirtió en el Corazón Hueco»."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "«La ciénaga cortó el paso a la orden. Algunos vigilantes murieron aquí y sus cuerpos todavía custodian estos lugares»."
+                  "text": "El relato continúa: «La ciénaga aisló a la orden. Algunos vigilantes murieron aquí y sus cuerpos aún custodian estos lugares»."
                 }
               ]
             },
@@ -3453,7 +3453,7 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "En la pared se lee: «Protegeré a quienes crucen Umbría. No los retendré contra su voluntad»."
+                  "text": "La pared conserva las palabras del Corazón: «Protegeré a quienes crucen Umbría. No los retendré contra su voluntad»."
                 },
                 {
                   "speaker": "narrator",
@@ -3532,11 +3532,11 @@
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "En un círculo de piedras se lee que un druida se convirtió en el Corazón Hueco para proteger a quienes cruzaban Umbría."
+          "text": "Llegáis al claro maldito. Un círculo de piedras recuerda al druida convertido en el Corazón Hueco, antiguo protector de Umbría."
         },
         {
           "speaker": "hero",
-          "text": "Su promesa era proteger a los viajeros y dejarlos regresar. Pero ahora sus raíces los retienen. Encontraremos al responsable."
+          "text": "Las inscripciones dicen que debía dejar salir a los viajeros. Seguiremos las raíces hasta llegar a los cautivos."
         }
       ],
       "rooms": [
@@ -3568,21 +3568,21 @@
               "default_scene": [
                 {
                   "speaker": "ivelle",
-                  "text": "Soy Ivelle. Mi orden protegía al Corazón Hueco, pero dejó de visitarlo cuando la ciénaga cerró el camino."
+                  "text": "Soy Ivelle. Mi orden recordaba al Corazón su promesa. Dejamos de visitarlo cuando la ciénaga cerró el camino."
                 },
                 {
                   "speaker": "ivelle",
-                  "text": "No volveré a abandonar a quienes necesitan nuestra ayuda."
+                  "text": "Ahora las raíces retienen viajeros. Os ayudaré a devolverles la libertad que mi orden debía proteger."
                 }
               ],
               "brunna_scene": [
                 {
                   "speaker": "telmo",
-                  "text": "Soy Corvalen. He descifrado las inscripciones: el Corazón Hueco debía proteger a los viajeros, no encarcelarlos."
+                  "text": "Soy Corvalen. Las inscripciones confirman que el Corazón debía proteger a los viajeros, no encarcelarlos."
                 },
                 {
                   "speaker": "telmo",
-                  "text": "Os acompañaré hasta el final."
+                  "text": "Os acompañaré hasta el Corazón. Sus propias palabras podrían ayudarnos a romper el encierro."
                 }
               ]
             },
@@ -3775,7 +3775,7 @@
               "img": "escena_altar_herido",
               "decision": true,
               "after": "b4_e02",
-              "text": "La dríade se desvanece entre hojas y savia dorada, y deja ante vosotros un altar partido. La savia sigue corriendo por la grieta de la piedra.",
+              "text": "Tras el combate, el altar sigue partido. Por una grieta corre savia dorada que cubre las marcas de la piedra.",
               "question": "¿Qué hacéis ante el altar?",
               "options": [
                 {
@@ -3863,11 +3863,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "El túnel de raíces tiene marcas de manos y rostros atrapados en la madera. De sus paredes salen débiles respiraciones."
+                  "text": "Manos y rostros sobresalen de las raíces. Entre la madera oís respiraciones débiles: las personas desaparecidas siguen aquí."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Los desaparecidos están aquí dentro. Aún siguen vivos."
+                  "text": "Los desaparecidos siguen con vida dentro de las raíces. Están cerca del Corazón; tenemos que liberarlos."
                 }
               ]
             },
@@ -3912,7 +3912,7 @@
               "type": "scene",
               "id": "b4_pat01_paso",
               "title": "Las raíces quietas",
-              "text": "Unos arbustos despertados os cierran el paso. Aunque el Corazón haya caído, todavía se mueven por su antigua orden.",
+              "text": "Unos arbustos despertados os cierran el paso. Las raíces se han quedado quietas, pero ellos siguen atacando a los viajeros.",
               "question": "¿Qué hacéis?",
               "on_return": true,
               "after": "b4_e04",
@@ -3992,30 +3992,30 @@
                   },
                   {
                     "speaker": "hero",
-                    "text": "Te llaman abuela Brezna. Los que han vuelto del bosque hablan de ti."
+                    "text": "¿Quién eres? ¿Por qué nos esperas ante esta puerta de raíces?"
                   },
                   {
                     "speaker": "ortiga",
-                    "text": "Hablan de una anciana amable. Ya no hace falta fingir."
+                    "text": "Me llaman abuela Brezna. Es fácil confiar en una anciana amable. Pero ya no necesito mantener la apariencia."
                   }
                 ]
               },
               "lines": [
                 {
                   "speaker": "ortiga",
-                  "text": "Has llegado justo donde quería. Necesitaba que llegaras con fuerzas hasta el Corazón."
+                  "text": "Habéis llegado donde quería. Necesitaba que siguierais con fuerzas hasta el Corazón Hueco."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Tú provocaste las desapariciones. ¿También las voces que oímos?"
+                  "text": "¿Fuiste tú quien hizo que el Corazón atrapara a los desaparecidos? ¿Y las voces?"
                 },
                 {
                   "speaker": "ortiga",
-                  "text": "Engañé al Corazón para que los retuviera. Sus raíces imitan sus voces y atraen a más gente. Yo me alimento de su fuerza."
+                  "text": "Lo engañé: le hice creer que encerrarlos era protegerlos. Sus raíces repiten voces y atraen a más gente. Yo absorbo su fuerza."
                 },
                 {
                   "speaker": "ortiga",
-                  "text": "Mis consejos y el antídoto eran para que confiaras en mí. La anciana amable era un disfraz. Ahora tu fuerza también será mía."
+                  "text": "Si os ofrecí ayuda, fue para ganar vuestra confianza. La anciana era un disfraz. También quiero vuestra fuerza."
                 }
               ]
             },
@@ -4301,7 +4301,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Dejaron de visitarlo. Fue entonces cuando Brezna pudo aprovechar su soledad."
+                  "text": "La orden dejó de visitarlo cuando la ciénaga cerró el camino. Ya no hubo quien le recordase su promesa."
                 }
               ]
             },
@@ -4349,7 +4349,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Así aprendían las raíces las voces. Las usaban para atraer a otras personas."
+                  "text": "Es el mismo engaño que oímos en la linde. El Corazón mantiene cautivos a quienes prestan sus voces."
                 }
               ]
             },
@@ -4393,11 +4393,11 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "Bajo unos arcos de madera hay una losa rota. Todavía se lee la promesa original del Corazón Hueco."
+                  "text": "Esta losa repite el juramento original. No es la primera vez que lo vemos; sigue escrito hasta aquí."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Si hacemos que recuerde por qué protegía el bosque, quizá sus raíces se debiliten."
+                  "text": "Sus propias palabras siguen aquí. Quizá podamos recordárselas para debilitar las raíces que lo protegen."
                 }
               ]
             },
@@ -4476,7 +4476,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Es una promesa clara. El Corazón nunca debió encerrar a nadie."
+                  "text": "Otra copia de la promesa. La orden quiso que nadie olvidara que proteger no significaba retener."
                 }
               ]
             },
@@ -4537,11 +4537,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Un grabado cuenta que el Corazón encerró una antigua helada bajo sus raíces. Solo un fragmento de aquel invierno abrirá el sello."
+                  "text": "Un grabado recuerda que el Corazón encerró una antigua helada. La hendidura del sello tenía forma de escama de dragón blanco."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ese hielo no pertenece a Umbría. Quizá algún día encontremos la pieza que falta."
+                  "text": "La escama encajó en el sello. Ahora este recuerdo helado ha quedado a nuestro alcance."
                 }
               ]
             },
@@ -4692,11 +4692,11 @@
       },
       {
         "speaker": "corazon",
-        "text": "Brezna me enseñó que fuera del bosque sufrirán. Aquí no les pasará nada. No dejaré que se marchen."
+        "text": "Prometí protegerlos. Brezna me dijo que fuera del bosque sufrirían. Si los retengo entre mis raíces, estarán a salvo."
       },
       {
         "speaker": "hero",
-        "text": "Los has convertido en prisioneros. Vamos a liberarlos."
+        "text": "Protegerlos no es encerrarlos. Tu promesa también decía que debías dejarlos regresar a casa."
       }
     ],
     "visions": [
