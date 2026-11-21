@@ -22,8 +22,8 @@ export const TONE_LINES: Record<string, Record<Tone, string>> = {
   },
   brunna: {
     piedad: 'En la mina nos cuidábamos así. Me gusta que sigáis la costumbre.',
-    dureza: 'Duro, pero claro. En la roca no hay sitio para dudas.',
-    codicia: 'Si es para la cuadrilla, vale. Si es para el bolsillo, ya hablaremos.',
+    dureza: 'La piedra exige firmeza, sí. Pero no quiero que acabemos pareciéndonos a los capataces.',
+    codicia: 'Si es para sacar a alguien de la mina, vale. Si es por avaricia, lo discutiremos.',
   },
   maren: {
     piedad: 'Ojalá alguien hiciera lo mismo por mi hermano, esté donde esté.',
@@ -89,8 +89,8 @@ export const TONE_LINES: Record<string, Record<Tone, string>> = {
 
 /** Una frase de un compañero la primera vez que el grupo entra en una zona de su propia aventura. */
 export const PLACE_LINES: Record<string, Record<string, string>> = {
-  tiko: { z3: 'Una cripta. Aquí no se roba, ¿eh? Por si acaso me quedo con las manos en los bolsillos.', z4: 'Esa luz violeta… Es la misma que vi desde la prisión. Estamos cerca.' },
-  edmund: { z4: 'El monasterio de los monjes. Aldric dio su nombre para que nadie llegara hasta aquí.' },
+  tiko: { z3: 'Una cripta... Nada de robar. Voy a mantener las manos en los bolsillos.', z4: 'Esa luz venía de aquí. Los cautivos están cerca; lo demás puede esperar.' },
+  edmund: { z4: 'Los monjes sostuvieron el sello; Aldric ocultó el camino. Hoy nos toca conservar su decisión.' },
   maren: { b3: 'La ciénaga. Mi hermano nunca pasaba de aquí. Algo le hizo seguir.', b4: 'Oigo las hojas, pero no suenan a bosque. Suenan a algo que respira.' },
   anselmo: { b4: 'Siento el pacto tirar de mí, como una cadena. Aquí dentro hay algo parecido.' },
   vurka: { m3: 'Los muros de los enanos. Mi clan comerciaba con ellos antes del dragón.', m4: 'Huele a hielo viejo y a escamas. Vharzûl está ahí abajo.' },
