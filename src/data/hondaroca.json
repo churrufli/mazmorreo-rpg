@@ -2,28 +2,28 @@
   "dungeon": {
     "id": "hondaroca",
     "name": "Las profundidades de Hondaroca",
-    "summary": "Hace días que nadie regresa de la mina de Hondaroca. En Valdescarcha, las familias esperan junto al camino. El mago Maese Orvane bajó a investigar unas ruinas antiguas. Después llegaron goblins armados y dejaron de salir las cuadrillas."
+    "summary": "Los mineros de Valdescarcha han desaparecido. Maese Orvane los obliga a excavar bajo Hondaroca para alcanzar un cristal de gran poder. Hace siglos, el rey enano Aldric cerró el camino para proteger el valle. Debéis rescatar a los mineros y detener a Orvane."
   },
   "zones": [
     {
       "id": "z1",
       "order": 1,
       "name": "La mina de Hondaroca",
-      "description": "Bajo la montaña hay señales de una historia que alguien quiso ocultar. Entráis para encontrar a los mineros y descubrir qué busca Orvane.",
+      "description": "La mina funcionaba hasta hace pocos días. Ahora la ocupan los goblins de Orvane, encargados de vigilar a los cautivos.",
       "expected_party_level": 1,
       "difficulty": "Baja; encuentros de uno o dos enemigos débiles para un héroe de nivel 1.",
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "La lámpara de guardia aún arde a la entrada. Nadie ha venido a apagarla desde la desaparición de las cuadrillas."
+          "text": "Hace días que los mineros de Hondaroca no regresan. Sus familias esperan noticias en Valdescarcha."
         },
         {
           "speaker": "narrator",
-          "text": "Una vagoneta volcada y marcas de forcejeo rompen el silencio. Por las vías se ven pisadas pequeñas y botas de minero."
+          "text": "La entrada está desierta. Hay huellas recientes y señales de una lucha."
         },
         {
           "speaker": "hero",
-          "text": "Seguiremos esas huellas. Alguien tiene que contarles a sus familias qué ha sucedido."
+          "text": "Encontraremos a los mineros. Primero debemos seguir su rastro."
         }
       ],
       "rooms": [
@@ -83,11 +83,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Bajo la vagoneta encontráis una hebilla de minero arrancada de una chaqueta. La tela aún está húmeda."
+                  "text": "Bajo una rueda de la vagoneta hay un trozo de tela gris con una hebilla de minero."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Hubo una lucha. Si siguieron con vida, se los llevaron hacia el interior."
+                  "text": "La hebilla está limpia. Esto ocurrió hace poco; sigamos las huellas."
                 }
               ]
             },
@@ -177,13 +177,13 @@
               "type": "scene",
               "id": "z1_p01",
               "title": "La viga que cede",
-              "text": "Bajo las vigas hay una bolsa con el sello de la cuadrilla de Valdescarcha. Asoman monedas y una cuerda. La madera cruje.",
-              "question": "¿Cómo recuperáis la bolsa sin provocar otro derrumbe?",
+              "text": "Bajo unas piedras hay una bolsa de suministros de los mineros. Asoman monedas y una cuerda. Las vigas crujen al acercaros.",
+              "question": "¿Cómo intentáis recuperar la bolsa?",
               "options": [
                 {
                   "label": "Coger solo lo que asoma",
                   "ok": {
-                    "text": "Recogéis las monedas visibles. La cuerda queda atrapada bajo las piedras.",
+                    "text": "Recogéis las monedas visibles sin tocar la viga. La cuerda sigue atrapada.",
                     "gold": 2
                   }
                 },
@@ -192,7 +192,7 @@
                   "attr": "str",
                   "dc": 11,
                   "ok": {
-                    "text": "Aseguráis la viga y sacáis las monedas y la cuerda de la cuadrilla. Servirá para descender a lugares difíciles.",
+                    "text": "Aseguráis la viga y sacáis la bolsa. Recuperáis las monedas y una cuerda para bajar al pozo.",
                     "gold": 2,
                     "item": "rope"
                   },
@@ -206,17 +206,17 @@
                   "attr": "int",
                   "dc": 13,
                   "ok": {
-                    "text": "Retiráis la piedra que sostiene los escombros. Recuperáis las monedas y una cuerda útil para descender.",
+                    "text": "Retiráis la piedra que sostiene los escombros. Recuperáis las monedas y una cuerda para bajar al pozo.",
                     "gold": 2,
                     "item": "rope"
                   },
                   "fail": {
-                    "text": "No identificáis el apoyo seguro. Es mejor no mover más piedras."
+                    "text": "No encontráis la piedra que sostiene el peso. Mejor no arriesgarse."
                   }
                 }
               ],
               "fallback": {
-                "text": "Dejáis la bolsa bajo las vigas. La galería sigue crujiendo."
+                "text": "Dejáis la bolsa atrapada entre los escombros."
               }
             }
           ]
@@ -350,7 +350,7 @@
                   "attr": "wis",
                   "dc": 11,
                   "ok": {
-                    "text": "Localizáis el acceso antiguo que conduce desde el almacén al campamento.",
+                    "text": "Descubrís la antigua ruta de mantenimiento que conecta con el campamento.",
                     "reveal": "z1_s01"
                   },
                   "fail": {
@@ -362,7 +362,7 @@
                   "attr": "int",
                   "dc": 11,
                   "ok": {
-                    "text": "Encontráis una entrada a la ruta de mantenimiento que comunica con el campamento.",
+                    "text": "Encontráis el acceso de mantenimiento que conduce al campamento.",
                     "reveal": "z1_s01"
                   },
                   "fail": {
@@ -429,7 +429,7 @@
               "id": "z1_s02",
               "detect_dc": 14,
               "reveals": "chest:z1_c02",
-              "description": "Las huellas del cruce conducen a un escondite goblin situado en el Campamento de los mineros."
+              "description": "Las marcas del cruce indican dónde escondieron los goblins un cofre en el Campamento de los mineros."
             },
             {
               "type": "prop",
@@ -445,8 +445,8 @@
               "type": "scene",
               "id": "z1_s02_pista",
               "title": "El rastro del botín",
-              "text": "Hay huellas de botas goblins cargadas de peso. Se alejan del cruce hacia el campamento, fuera del camino principal.",
-              "question": "¿Cómo buscáis el acceso?",
+              "text": "Unas huellas recientes se apartan del camino principal. Quizá indiquen dónde escondieron los goblins su botín.",
+              "question": "¿Cómo seguís las huellas?",
               "reveals": "z1_s02",
               "options": [
                 {
@@ -454,11 +454,11 @@
                   "attr": "wis",
                   "dc": 12,
                   "ok": {
-                    "text": "Las raspaduras os indican el escondite del botín goblin, en el campamento.",
+                    "text": "Seguís el rastro hasta el lugar del campamento donde ocultaron un cofre.",
                     "reveal": "z1_s02"
                   },
                   "fail": {
-                    "text": "Perdéis las huellas entre los raíles."
+                    "text": "Perdéis el rastro entre las vías."
                   }
                 },
                 {
@@ -466,11 +466,11 @@
                   "attr": "int",
                   "dc": 11,
                   "ok": {
-                    "text": "El polvo de las vigas os revela por dónde arrastraron el cofre hasta el campamento.",
+                    "text": "El polvo removido revela por dónde llevaron el cofre hacia el campamento.",
                     "reveal": "z1_s02"
                   },
                   "fail": {
-                    "text": "Perdéis las huellas entre los raíles."
+                    "text": "No encontráis ninguna pista más."
                   }
                 }
               ]
@@ -482,7 +482,7 @@
               "img": "escena_vigia_herido",
               "decision": true,
               "after": "z1_e04",
-              "text": "Tras el combate, un goblin herido suelta el arco. Murmura que Orvane paga por cada prisionero entregado vivo.",
+              "text": "Tras el combate, un goblin herido suelta el arco, se arrodilla y extiende las manos. Está dispuesto a hablar.",
               "question": "¿Qué hacéis con él?",
               "options": [
                 {
@@ -490,18 +490,18 @@
                   "attr": "cha",
                   "dc": 11,
                   "ok": {
-                    "text": "Os revela dónde ocultaron sus suministros, en el campamento. Después se marcha por la entrada.",
+                    "text": "El goblin os indica dónde dejaron los suministros, en el campamento. Después se marcha.",
                     "reveal": "z1_s02"
                   },
                   "fail": {
-                    "text": "El goblin aprovecha vuestra vacilación y huye sin revelar nada."
+                    "text": "Aprovecha un descuido y huye sin revelar el escondite."
                   },
                   "tone": "piedad"
                 },
                 {
                   "label": "Quitarle las monedas",
                   "ok": {
-                    "text": "Le quitáis dos monedas. Huye hacia el campamento y alerta a sus compañeros.",
+                    "text": "Le quitáis dos monedas. Huye hacia el campamento y alerta a otro goblin.",
                     "gold": 2,
                     "add": "z1_e05"
                   },
@@ -510,7 +510,7 @@
                 {
                   "label": "Dejarle huir",
                   "ok": {
-                    "text": "Le dejáis marchar. Sale de la mina y ya no se unirá a sus compañeros del campamento.",
+                    "text": "Le dejáis escapar. Abandona la mina, así que no combatirá en el campamento.",
                     "sub": "z1_e05"
                   }
                 }
@@ -537,7 +537,7 @@
               "type": "scene",
               "id": "z1_pat01_paso",
               "title": "Merodeadores del retorno",
-              "text": "De regreso al cruce, encontráis merodeadores goblins disputándose monedas robadas. Todavía no os han visto.",
+              "text": "Unos goblins discuten por el botín. Todavía no han advertido vuestra presencia.",
               "question": "¿Qué hacéis?",
               "on_return": true,
               "after": "z1_e04",
@@ -545,7 +545,7 @@
                 {
                   "label": "Luchar",
                   "ok": {
-                    "text": "Sacan las armas al verte.",
+                    "text": "Sacan las armas al veros.",
                     "fight": "z1_pat01"
                   }
                 },
@@ -554,7 +554,7 @@
                   "attr": "dex",
                   "dc": 12,
                   "ok": {
-                    "text": "Os ocultáis tras la roca hasta que se alejan.",
+                    "text": "Esperáis tras la roca hasta que se alejan.",
                     "remove": "z1_pat01"
                   },
                   "fail": {
@@ -567,11 +567,11 @@
                   "attr": "cha",
                   "dc": 12,
                   "ok": {
-                    "text": "Les hacéis creer que llegan refuerzos. Huyen por el túnel.",
+                    "text": "Les hacéis creer que vienen refuerzos. Huyen por el túnel.",
                     "remove": "z1_pat01"
                   },
                   "fail": {
-                    "text": "No os creen.",
+                    "text": "No se lo tragan.",
                     "fight": "z1_pat01"
                   }
                 }
@@ -661,7 +661,7 @@
               "decision": true,
               "on_return": true,
               "after": "z2_r02",
-              "text": "Un entibador herido llega al campamento desde los túneles inferiores. Escapó durante un cambio de guardia y aún teme que lo sigan.",
+              "text": "Un entibador herido llega al campamento tras escapar de la prisión. Apenas puede caminar, pero ha logrado volver hasta aquí.",
               "question": "¿Cómo le ayudáis?",
               "options": [
                 {
@@ -669,7 +669,7 @@
                   "needs": "potion_healing",
                   "ok": {
                     "lose": "potion_healing",
-                    "text": "La poción le devuelve el aliento. Os entrega sus ahorros y parte hacia Valdescarcha para avisar a las familias.",
+                    "text": "La poción le devuelve las fuerzas. Os entrega cinco monedas antes de regresar a Valdescarcha.",
                     "gold": 5
                   }
                 },
@@ -678,11 +678,11 @@
                   "attr": "wis",
                   "dc": 11,
                   "ok": {
-                    "text": "Le vendáis la herida. Os da sus ahorros y emprende el regreso a Valdescarcha.",
+                    "text": "Le vendáis la herida. Os da cinco monedas y emprende el regreso a Valdescarcha.",
                     "gold": 5
                   },
                   "fail": {
-                    "text": "La venda no detiene del todo la sangre, pero lo acompañáis hasta un tramo seguro de la salida."
+                    "text": "No conseguís vendarle bien la herida, pero le ayudáis a ponerse a salvo."
                   }
                 }
               ]
@@ -786,15 +786,15 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Descubrís una advertencia arañada en el montacargas por una mano temblorosa."
+                  "text": "Encontráis una advertencia grabada en el montacargas."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "«Nos bajan hacia las ruinas. Orvane quiere abrir la piedra antigua. No toquéis el agua violeta»."
+                  "text": "Dice: «No os acerquéis al agua que brilla. Los goblins nos obligan a bajar»."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "Los surcos del último renglón atraviesan la madera. Quien escribió no pudo terminar de contar lo ocurrido."
+                  "text": "Las últimas palabras están arañadas, como si alguien hubiera escrito con prisa."
                 }
               ]
             },
@@ -804,7 +804,7 @@
               "lines": [
                 {
                   "speaker": "tiko",
-                  "text": "Mirad el cable recién tensado. Bajaron a los cautivos por aquí, aunque los goblins juren que no."
+                  "text": "El montacargas se usó después del secuestro. Por aquí bajaron a los mineros."
                 }
               ],
               "only": "tiko"
@@ -813,7 +813,7 @@
               "type": "scene",
               "id": "z1_p02",
               "title": "Las maderas en tensión",
-              "text": "Bajo el montacargas hay una bolsa de la cuadrilla. Las vigas sostienen apenas la plataforma; tocarla podría hundir el apoyo.",
+              "text": "El montacargas está atrapado entre maderas caídas. Una bolsa de suministros cuelga sobre la plataforma y amenaza con desequilibrarla.",
               "question": "¿Cómo recuperáis la bolsa?",
               "options": [
                 {
@@ -821,12 +821,12 @@
                   "attr": "str",
                   "dc": 12,
                   "ok": {
-                    "text": "Liberáis la bolsa. Bajo la madera aparece también el monedero perdido de un minero.",
+                    "text": "Levantáis la madera y liberáis la bolsa. Debajo encontráis también el monedero de un minero.",
                     "item": "potion_healing",
                     "gold": 4
                   },
                   "fail": {
-                    "text": "La madera se desploma sobre vosotros.",
+                    "text": "La madera cede y os obliga a retroceder.",
                     "damage": "1d4"
                   }
                 },
@@ -835,11 +835,11 @@
                   "attr": "int",
                   "dc": 11,
                   "ok": {
-                    "text": "Repartes el peso entre los apoyos y liberas la bolsa.",
+                    "text": "Repartís el peso entre los apoyos y liberáis la bolsa.",
                     "item": "potion_healing"
                   },
                   "fail": {
-                    "text": "Las vigas crujen y debéis retroceder."
+                    "text": "La madera cede y os obliga a retroceder."
                   }
                 },
                 {
@@ -851,7 +851,7 @@
                     "item": "potion_healing"
                   },
                   "fail": {
-                    "text": "La madera se desploma sobre vosotros.",
+                    "text": "La madera cede y os obliga a retroceder.",
                     "damage": "1d4"
                   }
                 },
@@ -865,7 +865,7 @@
                 }
               ],
               "fallback": {
-                "text": "Al apartaros, una astilla rasga vuestra bolsa. Perdéis cinco monedas y dejáis los suministros.",
+                "text": "Al intentar retirar los escombros, se rompe vuestra bolsa. Perdéis cinco monedas y abandonáis los suministros.",
                 "gold": -5
               }
             },
@@ -888,7 +888,7 @@
               "type": "scene",
               "id": "z1_x01_p",
               "title": "La galería derrumbada",
-              "text": "Un derrumbe tapa la galería hacia las poleas. A través de las piedras se cuela aire fresco: hay espacio detrás.",
+              "text": "Un derrumbe reciente tapa la galería que lleva a la cámara de las poleas. Entre las piedras se cuela una corriente de aire: al otro lado hay espacio.",
               "question": "¿Cómo despejáis el paso?",
               "options": [
                 {
@@ -947,15 +947,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Encontráis marcas de mineros bajo las flechas goblins. Unas señalan el regreso; otras, el camino de los prisioneros."
+                  "text": "Unas flechas de tiza señalan la salida. Otras marcas recientes indican por dónde llevaron a los cautivos."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "Un mensaje dice: «Nos llevan a la ciudad enana. Si podéis leerlo, avisad a Valdescarcha»."
-                },
-                {
-                  "speaker": "hero",
-                  "text": "Las marcas se repiten. Es la forma que encontraron de dejar un rastro sin que los vigilantes lo entendieran."
+                  "text": "Una inscripción apresurada dice: «Nos llevan bajo la ciudad antigua. Avisad a Valdescarcha»."
                 }
               ]
             },
@@ -997,11 +993,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "El agua negra trae destellos violetas desde una fisura profunda. La piedra cercana está tibia, pese al frío de la mina."
+                  "text": "El agua devuelve un reflejo violáceo, aunque no hay ninguna luz sobre vuestras cabezas."
                 },
                 {
                   "speaker": "hero",
-                  "text": "La luz viene de más abajo. Orvane no está buscando oro: busca lo que calienta esta agua."
+                  "text": "La luz viene de las profundidades. Quizá esté relacionada con el cristal que busca Orvane."
                 }
               ]
             },
@@ -1042,7 +1038,7 @@
               "img": "escena_minero_agua_negra",
               "decision": true,
               "after": "z1_e09",
-              "text": "Un minero enano emerge del agua. Escapó de los excavadores, pero la corriente le impide llegar a la orilla.",
+              "text": "Un minero enano, exhausto y empapado, os tiende la mano desde el agua negra. Necesita ayuda.",
               "question": "¿Cómo le ayudáis?",
               "options": [
                 {
@@ -1050,7 +1046,7 @@
                   "needs": "potion_healing",
                   "ok": {
                     "lose": "potion_healing",
-                    "text": "El minero recupera fuerzas. Os explica cómo localizar la vieja ruta de mantenimiento del almacén.",
+                    "text": "La poción le devuelve las fuerzas. Os señala una antigua ruta de mantenimiento que comunica con el campamento.",
                     "reveal": "z1_s01"
                   }
                 },
@@ -1059,11 +1055,11 @@
                   "attr": "wis",
                   "dc": 12,
                   "ok": {
-                    "text": "Ayudáis al minero a salir del agua. Os indica cómo encontrar la ruta oculta del almacén.",
+                    "text": "Ayudáis al minero a salir del agua. Os indica una ruta de mantenimiento que lleva al campamento.",
                     "reveal": "z1_s01"
                   },
                   "fail": {
-                    "text": "El minero resbala, pero logra salir a una cornisa. Exhausto, se aleja hacia la salida sin poder hablar."
+                    "text": "Intentáis guiarle, pero resbala. Logra salir del agua y se aleja sin fuerzas para hablar."
                   }
                 }
               ]
@@ -1098,15 +1094,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "En el banco hay marcas de altura de los hijos de un entibador. Junto a ellas, una nota manchada de barro."
+                  "text": "El entibador dejó una nota: «Orvane exige que sigamos excavando. No le importa que las galerías cedan»."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "«Orvane vino a medir grietas. Cuando halló las piedras antiguas, dejó de escuchar nuestras advertencias»."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "«Los goblins nos obligan a bajar. No dejan cerrar los túneles inseguros. Que alguien avise a nuestras familias»."
+                  "text": "La última línea advierte: «Sus goblins vigilan la bajada. No nos dejan cerrar el paso»."
                 }
               ]
             },
@@ -1167,15 +1159,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "El tablero ordena tocar la campana si el agua adquiere brillo violeta. La advertencia es anterior a Orvane."
+                  "text": "Encontráis el tablero de avisos. Una orden exige tocar la campana si aparece una luz violeta bajo la mina."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "Encontráis la cuerda cortada. Una nota goblin dice: «No alarméis a las cuadrillas. Orden del maese»."
-                },
-                {
-                  "speaker": "hero",
-                  "text": "Alguien conocía el peligro antes de que llegara Orvane. Él prefirió silenciarlo."
+                  "text": "La cuerda está cortada. Una nota goblin añade: «Orvane prohíbe dar la alarma»."
                 }
               ]
             },
@@ -1231,13 +1219,13 @@
           "id": "z1_j01",
           "from": "z1_r01",
           "until": "z1_r08",
-          "text": "Las marcas de los mineros podrían conducir hasta sus compañeros."
+          "text": "Las huellas de la entrada muestran que hubo una lucha. Más adentro podría haber señales del camino de los cautivos."
         },
         {
           "id": "z1_j02",
           "from": "z1_r05",
           "until": "z1_ev01",
-          "text": "Alguien ha vuelto al campamento hace poco. Quizá quede algún minero con vida por aquí."
+          "text": "El campamento puede servir de refugio a quien escape de los goblins."
         },
         {
           "id": "z1_j03",
@@ -1249,19 +1237,19 @@
           "id": "z1_j04",
           "from": "z1_r04",
           "until": "z1_s02",
-          "text": "Unas huellas salen del cruce hacia el campamento. Quizá indiquen dónde escondieron su botín los goblins."
+          "text": "Las huellas del cruce podrían revelar dónde guardaron los goblins su botín, en el campamento."
         },
         {
           "id": "z1_j05",
           "from": "z1_r09",
           "until": "z4_e05",
-          "text": "Un resplandor violeta asciende con el agua negra. Hay que descubrir qué lo provoca."
+          "text": "Una luz violeta llega desde el fondo de Hondaroca. Hay que averiguar de dónde procede."
         },
         {
           "id": "z1_j06",
           "from": "z1_s02_r01",
           "until": "z4_e05",
-          "text": "Orvane prohibió dar la alarma por la luz violeta. Hay que detener su excavación."
+          "text": "Orvane prohibió dar la alarma de la luz violeta. Hay que detenerlo."
         }
       ],
       "c_scaled": true,
@@ -1290,15 +1278,15 @@
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "Bajo la mina descubrís una ciudad enana enterrada. Los goblins han atravesado sus muros para abrir nuevas galerías."
+          "text": "Bajo la mina encontráis una ciudad enana sepultada. Los goblins han abierto túneles entre las ruinas para seguir bajando."
         },
         {
           "speaker": "narrator",
-          "text": "Hay cadenas rotas, herramientas de Valdescarcha y marcas de arrastre. Los prisioneros trabajaron aquí hasta que abrieron otro paso."
+          "text": "Herramientas recientes y cadenas rotas demuestran que los mineros han pasado por aquí."
         },
         {
           "speaker": "hero",
-          "text": "Primero una mina, ahora una ciudad. Orvane está siguiendo un camino que otros cerraron hace siglos."
+          "text": "Las cadenas y las herramientas indican que los cautivos pasaron por aquí. Debemos seguirlos."
         }
       ],
       "rooms": [
@@ -1344,11 +1332,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Una reja enana cierra el atajo de regreso. Las muescas del mecanismo muestran que sigue en uso."
+                  "text": "Una reja antigua bloquea un corredor. Más allá hay una palanca que parece controlar el mecanismo."
                 },
                 {
                   "speaker": "hero",
-                  "text": "La palanca está al otro lado. Habrá que rodear las ruinas para abrirla."
+                  "text": "No alcanzamos esa palanca desde aquí. Tendremos que buscar otro camino."
                 }
               ]
             },
@@ -1360,7 +1348,7 @@
               "decision": true,
               "on_return": true,
               "after": "z2_b01",
-              "text": "Al abrirse el atajo, una buhonera llega por el camino de la mina. Comercia con exploradores, pero evita acercarse a los cautivos.",
+              "text": "Una mercader ambulante os ofrece pociones y antídotos. Asegura que aún regresa a Valdescarcha con sus mercancías.",
               "question": "¿Qué compráis?",
               "options": [
                 {
@@ -1422,29 +1410,29 @@
               "default_scene": [
                 {
                   "speaker": "narrator",
-                  "text": "Un mediano encadenado os llama. Cerca de sus pies hay una cerradura forzada y una llave partida."
+                  "text": "Un mediano encadenado os llama desde una antigua prisión."
                 },
                 {
                   "speaker": "tiko",
-                  "text": "¡Tiko Manosrápidas! Vine por tesoros, pero oí a un minero pedir auxilio tras esa puerta."
+                  "text": "¡Soy Tiko Manosrápidas! Intenté liberar a un minero de esta prisión. Los goblins me atraparon antes de lograrlo."
                 },
                 {
                   "speaker": "tiko",
-                  "text": "Robé una llave y regresé a abrirla. Me descubrieron antes de sacarlo. Si me liberáis, terminaremos el trabajo."
+                  "text": "Vine buscando tesoros, pero no voy a abandonar a los cautivos. Liberadme y os ayudaré a sacarlos."
                 }
               ],
               "brunna_scene": [
                 {
                   "speaker": "narrator",
-                  "text": "Una enana con casco de minero golpea los barrotes con el mango de su pico. Conserva una ficha de cobre."
+                  "text": "Una enana con casco de minero y un pico al hombro os llama desde una jaula."
                 },
                 {
                   "speaker": "brunna",
-                  "text": "Soy Brunna Piedrahonda, de Valdescarcha. Buscaba a mi cuadrilla cuando esos carroñeros me encerraron."
+                  "text": "Soy Brunna Piedrahonda, minera de Valdescarcha. Los goblins me apresaron mientras buscaba a mi cuadrilla."
                 },
                 {
                   "speaker": "brunna",
-                  "text": "Entre los cautivos hay un aprendiz que depende de mí. Liberadme y encontraremos a los demás."
+                  "text": "Busco a los miembros de mi cuadrilla. Si me liberáis, os ayudaré a encontrar a los demás."
                 }
               ]
             },
@@ -1680,7 +1668,7 @@
               "id": "z2_s01",
               "detect_dc": 14,
               "reveals": "exit:z2_r06",
-              "description": "Un respiradero enano lleva hasta un acceso lateral junto a la Puerta de la ciudad hundida."
+              "description": "Un respiradero enano conduce por un pasadizo hasta la Puerta de la ciudad hundida."
             },
             {
               "type": "prop",
@@ -1691,7 +1679,7 @@
               "type": "scene",
               "id": "z2_s01_pista",
               "title": "La grieta de los murciélagos",
-              "text": "Los murciélagos evitan una grieta de la escalinata. Por allí entra aire desde el corredor que conduce a la ciudad hundida.",
+              "text": "Entre los arcos derruidos, los murciélagos esquivan una grieta de la escalinata. Quizá haya algo detrás.",
               "question": "¿Cómo lo buscáis?",
               "reveals": "z2_s01",
               "options": [
@@ -1700,7 +1688,7 @@
                   "attr": "wis",
                   "dc": 12,
                   "ok": {
-                    "text": "Seguís el vuelo y descubrís un conducto hacia la Puerta de la ciudad hundida.",
+                    "text": "Siguiendo a los murciélagos, encontráis el conducto que conduce a la Puerta de la ciudad hundida.",
                     "reveal": "z2_s01"
                   },
                   "fail": {
@@ -1712,7 +1700,7 @@
                   "attr": "int",
                   "dc": 13,
                   "ok": {
-                    "text": "Las juntas indican un conducto que desemboca junto a la puerta de la ciudad hundida.",
+                    "text": "Las juntas de la escalinata revelan un conducto hacia la Puerta de la ciudad hundida.",
                     "reveal": "z2_s01"
                   },
                   "fail": {
@@ -1795,7 +1783,7 @@
               "lines": [
                 {
                   "speaker": "tiko",
-                  "text": "Estos planos muestran el camino de los cautivos: de la ciudad a la cripta. Orvane no piensa detenerse aquí."
+                  "text": "Los planos del jefe goblin muestran excavaciones que siguen más abajo. Aún no hemos llegado hasta Orvane."
                 }
               ],
               "only": "tiko"
@@ -2028,11 +2016,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Las balanzas conservan registros enanos. Encima, un capataz goblin ha escrito nuevos turnos con nombres de Valdescarcha."
+                  "text": "Las balanzas conservan las cuentas de las antiguas cuadrillas enanas. Entre ellas hay nombres recientes de mineros de Valdescarcha."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Los hacen trabajar por relevos, como si fueran herramientas. Necesitamos saber dónde está el último grupo."
+                  "text": "Orvane utiliza estas ruinas para organizar el trabajo forzado. Los nombres pueden indicarnos adónde llevaron a los demás."
                 }
               ]
             },
@@ -2042,7 +2030,7 @@
               "title": "El registro del excavador",
               "img": "escena_registro_excavador",
               "decision": true,
-              "text": "Un escribiente goblin se aferra a su registro. Entre las cuentas hay un plano del viejo conducto de los murciélagos.",
+              "text": "Un excavador goblin aprieta un libro contra el pecho y os mira con desconfianza. Parece dispuesto a negociar.",
               "question": "¿Cómo conseguís el registro?",
               "options": [
                 {
@@ -2050,11 +2038,11 @@
                   "attr": "cha",
                   "dc": 12,
                   "ok": {
-                    "text": "Os entrega el libro. El plano señala el conducto oculto junto a los murciélagos.",
+                    "text": "El goblin os entrega el libro. Contiene la ubicación de un conducto que permite avanzar entre las ruinas.",
                     "reveal": "z2_s01"
                   },
                   "fail": {
-                    "text": "Pagáis por ver una página, pero el goblin oculta el plano útil y escapa con el libro.",
+                    "text": "El goblin os cobra diez monedas por mostrar una página. Después huye con el libro.",
                     "gold": -10
                   }
                 },
@@ -2063,7 +2051,7 @@
                   "attr": "dex",
                   "dc": 13,
                   "ok": {
-                    "text": "Le quitáis el registro y su bolsa. Una página señala el conducto oculto.",
+                    "text": "Le quitáis el libro y la bolsa del cinto. El registro marca un conducto oculto.",
                     "reveal": "z2_s01",
                     "gold": 8
                   },
@@ -2083,7 +2071,7 @@
                   "ally": "tiko",
                   "label": "Dejar que Tiko le hable en su idioma",
                   "ok": {
-                    "text": "Tiko cambia una baratija por el registro. El plano señala el conducto de los murciélagos.",
+                    "text": "Tiko regatea con el goblin entre risas y le cambia el libro por una baratija. El registro marca un conducto oculto.",
                     "reveal": "z2_s01"
                   }
                 }
@@ -2140,7 +2128,7 @@
                   "attr": "cha",
                   "dc": 13,
                   "ok": {
-                    "text": "Les decís que el capataz ya no puede protegerles. Huyen.",
+                    "text": "Les hacéis creer que nadie acudirá a protegerles. Huyen.",
                     "remove": "z2_pat01"
                   },
                   "fail": {
@@ -2185,15 +2173,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Las tablillas registran traslados: primero la mina, después las ruinas. Algunas cuadrillas continuaron hacia la cripta; otras figuran como «retenidas»."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "Faltan las últimas páginas. Al margen se lee: «Nómina final en la sala de escribas, bajo el monasterio»."
+                  "text": "En los viejos registros enanos aparecen nombres nuevos. Son los de las cuadrillas que Orvane obliga a seguir excavando."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Los nombres siguen aquí. Mientras falte la última lista, no sabremos cuántos han sobrevivido."
+                  "text": "Son los mineros de Valdescarcha. Los han separado en grupos para excavar hacia la cripta."
                 }
               ]
             },
@@ -2203,7 +2187,7 @@
               "lines": [
                 {
                   "speaker": "brunna",
-                  "text": "Reconozco estos nombres. La ficha de cobre del aprendiz está conmigo, pero su traslado no figura completo. Seguiremos buscando."
+                  "text": "Aquí figuran nombres de mi cuadrilla. Ahora sabemos que pasaron por las ruinas; seguiremos buscándolos."
                 }
               ],
               "only": "brunna"
@@ -2314,11 +2298,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "La palanca hace temblar las poleas y levanta una reja hacia el vestíbulo. El camino de vuelta queda despejado."
+                  "text": "Accionáis la palanca del patio. La vieja reja comienza a subir."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ya podemos volver por aquí sin cruzar de nuevo toda la ciudad."
+                  "text": "La reja del vestíbulo está abierta. Ya tenemos un atajo de regreso."
                 }
               ]
             },
@@ -2352,11 +2336,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "El cuaderno conserva la última orden de los vigilantes enanos, fechada antes del abandono de la ciudad."
+                  "text": "Un cuaderno conserva los últimos turnos de los vigilantes enanos que guardaban este paso."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "«Por mandato de Aldric, cerrad el acceso al sepulcro y ocultad los planos del monasterio. El cristal no debe despertar»."
+                  "text": "Su última orden dice: «El rey Aldric ha cerrado el camino a la cripta. Nadie debe llegar al cristal»."
                 }
               ]
             },
@@ -2366,7 +2350,7 @@
               "lines": [
                 {
                   "speaker": "brunna",
-                  "text": "Falta la firma del relevo. Estos guardianes cerraron la ciudad a toda prisa y nunca pudieron regresar."
+                  "text": "Los canteros no dejaban un puesto sin entregar el relevo. Algo interrumpió aquel turno."
                 }
               ],
               "only": "brunna"
@@ -2428,11 +2412,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Los juramentos cuentan que Aldric mandó cerrar la ciudad para proteger el monasterio situado bajo la cripta."
+                  "text": "Las tablillas cuentan que los canteros obedecieron a Aldric y cerraron los accesos más profundos de la ciudad."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "«El agua calma la piedra violeta. Sellad el camino y borrad de los mapas la ruta hasta ella»."
+                  "text": "La última advertencia dice: «Bajo la cripta hay un cristal peligroso. No rompáis los cierres»."
                 }
               ]
             },
@@ -2493,13 +2477,13 @@
           "id": "z2_j02",
           "from": "z2_r09",
           "until": "z4_r09",
-          "text": "Los turnos de trabajo demuestran que los mineros fueron trasladados al fondo de las ruinas. Falta hallar el registro definitivo."
+          "text": "Los registros confirman que los mineros trabajan como prisioneros. Falta saber adónde los han trasladado."
         },
         {
           "id": "z2_j03",
           "from": "z2_r04",
           "until": "z2_s01",
-          "text": "Las corrientes de aire podrían revelar un atajo hacia la Puerta de la ciudad hundida."
+          "text": "Las corrientes de aire podrían conducir a un puesto de vigilancia oculto."
         },
         {
           "id": "z2_j04",
@@ -2520,15 +2504,15 @@
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "Entráis en la cripta del rey Aldric. Los enanos enterraron aquí a sus guardianes para proteger el último acceso al monasterio."
+          "text": "Llegáis a la cripta de Aldric. Los enanos la construyeron para custodiar el camino hacia el monasterio situado bajo ella."
         },
         {
           "speaker": "narrator",
-          "text": "Hay sepulcros profanados y marcas de herramientas recientes. La magia de Orvane ha levantado a muertos que debían descansar."
+          "text": "Los sarcófagos están abiertos y hay huellas recientes. Orvane ha profanado estas tumbas mientras buscaba el camino al cristal."
         },
         {
           "speaker": "hero",
-          "text": "Aldric hizo de su tumba una última puerta. Tendremos que atravesarla sin olvidar por qué fue cerrada."
+          "text": "Aldric cerró este camino por una razón. No podemos permitir que Orvane alcance el cristal."
         }
       ],
       "rooms": [
@@ -2569,15 +2553,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Un relieve muestra a Aldric entregando una llave a los canteros. Tras él, los monjes desvían agua hacia una piedra luminosa."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "Bajo la escena se lee: «Que mi tumba guarde el camino. Que el agua mantenga dormido cuanto yace debajo»."
+                  "text": "Una inscripción cuenta que Aldric ordenó cerrar el acceso al monasterio para proteger su reino."
                 },
                 {
                   "speaker": "hero",
-                  "text": "No ocultó un tesoro: cerró la ruta hasta algo que ni los monjes podían destruir."
+                  "text": "Aldric no cerró el paso para ocultar un tesoro. Quería proteger su reino de algo peligroso."
                 }
               ]
             },
@@ -2626,33 +2606,29 @@
               "default_scene": [
                 {
                   "speaker": "narrator",
-                  "text": "Un clérigo anciano defiende la capilla con un farol y una maza. A sus espaldas, la puerta funeraria resiste."
+                  "text": "Un clérigo anciano, con un farol y una maza, protege la entrada a las tumbas."
                 },
                 {
                   "speaker": "edmund",
-                  "text": "Soy el hermano Edmund. Mi orden heredó esta custodia de los últimos guardianes enanos."
+                  "text": "Soy el hermano Edmund. Mi orden heredó esta custodia cuando murieron los guardianes enanos."
                 },
                 {
                   "speaker": "edmund",
-                  "text": "Vi entrar a los profanadores y callé por miedo a sembrar el pánico. No volveré a mirar hacia otro lado."
-                },
-                {
-                  "speaker": "edmund",
-                  "text": "Orvane ha despertado a nuestros muertos. Si me aceptáis, os guiaré y ayudaré a darles descanso."
+                  "text": "Orvane ha despertado a los muertos para llegar al monasterio. Debí impedirlo. Os acompañaré para detenerlo."
                 }
               ],
               "brunna_scene": [
                 {
                   "speaker": "narrator",
-                  "text": "Una enana herida se incorpora entre los sarcófagos. Ha usado el pico para defenderse y conserva una ficha de cobre."
+                  "text": "Una enana con casco de minero aparece herida entre los sarcófagos."
                 },
                 {
                   "speaker": "brunna",
-                  "text": "Soy Brunna Piedrahonda. Seguí los traslados desde la mina, pero los muertos me cortaron el paso."
+                  "text": "Soy Brunna Piedrahonda. He seguido a los goblins hasta aquí, pero los muertos me impidieron avanzar."
                 },
                 {
                   "speaker": "brunna",
-                  "text": "Busco a mi cuadrilla, sobre todo a un aprendiz. Ayudadme a avanzar y lucharé con vosotros."
+                  "text": "Busco a mi cuadrilla y a los demás mineros. Si me ayudáis a avanzar, lucharé a vuestro lado."
                 }
               ]
             },
@@ -2802,7 +2778,7 @@
               "lines": [
                 {
                   "speaker": "edmund",
-                  "text": "Reconozco esas mortajas. Mis predecesores les dieron sepultura; Orvane les ha arrebatado el descanso."
+                  "text": "Estos muertos descansaban bajo nuestra custodia. Orvane los ha perturbado. Debemos devolverles el silencio."
                 }
               ],
               "only": "edmund"
@@ -2811,7 +2787,7 @@
               "type": "scene",
               "id": "z3_p02",
               "title": "La losa de los nombres",
-              "text": "Los nombres grabados en la losa pertenecen a quienes vigilaron el camino del monasterio. Debajo quedó una ofrenda intacta.",
+              "text": "Bajo una losa con nombres grabados hay una ofrenda olvidada. Recuperarla sin dañarla requiere paciencia.",
               "question": "¿Cómo recuperáis lo que hay debajo?",
               "options": [
                 {
@@ -2974,7 +2950,7 @@
               "lines": [
                 {
                   "speaker": "edmund",
-                  "text": "Las ofrendas honran a quienes sellaron la entrada y murieron guardando su secreto. No eran riquezas sin dueño."
+                  "text": "Las ofrendas recuerdan a quienes descansan aquí. No son un botín que alguien haya abandonado sin más."
                 }
               ],
               "only": "edmund"
@@ -3186,7 +3162,7 @@
               "lines": [
                 {
                   "speaker": "edmund",
-                  "text": "Aquí descansa Aldric. No borró su historia; ocultó los mapas que llevarían a cualquiera hasta el cristal."
+                  "text": "Aldric intentó ocultar el camino al cristal. La cripta debía impedir que alguien volviera a utilizarlo."
                 }
               ],
               "only": "edmund"
@@ -3195,7 +3171,7 @@
               "type": "scene",
               "id": "z3_s02_pista",
               "title": "Las losas removidas",
-              "text": "Tras el pedestal real hay polvo removido y aire frío bajo unas losas. Parece la cavidad del último tributo.",
+              "text": "Detrás del pedestal del sepulcro, unas losas removidas dejan pasar aire frío. Podría haber un hueco oculto.",
               "question": "¿Cómo lo buscáis?",
               "reveals": "z3_s02",
               "options": [
@@ -3204,7 +3180,7 @@
                   "attr": "wis",
                   "dc": 14,
                   "ok": {
-                    "text": "Las juntas revelan una cavidad con el cofre del tributo, detrás del pedestal.",
+                    "text": "Las juntas revelan una cavidad con el cofre funerario detrás del pedestal.",
                     "reveal": "z3_s02"
                   },
                   "fail": {
@@ -3216,7 +3192,7 @@
                   "attr": "int",
                   "dc": 14,
                   "ok": {
-                    "text": "Las juntas revelan una cavidad con el cofre del tributo, detrás del pedestal.",
+                    "text": "Las losas delatan dónde se oculta el cofre del tributo detrás del pedestal.",
                     "reveal": "z3_s02"
                   },
                   "fail": {
@@ -3250,11 +3226,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Una lista reúne a los guardianes enanos que cerraron el acceso. Los últimos nombres están junto a una fecha de inundación."
+                  "text": "Sobre un atril de piedra hay una lista de los guardianes que sellaron el acceso al monasterio."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Mantuvieron los pasos cerrados para que el agua hiciera su trabajo. Orvane está deshaciendo ambos cierres."
+                  "text": "Estos guardianes cumplían la orden de Aldric: mantener cerrado el camino hacia el cristal."
                 }
               ]
             },
@@ -3388,11 +3364,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "El registro conserva nombres de los guardianes, pero no indica dónde está la tumba del rey ni por dónde se llega al monasterio."
+                  "text": "Un registro conserva los nombres de los guardianes, pero omite el del rey que ordenó cerrar el paso."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Aldric no desapareció de la historia. Borraron el itinerario para que nadie siguiera su rastro."
+                  "text": "En otras inscripciones sí aparece Aldric. Quizá ocultó su nombre en ciertos registros para dificultar la búsqueda de la tumba."
                 }
               ]
             },
@@ -3419,7 +3395,7 @@
               "title": "El escriba de los nombres",
               "img": "escena_escriba_nombres",
               "decision": true,
-              "text": "Un escriba fantasmal protege pergaminos con los nombres de los guardianes. Señala sus firmas y después las lápidas vacías.",
+              "text": "Un escriba fantasmal señala una caja de pergaminos junto a unas lápidas sin nombre. Parece pedir que los respetéis.",
               "question": "¿Cómo respondéis al escriba?",
               "options": [
                 {
@@ -3427,7 +3403,7 @@
                   "attr": "cha",
                   "dc": 13,
                   "ok": {
-                    "text": "El escriba acepta vuestra promesa y señala un acceso lateral desde la Cámara de las ofrendas.",
+                    "text": "El escriba acepta vuestra promesa y os bendice. Os muestra una antigua entrada lateral hacia el sepulcro real.",
                     "reveal": "z3_s01",
                     "heal": 4
                   },
@@ -3440,7 +3416,7 @@
                   "label": "Dejar 15 monedas de tributo",
                   "cost": 15,
                   "ok": {
-                    "text": "Dejáis el tributo junto a los nombres. El escriba señala el acceso oculto desde la Cámara de las ofrendas.",
+                    "text": "Dejáis quince monedas de tributo. El escriba os muestra una entrada secundaria hacia el sepulcro real.",
                     "reveal": "z3_s01"
                   }
                 },
@@ -3457,7 +3433,7 @@
                   "ally": "edmund",
                   "label": "Dejar que Edmund rece por los nombres",
                   "ok": {
-                    "text": "Edmund recita los nombres. El escriba reconoce la plegaria y señala el acceso desde la Cámara de las ofrendas.",
+                    "text": "El hermano Edmund recita la oración de su orden. El escriba inclina la cabeza y os muestra una entrada lateral hacia el sepulcro real.",
                     "reveal": "z3_s01"
                   }
                 }
@@ -3503,15 +3479,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "La última orden de Aldric explica el cierre: «El cristal amplifica la voluntad, pero su fuerza desborda a quien intenta dominarla»."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "«Los monjes lo enfriaron bajo el agua. Sellad la piedra y ocultad la ruta. Ningún rey debe usarlo para gobernar»."
+                  "text": "Una inscripción dice: «Encerrad el cristal bajo el agua y la piedra. Que nadie vuelva a utilizar su poder»."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Orvane quiere justamente lo que Aldric prohibió: convertir esa fuerza en poder sobre otros."
+                  "text": "Orvane ha venido precisamente a romper la prohibición de Aldric."
                 }
               ],
               "flag": "pista_agua"
@@ -3522,7 +3494,7 @@
               "title": "La estatua sin rostro",
               "img": "escena_estatua_sin_rostro",
               "decision": true,
-              "text": "Una estatua sin rostro custodia un cuenco de bronce. En la base se distinguen marcas antiguas de una ofrenda.",
+              "text": "Una estatua de guardián tiene el rostro borrado a cincel. Frente a ella hay un cuenco de bronce.",
               "question": "¿Cómo mostráis respeto ante la estatua?",
               "options": [
                 {
@@ -3603,15 +3575,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "La declaración cuenta que los monjes estudiaron el cristal hasta que sus experimentos comenzaron a alterar el agua y la piedra."
+                  "text": "El documento explica que los monjes encerraron bajo su monasterio un cristal capaz de liberar una enorme fuerza mágica."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "No lograron destruirlo. Lo sumergieron y trazaron sellos que mantenían contenida su energía."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "Aldric cerró la ciudad y la cripta para que nadie pudiera deshacer aquella protección."
+                  "text": "Por eso Aldric ordenó sellar el acceso: nadie debía utilizar ese poder para dominar el valle."
                 }
               ]
             },
@@ -3672,15 +3640,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "El último libro de guardia confirma la orden: retirar de los archivos públicos planos, pasajes y entradas al monasterio."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "Aldric permitió que su nombre quedara en la tumba. Ocultó la ruta, no la memoria de quienes lo acompañaron."
+                  "text": "El libro confirma que Aldric mandó ocultar su nombre en algunos registros relacionados con el camino al cristal."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Con el tiempo se olvidó el motivo del cierre. Los guardianes siguieron aquí, aunque ya nadie supiera por qué."
+                  "text": "No desapareció de todas las inscripciones. Pero el motivo del cierre se olvidó, mientras los guardianes siguieron cumpliendo su deber."
                 }
               ]
             },
@@ -3729,19 +3693,19 @@
           "id": "z3_j01",
           "from": "z3_r01",
           "until": "z3_r10",
-          "text": "Un relieve muestra a Aldric cerrando el paso hacia las profundidades. Falta descubrir qué quería proteger."
+          "text": "La inscripción del umbral explica que Aldric cerró el paso. Falta descubrir qué quería proteger."
         },
         {
           "id": "z3_j02",
           "from": "z3_r09",
           "until": "z3_r07",
-          "text": "Los registros omitieron el recorrido hasta Aldric para ocultar el acceso al monasterio. Hay que examinar su sepulcro."
+          "text": "Un registro omite el nombre de Aldric. Hay que descubrir por qué y examinar su sepulcro."
         },
         {
           "id": "z3_j03",
           "from": "z3_r05",
           "until": "z3_s01",
-          "text": "Las marcas de una lápida podrían señalar una entrada lateral al Sepulcro de Aldric."
+          "text": "Las marcas funerarias pueden revelar una entrada lateral hacia el sepulcro."
         },
         {
           "id": "z3_j04",
@@ -3777,25 +3741,21 @@
       "id": "z4",
       "order": 4,
       "name": "El monasterio hundido",
-      "description": "Los monjes estudiaron el cristal, pero inundaron su monasterio al comprobar que no podían destruirlo. El agua lo enfriaba y los sellos impedían canalizar su energía. Aldric ocultó el acceso. Orvane usa a los cautivos para abrir canales, cambia el caudal y emplea a sus cultistas para invertir los sellos.",
+      "description": "El monasterio inundado oculta el cristal que Aldric mandó encerrar. Los monjes lo mantuvieron bajo el agua para contener su energía. Ahora Orvane intenta controlarlo con ayuda de sus cultistas.",
       "expected_party_level": 2,
       "difficulty": "Moderada-alta para cuatro personajes de nivel 2. El aliado se incorpora en la segunda sala, antes del primer combate. El descanso largo está inmediatamente antes del jefe.",
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "Llegáis al monasterio de unos antiguos sanadores que estudiaron la fuente subterránea buscando aprovechar su magia."
+          "text": "Llegáis al monasterio hundido. Los cristales violetas iluminan el agua que cubre sus cámaras."
         },
         {
           "speaker": "narrator",
-          "text": "El cristal amplificó sus conjuros hasta volverlos peligrosos. Los monjes inundaron las cámaras para enfriarlo y abandonaron las zonas profundas."
+          "text": "Los monjes lo inundaron para mantener contenida la magia del cristal. Orvane está dañando sus protecciones."
         },
         {
           "speaker": "narrator",
-          "text": "Sus sellos siguen en la piedra, pero alguien ha desviado el caudal y añadido inscripciones recientes."
-        },
-        {
-          "speaker": "narrator",
-          "text": "La voz de Orvane resuena en los corredores: «Casi lo he conseguido. Nadie volverá a ordenarme nada»."
+          "text": "La voz de Orvane resuena desde las profundidades: «No podréis detenerme. El cristal será mío»."
         }
       ],
       "rooms": [
@@ -3898,33 +3858,29 @@
               "default_scene": [
                 {
                   "speaker": "narrator",
-                  "text": "Una elfa joven sale del claustro con un libro empapado y un bastón apagado. Mira las inscripciones recientes con vergüenza."
+                  "text": "Una elfa joven, con un libro y un bastón de cristal apagado, sale de su escondite."
                 },
                 {
                   "speaker": "liss",
-                  "text": "Soy Liss. Estudié estos sellos con Orvane. Me dijo que quería reforzarlos para proteger el valle."
+                  "text": "Soy Liss. Fui aprendiz de Orvane y le ayudé a estudiar los cristales. No sabía que pretendía dominar su energía."
                 },
                 {
                   "speaker": "liss",
-                  "text": "Cuando comprendí que los estaba invirtiendo, ya le había ayudado demasiado. Conozco sus marcas y quiero reparar el daño."
-                },
-                {
-                  "speaker": "liss",
-                  "text": "Primero saquemos a los mineros. Después, detendremos a quien los convirtió en herramientas."
+                  "text": "Tardé en comprender lo que hacía. Conozco sus defensas y quiero ayudaros a liberar a los mineros."
                 }
               ],
               "brunna_scene": [
                 {
                   "speaker": "narrator",
-                  "text": "Una enana empapada emerge de un conducto, aferrada a su pico. Una ficha de cobre cuelga de su cuello."
+                  "text": "Una enana empapada sale de un conducto. Lleva un casco de minero y un pico al hombro."
                 },
                 {
                   "speaker": "brunna",
-                  "text": "Soy Brunna Piedrahonda. Seguí a los cautivos hasta aquí y escapé de quienes vigilaban los canales."
+                  "text": "Soy Brunna Piedrahonda. Escapé de los cultistas mientras buscaba a los mineros desaparecidos."
                 },
                 {
                   "speaker": "brunna",
-                  "text": "Mi cuadrilla está tras esas puertas. Entre ellos busco a un aprendiz. Ayudadme a liberarlos y no os fallaré."
+                  "text": "Orvane mantiene cautivos a nuestros mineros. No pienso marcharme sin intentar liberarlos."
                 }
               ]
             },
@@ -4060,7 +4016,7 @@
               "lines": [
                 {
                   "speaker": "liss",
-                  "text": "Dibujé esas placas para medir el calor del cristal. Orvane las alteró para extraer su fuerza. Ahora sé cómo reconocer sus engaños."
+                  "text": "Esas placas son mías. Orvane las cambió para extraer energía del cristal. Debemos detenerlo."
                 }
               ],
               "only": "liss"
@@ -4069,7 +4025,7 @@
               "type": "scene",
               "id": "z4_s01_pista",
               "title": "El cristal opaco",
-              "text": "Un cristal apagado parece distinto de los usados por Orvane. Conserva una marca antigua de los monjes bajo el polvo.",
+              "text": "Entre los destellos violetas destaca un cristal apagado. Parece ocultar algo bajo una capa de polvo.",
               "question": "¿Cómo seguís la pista?",
               "reveals": "z4_s01",
               "options": [
@@ -4101,7 +4057,7 @@
                   "ally": "liss",
                   "label": "Dejar que Liss lea el cristal",
                   "ok": {
-                    "text": "Liss reconoce la marca de los monjes y localiza su cofre oculto entre los cristales sin luz.",
+                    "text": "Liss reconoce los cristales del laboratorio y os indica dónde está el cofre oculto.",
                     "reveal": "z4_s01"
                   }
                 }
@@ -4128,7 +4084,7 @@
               "type": "scene",
               "id": "z4_pat01_paso",
               "title": "Recolectores del cristal",
-              "text": "Unos cultistas recogen destellos violetas en recipientes. Orvane los usa para alimentar sus runas mientras el cristal pierde su enfriamiento.",
+              "text": "Unos cultistas recogen energía de los cristales para Orvane. Todavía no han dado la alarma.",
               "question": "¿Qué hacéis?",
               "on_return": true,
               "after": "z4_e01",
@@ -4250,7 +4206,7 @@
               "type": "scene",
               "id": "z4_p02",
               "title": "El voto de silencio",
-              "text": "Entre las piedras yacen monedas y una poción. Pertenecieron a los monjes que vigilaban el caudal; cualquier movimiento resonará por la galería.",
+              "text": "Junto a los cristales violetas, unas monedas y una poción han quedado entre piedras sumergidas. Remover las ruinas podría hacer ruido y atraer atención.",
               "question": "¿Cómo recuperáis la ofrenda sin hacer ruido?",
               "options": [
                 {
@@ -4311,13 +4267,13 @@
               "on_return": true,
               "after": "z4_e03",
               "before": "z4_e05",
-              "text": "Un devoto empapado deja caer su daga. Dice que Orvane prometió protección, pero ahora exige que los cautivos trabajen hasta caer.",
+              "text": "Un devoto de Orvane, con la túnica empapada, deja caer su daga al agua y se arrodilla ante vosotros.",
               "question": "¿Qué hacéis?",
               "options": [
                 {
                   "label": "Aceptar su rendición",
                   "ok": {
-                    "text": "El cultista confirma que los cautivos están detrás de la cámara de estudio. Os entrega una poción y huye.",
+                    "text": "El cultista confirma que Orvane mantiene cautivos. Os entrega una poción antes de escapar.",
                     "item": "potion_healing"
                   },
                   "tone": "piedad"
@@ -4365,20 +4321,6 @@
             }
           ],
           "contents": [
-            {
-              "type": "dialogue",
-              "id": "z4_d11",
-              "lines": [
-                {
-                  "speaker": "narrator",
-                  "text": "Entre libros mojados halláis un registro de turnos. Al fondo indica «cautivos tras la cámara de estudio»."
-                },
-                {
-                  "speaker": "hero",
-                  "text": "Los prisioneros siguen cerca. Antes de abrir sus celdas, tendremos que cortar el ritual de Orvane."
-                }
-              ]
-            },
             {
               "type": "encounter",
               "id": "z4_e03",
@@ -4483,15 +4425,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "La fuente conserva agua clara. Una inscripción explica que los monjes la usaban para purgar el exceso de energía del cristal."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "Más allá, el resplandor se intensifica. El ritual de Orvane está llegando a su fin."
+                  "text": "El brillo violeta se vuelve más intenso. Orvane está en la siguiente cámara, junto al cristal."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ya sabemos qué protege el agua y qué ha roto Orvane. Tenemos que detenerlo antes de que el valle pague las consecuencias."
+                  "text": "Orvane está cerca del cristal. Tenemos que detenerlo antes de que termine de romper las protecciones."
                 }
               ]
             },
@@ -4501,7 +4439,7 @@
               "lines": [
                 {
                   "speaker": "edmund",
-                  "text": "Los monjes conservaron esta fuente para los que llegaran después. Descansad. Aún quedan vidas al otro lado."
+                  "text": "Descansad mientras podáis. Después tendremos que enfrentar a Orvane y salvar a los mineros."
                 }
               ],
               "only": "edmund"
@@ -4511,7 +4449,7 @@
               "id": "z4_s02_pista",
               "title": "El vínculo de Umbría",
               "before": "b2_r01",
-              "text": "Una señal de viajeros muestra raíces junto a un cauce. Un monje anotó que aprendió aquel vínculo en el bosque de Umbría.",
+              "text": "Un sello de piedra lleva símbolos de Umbría, un bosque lejano. Parece una antigua señal de los monjes viajeros.",
               "question": "¿Qué hacéis?",
               "options": [
                 {
@@ -4519,7 +4457,7 @@
                   "attr": "wis",
                   "dc": 14,
                   "ok": {
-                    "text": "Identificáis la forma de un amuleto de corteza. Serviría para abrir este depósito antiguo en una visita futura.",
+                    "text": "Descubrís una marca con forma de amuleto de corteza. Hará falta uno para activar el antiguo vínculo.",
                     "flag": "z4_s02_visto"
                   },
                   "fail": {
@@ -4531,7 +4469,7 @@
                   "attr": "int",
                   "dc": 15,
                   "ok": {
-                    "text": "Descifráis que un monje trajo un vínculo de Umbría. Hace falta un amuleto de corteza para acceder al depósito.",
+                    "text": "Interpretáis el símbolo: un monje trajo esta magia de Umbría. Se necesita un amuleto de corteza.",
                     "flag": "z4_s02_visto"
                   },
                   "fail": {
@@ -4549,13 +4487,13 @@
               "title": "El vínculo de Umbría",
               "after": "b2_r01",
               "reveals": "z4_s02",
-              "text": "El amuleto obtenido en Umbría encaja en el símbolo de raíces. Se ilumina una junta que antes permanecía cerrada.",
+              "text": "El amuleto de corteza responde al sello de Umbría. Una luz violeta recorre la piedra.",
               "question": "¿Probáis?",
               "options": [
                 {
                   "label": "Acercar el amuleto a los símbolos",
                   "ok": {
-                    "text": "La piedra se aparta y revela el antiguo depósito de los monjes viajeros.",
+                    "text": "El amuleto activa un antiguo acceso de los monjes. Habéis descubierto el secreto del vínculo.",
                     "reveal": "z4_s02"
                   }
                 }
@@ -4583,7 +4521,7 @@
               "type": "encounter",
               "id": "z4_e04",
               "trigger": "seen",
-              "omen": "El agua hierve en las grietas. El vapor adquiere formas vivas mientras Orvane recita junto al cristal.",
+              "omen": "El aire se vuelve húmedo y caliente. De la cámara siguiente llega un silbido de vapor y la voz de Maese Orvane, que recita sin descanso.",
               "can_reinforce": [
                 "z4_e05"
               ],
@@ -4639,7 +4577,7 @@
               "lines": [
                 {
                   "speaker": "brunna",
-                  "text": "He visto sus nombres en tus registros, Orvane. No te los llevarás más lejos. Nos los llevamos a casa."
+                  "text": "Orvane, esos mineros son gente de mi pueblo. Voy a liberarlos, aunque tenga que derribar esta montaña."
                 }
               ],
               "only": "brunna"
@@ -4650,7 +4588,7 @@
               "lines": [
                 {
                   "speaker": "tiko",
-                  "text": "Vine por un tesoro. Ahora sé qué había que rescatar de verdad. Orvane, abre las celdas."
+                  "text": "Vine a Hondaroca buscando tesoros. Pero lo importante ahora es sacar a los mineros. ¡Se acabó, Orvane!"
                 }
               ],
               "only": "tiko"
@@ -4675,11 +4613,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Las marcas antiguas señalan el nivel de agua necesario para enfriar el cristal. Las compuertas fueron movidas hace poco."
+                  "text": "Las compuertas conservan marcas antiguas de inundación. Los monjes las usaban para mantener el cristal bajo el agua."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Orvane ha desviado el agua de los sellos. Así puede extraer energía y provocar esas criaturas de vapor."
+                  "text": "Orvane ha modificado el caudal que los monjes utilizaban para proteger el cristal. Tenemos que detenerlo."
                 }
               ]
             },
@@ -4694,7 +4632,7 @@
                   "if": "pista_agua",
                   "label": "Cerrar las compuertas, como mandaba Aldric",
                   "ok": {
-                    "text": "Recordáis la orden de Aldric. Recuperáis parte del caudal hacia las cámaras interiores y encontráis monedas en el canal.",
+                    "text": "Recordáis la orden de Aldric y movéis las compuertas. El agua vuelve a cubrir el cristal. Recuperáis las monedas del canal.",
                     "gold": 9,
                     "flag": "z4_compuertas"
                   }
@@ -4778,15 +4716,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "La lista definitiva reúne los traslados de la mina y las ruinas. Los últimos supervivientes figuran tras la cámara de estudio."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "Algunos nombres aparecen tachados por fallecimiento. Otros llevan una marca de ración: todavía están vivos."
+                  "text": "El registro recoge los nombres de los mineros presos. Algunos fueron trasladados detrás de la cámara de estudio."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ahora sabemos dónde están y qué puerta hay que abrir. Primero debemos detener a Orvane."
+                  "text": "Ya sabemos dónde se encuentran los cautivos. Detendremos a Orvane antes de sacarlos de aquí."
                 }
               ]
             },
@@ -4796,7 +4730,7 @@
               "lines": [
                 {
                   "speaker": "liss",
-                  "text": "Leí estas listas mientras trabajaba para Orvane. Debí intervenir entonces. Ahora ayudaré a sacar a cada superviviente."
+                  "text": "Conocía este registro y debí denunciarlo. No puedo cambiar eso, pero sí ayudaros a liberar a los cautivos."
                 }
               ],
               "only": "liss"
@@ -4807,7 +4741,7 @@
               "lines": [
                 {
                   "speaker": "brunna",
-                  "text": "¡Aquí está su nombre! El aprendiz recibió raciones en el último turno. Aún podemos encontrarlo con vida."
+                  "text": "¡Aquí están los nombres de mi cuadrilla! Los trasladaron con otros cautivos. Tenemos que sacarlos."
                 }
               ],
               "only": "brunna"
@@ -4818,13 +4752,13 @@
               "title": "El escribiente cautivo",
               "img": "escena_escribiente_cautivo",
               "decision": true,
-              "text": "Tras una reja, un escribiente cautivo os enseña los turnos de vigilancia y las raciones. Suplica que no olvidéis su celda.",
+              "text": "Tras una reja oxidada, un escribiente cautivo os muestra dos tablillas: una con los turnos de guardia y otra con provisiones.",
               "question": "¿Qué le pedís que os explique?",
               "options": [
                 {
                   "label": "Consultar los turnos de guardia",
                   "ok": {
-                    "text": "El escribiente os señala un acceso que permite sortear la vigilancia de la cámara de estudio.",
+                    "text": "El escribiente os señala una ruta que permite esquivar a uno de los guardias de la cámara de estudio.",
                     "sub": "z4_e03"
                   }
                 },
@@ -4891,15 +4825,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Los sellos de piedra estaban hechos para contener energía. Orvane ha invertido sus runas para enviarla a su cámara."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "Los símbolos recién trazados aún brillan, aunque la barrera que impedía el paso ya no está activa."
+                  "text": "Los sellos de piedra de los monjes están dañados. Reconocéis las marcas recientes de Orvane junto a las antiguas."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Los monjes retenían el poder; Orvane lo conduce hacia sí mismo. Ahora entendemos cómo prepara su dominio."
+                  "text": "Orvane intenta absorber la energía del cristal. Por eso está rompiendo las protecciones que lo mantenían contenido."
                 }
               ]
             },
@@ -4909,13 +4839,13 @@
               "title": "El cultista rendido",
               "img": "escena_cultista_llave",
               "decision": true,
-              "text": "Un cultista arroja al agua las tablillas que llevaba. Afirma que Orvane les prometió participar en el poder del cristal.",
+              "text": "Un joven cultista se arrodilla entre las ruinas inundadas y levanta las manos. Ofrece información a cambio de su libertad.",
               "question": "¿Qué hacéis con el cultista?",
               "options": [
                 {
                   "label": "Perdonarle a cambio de información",
                   "ok": {
-                    "text": "Os señala el cofre de los monjes en el laboratorio y la ruta para evitar a un guardián de vapor. Huye.",
+                    "text": "El cultista os revela dónde ocultaron un cofre y cómo evitar a uno de los guardianes de vapor. Después huye.",
                     "reveal": "z4_s01",
                     "sub": "z4_e04"
                   },
@@ -4988,15 +4918,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "El diario de los monjes describe cómo el cristal respondía a deseos y conjuros, amplificándolos hasta volverlos incontrolables."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "Para impedir otra catástrofe, inundaron el monasterio y grabaron sellos en sus muros. Aldric ordenó ocultar después todos los accesos."
+                  "text": "El diario explica por qué se inundó el monasterio: los monjes necesitaban enfriar el cristal para mantener su magia contenida."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Orvane ha invertido esas protecciones. Si termina el ritual, la magia que antes contenían caerá sobre Valdescarcha."
+                  "text": "Orvane ha roto parte de aquella protección. Si domina el cristal, también pondrá en peligro Valdescarcha."
                 }
               ]
             },
@@ -5057,15 +4983,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Un cuaderno cuenta que un monje viajó al bosque de Umbría y aprendió a unir las raíces vivas con la piedra."
-                },
-                {
-                  "speaker": "narrator",
-                  "text": "El vínculo servía para custodiar este depósito, no para controlar el gran cristal. Habéis recuperado una historia aparte del monasterio."
+                  "text": "Un cuaderno cuenta que un monje viajó a Umbría y aprendió a crear vínculos mágicos con madera y piedra."
                 },
                 {
                   "speaker": "hero",
-                  "text": "El amuleto ha cerrado su propio misterio. El peligro de Hondaroca sigue siendo Orvane."
+                  "text": "El vínculo viene de los viajes de aquel monje a Umbría. Ahora debemos concentrarnos en Orvane."
                 }
               ]
             },
@@ -5114,19 +5036,19 @@
           "id": "z4_j01",
           "from": "z4_r05",
           "until": "z4_e05",
-          "text": "El registro sitúa a los últimos cautivos tras la cámara de estudio. Hay que impedir que Orvane los utilice."
+          "text": "La cámara de estudio está protegida por devotos de Orvane. Aún quedan mineros cautivos y habrá que derrotarlo para liberarlos."
         },
         {
           "id": "z4_j03",
           "from": "z4_r03",
           "until": "z4_s01",
-          "text": "En el laboratorio hay señales de un escondite de los monjes. Quizá guardaron allí equipo para defenderse."
+          "text": "El laboratorio conserva señales de un cofre que los monjes ocultaron entre los cristales."
         },
         {
           "id": "z4_j04",
           "from": "z4_r03",
           "until": "z4_r10",
-          "text": "Orvane desvía el agua y altera los sellos antiguos. Hay que comprender cómo los está deshaciendo."
+          "text": "Orvane está rompiendo las protecciones que mantienen controlada la energía del cristal."
         },
         {
           "id": "z4_j05",
@@ -5146,7 +5068,7 @@
             {
               "if": "z4_e03",
               "to": "disipada",
-              "text": "La barrera del ritual se apaga cuando caen los devotos de la cámara de estudio. Los sellos antiguos siguen dañados."
+              "text": "Al caer los devotos de la cámara de estudio, la barrera violeta que cerraba la sala de los sellos se apaga."
             }
           ],
           "texts": {
@@ -5162,7 +5084,7 @@
       "name": "Brunna Piedrahonda",
       "class": "Fighter",
       "species": "Enana",
-      "personality": "Minera de Valdescarcha. Conoce las galerías y protege a su cuadrilla. Busca al aprendiz desaparecido cuya ficha de cobre conserva. Su dureza nace del temor a dejar a alguien bajo la piedra.",
+      "personality": "Práctica, testaruda y protectora. Conoce las galerías mineras y no soporta a los capataces abusivos. Prefiere resolver los problemas con su martillo y proteger a sus compañeros.",
       "starting_items": [
         "Cota de escamas",
         "Martillo de guerra",
@@ -5175,7 +5097,7 @@
       "name": "Tiko Manosrápidas",
       "class": "Rogue",
       "species": "Mediano",
-      "personality": "Llegó tras un tesoro, pero intentó abrir una celda para salvar a un minero y terminó preso. Su humor es una coraza. Debe decidir qué vale más: un botín o una vida.",
+      "personality": "Ingenioso, hablador y oportunista. Siempre busca una salida y un tesoro. Tiene buen corazón, aunque intenta ocultarlo detrás de sus bromas.",
       "starting_items": [
         "Armadura de cuero",
         "Espada corta",
@@ -5188,7 +5110,7 @@
       "name": "Hermano Edmund",
       "class": "Cleric",
       "species": "Humano",
-      "personality": "Último guardián de la cripta por encargo de una orden heredera de los custodios enanos. Ocultó las primeras señales de intrusión por temor al pánico. Aprenderá que proteger a los muertos exige proteger a los vivos.",
+      "personality": "Sereno, compasivo y profundamente comprometido con su deber. Es el último guardián de la cripta y siente que ha fallado a los antepasados.",
       "starting_items": [
         "Cota de escamas",
         "Maza",
@@ -5201,7 +5123,7 @@
       "name": "Liss",
       "class": "Wizard",
       "species": "Elfa",
-      "personality": "Antigua aprendiz de Orvane. Al principio creyó que estudiaban una protección ancestral; después comprendió que él la estaba invirtiendo. Permaneció demasiado tiempo y quiere enmendarlo ayudando a liberar a los cautivos.",
+      "personality": "Inteligente, reservada y atormentada por su participación en los experimentos de Orvane. Desea reparar el daño que ha causado y teme el poder que su antiguo maestro ha descubierto.",
       "starting_items": [
         "Túnica",
         "Daga",
@@ -5363,45 +5285,41 @@
     "pre_boss_dialogue": [
       {
         "speaker": "orvane",
-        "text": "Me trajeron aquí para estudiar grietas y ruinas. Descubrí un poder que Aldric ocultó por miedo."
-      },
-      {
-        "speaker": "orvane",
-        "text": "Los monjes lo enterraron bajo el agua. Yo he aprendido a abrir sus sellos y dirigir su fuerza."
+        "text": "¡Apartaos! ¡Este cristal me dará un poder que ningún mago ha conocido jamás!"
       },
       {
         "speaker": "hero",
-        "text": "Para hacerlo has esclavizado a los mineros. Están encerrados detrás de la cámara de estudio. Libéralos."
+        "text": "Has esclavizado a los mineros y puesto en peligro Valdescarcha. Libéralos y detente."
       },
       {
         "speaker": "orvane",
-        "text": "Cuando domine el cristal, Valdescarcha estará a salvo de sus disputas. Todos obedecerán una sola voluntad: la mía."
+        "text": "¡Cuando domine su energía, nadie volverá a darme órdenes! ¡El valle entero obedecerá mi voluntad!"
       },
       {
         "speaker": "hero",
-        "text": "Eso no es proteger a nadie. Has puesto al valle en peligro. Esto termina aquí."
+        "text": "No permitiré que sigas utilizando a los mineros. Se acabó, Orvane."
       }
     ],
     "pre_boss_dialogue_brunna": [
       {
         "speaker": "orvane",
-        "text": "Vine a estudiar la montaña. Aldric escondió un poder que puede obligar a todo el valle a obedecer."
+        "text": "¡Apartaos! ¡Este cristal me dará un poder que ningún mago ha conocido jamás!"
       },
       {
         "speaker": "brunna",
-        "text": "Nos contrataste para medir grietas. Luego encadenaste a la cuadrilla. Aquí termina tu excavación."
+        "text": "Soy minera de Valdescarcha. ¡Has utilizado a nuestra gente y voy a sacarla de aquí!"
       },
       {
         "speaker": "orvane",
-        "text": "El agua y los sellos mantenían dormido el cristal. Al dominarlo, nadie volverá a darme órdenes."
+        "text": "¡Cuando domine su energía, nadie volverá a darme órdenes! ¡El valle entero obedecerá mi voluntad!"
       },
       {
         "speaker": "hero",
-        "text": "No vas a gobernar sobre quienes has encerrado. Liberaremos a los mineros y acabaremos con tu ritual."
+        "text": "No vas a utilizar a nadie más para alcanzar el cristal. Esto termina ahora."
       }
     ],
     "dialogue_selection_rule": "Utiliza pre_boss_dialogue_brunna únicamente cuando Brunna haya sustituido a Liss y esté presente en el encuentro final. En los demás casos utiliza pre_boss_dialogue, que no depende de ningún aliado.",
-    "victory_reward": "Orvane cae. El cristal se agrieta y su luz se apaga hasta deshacerse en polvo oscuro.\nEl vapor pierde fuerza. El agua vuelve a circular por los canales de los monjes y los sellos dejan de recibir energía.\nLos cultistas supervivientes abandonan las ruinas. Tras la cámara de estudio abrís las celdas y liberáis a los mineros que siguen vivos.\nEl escribiente cautivo sale con ellos. Un aprendiz conserva las fuerzas para regresar con su cuadrilla. Quienes escaparon antes podrán contar lo ocurrido.\nEn Valdescarcha hay abrazos y también duelo por quienes no vuelven. Las familias conocen al fin el destino de los desaparecidos.\nRecordáis a Aldric y a los monjes: sacrificaron el acceso a un poder inmenso para proteger a otros.\nLa amenaza del cristal ha terminado. Hondaroca queda en silencio y los supervivientes están a salvo."
+    "victory_reward": "Orvane cae derrotado. El cristal oscuro se agrieta y se deshace. Sin su energía, las aguas del monasterio empiezan a descender.\nLos cultistas supervivientes huyen. Tras la cámara de estudio encontráis a los mineros que siguen vivos, encerrados y agotados.\nLos liberáis y regresáis con ellos a Valdescarcha. Las familias vuelven a reunirse.\nLos documentos confirman que Aldric cerró el camino y los monjes sumergieron el cristal para proteger el valle. Hondaroca ya no está en peligro."
   },
   "items": [
     {

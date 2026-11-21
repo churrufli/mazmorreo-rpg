@@ -22,23 +22,19 @@
    [
     {
      "speaker": "tiko",
-     "text": "Robé una llave al jefe de la prisión. Tenía la salida delante de mí."
+     "text": "Fui a buscar tesoros en las ruinas y encontré a un minero atrapado por los goblins."
     },
     {
      "speaker": "hero",
-     "text": "¿Por qué regresaste?"
+     "text": "¿Por qué intentaste liberarlo?"
     },
     {
      "speaker": "tiko",
-     "text": "Oí a un minero pedir auxilio al otro lado de una puerta cerrada."
+     "text": "No podía irme sabiendo que los goblins lo tenían prisionero."
     },
     {
      "speaker": "tiko",
-     "text": "Su voz pesó más que el oro. Volví a abrir su celda y terminé encadenado en la mía."
-    },
-    {
-     "speaker": "tiko",
-     "text": "Entre los liberados estaba aquel minero. Me reconoció al oírme protestar por las cerraduras."
+     "text": "No me gusta admitirlo, pero ayudarle importó más que el oro. Por intentarlo acabé encadenado."
     }
    ],
    [
@@ -75,7 +71,7 @@
     },
     {
      "speaker": "edmund",
-     "text": "Creí que custodiar las tumbas bastaba. Cuando llegaron los profanadores, no pensé primero en los mineros."
+     "text": "Pensaba que proteger la cripta bastaba. No vi que Orvane también amenazaba a los vivos."
     },
     {
      "speaker": "edmund",
@@ -85,7 +81,7 @@
    [
     {
      "speaker": "edmund",
-     "text": "Vi las primeras huellas en la cripta y no avisé a Valdescarcha."
+     "text": "Vi las primeras huellas de intrusos y no alerté a Valdescarcha."
     },
     {
      "speaker": "hero",
@@ -93,7 +89,7 @@
     },
     {
      "speaker": "edmund",
-     "text": "Temía sembrar el pánico. Mi silencio dio tiempo a Orvane para continuar."
+     "text": "Temía provocar el pánico. Mi prudencia dio tiempo a Orvane."
     },
     {
      "speaker": "edmund",
@@ -126,7 +122,7 @@
    [
     {
      "speaker": "liss",
-     "text": "Orvane me enseñó a leer los signos de la piedra. Cuando llegamos, creímos que estudiábamos una defensa antigua."
+     "text": "Orvane me enseñó a leer los signos de la piedra. Admiraba su paciencia."
     },
     {
      "speaker": "hero",
@@ -134,7 +130,7 @@
     },
     {
      "speaker": "liss",
-     "text": "Todo cambió cuando alteró mis placas para extraer energía y empezó a hablar de obligar al valle a obedecer."
+     "text": "Cuando dejó de estudiar el cristal y empezó a hablar de someter a todo el valle."
     },
     {
      "speaker": "liss",
@@ -144,7 +140,7 @@
    [
     {
      "speaker": "liss",
-     "text": "Ayudé a activar las placas del laboratorio. Creía que mediríamos la magia sin dañar los sellos."
+     "text": "Ayudé a Orvane a estudiar los cristales del monasterio. Creí que solo buscábamos conocer su magia."
     },
     {
      "speaker": "hero",
@@ -152,11 +148,11 @@
     },
     {
      "speaker": "liss",
-     "text": "Después vi llegar a los cautivos y aún tardé en marcharme. Esa demora fue una elección."
+     "text": "Pero vi las consecuencias y seguí allí. Eso también fue una elección."
     },
     {
      "speaker": "liss",
-     "text": "Se lo debía: usé lo aprendido para abrir sus celdas. Reparar no borra lo que hice, pero importa."
+     "text": "Ahora quiero usar lo aprendido para reparar cuanto pueda."
     }
    ],
    [
@@ -185,7 +181,7 @@
    [
     {
      "speaker": "brunna",
-     "text": "En la cuadrilla trabajaban madres, padres e hijos mayores de Valdescarcha. Nadie era un número de registro."
+     "text": "Mi cuadrilla estaba formada por familias enteras de Valdescarcha."
     },
     {
      "speaker": "hero",
@@ -197,25 +193,25 @@
     },
     {
      "speaker": "brunna",
-     "text": "Orvane vino a estudiar grietas. Cuando le advertí de los derrumbes, decidió que los mineros podían arriesgarse por él."
+     "text": "Advertí que las galerías podían ceder. Orvane no quiso detener las excavaciones y puso en peligro a la cuadrilla."
     }
    ],
    [
     {
      "speaker": "brunna",
-     "text": "Guardaba la ficha de cobre de un aprendiz. Temía encontrar su nombre entre los muertos."
+     "text": "Cuando vi los nombres de mi cuadrilla en los registros, temí no volver a verlos."
     },
     {
      "speaker": "hero",
-     "text": "¿Qué ocurrió con él?"
+     "text": "¿Qué pensaste al encontrarlos?"
     },
     {
      "speaker": "brunna",
-     "text": "Figuraba entre los cautivos de la última lista. Lo encontramos vivo cuando abrimos las celdas."
+     "text": "Que tenía que continuar. No podía abandonar a los mineros cuando ya sabía adónde los habían llevado."
     },
     {
      "speaker": "brunna",
-     "text": "Le devolví la ficha. Ahora tendré que aprender también a llorar a quienes no regresaron."
+     "text": "Ver a los supervivientes regresar a Valdescarcha fue la respuesta que necesitaba."
     }
    ],
    [
