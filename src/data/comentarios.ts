@@ -26,7 +26,7 @@ export const TONE_LINES: Record<string, Record<Tone, string>> = {
     codicia: 'Si es para la cuadrilla, vale. Si es para el bolsillo, ya hablaremos.',
   },
   maren: {
-    piedad: 'Ojalá alguien hiciera lo mismo por mi hermano, esté donde esté.',
+    piedad: 'Cada vez que alguien ayuda a otro, recuerdo por qué busqué a mi hermano.',
     dureza: 'El bosque no olvida. Espero que nosotros tampoco.',
     codicia: 'Las raíces no se compran. Pero bueno, el pan sí.',
   },
@@ -91,8 +91,8 @@ export const TONE_LINES: Record<string, Record<Tone, string>> = {
 export const PLACE_LINES: Record<string, Record<string, string>> = {
   tiko: { z3: 'Una cripta. Aquí no se roba, ¿eh? Por si acaso me quedo con las manos en los bolsillos.', z4: 'Esa luz violeta… Es la misma que vi desde la prisión. Estamos cerca.' },
   edmund: { z4: 'Aldric mandó cerrar el camino, y los monjes mantuvieron el cristal bajo el agua.' },
-  maren: { b3: 'La ciénaga. Mi hermano nunca pasaba de aquí. Algo le hizo seguir.', b4: 'Oigo las hojas, pero no suenan a bosque. Suenan a algo que respira.' },
-  anselmo: { b4: 'Siento el pacto tirar de mí, como una cadena. Aquí dentro hay algo parecido.' },
+  maren: { b3: 'Mi hermano nunca pasaba de la ciénaga. Si lo trajeron hasta aquí, alguien lo atrajo.', b4: 'Oigo las hojas como me enseñó mi hermano. Pero aquí suenan como si el bosque respirara.' },
+  anselmo: { b4: 'Mi pacto es una cadena. Aquí sucede lo mismo: el Corazón no deja marchar a quienes retiene.' },
   vurka: { m3: 'Los muros de los enanos. Mi clan comerciaba con ellos antes del dragón.', m4: 'Huele a hielo viejo y a escamas. Vharzûl está ahí abajo.' },
   durnok: { m4: 'La carta de mi familia hablaba de esta cueva. Ahora sabré la verdad.' },
   zeyna: { s3: 'Mi abuela nunca bajó tanto. Decía que aquí ya no había tesoro, solo dientes.', s4: 'Oigo voces. Son de gente viva. ¡Rápido!' },
