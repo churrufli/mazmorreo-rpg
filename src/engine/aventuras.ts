@@ -86,7 +86,7 @@ export const ADVS: Record<AdvId, Adv> = {
   montana: {
     id: 'montana', name: MD.dungeon.name, data: MD, town: 'cumbrenieve', boss: 'Young White Dragon', sub: 'aldric',
     intro: 'intro_montana', victoryImg: 'victoria_montana', defeatImg: 'derrota_generica',
-    victoryText: 'Vharzûl cae sobre su tesoro y el hielo de la cumbre empieza a crujir. El paso volverá a abrirse y Cumbrenieve no pagará más tributo. Encontráis 120 monedas de oro y el Sello del Deshielo.',
+    victoryText: 'Vharzûl cae sobre el oro del tributo. El hielo de la cumbre empieza a quebrarse y el paso podrá abrirse de nuevo.\nCumbrenieve ya no tendrá que pagar al dragón. Entre el botín hay 120 monedas de oro y el Sello del Deshielo.',
     defeatText: 'Todo el grupo ha caído en el hielo de la montaña.',
     reward: { gold: 120, item: 'relic_dwarf' },
     art: { m1: art('paso_nevado'), m2: art('pinos_helados'), m3: art('fortaleza_enana'), m4: art('cueva_glaciar') },

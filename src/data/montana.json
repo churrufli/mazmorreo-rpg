@@ -2,7 +2,7 @@
   "dungeon": {
     "id": "montana_helada",
     "name": "El Invierno del Dragón",
-    "summary": "Desde Cumbrenieve, una tormenta imposible desciende de las montañas y amenaza con aislar el valle. Tras la nieve se oculta un antiguo tributo: durante generaciones, una fortaleza enana entregó oro al dragón blanco Vharzûl para mantener abierto el paso. Ahora el pacto se ha convertido en una condena, y el héroe deberá alcanzar el glaciar antes de que el invierno lo reclame todo."
+    "summary": "El frío de Vharzûl se extiende desde el glaciar. Una tormenta imposible amenaza con aislar Cumbrenieve. Durante generaciones, la fortaleza enana entregó oro al dragón blanco para mantener abierto el paso. Pero Vharzûl no respetó el trato. Debéis cruzar la montaña y llegar hasta su guarida."
   },
   "zones": [
     {
@@ -14,15 +14,15 @@
       "entry_dialogue": [
         {
           "speaker": "sabio",
-          "text": "El hielo no viene solo del cielo. Los antiguos hitos enanos todavía señalan la senda, si el viento no los ha borrado."
+          "text": "La tormenta no explica por sí sola tanto hielo. Los hitos enanos aún indican el camino hacia la fortaleza, si la ventisca permite verlos."
         },
         {
           "speaker": "hero",
-          "text": "Partiré antes de que la tormenta cierre el paso. ¿Dónde puedo refugiarme?"
+          "text": "Partiremos antes de que la tormenta cierre el paso. ¿Dónde podremos refugiarnos?"
         },
         {
           "speaker": "sabio",
-          "text": "Una cabaña de tramperos resiste antes del collado. Busca allí resguardo si arrecia la ventisca."
+          "text": "Antes del collado encontraréis un refugio de tramperos. Podéis resguardaros allí si arrecia la ventisca."
         }
       ],
       "rooms": [
@@ -53,11 +53,11 @@
               "lines": [
                 {
                   "speaker": "sabio",
-                  "text": "La fortaleza pagaba tributo a la cumbre. No confundas el oro con un pacto de paz."
+                  "text": "La fortaleza pagaba tributo a Vharzûl. No confundáis aquel oro con un pacto de paz."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Encontraré la verdad en sus salones."
+                  "text": "Buscaremos la verdad en sus salones."
                 }
               ]
             },
@@ -151,11 +151,11 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "El lobo no iba solo. Algo más pequeño pasó por aquí antes que él."
+                  "text": "Las huellas del lobo cruzan un rastro casi borrado. Parece dirigirse hacia el puesto de señales."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "Una hebra de tela se agita en una rama helada, demasiado alta para el animal."
+                  "text": "La nieve sigue cayendo y borra las marcas recientes del camino."
                 }
               ]
             }
@@ -201,15 +201,15 @@
               "decision": true,
               "on_return": true,
               "after": "m1_r07",
-              "text": "Un trampero malherido pide ayuda. «Solo quiero que alguien sepa dónde nos alcanzó la tormenta».",
-              "question": "¿Qué haces?",
+              "text": "Un trampero malherido pide ayuda. «La tormenta me alcanzó en el paso. Apenas pude llegar hasta aquí».",
+              "question": "¿Qué hacéis?",
               "options": [
                 {
                   "label": "Curarle con el estuche",
                   "needs": "healers_kit_1",
                   "ok": {
                     "lose": "healers_kit_1",
-                    "text": "Se recupera y te dice dónde escondió su bolsa en el almacén.",
+                    "text": "Se recupera y os confía las monedas que guardaba en su bolsa.",
                     "gold": 5
                   }
                 },
@@ -218,17 +218,17 @@
                   "attr": "wis",
                   "dc": 11,
                   "ok": {
-                    "text": "Consigues estabilizarlo. Agradecido, te indica dónde escondió su bolsa.",
+                    "text": "Conseguís estabilizarlo. Agradecido, os entrega unas monedas de su bolsa.",
                     "gold": 5
                   },
                   "fail": {
-                    "text": "Haces lo que puedes y lo dejas abrigado junto al fuego."
+                    "text": "Hacéis lo que podéis y lo dejáis abrigado junto al fuego."
                   }
                 },
                 {
                   "label": "Marcar el lugar y seguir",
                   "ok": {
-                    "text": "Le prometes avisar a Cumbrenieve."
+                    "text": "Marcáis la ubicación del refugio antes de seguir."
                   }
                 }
               ]
@@ -270,7 +270,7 @@
               "type": "trap",
               "id": "m1_t01",
               "name": "Placa de hielo fino",
-              "description": "Algo cruje bajo tus pies…",
+              "description": "El hielo cruje bajo vuestros pies…",
               "detect_dc": 12,
               "disarm_dc": 12,
               "save_ability": "DEX",
@@ -308,13 +308,13 @@
               "img": "escena_kobold_puente",
               "decision": true,
               "after": "m1_e02",
-              "text": "Un kobold herido se aferra a la cuerda de un puente nevado y te mira aterrado. No parece dispuesto a luchar.",
-              "question": "¿Qué decides?",
+              "text": "Un kobold herido se aferra a la cuerda del puente y os mira aterrado. No parece dispuesto a luchar.",
+              "question": "¿Qué decidís?",
               "options": [
                 {
                   "label": "Dejarle marchar",
                   "ok": {
-                    "text": "Huye ladera abajo. Al pasar suelta la bolsa del tributo.",
+                    "text": "Huye ladera abajo. Al marcharse deja caer la bolsa del tributo.",
                     "gold": 4
                   },
                   "tone": "piedad"
@@ -324,7 +324,7 @@
                   "attr": "cha",
                   "dc": 12,
                   "ok": {
-                    "text": "«Los guardias enanos escondieron un cofre bajo la roca para proteger sus provisiones de las tormentas», confiesa antes de huir.",
+                    "text": "«Los enanos ocultaron provisiones bajo una roca de la cornisa, lejos del viento», confiesa antes de huir.",
                     "reveal": "m1_s01"
                   },
                   "fail": {
@@ -335,7 +335,7 @@
                 {
                   "label": "Dejarle donde está",
                   "ok": {
-                    "text": "Sigues adelante."
+                    "text": "Seguís adelante."
                   }
                 }
               ]
@@ -346,11 +346,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "El kobold del tributo gruñe: «El oro sube. Los forasteros no»."
+                  "text": "El kobold del tributo gruñe: «El oro sube hacia Vharzûl. Los forasteros no pasan»."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Entonces ya conozco el precio de obedecerle."
+                  "text": "Ahora sabemos a quién sirven los kobolds del paso."
                 }
               ]
             }
@@ -429,8 +429,8 @@
               "type": "scene",
               "id": "m1_s01_pista",
               "title": "La guardia enterrada",
-              "text": "La nieve junto a las rocas del sendero se hunde en una línea recta. Entre las piedras se filtra aire que no trae la ventisca.",
-              "question": "¿Cómo investigas la roca?",
+              "text": "La nieve se hunde junto a las rocas de la cornisa. Una corriente de aire sale de una junta entre las piedras.",
+              "question": "¿Cómo investigáis la roca?",
               "reveals": "m1_s01",
               "options": [
                 {
@@ -438,11 +438,11 @@
                   "attr": "wis",
                   "dc": 12,
                   "ok": {
-                    "text": "El aire entre las piedras te permite localizar un cofre oculto bajo la roca.",
+                    "text": "Seguís la corriente de aire y localizáis el cofre oculto bajo la roca.",
                     "reveal": "m1_s01"
                   },
                   "fail": {
-                    "text": "No encuentras la entrada bajo la roca."
+                    "text": "No encontráis el hueco bajo la roca."
                   }
                 },
                 {
@@ -450,7 +450,7 @@
                   "attr": "int",
                   "dc": 12,
                   "ok": {
-                    "text": "Las juntas bajo la nieve delatan dónde se oculta un cofre enano.",
+                    "text": "Las juntas bajo la nieve delatan el cofre enano oculto en la roca.",
                     "reveal": "m1_s01"
                   },
                   "fail": {
@@ -615,7 +615,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Seguiré por la antigua ruta enana."
+                  "text": "Seguiremos la antigua ruta enana hasta la fortaleza."
                 }
               ]
             },
@@ -629,7 +629,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Tendré cuidado con cada paso."
+                  "text": "Comprobaremos el terreno antes de avanzar."
                 }
               ],
               "only": "aldric"
@@ -662,8 +662,8 @@
               "type": "scene",
               "id": "m1_pat01_paso",
               "title": "Rastreadores del collado",
-              "text": "Un huargo y un lobo rastrean tu presencia. Todavía puedes evitar que te descubran.",
-              "question": "¿Qué haces?",
+              "text": "Los rastreadores se acercan por el collado. Todavía podéis evitar que os descubran.",
+              "question": "¿Qué hacéis?",
               "on_return": true,
               "after": "m2_r01",
               "options": [
@@ -679,11 +679,11 @@
                   "attr": "dex",
                   "dc": 12,
                   "ok": {
-                    "text": "Te deslizas tras los pinos sin quebrar las ramas.",
+                    "text": "Os deslizáis tras los pinos sin romper las ramas.",
                     "remove": "m1_pat01"
                   },
                   "fail": {
-                    "text": "Te descubren.",
+                    "text": "Os descubren.",
                     "fight": "m1_pat01"
                   }
                 },
@@ -692,11 +692,11 @@
                   "attr": "cha",
                   "dc": 12,
                   "ok": {
-                    "text": "Tu voz retumba contra el collado. Los animales se pierden en la ventisca.",
+                    "text": "Vuestras voces retumban por el collado. Los animales se alejan entre la nieve.",
                     "remove": "m1_pat01"
                   },
                   "fail": {
-                    "text": "No se lo tragan.",
+                    "text": "No retroceden.",
                     "fight": "m1_pat01"
                   }
                 }
@@ -727,7 +727,7 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "Dos piedras señalan direcciones distintas."
+                  "text": "Los hitos señalan rutas distintas. Habrá que comprobar el terreno."
                 },
                 {
                   "speaker": "narrator",
@@ -739,19 +739,19 @@
               "type": "scene",
               "id": "m1_p01",
               "title": "La senda enterrada",
-              "text": "Junto a las rocas nevadas del sendero asoma una bolsa de viaje. La ventisca ha cubierto de hielo sus posibles apoyos.",
-              "question": "¿Cómo intentas recuperar la bolsa?",
+              "text": "Una bolsa de viaje asoma junto a unas rocas nevadas. El hielo oculta dónde podéis apoyar los pies.",
+              "question": "¿Cómo intentáis recuperar la bolsa?",
               "options": [
                 {
                   "label": "Leer las huellas y el hielo",
                   "attr": "wis",
                   "dc": 12,
                   "ok": {
-                    "text": "Tanteas la nieve y recuperas la bolsa. En su interior hay cuatro monedas.",
+                    "text": "Tanteáis la nieve y recuperáis la bolsa con las monedas.",
                     "gold": 4
                   },
                   "fail": {
-                    "text": "El frío te cala.",
+                    "text": "El frío os cala.",
                     "damage": "1d4"
                   }
                 },
@@ -760,7 +760,7 @@
                   "attr": "int",
                   "dc": 12,
                   "ok": {
-                    "text": "Distingues la roca firme bajo el hielo y recuperas las monedas de la bolsa.",
+                    "text": "Distinguís la roca firme bajo el hielo y recuperáis las monedas de la bolsa.",
                     "gold": 4
                   },
                   "fail": {
@@ -772,10 +772,10 @@
                   "attr": "con",
                   "dc": 11,
                   "ok": {
-                    "text": "Consigues salir de la nieve profunda, pero dejas la bolsa atrás."
+                    "text": "Conseguís salir de la nieve profunda, pero dejáis la bolsa atrás."
                   },
                   "fail": {
-                    "text": "La ventisca te deja exhausto.",
+                    "text": "La ventisca os deja exhaustos.",
                     "damage": "1d4"
                   }
                 },
@@ -783,13 +783,13 @@
                   "ally": "aldric",
                   "label": "Dejar que Tavin tantee la nieve",
                   "ok": {
-                    "text": "Tavin lee las huellas medio borradas y saca la bolsa sin hundirse. Dentro hay cuatro monedas.",
+                    "text": "Tavin reconoce el terreno firme y saca la bolsa sin hundirse. Dentro encontráis monedas.",
                     "gold": 4
                   }
                 }
               ],
               "fallback": {
-                "text": "Rodeas el bosquecillo sin encontrar nada."
+                "text": "Rodeáis el bosquecillo sin encontrar nada."
               }
             },
             {
@@ -848,19 +848,19 @@
               "type": "scene",
               "id": "m1_p02",
               "title": "Las piedras de la tormenta",
-              "text": "Una mochila de provisiones ha quedado bajo piedras cubiertas de nieve. Moverlas podría desencadenar un desprendimiento sobre el sendero.",
-              "question": "¿Cómo recuperas la mochila?",
+              "text": "Una mochila ha quedado atrapada bajo unas piedras nevadas. Si las movéis mal, podrían deslizarse hacia el sendero.",
+              "question": "¿Cómo recuperáis la mochila?",
               "options": [
                 {
                   "label": "Empujar la piedra hacia la ladera",
                   "attr": "str",
                   "dc": 13,
                   "ok": {
-                    "text": "Desplazas la piedra hacia la ladera y recuperas las provisiones.",
+                    "text": "Desplazáis la piedra hacia la ladera y recuperáis la mochila.",
                     "item": "healers_kit_1"
                   },
                   "fail": {
-                    "text": "Las piedras se deslizan y te golpean.",
+                    "text": "El ruido de las piedras provoca un enfrentamiento.",
                     "fight": "m1_e05"
                   }
                 },
@@ -869,11 +869,11 @@
                   "attr": "int",
                   "dc": 12,
                   "ok": {
-                    "text": "Liberas primero las piedras que soportan menos peso y recuperas las provisiones.",
+                    "text": "Apartáis primero las piedras más sueltas y recuperáis la mochila.",
                     "item": "healers_kit_1"
                   },
                   "fail": {
-                    "text": "Las piedras se deslizan y te golpean."
+                    "text": "Las piedras se deslizan y os obligan a retroceder."
                   }
                 },
                 {
@@ -881,16 +881,16 @@
                   "attr": "dex",
                   "dc": 12,
                   "ok": {
-                    "text": "Encuentras un rodeo seguro, pero las provisiones quedan bajo las piedras."
+                    "text": "Encontráis un rodeo seguro, pero las provisiones siguen bajo las piedras."
                   },
                   "fail": {
-                    "text": "Las piedras se deslizan y te golpean.",
+                    "text": "Las piedras se deslizan y os golpean.",
                     "damage": "1d4"
                   }
                 }
               ],
               "fallback": {
-                "text": "No consigues recuperar lo que buscabas y te retiras."
+                "text": "No conseguís recuperar la mochila y os retiráis."
               }
             },
             {
@@ -923,15 +923,15 @@
               "title": "La baliza apagada",
               "img": "escena_baliza_apagada",
               "decision": true,
-              "text": "Un trampero tiembla junto a una baliza apagada y unas piedras cubiertas de nieve. No encuentra el camino entre la ventisca.",
-              "question": "¿Qué haces?",
+              "text": "Un trampero tiembla junto a una baliza apagada. Las huellas de la senda terminan aquí, entre piedras cubiertas de nieve.",
+              "question": "¿Qué hacéis?",
               "options": [
                 {
                   "label": "Darle una poción de curación",
                   "needs": "potion_healing",
                   "ok": {
                     "lose": "potion_healing",
-                    "text": "Recupera el color. «Gracias. Los enanos ocultaron un cofre con provisiones bajo una roca, a salvo de las ventiscas».",
+                    "text": "Recupera el color. «Gracias. Los enanos ocultaron provisiones bajo una roca de la cornisa».",
                     "reveal": "m1_s01"
                   }
                 },
@@ -940,7 +940,7 @@
                   "attr": "wis",
                   "dc": 12,
                   "ok": {
-                    "text": "La llama prende y el trampero entra en calor. Te indica dónde escondieron los enanos un cofre de provisiones.",
+                    "text": "La llama prende y el trampero entra en calor. Os indica dónde ocultaron provisiones los enanos.",
                     "reveal": "m1_s01"
                   },
                   "fail": {
@@ -951,7 +951,7 @@
                   "label": "Dejarle comida y una manta",
                   "cost": 5,
                   "ok": {
-                    "text": "Te lo agradece y te enseña una señal enana que indica dónde ocultaron un cofre de provisiones.",
+                    "text": "Os lo agradece y os muestra la señal enana que indica dónde ocultaron provisiones.",
                     "reveal": "m1_s01"
                   }
                 }
@@ -987,11 +987,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "La nota conserva una despedida: «Cerramos el paso para que los niños llegaran al valle»."
+                  "text": "La nota conserva una despedida: «Aguantamos aquí para que los demás alcanzaran el valle»."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Su último trabajo fue cerrar el paso."
+                  "text": "Se quedaron para proteger la retirada hacia el valle."
                 }
               ]
             },
@@ -1040,7 +1040,7 @@
           "id": "m1_j01",
           "from": "m1_r02",
           "until": "m1_r11",
-          "text": "Algo pequeño cruzó el paso antes que el lobo, cargando peso."
+          "text": "Las huellas del paso desaparecen bajo la nieve antes de llegar al puesto de señales."
         },
         {
           "id": "m1_j02",
@@ -1060,11 +1060,11 @@
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "Los pinos se alzan inmóviles bajo un peso de nieve que no deja de crecer. Entre las raíces se hunden huellas demasiado grandes para un viajero."
+          "text": "Los pinos soportan una nieve que no deja de crecer. Las huellas de grandes animales se hunden entre las raíces."
         },
         {
           "speaker": "hero",
-          "text": "El aire huele a resina y a hielo reciente. Algo vigila las rutas hacia la fortaleza."
+          "text": "La ruta hacia la fortaleza cruza este bosque. Tendremos que sortear sus trampas y a quienes las vigilan."
         }
       ],
       "rooms": [
@@ -1129,7 +1129,7 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "Esa criatura surgió del frío como si la nieve le hubiera dado forma."
+                  "text": "Hasta las criaturas del bosque parecen surgir del frío que cubre el paso."
                 },
                 {
                   "speaker": "narrator",
@@ -1171,7 +1171,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ven con nosotros. Nos hará falta tu fuerza."
+                  "text": "Tu fuerza nos ayudará a llegar hasta el dragón. Sigamos juntos."
                 }
               ],
               "brunna_scene": [
@@ -1181,7 +1181,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Entonces guía nuestros pasos, Tavin."
+                  "text": "Con tu experiencia podremos cruzar el bosque, Tavin."
                 }
               ]
             },
@@ -1261,11 +1261,11 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "El oso quedó atrapado aquí. Estas trampas no estaban destinadas solo a animales."
+                  "text": "Estos cepos pueden atrapar tanto a los animales como a quienes cruzan el bosque."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Alguien vigila este bosque."
+                  "text": "Los kobolds vigilan la ruta del tributo."
                 }
               ]
             },
@@ -1290,7 +1290,7 @@
               "type": "scene",
               "id": "m2_pat01_paso",
               "title": "Vigías del tributo",
-              "text": "Unos kobolds inspeccionan sus trampas y discuten sobre los tributos.",
+              "text": "Los kobolds revisan los cepos junto a la ruta del tributo.",
               "question": "¿Qué hacéis?",
               "on_return": true,
               "after": "m3_r01",
@@ -1320,11 +1320,11 @@
                   "attr": "cha",
                   "dc": 13,
                   "ok": {
-                    "text": "Les enseñáis una marca del tributo rota. Se miran y retroceden.",
+                    "text": "Les mostráis una marca rota del tributo. Retroceden al verla.",
                     "remove": "m2_pat01"
                   },
                   "fail": {
-                    "text": "No se lo tragan.",
+                    "text": "No retroceden.",
                     "fight": "m2_pat01"
                   }
                 }
@@ -1369,7 +1369,7 @@
               "lines": [
                 {
                   "speaker": "sabio",
-                  "text": "Estas piedras registran los antiguos tributos. Los enanos entregaban oro para mantener abierto el paso."
+                  "text": "Estas piedras señalaban la ruta del tributo. Los enanos llevaban oro a Vharzûl para mantener abierto el paso."
                 },
                 {
                   "speaker": "hero",
@@ -1377,7 +1377,7 @@
                 },
                 {
                   "speaker": "sabio",
-                  "text": "Solo mientras le convenía. Los archivos de la fortaleza cuentan cuánto duró aquella promesa."
+                  "text": "No siempre. En el archivo de la fortaleza encontraréis las cuentas de aquellos pagos."
                 }
               ]
             }
@@ -1454,7 +1454,7 @@
               "lines": [
                 {
                   "speaker": "vurka",
-                  "text": "Mi clan encontró marcas como estas antes de que el dragón lo atacara."
+                  "text": "Mi clan conocía estas rutas de mercaderes. Las seguimos antes de que el dragón nos atacara."
                 },
                 {
                   "speaker": "vurka",
@@ -1524,7 +1524,7 @@
               "id": "m2_s01",
               "detect_dc": 14,
               "reveals": "chest:m2_c02",
-              "description": "Tras una raíz aparece un escondite de mercaderes."
+              "description": "Tras una raíz aparece un escondite de porteadores."
             },
             {
               "type": "chest",
@@ -1543,7 +1543,7 @@
               "type": "scene",
               "id": "m2_s01_pista",
               "title": "El refugio de los porteadores",
-              "text": "Entre los pinos nevados hay ramas cortadas de forma regular. Un hueco entre sus raíces podría haber servido de refugio.",
+              "text": "Unas ramas cortadas señalan el pino gigantesco. Entre las raíces se abre un hueco que podría ocultar suministros.",
               "question": "¿Cómo lo buscáis?",
               "reveals": "m2_s01",
               "options": [
@@ -1552,7 +1552,7 @@
                   "attr": "wis",
                   "dc": 13,
                   "ok": {
-                    "text": "Las ramas cortadas os guían hasta un cofre de suministros escondido entre los pinos.",
+                    "text": "Los cortes de las ramas os llevan hasta un cofre oculto entre las raíces.",
                     "reveal": "m2_s01"
                   },
                   "fail": {
@@ -1564,7 +1564,7 @@
                   "attr": "int",
                   "dc": 12,
                   "ok": {
-                    "text": "Las ramas cortadas os guían hasta un cofre de suministros escondido entre los pinos.",
+                    "text": "Las marcas de las ramas os llevan al cofre escondido bajo el pino.",
                     "reveal": "m2_s01"
                   },
                   "fail": {
@@ -1698,7 +1698,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "La puerta parece llevar siglos cerrada. Averiguaré qué guarda."
+                  "text": "La puerta de la fortaleza está cubierta de hielo. Allí podremos consultar los archivos del tributo."
                 }
               ]
             }
@@ -1720,7 +1720,7 @@
               "type": "scene",
               "id": "m2_p01",
               "title": "Las raíces heladas",
-              "text": "Una bolsa de suministros está atrapada entre las raíces de los pinos, bajo una costra de hielo. El frío dificulta recuperarla.",
+              "text": "Una bolsa de suministros ha quedado atrapada entre raíces heladas. Será difícil alcanzarla sin resbalar.",
               "question": "¿Cómo recuperáis la bolsa?",
               "options": [
                 {
@@ -1818,14 +1818,14 @@
               "title": "El vigía de las trampas",
               "img": "escena_vigia_trampas",
               "decision": true,
-              "text": "Un kobold vigila unas trampas junto a una jaula cerrada. «No quiero morir aquí. Yo solo cumplo órdenes».",
-              "question": "¿Cómo lo tratas?",
+              "text": "Un kobold vigila las trampas y una jaula cerrada. «Solo cumplo órdenes. No quiero morir aquí».",
+              "question": "¿Cómo lo tratáis?",
               "options": [
                 {
                   "label": "Ofrecerle 8 monedas por su mapa",
                   "cost": 8,
                   "ok": {
-                    "text": "El mapa contiene información sobre un escondite de los antiguos porteadores.",
+                    "text": "El mapa señala el escondite de los antiguos porteadores.",
                     "reveal": "m2_s01"
                   }
                 },
@@ -1834,7 +1834,7 @@
                   "attr": "cha",
                   "dc": 13,
                   "ok": {
-                    "text": "Se marcha sin avisar a nadie. Antes os confía el secreto de los porteadores.",
+                    "text": "Se marcha sin dar la alarma. Antes os indica dónde está el escondite de los porteadores.",
                     "remove": "m2_e06",
                     "reveal": "m2_s01"
                   },
@@ -1907,15 +1907,15 @@
               "title": "La correa del pino",
               "img": "escena_correa_pino",
               "decision": true,
-              "text": "Una vieja correa de porteador conserva señales talladas que podrían revelar una ruta olvidada.",
-              "question": "¿Qué haces con las señales?",
+              "text": "La correa de un porteador conserva señales que apuntan hacia otro escondite de suministros.",
+              "question": "¿Qué hacéis con las señales?",
               "options": [
                 {
                   "label": "Examinar la correa",
                   "attr": "dex",
                   "dc": 12,
                   "ok": {
-                    "text": "Entre sus pliegues aparece una bolsita de cuero con monedas y una nota de los porteadores.",
+                    "text": "Entre los pliegues de la correa encontráis una bolsita con monedas y una nota de los porteadores.",
                     "gold": 6
                   },
                   "fail": {
@@ -1925,7 +1925,7 @@
                 {
                   "label": "Dejar una marca para otros viajeros",
                   "ok": {
-                    "text": "Encontráis una antigua bolsa de viajeros que contiene una poción.",
+                    "text": "Al buscar dónde marcar la corteza, encontráis una vieja bolsa de viajeros con una poción.",
                     "item": "potion_healing"
                   }
                 },
@@ -1973,11 +1973,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "El libro enumera cargas para la fortaleza. Otra mano escribió al final: «Faltan dos; esperamos al amanecer»."
+                  "text": "El libro enumera cargas destinadas a la fortaleza. Sus cuentas muestran que la ruta del tributo atravesaba este bosque."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Que esta página llegue al valle."
+                  "text": "Hasta aquí llegó la ruta del tributo. Sus cuentas siguen en la fortaleza."
                 }
               ]
             },
@@ -2038,7 +2038,7 @@
           "id": "m2_j02",
           "from": "m2_r06",
           "until": "m2_s01",
-          "text": "Las agujas de un pino gigante se mueven sin viento."
+          "text": "Las ramas de un pino gigante muestran cortes hechos con cuidado."
         }
       ],
       "c_gold": true
@@ -2056,7 +2056,7 @@
         },
         {
           "speaker": "hero",
-          "text": "Los relieves de los porteadores están arañados. Alguien intentó borrar el recuerdo del tributo."
+          "text": "Detrás de estos muros deben quedar respuestas sobre el tributo. Buscaremos los registros de la fortaleza."
         }
       ],
       "rooms": [
@@ -2123,11 +2123,11 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "Han arañado las figuras de quienes cargaban el oro hacia la cumbre."
+                  "text": "Aquí aparecen los porteadores que llevaban oro hacia la cumbre."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Borraron a los porteadores de la piedra. No pudieron borrar lo que ocurrió."
+                  "text": "Los relieves están dañados. Pero los archivos pueden contar qué ocurrió con el tributo."
                 }
               ]
             }
@@ -2175,7 +2175,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ven con nosotros. Recuperaremos sus salones."
+                  "text": "Sigamos juntos. Tu experiencia en esta fortaleza nos ayudará."
                 }
               ],
               "brunna_scene": [
@@ -2185,7 +2185,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Acompáñanos, Tavin. Conoces los accesos."
+                  "text": "Sigamos juntos, Tavin. Tu conocimiento de los accesos nos ayudará."
                 }
               ]
             },
@@ -2199,7 +2199,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "El pasillo está a la vista, pero desde aquí no hay forma de abrir la reja."
+                  "text": "La reja bloquea el atajo. Tendremos que buscar su mecanismo en otro lugar."
                 }
               ]
             }
@@ -2491,7 +2491,7 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "Esta es la palanca de la reja que vimos junto al farol."
+                  "text": "Esta palanca mueve la reja de la galería del guardián."
                 },
                 {
                   "speaker": "narrator",
@@ -2499,7 +2499,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ahora servirá para regresar con vida."
+                  "text": "Ya tenemos un atajo para regresar por la fortaleza."
                 }
               ]
             },
@@ -2510,13 +2510,13 @@
               "decision": true,
               "on_return": true,
               "after": "m3_r08",
-              "text": "Un kobold rezagado arroja su daga. «No quiero volver a cargar oro. Sé cómo salir de aquí sin que me vean».",
-              "question": "¿Qué le dices?",
+              "text": "Un kobold rezagado arroja su daga. «No quiero seguir cargando oro para el dragón. Puedo marcharme sin dar la alarma».",
+              "question": "¿Qué le decís?",
               "options": [
                 {
                   "label": "Que se lleve a los demás",
                   "ok": {
-                    "text": "Se marcha a avisar a otro porteador para que abandone la fortaleza. Uno menos se interpondrá.",
+                    "text": "Se marcha a convencer a otro porteador de que no os cierre el paso.",
                     "sub": "m3_pat01"
                   },
                   "tone": "piedad"
@@ -2558,7 +2558,7 @@
                 {
                   "label": "Luchar",
                   "ok": {
-                    "text": "Dejan el carro vacío y preparan sus armas.",
+                    "text": "Sueltan el carro y preparan sus armas.",
                     "fight": "m3_pat01"
                   }
                 },
@@ -2580,11 +2580,11 @@
                   "attr": "cha",
                   "dc": 13,
                   "ok": {
-                    "text": "Les convencéis de que la fortaleza ya no es suya. Huyen.",
+                    "text": "Les convencéis de que ya pueden abandonar el tributo. Huyen.",
                     "remove": "m3_pat01"
                   },
                   "fail": {
-                    "text": "No se lo tragan.",
+                    "text": "No retroceden.",
                     "fight": "m3_pat01"
                   }
                 }
@@ -2791,11 +2791,11 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "Más allá del portón, el glaciar conserva una luz que no pertenece al amanecer."
+                  "text": "Al otro lado del portón empieza la ruta de hielo que lleva hasta Vharzûl."
                 },
                 {
                   "speaker": "narrator",
-                  "text": "El portón vibra y la luz azul llena la garganta."
+                  "text": "El portón vibra. La luz azul del glaciar llena la garganta."
                 }
               ]
             }
@@ -2819,7 +2819,7 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "Hasta la piedra estaba pensada para obedecer a una medida exacta."
+                  "text": "Los enanos usaban pesos y contrapesos incluso para mover estas losas."
                 }
               ]
             },
@@ -2923,14 +2923,14 @@
               "img": "escena_dos_valvulas",
               "decision": true,
               "text": "Un antiguo sistema de válvulas pierde vapor. Podéis intentar repararlo y recuperar unos suministros.",
-              "question": "¿Qué haces con las válvulas?",
+              "question": "¿Qué hacéis con las válvulas?",
               "options": [
                 {
                   "label": "Reparar la válvula",
                   "attr": "dex",
                   "dc": 13,
                   "ok": {
-                    "text": "La tubería deja salir aire templado. El cajón queda libre y encuentras monedas.",
+                    "text": "La tubería libera aire templado. Abrís el cajón y encontráis monedas.",
                     "gold": 9
                   },
                   "fail": {
@@ -2997,14 +2997,14 @@
               "img": "escena_kobold_estandarte",
               "decision": true,
               "text": "Un kobold se refugia junto a un estandarte raído y una lámpara. Dice que guarda unos sellos de la fortaleza y pide una salida.",
-              "question": "¿Qué harás con él?",
+              "question": "¿Qué haréis con él?",
               "options": [
                 {
                   "label": "Prometerle una salida",
                   "attr": "cha",
                   "dc": 12,
                   "ok": {
-                    "text": "Te entrega los sellos y se marcha. Otro porteador reconoce la señal y decide no enfrentarse a vosotros.",
+                    "text": "Os entrega los sellos y unas monedas. Otro porteador reconoce la señal y decide no enfrentarse a vosotros.",
                     "sub": "m3_pat01",
                     "gold": 3
                   },
@@ -3017,7 +3017,7 @@
                   "label": "Comprarle los sellos",
                   "cost": 40,
                   "ok": {
-                    "text": "Los sellos convencen a un porteador de que puede dejar de vigilaros.",
+                    "text": "Los sellos sirven para convencer a un porteador de que no tiene que enfrentaros.",
                     "sub": "m3_pat01"
                   },
                   "tone": "codicia"
@@ -3061,11 +3061,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Una nota menciona «la última pieza que jamás debió fundirse para pagar el invierno»."
+                  "text": "Una nota de los maestros lamenta haber dedicado la forja a pagar el tributo de Vharzûl."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ni siquiera escribieron qué era. Parece que les avergonzaba recordarlo."
+                  "text": "También los maestros de la forja acabaron sometidos al tributo."
                 }
               ]
             },
@@ -3241,7 +3241,7 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "Estas monedas no llegaron en un solo viaje."
+                  "text": "Estas monedas llegaron aquí en muchos viajes desde la fortaleza."
                 },
                 {
                   "speaker": "narrator",
@@ -3254,7 +3254,7 @@
         {
           "id": "m4_r02",
           "name": "Observatorio de escarcha",
-          "description": "Una investigadora examina grietas luminosas.",
+          "description": "Las grietas luminosas cruzan las paredes de la cueva.",
           "kind": "room",
           "size_hexes": 8,
           "shape": "round",
@@ -3289,15 +3289,15 @@
               "default_scene": [
                 {
                   "speaker": "syrael",
-                  "text": "Me llamo Ghaldra. Escoltaba la última caravana que cruzó el paso. El dragón se la llevó entera."
+                  "text": "Soy Ghaldra. Escoltaba la última caravana del paso. Vharzûl se llevó a quienes viajaban conmigo."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ven con nosotros. Vamos a por él."
+                  "text": "Sigamos juntos. Vamos a enfrentarnos al dragón."
                 },
                 {
                   "speaker": "syrael",
-                  "text": "Mi linaje es de plata: su hielo no me asusta."
+                  "text": "Mi linaje es de plata. Puedo resistir su frío, aunque conozco bien sus peligros."
                 }
               ],
               "brunna_scene": [
@@ -3307,7 +3307,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Perfecto. Nos llevarás hasta el dragón."
+                  "text": "Conoces una ruta hacia el dragón. Sigámosla."
                 }
               ]
             },
@@ -3469,7 +3469,7 @@
               "type": "scene",
               "id": "m4_pat01_paso",
               "title": "Mefits de la fisura",
-              "text": "Dos mefits de hielo aparecen entre una nube helada y os desafían.",
+              "text": "Unos mefits de hielo surgen de la bruma y os cierran el paso.",
               "question": "¿Qué hacéis?",
               "on_return": true,
               "after": "m4_r06",
@@ -3504,7 +3504,7 @@
                     "remove": "m4_pat01"
                   },
                   "fail": {
-                    "text": "No se lo tragan.",
+                    "text": "No retroceden.",
                     "fight": "m4_pat01"
                   }
                 }
@@ -3582,11 +3582,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Parte de este tesoro lleva marcas de la fortaleza enana. Cada moneda tiene el rastro de un tributo."
+                  "text": "En estas cajas y monedas reconocéis las marcas de la fortaleza enana. El oro del tributo acabó en la guarida de Vharzûl."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ningún pago consiguió detener al dragón."
+                  "text": "Ahora sabemos adónde fue a parar el oro. Los pagos no salvaron el paso."
                 }
               ]
             },
@@ -3594,7 +3594,7 @@
               "type": "scene",
               "id": "m4_s01_pista",
               "title": "La ofrenda que nunca llegó",
-              "text": "Un reflejo extraño en el hielo delata algo que los antiguos porteadores quisieron ocultar.",
+              "text": "Un reflejo extraño señala una rendija en el hielo. Allí podría seguir intacta parte de una ofrenda.",
               "question": "¿Cómo lo buscáis?",
               "reveals": "m4_s01",
               "options": [
@@ -3630,13 +3630,13 @@
               "title": "La carta de los emisarios",
               "img": "escena_carta_emisarios",
               "decision": true,
-              "text": "Encontráis una carta sellada de los emisarios desaparecidos. Decidís qué hacer con su testimonio.",
-              "question": "¿Qué harás?",
+              "text": "Junto a los mantos encontráis una carta sellada de los emisarios desaparecidos. Decidís qué hacer con su testimonio.",
+              "question": "¿Qué hacéis?",
               "options": [
                 {
                   "label": "Llevar la carta a Cumbrenieve",
                   "ok": {
-                    "text": "Guardáis la carta sellada. Bajo los mantos hay unas monedas para el viaje.",
+                    "text": "Guardáis la carta sellada para llevarla al valle. Bajo los mantos encontráis unas monedas.",
                     "gold": 8
                   }
                 },
@@ -3730,7 +3730,7 @@
               "lines": [
                 {
                   "speaker": "hero",
-                  "text": "La barricada no protege un hogar. Protege un tesoro que no les pertenece."
+                  "text": "Los kobolds protegen el tesoro de Vharzûl, no su propio hogar."
                 },
                 {
                   "speaker": "narrator",
@@ -3790,7 +3790,7 @@
               "lines": [
                 {
                   "speaker": "aldric",
-                  "text": "Mi hermano creyó que conocía esta montaña. Yo también lo creía, hasta que vi lo que oculta el hielo."
+                  "text": "Esta montaña oculta grietas peligrosas. No volveré a pasar por alto las señales del hielo."
                 }
               ],
               "only": "aldric"
@@ -3995,7 +3995,7 @@
                   "attr": "cha",
                   "dc": 13,
                   "ok": {
-                    "text": "Se aparta de la campanilla y huye. «En la barricada son tres», susurra antes de desaparecer.",
+                    "text": "Se aparta de la campanilla y huye. «La barricada sigue vigilada», susurra antes de desaparecer.",
                     "remove": "m4_e06"
                   },
                   "fail": {
@@ -4017,11 +4017,11 @@
                   "attr": "str",
                   "dc": 15,
                   "ok": {
-                    "text": "Te adelantas a la señal. El kobold huye sin llegar a tocar la campanilla.",
+                    "text": "Os adelantáis a la señal. El kobold huye sin tocar la campanilla.",
                     "remove": "m4_e06"
                   },
                   "fail": {
-                    "text": "El kobold golpea la campanilla antes de que puedas detenerlo.",
+                    "text": "El kobold toca la campanilla antes de que podáis detenerlo.",
                     "fight": "m4_e06"
                   },
                   "tone": "dureza"
@@ -4070,7 +4070,7 @@
               "type": "scene",
               "id": "m4_p03",
               "title": "La respiración de la montaña",
-              "text": "Un frasco de poción se distingue en un nicho, al pie de una pared de hielo. El aire gélido que recorre la cueva dificulta alcanzarlas.",
+              "text": "Un frasco de poción brilla en un nicho de hielo. Las ráfagas heladas dificultan alcanzarlo.",
               "question": "¿Cómo recuperáis el frasco sin exponeros al frío?",
               "options": [
                 {
@@ -4128,7 +4128,7 @@
         {
           "id": "m4_s01_r01",
           "name": "Cámara de los últimos emisarios",
-          "description": "Un cofre de ofrendas, dos mantos doblados y una carta sellada sin entregar.",
+          "description": "Un cofre de ofrendas y unos mantos doblados permanecen junto al hielo.",
           "exits": [
             {
               "to": "m4_r05",
@@ -4143,11 +4143,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "«No traemos el tributo pedido. Traemos una última solicitud: que el valle pueda pasar sin inclinar la cabeza»."
+                  "text": "Los emisarios llevaron una petición, no el tributo: querían que el valle pudiera cruzar sin inclinar la cabeza. No consiguieron entregarla."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Llevaremos su petición al valle, aunque llegue tarde para ellos."
+                  "text": "El paso debe volver a abrirse, para que nadie tenga que pagar por cruzarlo."
                 }
               ]
             },
@@ -4277,7 +4277,7 @@
     "pre_boss_dialogue": [
       {
         "speaker": "dragon",
-        "text": "El oro de los enanos me pertenece. También el vuestro."
+        "text": "El oro de los enanos me pertenece. Y también el vuestro."
       },
       {
         "speaker": "hero",
