@@ -2,7 +2,7 @@
   "dungeon": {
     "id": "tumba_reyes_serpiente",
     "name": "La Tumba de los Reyes Serpiente",
-    "summary": "Una tormenta de arena y un desprendimiento abren una grieta en la colina del Cobra, junto a Arenaroja. Desde esa luna desaparecen pastores y caravaneros, y los que se quedan sueñan con una voz que sisea. Bajo la colina duerme la tumba de un imperio de hombres serpiente. Y en su fondo, algo no ha dejado de trabajar."
+    "summary": "Una tormenta de arena y un desprendimiento abren una grieta en la colina del Cobra, junto a Arenaroja. Desde entonces desaparecen pastores y caravaneros. Quienes se quedan sueñan con una voz que sisea. Bajo la colina yace la tumba de los reyes de un antiguo imperio de hombres serpiente. Algo sigue activo en las profundidades."
   },
   "credits": "Basada en Tomb of the Serpent Kings, de Skerples (Coins and Scrolls), CC BY-NC-SA. Adaptada a Mazmorreo.",
   "zones": [
@@ -15,11 +15,11 @@
       "entry_dialogue": [
         {
           "speaker": "narrator",
-          "text": "La tormenta de arena ha abierto una grieta en la colina del Cobra. Por ella se baja a una tumba que nadie recordaba."
+          "text": "Por la grieta abierta en la colina del Cobra descendéis a la tumba. La tormenta ha dejado al descubierto una entrada olvidada."
         },
         {
           "speaker": "hero",
-          "text": "Si los desaparecidos de Arenaroja están ahí abajo, los sacaremos."
+          "text": "Las huellas nos dirán si los desaparecidos de Arenaroja han pasado por aquí. Si siguen vivos, los sacaremos."
         },
         {
           "speaker": "narrator",
@@ -73,7 +73,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Se llevaron a alguien por aquí. No hace mucho."
+                  "text": "Alguien entró arrastrado por esta grieta. Tal vez uno de los desaparecidos."
                 }
               ]
             },
@@ -188,7 +188,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Quien enterró aquí a estos soldados no quería que descansaran."
+                  "text": "Los dejaron aquí para vigilar el paso, incluso después de morir."
                 }
               ]
             }
@@ -618,7 +618,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Una tumba falsa con un rey falso. Lo de verdad tiene que estar más abajo."
+                  "text": "Hasta el rey es falso. Si esta tumba es un engaño, tiene que ocultar otra."
                 }
               ]
             }
@@ -660,7 +660,7 @@
               "id": "s1_q02",
               "title": "El paso bajo el dios serpiente",
               "img": "escena_templo_falso",
-              "text": "El agua se ha retirado y bajo la estatua asoma un pasadizo. Sale aire caliente y un olor a aceite.",
+              "text": "El agua se ha retirado y bajo la estatua asoma un pasadizo. De él salen aire caliente y olor a aceite.",
               "question": "¿Qué hacéis?",
               "options": [
                 {
@@ -674,7 +674,7 @@
                   "attr": "int",
                   "dc": 12,
                   "ok": {
-                    "text": "En la base hay grabadas cuatro coronas y una serpiente con alas. Guardáis el dibujo en la memoria.",
+                    "text": "En la base hay cuatro coronas y una serpiente alada. Los grabados apuntan a la tumba de los reyes.",
                     "flag": "s1_coronas"
                   },
                   "fail": {
@@ -693,7 +693,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Lo de arriba era un decorado. Vamos a ver qué escondían."
+                  "text": "El templo también es falso. La tumba de los reyes está más abajo."
                 }
               ]
             }
@@ -808,7 +808,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Los obreros sabían el secreto. Por eso están aquí."
+                  "text": "Los obreros construyeron ambas tumbas y acabaron en este osario. No pudieron ocultar del todo la verdad."
                 }
               ]
             },
@@ -893,11 +893,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Las tablillas muestran la tumba entera: arriba la falsa, abajo la de los reyes, y al fondo un pozo que no tiene final."
+                  "text": "Las tablillas muestran la tumba entera. Arriba está la falsa; debajo, la de los reyes. En el fondo aparece un pozo sin final."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Y alguien sigue viviendo en ese fondo."
+                  "text": "Puede que quien arrastra a la gente de Arenaroja esté ahí abajo."
                 }
               ]
             },
@@ -959,7 +959,7 @@
         },
         {
           "speaker": "hero",
-          "text": "Esta es la tumba de los reyes serpiente. Cuidado con lo que toquéis."
+          "text": "Ya no estamos en la tumba falsa. Aquí enterraron a los reyes serpiente. Cuidado con lo que toquéis."
         }
       ],
       "pending": [
@@ -973,7 +973,7 @@
           "id": "s2_j02",
           "from": "s2_r06",
           "until": "s2_r10",
-          "text": "Uno de los reyes no descansa en su sarcófago, sino en un ataúd sellado con plomo."
+          "text": "Sparamuntar no descansa en su cripta. Quizá haya otros reyes que tampoco reposen en paz."
         }
       ],
       "c_gold": true,
@@ -1021,7 +1021,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Aquí reinaban sobre nosotros. Hace siglos."
+                  "text": "Los reyes serpiente exigían tributo a los pueblos. Así muestran su poder."
                 }
               ]
             }
@@ -1065,7 +1065,7 @@
               "default_scene": [
                 {
                   "speaker": "zeyna",
-                  "text": "Llevo tres días aquí abajo. La estatua torcida esconde algo, pero sola no podía moverla."
+                  "text": "Llevo tres días aquí abajo. Esa estatua no mira como las demás. Esconde algo, pero sola no he logrado moverla."
                 },
                 {
                   "speaker": "hero",
@@ -1073,7 +1073,7 @@
                 },
                 {
                   "speaker": "zeyna",
-                  "text": "Trato hecho. Y lo que encontremos, a partes iguales."
+                  "text": "Trato hecho. Pero el botín, a partes iguales."
                 }
               ],
               "brunna_scene": [
@@ -1189,7 +1189,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Nombres prohibidos. Los sacerdotes sabían algo que no querían que se repitiera."
+                  "text": "Alguien quiso borrar esos nombres. Quizá las tablillas de los sacerdotes expliquen por qué."
                 }
               ]
             }
@@ -1400,7 +1400,7 @@
               "title": "Sparamuntar bajo las piedras",
               "decision": true,
               "img": "escena_sparamuntar",
-              "text": "Una mano vendada golpea desde dentro del sarcófago aplastado. Una voz ronca pide que lo liberéis.",
+              "text": "Una mano vendada golpea desde el sarcófago aplastado. Una voz ronca os pide que la liberéis.",
               "question": "¿Qué hacéis?",
               "options": [
                 {
@@ -1482,7 +1482,7 @@
               "type": "scene",
               "id": "s2_p02",
               "title": "Las tablillas del sacerdote",
-              "text": "Una tablilla habla de una criatura que los reyes ataron en la sala de invocación. Su nombre está escrito a medias.",
+              "text": "Una tablilla del sacerdote habla de una criatura atada por los reyes en la sala de invocación. Su nombre está incompleto.",
               "question": "¿Cómo descifráis el nombre?",
               "options": [
                 {
@@ -1589,7 +1589,7 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "La cobra de piedra se queda quieta, rota en pedazos. Al fondo, una escalera baja hacia un calor seco."
+                  "text": "La cobra de piedra yace rota. Al fondo, una escalera desciende hacia un calor cada vez más seco."
                 },
                 {
                   "speaker": "hero",
@@ -1717,7 +1717,7 @@
               "id": "s2_q03",
               "title": "El último rey",
               "decision": true,
-              "text": "Franbinzar fue el último rey serpiente. Su ataúd está sellado y algo negro rezuma por las juntas. Dentro suena un borboteo.",
+              "text": "Franbinzar fue el último rey serpiente. El plomo sella su ataúd, pero por las juntas rezuma algo negro. Dentro suena un borboteo.",
               "question": "Es un combate muy peligroso. ¿Qué hacéis?",
               "options": [
                 {
@@ -1774,11 +1774,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Una tablilla entera cuenta que el hechicero Xiximanter pidió no morir nunca. Los reyes se lo concedieron."
+                  "text": "Una tablilla cuenta que Xiximanter, hechicero de los hombres serpiente, pidió a los reyes vivir para siempre. Ellos aceptaron su petición."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Y nadie le dijo que el imperio se acabaría."
+                  "text": "El imperio cayó, pero ese hechicero pudo sobrevivir a sus reyes."
                 }
               ]
             }
@@ -1799,7 +1799,7 @@
         },
         {
           "speaker": "hero",
-          "text": "Aquí sacrificaban a los que traían. Ojalá lleguemos a tiempo."
+          "text": "Aquí traían víctimas para sus sacrificios. Puede que los desaparecidos estén más abajo. Ojalá lleguemos a tiempo."
         }
       ],
       "pending": [
@@ -1870,11 +1870,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Los goblins tienen la piel cubierta de hongos. Algunos aún llevan jirones de ropa de pastor."
+                  "text": "Los goblins tienen la piel cubierta de hongos. Entre sus jirones de ropa reconocéis prendas de pastor, como las de los desaparecidos."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Son los experimentos de alguien. Alguien que sigue ahí abajo."
+                  "text": "Estos goblins y las ropas de los pastores no son ninguna casualidad. Algo los relaciona con los desaparecidos."
                 }
               ]
             }
@@ -1918,7 +1918,7 @@
               "default_scene": [
                 {
                   "speaker": "hassim",
-                  "text": "Mi hermano estaba en la caravana que desapareció. Llevo dos noches abriéndome paso entre estas conchas."
+                  "text": "Mi hermano viajaba en la caravana desaparecida. Llevo dos noches abriéndome paso entre estas conchas para encontrarlo."
                 },
                 {
                   "speaker": "hero",
@@ -1932,11 +1932,11 @@
               "brunna_scene": [
                 {
                   "speaker": "teodor",
-                  "text": "Los percebes no soportan el fuego. Lo leí en una tablilla de arriba."
+                  "text": "Estas conchas se cierran ante el fuego. Podemos aprovecharlo para pasar."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ven con nosotros, Teodor. Tu lectura nos ha salvado ya una vez."
+                  "text": "Ven con nosotros, Teodor. Tus conocimientos pueden ayudarnos a seguir bajando."
                 }
               ]
             },
@@ -2044,7 +2044,7 @@
                 {
                   "label": "Llevaros un buen trozo",
                   "ok": {
-                    "text": "Envolvéis un pedazo en tela. Algo grande come esto.",
+                    "text": "Envolvéis un pedazo en tela. La carne parece destinada a una criatura mucho mayor.",
                     "flag": "s3_carne"
                   }
                 },
@@ -2120,11 +2120,11 @@
               "lines": [
                 {
                   "speaker": "hassim",
-                  "text": "Es el bordado de mi madre. Mi hermano estuvo atado aquí."
+                  "text": "Reconozco ese bordado. Mi madre lo hacía. Puede que mi hermano haya pasado por esta sala."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Entonces sigue vivo. Vamos."
+                  "text": "Aún no sabemos qué le ocurrió. Sigamos buscándolo."
                 }
               ],
               "only": "hassim"
@@ -2286,14 +2286,14 @@
               "title": "Baltoplat",
               "decision": true,
               "img": "escena_baltoplat_atada",
-              "text": "Una mujer con gafas redondas y delantal de herbolaria os sonríe. Dice ser botánica y pide que la soltéis. Su sombra tiene alas y cuernos.",
+              "text": "Una mujer con gafas y delantal de herbolaria dice ser botánica y pide que la soltéis. Su sombra tiene alas y cuernos.",
               "question": "¿Qué hacéis con ella?",
               "options": [
                 {
                   "label": "Pronunciar su nombre verdadero",
                   "if": "s2_nombre",
                   "ok": {
-                    "text": "«Baltoplat». Su sonrisa se apaga. Os entrega su daga y os dice dónde guardan el oro de las víctimas. Luego desaparece en la sombra.",
+                    "text": "«Baltoplat». Le ordenáis ayudaros a recuperar el botín de las víctimas. Obedece: os da su daga, revela dónde está el oro y desaparece.",
                     "item": "dagger_plus1",
                     "gold": 30
                   }
@@ -2468,14 +2468,14 @@
               "title": "El basilisco encadenado",
               "decision": true,
               "img": "escena_basilisco_encadenado",
-              "text": "Un lagarto enorme de ocho patas os mira desde el fondo. Lleva un collar de hierro y una llave cuelga de él. Las estatuas a su alrededor eran personas.",
+              "text": "Un lagarto de ocho patas os observa desde el fondo. Una llave cuelga de su collar. Las estatuas que lo rodean fueron personas.",
               "question": "¿Qué hacéis?",
               "options": [
                 {
                   "label": "Lanzarle la carne",
                   "if": "s3_carne",
                   "ok": {
-                    "text": "El basilisco devora la carne y se tumba. Le quitáis la llave del collar sin que se mueva.",
+                    "text": "El basilisco devora la carne y se tumba. Recogéis el botín que custodia y la llave del collar.",
                     "remove": "s3_e05",
                     "gold": 30,
                     "item": "potion_greater_healing_1"
@@ -2486,7 +2486,7 @@
                   "attr": "wis",
                   "dc": 15,
                   "ok": {
-                    "text": "Os acercáis de lado, hablando bajo. El basilisco os deja coger la llave.",
+                    "text": "Os acercáis de lado, hablando bajo. El basilisco os deja coger la llave y el oro que custodia.",
                     "remove": "s3_e05",
                     "gold": 30
                   },
@@ -2510,11 +2510,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Detrás del basilisco, una puerta de hierro da a un túnel de barro y hongos."
+                  "text": "Detrás del basilisco, una puerta de hierro lleva a un túnel de barro y hongos."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Las madrigueras. Los secuestrados tienen que estar ahí, más adentro."
+                  "text": "Las madrigueras. Quien se llevó a los pastores y caravaneros puede esconderse ahí dentro."
                 }
               ]
             }
@@ -2551,7 +2551,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "El basilisco. Que nadie le mire a los ojos."
+                  "text": "Son personas petrificadas. Si encontramos a la criatura que lo hizo, que nadie la mire a los ojos."
                 }
               ]
             },
@@ -2685,11 +2685,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Entre las mochilas hay un diario: «Nos llevan de dos en dos. Dicen que el amo destila a los que no sirven»"
+                  "text": "Entre las mochilas hay un diario: «Nos llevan de dos en dos. Dicen que el amo destila a los que no sirven»."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Destila. Como quien hace licor."
+                  "text": "¿Destila personas? Tenemos que averiguar adónde lleva a los cautivos."
                 }
               ]
             },
@@ -2738,7 +2738,7 @@
         },
         {
           "speaker": "hero",
-          "text": "Ahí está la voz que sisea en los sueños de Arenaroja."
+          "text": "Esa luz morada podría llevarnos hasta la voz que atormenta los sueños de Arenaroja."
         }
       ],
       "pending": [
@@ -2856,7 +2856,7 @@
               "default_scene": [
                 {
                   "speaker": "yara",
-                  "text": "Me cogieron defendiendo la última caravana. Llevo días rompiéndome las garras contra estos barrotes."
+                  "text": "Me capturaron defendiendo una caravana. Llevo días rompiéndome las garras contra estos barrotes."
                 },
                 {
                   "speaker": "hero",
@@ -2870,11 +2870,11 @@
               "brunna_scene": [
                 {
                   "speaker": "teodor",
-                  "text": "La voz de mis sueños sale de aquí. Ya sé quién es: Xiximanter, el hechicero que pidió no morir."
+                  "text": "Ya sé quién me hablaba en sueños: Xiximanter, el hechicero que pidió a los reyes vivir para siempre."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Entonces vamos a recordarle que todo se acaba."
+                  "text": "Entonces está al fondo de estas madrigueras. Hay que encontrarlo."
                 }
               ]
             },
@@ -2884,7 +2884,7 @@
               "lines": [
                 {
                   "speaker": "yara",
-                  "text": "Los prisioneros están más adelante, en el almacén. Él los llama ingredientes."
+                  "text": "Más adelante hay prisioneros, encerrados en el almacén. El hechicero los llama ingredientes."
                 },
                 {
                   "speaker": "hero",
@@ -2962,11 +2962,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "La corona del rey goblin es de tenedores atados con tripa. La ha hecho con lo que robaron en Arenaroja."
+                  "text": "La corona del rey goblin está hecha con cubiertos robados en Arenaroja. Los goblins de hongo nacen en el pozo de engendro."
                 },
                 {
                   "speaker": "hero",
-                  "text": "Hasta los monstruos quieren ser reyes."
+                  "text": "Hasta los monstruos quieren ser reyes. Si siguen naciendo en ese pozo, habrá que detenerlo."
                 }
               ]
             }
@@ -3027,7 +3027,7 @@
               "title": "El pozo de engendro",
               "decision": true,
               "img": "escena_pozo_engendro",
-              "text": "Del lodo salen goblins nuevos, todavía húmedos. Si el pozo sigue vivo, Arenaroja nunca estará a salvo.",
+              "text": "Del lodo surgen goblins de hongo, todavía húmedos. Mientras el pozo siga abierto, podrán salir más y amenazar Arenaroja.",
               "question": "¿Qué hacéis?",
               "options": [
                 {
@@ -3055,7 +3055,7 @@
                   "attr": "str",
                   "dc": 15,
                   "ok": {
-                    "text": "Las piedras tapan el pozo. Aguantará un tiempo.",
+                    "text": "Las piedras tapan el pozo. No saldrán goblins de momento, pero el cierre no durará para siempre.",
                     "flag": "s4_pozo",
                     "remove": "s4_e03"
                   },
@@ -3131,7 +3131,7 @@
               "id": "s4_q02",
               "title": "Los prisioneros",
               "decision": true,
-              "text": "Pastores y caravaneros os miran desde las jaulas. Las etiquetas dicen cosas como «hígado» o «miedo».",
+              "text": "Pastores y caravaneros siguen vivos, encerrados en jaulas. Las etiquetas de barro los clasifican como «hígado» o «miedo».",
               "question": "¿Cómo los liberáis?",
               "options": [
                 {
@@ -3168,7 +3168,7 @@
                 },
                 {
                   "speaker": "narrator",
-                  "text": "Un caravanero flaco abraza a Hassim y llora sin ruido."
+                  "text": "Un caravanero flaco se acerca a los barrotes al reconocer a Hassim. Los dos intentan alcanzarse."
                 }
               ],
               "only": "hassim"
@@ -3312,11 +3312,11 @@
               "lines": [
                 {
                   "speaker": "narrator",
-                  "text": "Cada frasco tiene una etiqueta con un nombre de persona. Algunos nombres son de Arenaroja."
+                  "text": "Los frascos llevan nombres de personas. Entre ellos hay nombres de Arenaroja: el destino de quienes no le servían al hechicero."
                 },
                 {
                   "speaker": "hero",
-                  "text": "No vamos a dejar que embotelle a nadie más."
+                  "text": "Esos nombres son de los desaparecidos. El hechicero los destila como ingredientes. Tenemos que detenerlo."
                 }
               ]
             }
@@ -3404,7 +3404,7 @@
               "title": "El trono de los reyes serpiente",
               "decision": true,
               "img": "escena_trono_reyes",
-              "text": "Al acercaros al trono, una voz os promete un imperio. Solo tenéis que sentaros.",
+              "text": "El trono de los reyes serpiente os susurra una promesa: un imperio si os sentáis.",
               "question": "¿Qué hacéis?",
               "options": [
                 {
@@ -3528,7 +3528,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Ya veremos quién acaba en un frasco."
+                  "text": "Ahora sabemos qué significa «ingrediente» para el hechicero. Tenemos que acabar con sus experimentos."
                 }
               ]
             }
@@ -3578,7 +3578,7 @@
       "name": "Teodor Escamagrís",
       "class": "Warlock",
       "species": "Humano",
-      "personality": "Erudito nervioso que lee la lengua de los hombres serpiente; para callar la voz de sus sueños aceptó un pacto infernal.",
+      "personality": "Erudito nervioso que lee la lengua de los hombres serpiente. Hizo un pacto infernal para callar la voz de sus sueños.",
       "starting_items": [
         "Armadura de cuero",
         "Daga",
@@ -3600,15 +3600,15 @@
     "pre_boss_dialogue": [
       {
         "speaker": "xiximanter",
-        "text": "Hola, bípedos. ¿Turistas? Hace siglos que no venían turistas."
+        "text": "Hola, bípedos. Soy Xiximanter. ¿Turistas? Hace siglos que no venían turistas."
       },
       {
         "speaker": "hero",
-        "text": "Venimos a por la gente de Arenaroja."
+        "text": "Venimos a por los desaparecidos de Arenaroja. ¿Eres tú la voz que oyen en sueños?"
       },
       {
         "speaker": "xiximanter",
-        "text": "Ah, los ingredientes. Me temo que ya están reservados. Vosotros también serviréis."
+        "text": "Sí, esa voz es mía. Los desaparecidos son mis ingredientes: a unos los encierro y a otros los destilo. Vosotros también serviréis."
       }
     ],
     "victory_reward": "Corona de los Reyes Serpiente, 150 po."
