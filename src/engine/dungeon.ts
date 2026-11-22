@@ -511,7 +511,7 @@ function capture(g: Game): Ev[] {
   g.captive = c;
   const first = c.name.replace(/^(Hermano|Hermana|Dama|Maese) /, '').split(' ')[0];
   return [
-    { kind: 'dialogue', lines: [{ speaker: 'narrator', text: `Una red cae de los pinos. Cuando conseguís cortarla, ${first} ya no está.` }, { speaker: 'hero', text: `Se lo han llevado a rastras: hay huellas de kobold. Iremos a por ${first}.` }] },
+    { kind: 'dialogue', lines: [{ speaker: 'narrator', text: `Una red cae de los pinos. Cuando conseguís cortarla, ${first} ya no está.` }, { speaker: 'hero', text: `Las huellas son de kobolds. Buscaremos su campamento para rescatar a ${first}.` }] },
     { kind: 'msg', title: 'Aliado apresado', portrait: c.img, lines: [`Los kobolds se han llevado a ${c.name}. Buscad su campamento en este bosque para rescatarle.`] },
   ];
 }

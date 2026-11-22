@@ -49,7 +49,7 @@ export const GOALS: Goal[] = [
   { enc: 'z2_e05', kind: 'nodown', text: 'Que nadie del grupo caiga a 0 PG.', ok: 'Nadie ha caído: registráis la puerta con calma y encontráis una poción.', gold: 15, items: ['potion_healing'] },
   { enc: 'z3_e05', kind: 'nodown', text: 'Que nadie del grupo caiga a 0 PG ante el sepulcro.', ok: 'Seguís todos en pie. Bajo el sarcófago hay oro y una poción.', gold: 20, items: ['potion_healing'] },
   { enc: 'b3_e06', kind: 'nodown', text: 'Que nadie del grupo caiga a 0 PG.', ok: 'Nadie ha caído. En el puesto de la antigua orden queda un frasco de agua bendita.', gold: 15, items: ['holy_water'] },
-  { enc: 'm1_e03', kind: 'nodown', text: 'Que la manada no derribe a nadie del grupo.', ok: 'La manada no ha podido con ninguno. En la cornisa hay un zurrón con una poción.', gold: 10, items: ['potion_healing'] },
+  { enc: 'm1_e03', kind: 'nodown', text: 'Que la manada no derribe a nadie del grupo.', ok: 'La manada no ha derribado a nadie. En la cornisa hay un zurrón con una poción.', gold: 10, items: ['potion_healing'] },
   { enc: 'm3_e02', kind: 'nodown', text: 'Que nadie del grupo caiga a 0 PG.', ok: 'Seguís todos en pie. Entre las cadenas hay un frasco de agua bendita.', gold: 20, items: ['holy_water'] },
   { enc: 'm4_e02', kind: 'nodown', text: 'Que nadie del grupo caiga a 0 PG junto al lago.', ok: 'Nadie ha caído. En la orilla hay oro y una poción.', gold: 25, items: ['potion_healing'] },
 ];

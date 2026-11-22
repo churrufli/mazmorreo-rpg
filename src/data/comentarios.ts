@@ -63,7 +63,7 @@ export const TONE_LINES: Record<string, Record<Tone, string>> = {
   aldric: {
     piedad: 'Bien. Marcaré este sitio como seguro para él.',
     dureza: 'En la nieve, el que se queda atrás no vuelve. Ojalá lo hayáis pensado.',
-    codicia: 'Monedas no te sacan de una grieta. Una cuerda sí.',
+    codicia: 'Las monedas no nos sacan de una grieta. Una cuerda sí.',
   },
   zeyna: {
     piedad: 'Sacar a gente viva. Para eso vine, no por el oro.',
@@ -94,7 +94,7 @@ export const PLACE_LINES: Record<string, Record<string, string>> = {
   maren: { b3: 'Mi hermano nunca pasaba de la ciénaga. Si lo trajeron hasta aquí, alguien lo atrajo.', b4: 'Oigo las hojas como me enseñó mi hermano. Pero aquí suenan como si el bosque respirara.' },
   anselmo: { b4: 'Mi pacto es una cadena. Aquí sucede lo mismo: el Corazón no deja marchar a quienes retiene.' },
   vurka: { m3: 'Los muros de los enanos. Mi clan comerciaba con ellos antes del dragón.', m4: 'Huele a hielo viejo y a escamas. Vharzûl está ahí abajo.' },
-  durnok: { m4: 'La carta de mi familia hablaba de esta cueva. Ahora sabré la verdad.' },
+  durnok: { m4: 'La carta de mi familia me hizo dudar del tributo. Aquí veremos dónde terminó todo aquel oro.' },
   zeyna: { s3: 'Mi abuela nunca bajó tanto. Decía que aquí ya no había tesoro, solo dientes.', s4: 'Oigo voces. Son de gente viva. ¡Rápido!' },
   hassim: { s4: 'Si la caravana de mi hermano llegó hasta aquí, sus huellas estarán en estas madrigueras.' },
 };
