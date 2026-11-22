@@ -100,7 +100,7 @@ export const ADVS: Record<AdvId, Adv> = {
   tumba: {
     id: 'tumba', name: TD.dungeon.name, data: TD, town: 'arenaroja', boss: 'Xiximanter', sub: 'teodor',
     intro: 'intro_tumba', victoryImg: 'victoria_tumba', defeatImg: 'derrota_generica',
-    victoryText: 'Xiximanter cae entre sus frascos y la luz morada se apaga. Los prisioneros vuelven a Arenaroja y nadie más soñará con la voz que sisea. Encontráis 150 monedas de oro y la Corona de los Reyes Serpiente.',
+    victoryText: 'Xiximanter cae entre sus frascos. La luz morada se apaga y cesa la voz que siseaba en los sueños de Arenaroja.\nLos cautivos que habéis liberado pueden regresar a sus hogares. Encontráis 150 monedas de oro y la Corona de los Reyes Serpiente.',
     defeatText: 'Todo el grupo ha caído en la tumba. Xiximanter añade nuevos frascos a su colección.',
     reward: { gold: 150, item: 'serpent_crown' },
     // Paredes más oscuras en todas las zonas para distinguirlas del suelo (el autor 2026-11-19 y 2026-11-20).

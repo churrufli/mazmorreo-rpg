@@ -95,6 +95,6 @@ export const PLACE_LINES: Record<string, Record<string, string>> = {
   anselmo: { b4: 'Mi pacto es una cadena. Aquí sucede lo mismo: el Corazón no deja marchar a quienes retiene.' },
   vurka: { m3: 'Los muros de los enanos. Mi clan comerciaba con ellos antes del dragón.', m4: 'Huele a hielo viejo y a escamas. Vharzûl está ahí abajo.' },
   durnok: { m4: 'La carta de mi familia me hizo dudar del tributo. Aquí veremos dónde terminó todo aquel oro.' },
-  zeyna: { s3: 'Mi abuela nunca bajó tanto. Decía que aquí ya no había tesoro, solo dientes.', s4: 'Oigo voces. Son de gente viva. ¡Rápido!' },
-  hassim: { s4: 'Si la caravana de mi hermano llegó hasta aquí, sus huellas estarán en estas madrigueras.' },
+  zeyna: { s3: 'Mi abuela decía: cuanto más honda la tumba, menos tesoros y más dientes.', s4: 'Oigo voces humanas. Puede que haya gente viva ahí dentro. ¡Rápido!' },
+  hassim: { s4: 'Si mi hermano llegó hasta aquí, tenemos que encontrarlo. Sigamos avanzando.' },
 };
