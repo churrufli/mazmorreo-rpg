@@ -71,7 +71,7 @@ Antes de abrir la PR:
 npm ci
 npx tsc --noEmit
 npm test -- --ci --runInBand
-node scripts/validar-aventuras.mjs src/data/hondaroca.json src/data/corazon.json src/data/montana.json
+node scripts/validar-aventuras.mjs src/data/hondaroca.json src/data/corazon.json src/data/montana.json src/data/tumba.json
 npm run web:build
 ```
 
