@@ -435,6 +435,13 @@ const calcOf = (r: Roll) => {
 
 /** Dado de veinte caras animado para las tiradas importantes. */
 /** Lo que tarda en irse de la pantalla una tirada (giro, pausa y fundido). */
+/** Milisegundos hasta que se ve el resultado de la tirada: el d20 ya parado y los dados de daño en su cara final. */
+export const revealMs = (r: Roll) => {
+  const spin = r.enemy ? 320 : 500;
+  if (!r.dice?.length) return r.d20 ? spin : 0;
+  const start = r.d20 === 0 ? 0 : spin;
+  return Math.max(...r.dice.map((d, i) => start + i * 90 + (d.f === 6 ? 750 : 600)));
+};
 export const rollMs = (r: Roll) => (r.enemy ? 320 : 500) + (r.enemy ? 900 : 650) + (r.dice ? 700 : 0) + 250;
 
 export function D20({ roll }: { roll?: Roll }) {

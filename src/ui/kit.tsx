@@ -116,9 +116,11 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, st
   const c = small ? 9 : 12;
   const edge = dim ? '#756b60' : danger ? C.damage : primary ? PARCH2 : C.gold;
   const ink = combatTone ? (dim ? '#a29c90' : '#f4dcaa') : primary ? '#1a130b' : C.goldHi;
-  // Texto largo: en dos líneas con letra algo menor, sin que el botón crezca.
+  // Texto largo: en dos líneas con letra algo menor, sin que el botón crezca. Interlineado 1,3: con menos, Android
+  // recortaba por abajo la segunda línea de la fuente de título.
   const fs = combatTone ? combatFont : small ? 13 : 17;
-  const two = !!box && caption.length * fs * 0.66 > box.width - textInset;
+  // Ancho medio de una mayúscula de la fuente de título con su espaciado: con menos, «CALCULAR CÓMO DESPLAZAR LA LOSA» se cortaba con «…».
+  const two = !!box && caption.length * fs * (small ? 0.72 : 0.66) > box.width - textInset;
   const room = box ? box.width - textInset : 1;
   const halves = split2(caption);
   const fs2 = combatTone ? combatFont : Math.max(9, Math.min(small ? 11.5 : 14, room / (Math.max(halves[0].length, halves[1].length) * 0.64)));
@@ -167,8 +169,8 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, st
             </Svg>
           </Animated.View> : null}
           {showIcon ? <View pointerEvents="none" style={{ position: 'absolute', left: 10, top: 0, bottom: 0, justifyContent: 'center' }}><Icon path={icon!} size={18} color={ink} /></View> : null}
-          {combatTone ? <Text testID="combat-button-label" style={[s.btnText, { color: ink, fontSize: labelLayout ? labelLayout.fontSize / fontScale : combatFont, lineHeight: (labelLayout ? labelLayout.fontSize / fontScale : combatFont) * 1.18, letterSpacing: 0, textAlign: 'center', width: '100%' }]} numberOfLines={2} ellipsizeMode="clip">{labelLayout?.lines.join('\n') ?? caption}</Text> : two
-            ? <Text style={[s.btnText, { color: ink, fontSize: fs2, lineHeight: fs2 * 1.18, letterSpacing: 0, textAlign: 'center' }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={combatTone ? 1 : 0.75}>{halves[1] ? `${halves[0]}\n${halves[1]}` : caption}</Text>
+          {combatTone ? <Text testID="combat-button-label" style={[s.btnText, { color: ink, fontSize: labelLayout ? labelLayout.fontSize / fontScale : combatFont, lineHeight: (labelLayout ? labelLayout.fontSize / fontScale : combatFont) * 1.3, letterSpacing: 0, textAlign: 'center', width: '100%' }]} numberOfLines={2} ellipsizeMode="clip">{labelLayout?.lines.join('\n') ?? caption}</Text> : two
+            ? <Text style={[s.btnText, { color: ink, fontSize: fs2, lineHeight: fs2 * 1.3, letterSpacing: 0, textAlign: 'center' }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={combatTone ? 1 : 0.75}>{halves[1] ? `${halves[0]}\n${halves[1]}` : caption}</Text>
             : <Text style={[s.btnText, small && s.btnTextSmall, { color: ink, ...(combatTone ? { fontSize: combatFont, letterSpacing: 0 } : {}) }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={combatTone ? 1 : 0.7}>{caption}</Text>}
           {onInfo ? <Pressable accessibilityRole="button" accessibilityLabel={`Información sobre ${label}`} onPress={e => { e.stopPropagation(); onInfo(); }} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: tight ? 28 : 36, minHeight: 40 }} /> : null}
           {sub ? <Text style={[s.btnSub, primary && { color: '#4a3b26' }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{sub}</Text> : null}

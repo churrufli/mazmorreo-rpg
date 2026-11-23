@@ -736,7 +736,7 @@ function MapInfo({ g, onClose }: { g: ReturnType<typeof useStore.getState>['game
   return (
     <Modal transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={st.logBg} onPress={onClose}>
-        <View style={[st.logPanel, { flex: 0 }]}>
+        <View style={[st.logPanel, st.infoPanel]}>
           <Text style={st.logTitle}>{zoneById(g.zone).name}</Text>
           {rows.map(([k, v]) => (
             <View key={k} style={st.infoRow}>
@@ -759,6 +759,8 @@ const st = StyleSheet.create({
   logBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', padding: 16, paddingVertical: 50 },
   logPanel: { flex: 1, backgroundColor: C.panel, borderColor: C.gold, borderWidth: 1, borderRadius: 8, padding: 14 },
   logTitle: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 20, textAlign: 'center', marginBottom: 8 },
+  // La caja de información crece con su contenido (con flex: 0 la web la dejaba a la altura del título).
+  infoPanel: { flexGrow: 0, flexShrink: 1, flexBasis: 'auto' },
   hitNum: { position: 'absolute', top: '28%', alignSelf: 'center', fontFamily: F.titleBold, fontSize: 30, color: C.damage, textShadowColor: '#000', textShadowRadius: 6 },
   top: { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: 14, paddingBottom: 8, backgroundColor: 'rgba(0,0,0,0.7)' },
   topRow: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
