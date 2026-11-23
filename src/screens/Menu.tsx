@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { mdiAlertOutline, mdiDiceMultipleOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiAlertOutline, mdiDiceMultipleOutline, mdiPencilOutline, mdiShareVariantOutline, mdiTrashCanOutline } from '@mdi/js';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG } from '../assets';
 import { C, F } from '../theme';
@@ -18,6 +18,8 @@ import { COLABORAR, Settings } from '../ui/Settings';
 import { BUILD } from '../version';
 import { CAMBIOS } from '../versionWeb';
 import { useFxMode } from '../ui/movimiento';
+import { exportGame, importGame } from '../engine/copia';
+import { abrirCopia, compartirCopia } from '../platform';
 
 /** Motas de luz que suben despacio, como polvo o ascuas. */
 function Particles({ n: n0 = 24, h }: { n?: number; h?: number }) {
@@ -86,7 +88,7 @@ export function Title() {
         <Btn label="Ajustes" onPress={() => setOpts(true)} />
         {/* Mazmorreo es abierto: lleva a la guía para colaborar en GitHub. */}
         <Btn small label="Participa en el proyecto" onPress={() => Linking.openURL(COLABORAR)} />
-        <Text style={st.version}>{BUILD ? `v0.${BUILD}${CAMBIOS ? `+${CAMBIOS}` : ''} · ` : ''}Versión de prueba · Tres aventuras</Text>
+        <Text style={st.version}>{BUILD ? `v0.${BUILD}${CAMBIOS ? `+${CAMBIOS}` : ''} · ` : ''}Versión de prueba · Cuatro aventuras</Text>
         {/* Aviso legal breve; el completo está en Ajustes › Créditos (el autor 2026-11-19). */}
         <Text style={st.legal}>Proyecto de fans no oficial, sin relación con Wizards of the Coast. Dungeons & Dragons es marca de Wizards of the Coast LLC.</Text>
       </FadeIn>
@@ -103,6 +105,7 @@ export function Slots() {
   const [confirm, setConfirm] = useState<number>();
   const [del, setDel] = useState<number>();
   const [ren, setRen] = useState<number>();
+  const [restore, setRestore] = useState(false);
   const [, refresh] = useState(0);
   const ins = useSafeAreaInsets();
   return (
@@ -139,6 +142,12 @@ export function Slots() {
                   {confirm === n ? <Text style={[st.slotLine, { color: C.damage }]}>Archivo ocupado. Para empezar aquí, bórralo antes con la papelera.</Text> : null}
                 </View>
                 {g ? (
+                  // Copia de seguridad fuera del juego, para no perder la partida al reinstalar o cambiar de móvil.
+                  <Pressable onPress={() => compartirCopia(exportGame(g, BUILD), `Mazmorreo - ${storage.slotName(n)}`).catch(() => {})} accessibilityRole="button" accessibilityLabel={`Guardar una copia de ${storage.slotName(n)}`} hitSlop={12} style={st.trash}>
+                    <Icon path={mdiShareVariantOutline} size={22} color={C.textDim} />
+                  </Pressable>
+                ) : null}
+                {g ? (
                   <Pressable onPress={() => setDel(n)} accessibilityRole="button" accessibilityLabel={`Borrar la partida de ${storage.slotName(n)}`} hitSlop={12} style={st.trash}>
                     <Icon path={mdiTrashCanOutline} size={22} color={C.textDim} />
                   </Pressable>
@@ -147,11 +156,50 @@ export function Slots() {
             </Pressable>
           );
         })}
+        <Btn small label="Restaurar una copia" onPress={() => setRestore(true)} />
         <Btn label="Volver" onPress={() => { setConfirm(undefined); refresh(x => x + 1); go('title'); }} />
       </View>
+      {restore ? <RestoreCopy onClose={() => { setRestore(false); refresh(x => x + 1); }} /> : null}
       {ren ? <RenameSlot slot={ren} onClose={() => { setRen(undefined); refresh(x => x + 1); }} /> : null}
       {del ? <DeleteSlot slot={del} onClose={deleted => { setDel(undefined); if (deleted) { storage.remove(del); setConfirm(undefined); refresh(x => x + 1); } }} /> : null}
     </Bg>
+  );
+}
+
+/** Restaurar una copia de seguridad en el primer archivo vacío. */
+function RestoreCopy({ onClose }: { onClose: () => void }) {
+  const [txt, setTxt] = useState('');
+  const [msg, setMsg] = useState<string>();
+  const free = storage.SLOTS.find(n => !storage.load(n));
+  const restore = (text: string) => {
+    if (!free) return;
+    const r = importGame(text, free, BUILD);
+    if ('error' in r) { setMsg(r.error); return; }
+    storage.save(r.game);
+    onClose();
+  };
+  return (
+    <Modal transparent animationType="fade" onRequestClose={onClose}>
+      <View style={st.delBg}>
+        <Panel>
+          <Text style={[st.slotTitle, { textAlign: 'center', fontSize: 18, marginBottom: 6 }]}>Restaurar una copia</Text>
+          {free ? (
+            <>
+              <Text style={[st.slotLine, { textAlign: 'center' }]}>
+                {abrirCopia ? `Elige el archivo de la copia o pega su texto. Irá a ${storage.slotName(free)}.` : `Pega el texto de la copia que guardaste. Irá a ${storage.slotName(free)}.`}
+              </Text>
+              {abrirCopia ? <Btn small label="Elegir archivo" onPress={() => abrirCopia!().then(t => t && restore(t))} /> : null}
+              <TextInput value={txt} onChangeText={t => { setTxt(t); setMsg(undefined); }} multiline autoCorrect={false} placeholder="Pega aquí la copia" placeholderTextColor="#5a4a36" style={[st.delInput, { fontFamily: F.text, fontWeight: 'normal', letterSpacing: 0, fontSize: 13, height: 90, textAlignVertical: 'top' }]} accessibilityLabel="Texto de la copia" />
+              {msg ? <Text style={[st.slotLine, { color: C.damage, textAlign: 'center' }]}>{msg}</Text> : null}
+            </>
+          ) : <Text style={[st.slotLine, { textAlign: 'center' }]}>Los tres archivos están ocupados. Borra uno antes con la papelera.</Text>}
+          <View style={{ flexDirection: 'row' }}>
+            <Btn small label="Cancelar" onPress={onClose} style={{ flex: 1 }} />
+            {free ? <Btn small primary label="Restaurar" disabled={!txt.trim()} onPress={() => restore(txt)} style={{ flex: 1 }} /> : null}
+          </View>
+        </Panel>
+      </View>
+    </Modal>
   );
 }
 

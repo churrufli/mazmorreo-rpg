@@ -1,6 +1,6 @@
 # Mazmorreo en navegador
 
-Mazmorreo está pensado para jugar en Android con el móvil en vertical (la app va bloqueada en vertical); la versión web sirve para probarlo en el navegador y se publica en GitHub Pages. Reutiliza las pantallas, el motor de reglas y las tres aventuras de Android mediante React Native Web y Vite.
+Mazmorreo está pensado para jugar en Android con el móvil en vertical (la app va bloqueada en vertical); la versión web sirve para probarlo en el navegador y se publica en GitHub Pages. Reutiliza las pantallas, el motor de reglas y las cuatro aventuras de Android mediante React Native Web y Vite.
 
 ## Ejecutar y compilar
 

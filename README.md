@@ -31,11 +31,11 @@ El sistema parte de las reglas de quinta edición del **SRD 5.2.1** (2024), adap
 
 ## Las cuatro aventuras
 
-| Orden | Aventura | Punto de partida | Ambientación y conflicto | Progresión al completarla |
+| Orden | Aventura | Punto de partida | Ambientación y conflicto | Nivel al llegar al jefe |
 | --- | --- | --- | --- | --- |
-| 1 | **Las profundidades de Hondaroca** | **Valdescarcha** | Minas abandonadas, ruinas enanas, cripta real y monasterio hundido. El mago **Maese Orvane** amenaza las profundidades. | El grupo alcanza al menos el **nivel 3**. |
-| 2 | **El Corazón Hueco** | **Vegaumbría** | El **Bosque de Umbría** se ha vuelto hostil. Desapariciones, una ciénaga y secretos antiguos conducen hasta el propio Corazón del bosque. | El grupo alcanza al menos el **nivel 5**. |
-| 3 | **El Invierno del Dragón** | **Cumbrenieve** | Un paso nevado, bosques helados y una fortaleza enana conducen al dragón blanco **Vharzûl**. | El grupo alcanza al menos el **nivel 6**. |
+| 1 | **Las profundidades de Hondaroca** | **Valdescarcha** | Minas abandonadas, ruinas enanas, cripta real y monasterio hundido. El mago **Maese Orvane** amenaza las profundidades. | El grupo llega al jefe con **nivel 2**. |
+| 2 | **El Corazón Hueco** | **Vegaumbría** | El **Bosque de Umbría** se ha vuelto hostil. Desapariciones, una ciénaga y secretos antiguos conducen hasta el propio Corazón del bosque. | El grupo llega al jefe con **nivel 3**. |
+| 3 | **El Invierno del Dragón** | **Cumbrenieve** | Un paso nevado, bosques helados y una fortaleza enana conducen al dragón blanco **Vharzûl**. | El grupo llega al jefe con **nivel 4**. |
 | 4 | **La Tumba de los Reyes Serpiente** | **Arenaroja** | Bajo las Colinas de Ocre, una tumba de hombres serpiente esconde al hechicero **Xiximanter**, que secuestra a la gente del pueblo. Basada en *Tomb of the Serpent Kings*, de Skerples (CC BY-NC-SA). | El grupo llega al jefe con **nivel 5**. |
 
 Las aventuras se desbloquean **en orden**. Cada una tiene **cuatro zonas**, salas, encuentros, personajes, decisiones y recompensas propias. Existen secretos relacionados entre aventuras que pueden animar a regresar a zonas anteriores.
@@ -68,7 +68,7 @@ Estos ajustes **no garantizan** que todas las clases o composiciones tengan la m
 
 Las escenas se escriben para funcionar **independientemente del decorado gráfico del mapa**. No deben afirmar que existe una escalera, saco, pared, puerta, pasadizo u otro elemento físico visible si no está garantizado en la representación. Los objetos que forman parte de una **escena interactiva** pueden mencionarse dentro de esa escena, sin prometer que aparecen dibujados en la casilla.
 
-La revisión narrativa de las tres aventuras incluye introducciones de escenas, diálogos y consecuencias de decisiones. El motor usa el aviso neutro **«Habéis descubierto un secreto»**, sin mensajes como «ya lo veis en el mapa». Los secretos y sus efectos siguen funcionando.
+La revisión narrativa de las cuatro aventuras incluye introducciones de escenas, diálogos y consecuencias de decisiones. El motor usa el aviso neutro **«Habéis descubierto un secreto»**, sin mensajes como «ya lo veis en el mapa». Los secretos y sus efectos siguen funcionando.
 
 ## Versión para navegador
 
@@ -126,6 +126,7 @@ En PowerShell, establece las variables con `$env:ESTUDIO="1"; $env:N="20"` antes
 | `src/data/hondaroca.json` | Historia, salas, encuentros y decisiones de Hondaroca. |
 | `src/data/corazon.json` | Contenido de El Corazón Hueco. |
 | `src/data/montana.json` | Contenido de El Invierno del Dragón. |
+| `src/data/tumba.json` | Contenido de La Tumba de los Reyes Serpiente. |
 | `src/data/charlas.json` | Conversaciones de afinidad de los aliados. |
 | `src/engine/aventuras.ts` | Registro de aventuras, pueblos, jefes, aliados y progresión. |
 | `src/engine/escenas.ts` | Resolución de decisiones, secretos y ajuste de enemigos. |
@@ -144,7 +145,7 @@ En PowerShell, establece las variables con `$env:ESTUDIO="1"; $env:N="20"` antes
 
 ## Estado del proyecto
 
-**En desarrollo activo.** Las tres aventuras están integradas en el repositorio y se han revisado la narrativa, el equilibrio de encuentros, la gestión de aliados y la documentación del juego. Sigue siendo necesario **verificar las compilaciones, ejecutar las pruebas y comprobar la dificultad en partidas reales** tras los cambios.
+**En desarrollo activo.** Las cuatro aventuras están integradas en el repositorio y se han revisado la narrativa, el equilibrio de encuentros, la gestión de aliados y la documentación del juego. Sigue siendo necesario **verificar las compilaciones, ejecutar las pruebas y comprobar la dificultad en partidas reales** tras los cambios.
 
 Repositorio: [github.com/churrufli/mazmorreo-rpg](https://github.com/churrufli/mazmorreo-rpg).
 
