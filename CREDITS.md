@@ -28,7 +28,7 @@ Todo el audio está en `android/app/src/main/res/raw/`, convertido a OGG, recort
 
 ### Música
 
-Las seis pistas (`mus_principal`, `mus_pueblo`, `mus_combate`, `mus_minas`, `mus_bosque` y `mus_jefe`) se crearon con [Suno](https://suno.com) en su plan gratuito.
+Las siete pistas (`mus_principal`, `mus_pueblo`, `mus_combate`, `mus_minas`, `mus_bosque`, `mus_montana` y `mus_jefe`) se crearon con [Suno](https://suno.com) en su plan gratuito.
 
 **Excepción a las licencias del proyecto.** Según las condiciones de Suno, estas pistas pertenecen a Suno y solo se pueden usar sin fines comerciales y citando a Suno. Por eso **no** van con la licencia CC BY-NC-SA 4.0 ni con la MIT del proyecto:
 

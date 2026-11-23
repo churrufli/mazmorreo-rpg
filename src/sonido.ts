@@ -104,11 +104,11 @@ export function refresh() {
     const tomb = g.zone.startsWith('s');
     if (g.place === 'town') track = g.town === 'arenaroja' ? 'mus_arenaroja' : 'mus_pueblo';
     else if (st.combat) track = st.combat.encounters.includes(bossEncounter(g.zone)) ? 'mus_jefe' : tomb ? 'mus_combate_tumba' : 'mus_combate';
-    else track = tomb ? 'mus_tumba' : forest(g) ? 'mus_bosque' : 'mus_minas';
+    else track = tomb ? 'mus_tumba' : g.zone.startsWith('m') ? 'mus_montana' : forest(g) ? 'mus_bosque' : 'mus_minas';
   } else if (st.screen === 'intro') {
     // Imagen de entrada de la aventura: ya suena la música de su primera zona (el autor 2026-11-06).
     const adv = st.intro?.adv ?? 'hondaroca';
-    track = adv === 'hondaroca' ? 'mus_minas' : adv === 'tumba' ? 'mus_tumba' : 'mus_bosque';
+    track = adv === 'hondaroca' ? 'mus_minas' : adv === 'tumba' ? 'mus_tumba' : adv === 'montana' ? 'mus_montana' : 'mus_bosque';
   } else if (st.screen === 'victory') track = 'mus_pueblo'; // Final de la aventura: suena la música del pueblo.
   else if (st.screen !== 'defeat') track = 'mus_principal';
   loop(!away && musicOn() && level('musica') > 0 ? track : undefined, mus, MUSIC * level('musica'));

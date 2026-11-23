@@ -77,7 +77,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Al comprar o repartir equipo se compara con lo que ya lleva: cómo cambia la CA, o el ataque y el daño medio frente al arma que usa ahora.',
     'Al tocar una carta en combate, cada estado dice cuánto le dura o cómo se le pasa: turnos que le quedan ardiendo, la CD para soltarse, quién mantiene la concentración…',
     'El diario muestra los personajes conocidos de cada aventura y, en Hondaroca, los preparativos que ya tenéis contra Maese Orvane.',
-    'Música nueva para el bosque.',
+    'Música nueva para el bosque y música propia para la montaña.',
   ] },
   { version: 'v0.147', items: [
     'Cuarta aventura: La Tumba de los Reyes Serpiente. Se abre al vencer a Vharzûl. Desde Arenaroja, en las Colinas de Ocre, bajáis a una tumba de hombres serpiente en busca de los pastores y caravaneros desaparecidos.',
