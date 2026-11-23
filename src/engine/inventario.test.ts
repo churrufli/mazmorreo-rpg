@@ -1,4 +1,4 @@
-import { createHero, itemOwnership, newItem } from './rules';
+import { compareItem, createHero, itemOwnership, newItem } from './rules';
 
 test('la compra indica cuando ningún personaje tiene el objeto', () => {
   const hero = createHero('Brakka', 'fighter', 'human');
@@ -19,4 +19,17 @@ test('la compra identifica todos los propietarios y sus unidades sin modificar i
 test('el aviso también cuenta equipo que un personaje ya lleva', () => {
   const hero = createHero('Brakka', 'fighter', 'human');
   expect(itemOwnership([hero], 'longsword')).toBe('Ya lo tienen: Brakka ×1.');
+});
+
+test('comparar equipo: la CA con y sin la armadura, y el arma frente a la que lleva', () => {
+  const hero = createHero('Brakka', 'fighter', 'human');
+  hero.items = [newItem('leather'), newItem('dagger')];
+  const before = JSON.stringify(hero);
+  expect(compareItem(hero, 'chain_mail')).toMatch(/^Su CA pasaría de \d+ a \d+\.$/);
+  expect(compareItem(hero, 'leather')).toMatch(/^No le mejora la CA/);
+  expect(compareItem(hero, 'longsword')).toMatch(/Ahora usa Daga/);
+  expect(compareItem(hero, 'shortbow')).toMatch(/No lleva otra arma a distancia/);
+  expect(compareItem(hero, 'leather', hero.items[0].uid)).toMatch(/^Le da CA/);
+  expect(compareItem(hero, 'potion_healing')).toBeUndefined();
+  expect(JSON.stringify(hero)).toBe(before);
 });

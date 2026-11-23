@@ -6,7 +6,7 @@ import { C, F } from '../theme';
 import { useStore } from '../store';
 import { Bg, Btn, Panel, T } from '../ui/kit';
 import { ITEMS } from '../data/srd';
-import { MAX_ITEMS, itemOwnership, keeps, longRest, needsRest, newItem, shortRest } from '../engine/rules';
+import { MAX_ITEMS, compareItem, itemOwnership, keeps, longRest, needsRest, newItem, shortRest } from '../engine/rules';
 import { reopenScenes, sceneSpent } from '../engine/escenas';
 import { FeatPicker } from '../ui/FeatPicker';
 import { CLASSES } from '../data/srd';
@@ -16,7 +16,7 @@ import { FaceImage } from '../ui/FaceImage';
 import { FadeIn, PopIn, Portrait } from '../ui/Overlays';
 import { EASE, fxOn } from '../ui/movimiento';
 import { ADV_LIST, ADVS, MEJORES, TOWNS, TownId, advOf, speaker, wonAdv } from '../engine/aventuras';
-import { pendingNotes, itemOutside } from '../engine/dungeon';
+import { bossPrep, pendingNotes, itemOutside } from '../engine/dungeon';
 import { entryLevel } from '../engine/desarrollador';
 import { shopStock } from '../engine/botin';
 import { allyCap, finishTalk, nextTalk, short, talkLines, talksDone } from '../engine/posada';
@@ -187,6 +187,7 @@ export function Town() {
               <View key={id} style={st.confirm}>
                 <ItemHead id={id} />
                 <Text style={st.itemName}>¿Comprar {ITEMS[id].name} para {buyer.name.split(' ')[0]} por {pay(ITEMS[id].value)} po?</Text>
+                {compareItem(buyer, id) ? <Text style={st.itemDesc}>{compareItem(buyer, id)}</Text> : null}
                 <Text style={st.itemDesc}>{itemOwnership([...g.party, ...(g.bench ?? []), ...(g.captive ? [g.captive] : [])], id)}</Text>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
                   <Btn small primary label="Comprar" disabled={!afford(ITEMS[id].value) || buyer.items.length >= MAX_ITEMS} onPress={() => {
@@ -365,6 +366,12 @@ export function Town() {
   );
 }
 
+/** Personajes que han hablado en el diario (sin el héroe ni el narrador), en el orden en que aparecieron. */
+const known = (lines: { s: string }[]) => {
+  const ids = [...new Set(lines.map(d => d.s))].filter(s => s !== 'hero' && s !== 'narrator');
+  return ids.map(speaker).filter(sp => sp.name && sp.img);
+};
+
 /** Diario: diálogos vividos en cada aventura, con el retrato de quien habla, y la intro para volver a verla. */
 function Diary() {
   const { game, showIntro, showEnding } = useStore();
@@ -384,6 +391,27 @@ function Diary() {
               <View style={{ marginVertical: 6 }}>
                 <Text style={st.diaryWho}>Pendientes</Text>
                 {pendingNotes(g, a.id).map((t, i) => <Text key={i} style={[st.itemDesc, { color: C.text, fontSize: 15 }]}>• {t}</Text>)}
+              </View>
+            ) : null}
+            {/* Lo que ya juega a vuestro favor contra el jefe (por ahora, Maese Orvane). */}
+            {a.id === 'hondaroca' && !wonAdv(g, a.id) && bossPrep(g, 'Orvane').length ? (
+              <View style={{ marginVertical: 6 }}>
+                <Text style={st.diaryWho}>Preparativos contra Maese Orvane</Text>
+                {bossPrep(g, 'Orvane').map((t, i) => <Text key={i} style={[st.itemDesc, { color: C.text, fontSize: 15 }]}>• {t}</Text>)}
+              </View>
+            ) : null}
+            {/* Quién es quién: cada personaje con el que se ha hablado, una sola vez. */}
+            {known(lines).length ? (
+              <View style={{ marginVertical: 6 }}>
+                <Text style={st.diaryWho}>Personajes conocidos</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+                  {known(lines).map((sp, i) => (
+                    <View key={i} style={{ alignItems: 'center', width: 64 }}>
+                      <Portrait img={sp.img!} size={44} />
+                      <Text style={[st.itemDesc, { textAlign: 'center', fontSize: 12 }]} numberOfLines={2}>{sp.name}</Text>
+                    </View>
+                  ))}
+                </View>
               </View>
             ) : null}
             {lines.length ? lines.map((d, i) => {

@@ -201,6 +201,39 @@ export function equipState(c: Char, it: Item): { on: boolean; why?: string } | u
   return undefined;
 }
 
+/** «+5 · 1d8+3 (media 7,5)»: lo que hace un arma en manos de c. */
+const weaponLine = (c: Char, id: string) => {
+  const w = ITEMS[id].weapon!, s = weaponStat(c, id);
+  const [n, f] = w.dice.split('d').map(Number);
+  const avg = n * (f + 1) / 2 + s.dmgBonus;
+  const sg = (x: number) => (x >= 0 ? `+${x}` : `${x}`);
+  return `${sg(s.toHit)} · ${w.dice}${s.dmgBonus ? sg(s.dmgBonus) : ''} (media ${String(Math.max(1, avg)).replace('.', ',')})`;
+};
+
+/**
+ * Comparación con lo que ya lleva, para decidir al comprar o repartir (el objeto `uid` si ya es suyo; si no, uno nuevo).
+ * Armadura y escudo: la CA con y sin él. Armas: ataque y daño medio frente a la que lleva del mismo tipo.
+ */
+export function compareItem(c: Char, id: string, uid?: string): string | undefined {
+  const d = ITEMS[id];
+  if (!d) return undefined;
+  const owned = !!uid && c.items.some(x => x.uid === uid);
+  const without = owned ? c.items.filter(x => x.uid !== uid) : c.items;
+  const withIt = owned ? c.items : [...c.items, { uid: '_comparar', id }];
+  if (d.armor || d.kind === 'shield') {
+    const a = armorClass({ ...c, items: without }), b = armorClass({ ...c, items: withIt });
+    if (b <= a) return `No le mejora la CA (${a}).`;
+    return owned ? `Le da CA ${b}; sin ello tendría ${a}.` : `Su CA pasaría de ${a} a ${b}.`;
+  }
+  if (d.weapon) {
+    const cur = weapons({ ...c, items: without }).find(x => !!ITEMS[x.id].weapon!.ranged === !!d.weapon!.ranged);
+    const line = `Con ${c.name.split(' ')[0]}: ${weaponLine(c, id)}`;
+    if (!cur) return `${line}. No lleva otra arma ${d.weapon.ranged ? 'a distancia' : 'cuerpo a cuerpo'}.`;
+    return owned ? `${line}. Sin ella usaría ${ITEMS[cur.id].name}: ${weaponLine(c, cur.id)}.` : `${line}. Ahora usa ${ITEMS[cur.id].name}: ${weaponLine(c, cur.id)}.`;
+  }
+  return undefined;
+}
+
 export function proficientWith(c: Char, itemId: string): boolean {
   const w = ITEMS[itemId]?.weapon;
   if (!w) return false;

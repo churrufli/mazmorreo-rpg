@@ -72,6 +72,12 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 ];
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
+  { version: 'v0.148', items: [
+    'Copias de seguridad: en Cargar partida, el botón de compartir de cada archivo guarda una copia fuera del juego (en Android, con Compartir; en la web, como archivo). «Restaurar una copia» la recupera en un archivo vacío.',
+    'Al comprar o repartir equipo se compara con lo que ya lleva: cómo cambia la CA, o el ataque y el daño medio frente al arma que usa ahora.',
+    'Al tocar una carta en combate, cada estado dice cuánto le dura o cómo se le pasa: turnos que le quedan ardiendo, la CD para soltarse, quién mantiene la concentración…',
+    'El diario muestra los personajes conocidos de cada aventura y, en Hondaroca, los preparativos que ya tenéis contra Maese Orvane.',
+  ] },
   { version: 'v0.147', items: [
     'Cuarta aventura: La Tumba de los Reyes Serpiente. Se abre al vencer a Vharzûl. Desde Arenaroja, en las Colinas de Ocre, bajáis a una tumba de hombres serpiente en busca de los pastores y caravaneros desaparecidos.',
     'Cuatro zonas nuevas (la tumba falsa, la tumba superior, las salas del sacrificio y las madrigueras), con trampas, secretos, decisiones y el hechicero Xiximanter esperando al fondo. Se entra con nivel 4 y se llega al jefe con nivel 5.',

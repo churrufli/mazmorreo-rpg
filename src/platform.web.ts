@@ -14,3 +14,20 @@ export const BackHandler = {
     } };
   },
 };
+
+/** Copia de seguridad: en la web se descarga como archivo. */
+export const compartirCopia = async (texto: string, nombre: string) => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([texto], { type: 'application/json' }));
+  a.download = `${nombre}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+/** Elegir un archivo de copia descargado antes. */
+export const abrirCopia: (() => Promise<string | undefined>) | undefined = () => new Promise(resolve => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json,text/plain';
+  input.onchange = () => { const f = input.files?.[0]; if (f) f.text().then(resolve, () => resolve(undefined)); else resolve(undefined); };
+  input.click();
+});

@@ -25,27 +25,30 @@ export const STATES: Record<StateKey, { name: string; orb: ImgKey; icon: string;
   death: { name: 'Muerte', orb: 'esfera_sombra', icon: mdiSkull, desc: 'Caído: tira salvaciones de muerte. Tres éxitos lo estabilizan; tres fallos, muere.' },
 };
 
-export interface StateTag { key: StateKey; label: string }
+/** `ends`: cuánto le dura o cómo se le pasa, cuando depende de la partida. */
+export interface StateTag { key: StateKey; label: string; ends?: string }
 
 /** Estados de una unidad en combate, en el orden en que se muestran. */
 export function statesOf(cb: Combat, u: Unit): StateTag[] {
   const out: StateTag[] = [];
-  const add = (key: StateKey, label = STATES[key].name) => out.push({ key, label });
+  const add = (key: StateKey, label = STATES[key].name, ends?: string) => out.push({ key, label, ends });
+  const first = (k?: string) => cb.units.find(x => x.key === k)?.name.split(' ')[0];
+  const blesser = cb.units.find(x => x.side === u.side && x.concentration === 'bless' && !x.dead && x.hp > 0);
   if (u.hp <= 0 && u.side === 'party' && !u.dead) add('death', `Muerte ${u.deathS ?? 0}✓ ${u.deathF ?? 0}✗`);
   if (u.asleep) add('asleep');
-  if (u.paralyzed) add('paralyzed');
-  if (u.restrained) add('restrained');
-  if (u.poisoned) add('poisoned');
-  if (u.burn) add('burn');
+  if (u.paralyzed) add('paralyzed', undefined, 'Al acabar cada turno suyo, salvación de Constitución CD 10 para librarse.');
+  if (u.restrained) add('restrained', undefined, `En su turno intenta soltarse: Fuerza CD ${u.restrained}. Mientras, no hace nada más.`);
+  if (u.poisoned) add('poisoned', undefined, 'Hasta que acabe el combate o se cure con un antídoto.');
+  if (u.burn) add('burn', undefined, u.burn === 1 ? 'Le queda 1 turno ardiendo.' : `Le quedan ${u.burn} turnos ardiendo.`);
   const marker = cb.units.find(x => x.mark === u.key && !x.dead && !x.fled && x.hp > 0);
-  if (marker) add('mark', `Marcado por ${marker.name.split(' ')[0]}`);
+  if (marker) add('mark', `Marcado por ${marker.name.split(' ')[0]}`, marker.concentration === 'mark' ? `Mientras ${marker.name.split(' ')[0]} mantenga la concentración.` : undefined);
   if (u.prone) add('prone');
-  if (u.sapped) add('sapped');
-  if (u.helped) add('helped');
+  if (u.sapped) add('sapped', undefined, first(u.sapped) ? `Hasta su próximo ataque o el turno de ${first(u.sapped)}.` : undefined);
+  if (u.helped) add('helped', undefined, first(u.helped) ? `Hasta el próximo turno de ${first(u.helped)}.` : undefined);
   if (u.guided) add('guided');
   if (u.hidden) add('hidden');
   if (u.dodge) add('dodge');
-  if (u.bless) add('bless');
+  if (u.bless) add('bless', undefined, blesser ? `Mientras ${blesser.name.split(' ')[0]} mantenga la concentración.` : undefined);
   return out;
 }
 

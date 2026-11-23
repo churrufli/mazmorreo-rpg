@@ -10,7 +10,7 @@ import { FACE } from '../data/caras';
 import type { FxKind } from '../engine/combat';
 import { ABIL_NAME, ABIL_SHORT, Ability, CLASSES, DmgType, ITEMS, MONSTERS, SPECIES } from '../data/srd';
 import { usableOutside } from '../engine/dungeon';
-import { Char, LEVEL_FEATURES, MAX_ITEMS, equipState, keeps, abilMod, armorClass, passivePerception, saveBonus, score } from '../engine/rules';
+import { Char, LEVEL_FEATURES, MAX_ITEMS, compareItem, equipState, keeps, abilMod, armorClass, passivePerception, saveBonus, score } from '../engine/rules';
 import { XP_LEVELS } from '../data/srd';
 import { StateOrb, StateTag, STATES } from './estados';
 import { ElementFx, FlashFx, GOOD_STATES, HealFx, ImpactFx, ShardsFx, StateFx, elementOf } from './efectos';
@@ -376,6 +376,7 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
                 <View style={{ flex: 1, marginLeft: 8 }}>
                   <Text style={st.stateName}>{t.label}</Text>
                   <Text style={st.stateDesc}>{STATES[t.key].desc}</Text>
+                  {t.ends ? <Text style={[st.stateDesc, { color: C.goldHi }]}>{t.ends}</Text> : null}
                 </View>
               </View>
             ))}
@@ -533,6 +534,7 @@ function Sheet({ c, party, onGive, onDrop, onUse, onFlip }: { c: Char; party?: C
               <Text style={st.itemName}>{ITEMS[it.id].name}{it.charges !== undefined ? ` (${it.charges} cargas)` : ''}</Text>
               <Text style={st.small}>{ITEMS[it.id].desc}</Text>
               {equipState(c, it) ? <Text style={[st.small, { color: equipState(c, it)!.on ? '#7fcf8f' : C.textDim }]}>{equipState(c, it)!.on ? 'Equipado.' : 'Sin equipar.'}{equipState(c, it)!.why ? ` ${equipState(c, it)!.why}` : ''}</Text> : null}
+              {compareItem(c, it.id, it.uid) ? <Text style={st.small}>{compareItem(c, it.id, it.uid)}</Text> : null}
               <Text style={st.small}>{keeps(it) ? 'Llave: no se vende ni se deja en el suelo.' : `Valor: ${ITEMS[it.id].value} po`}</Text>
             </View>
           </View>
@@ -543,6 +545,9 @@ function Sheet({ c, party, onGive, onDrop, onUse, onFlip }: { c: Char; party?: C
               ))}
             </View>
           ) : null}
+          {onGive && party ? party.filter(p => p.id !== c.id && !p.dead && compareItem(p, it.id)).map(p => (
+            <Text key={p.id} style={st.small}>{p.name.split(' ')[0]}: {compareItem(p, it.id)}</Text>
+          )) : null}
           {onGive && party ? (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 4 }}>
               {party.filter(p => p.id !== c.id && !p.dead && p.items.length < MAX_ITEMS).map(p => (
