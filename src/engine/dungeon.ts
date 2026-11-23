@@ -350,6 +350,8 @@ export function step(g: Game, to: Hex, free = false): Ev[] {
   const room = roomIdx >= 0 ? roomOf(g.zone, roomIdx) : undefined;
   if (room && !g.done.includes(room.id)) {
     g.done.push(room.id);
+    // Primera vez en la sala: se cuenta cómo es en un aviso breve (el autor 2026-11-23).
+    if (room.description) g.note = room.description;
     evs.push(...enterRoom(g, room));
   }
   if (hkey(g.prev) !== k && atEntrance(g)) return [{ kind: 'back' }];

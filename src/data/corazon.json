@@ -48,7 +48,7 @@
         {
           "id": "b1_r02",
           "name": "Paso de los cazadores",
-          "description": "Un lazo oculto cruza el sendero.",
+          "description": "El sendero se estrecha entre zarzas y raíces retorcidas.",
           "kind": "corridor",
           "size_hexes": 5,
           "shape": "corridor",

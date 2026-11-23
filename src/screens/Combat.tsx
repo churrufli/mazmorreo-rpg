@@ -124,6 +124,13 @@ export function Combat() {
   if (cb.roll && reveal.current.id !== cb.roll.id) reveal.current = { id: cb.roll.id, at: Date.now() + revealMs(cb.roll) };
   const revealLeft = () => Math.max(0, reveal.current.at - Date.now());
   const fxWait = IMPACT + revealLeft();
+  // Las líneas nuevas del registro salen cuando se ve el dado, no antes («¡Impacto!» con el d20 aún girando).
+  const [logN, setLogN] = useState(cb.log.length);
+  useEffect(() => {
+    if (cb.log.length <= logN) { setLogN(cb.log.length); return; }
+    const t = setTimeout(() => setLogN(cb.log.length), revealLeft());
+    return () => clearTimeout(t);
+  }, [cb.log.length]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const sw = cb.swing;
     if (!sw || playedSwing.current === sw.id) return;
@@ -470,7 +477,7 @@ export function Combat() {
           ) : null}
           {/* Desliza para ver todo el registro del combate. En pantallas bajas, una línea menos cuando se ve lo que queda del turno. */}
           <ScrollView ref={logRef} style={{ height: logOpen ? 85 : height < 700 && budget && !sel ? 17 : 34, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
-            {cb.log.map((l, i) => (
+            {cb.log.slice(0, logN).map((l, i) => (
               <Text key={i} style={[st.logLine, l.c === 'dmg' && { color: '#e8796b' }, l.c === 'heal' && { color: '#7fcf8f' }, l.c === 'big' && { color: C.goldHi }, l.c === 'miss' && { color: C.textDim }]}>{l.t}</Text>
             ))}
           </ScrollView>
