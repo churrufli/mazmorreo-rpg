@@ -59,7 +59,24 @@ function wallOutline(cells: Hex[], walls: Set<string>): string {
   return segments.join(' ');
 }
 
+/** Objetos del mapa 5.97-5.192: su id es el nombre de su imagen. */
+const OBJETOS: ImgKey[] = [
+  'entibado_farol', 'vagoneta_volcada', 'herramientas_apoyadas', 'parapeto_vigia', 'montacargas_mina', 'roca_tiza', 'manantial_agua_negra',
+  'banco_trabajo', 'tablero_avisos', 'campana_alarma', 'bolsa_suministros', 'poste_cadenas_grilletes', 'capullo_seda', 'rejilla_respiradero',
+  'porton_enano', 'brasero', 'balanza_enana', 'estanteria_tablillas', 'mesa_piedra_bancos', 'velas_funerarias', 'nicho_funerario', 'cuenco_ofrendas',
+  'urnas_funerarias', 'caja_pergaminos', 'asiento_guardia', 'columna_rota', 'monje_arrodillado', 'mesa_alquimia', 'libros_apilados',
+  'fuente_serenidad', 'sello_umbria', 'compuerta_canal', 'sellos_rotos', 'trono_piedra', 'estandarte_raido', 'carromato_volcado', 'farol_poste',
+  'surcos_raices', 'hoguera_apagada', 'helechos', 'roble_hueco', 'hacha_raiz', 'campanillas_hueso', 'petate_abandonado', 'poste_cintas',
+  'poza_resina', 'tronco_sangrado', 'arbol_marcado', 'juncos_cienaga', 'nido_arpia', 'caseta_pilotes', 'dolmen_tumulo', 'estacas_camino',
+  'cautivo_raices', 'pilar_raiz', 'pedestal_manos', 'rostro_corteza', 'losa_promesa', 'raiz_helada', 'ventisquero', 'hornacina', 'baliza',
+  'esqueleto_sentado', 'cepo', 'trampas_kobold', 'yunque', 'carretilla_porteadores', 'puerta_escarcha', 'reloj_agua', 'valvulas', 'monedas_hielo',
+  'arco_hielo', 'monton_arena', 'guardian_arcilla', 'tinajas', 'puerta_atrancada', 'pozo_seco', 'catre_piedra', 'escudos_bronce', 'cestas_tributo',
+  'ataud_plomo', 'sarcofago_aplastado', 'abismo', 'ganchos_carne', 'cobra_bronce', 'estatua_destrozada', 'persona_petrificada', 'pertenencias',
+  'setas_luminosas', 'trono_barro', 'pozo_engendro', 'jaula_cana', 'pepinos_azules', 'trono_reyes',
+];
+
 const PROP: Record<string, ImgKey> = {
+  ...Object.fromEntries(OBJETOS.map(k => [k, k])),
   mine_cart: 'vagoneta', rails: 'railes', torch: 'antorcha', stairs: 'escaleras', rubble: 'escombros', column: 'columna',
   altar: 'altar', sarcophagus: 'sarcofago', crystal: 'cristal', water: 'agua_oscura',
   big_tree: 'arbol_grande', fallen_tree: 'arbol_caido', standing_stone: 'piedra_erguida', swamp_water: 'agua_cienaga',
@@ -74,7 +91,7 @@ const PROP: Record<string, ImgKey> = {
 };
 
 /** Decorados planos del suelo, que se recortan como la casilla. */
-const HEX_PROPS = new Set(['water', 'swamp_water']);
+const HEX_PROPS = new Set(['water', 'swamp_water', 'poza_resina', 'abismo']);
 
 const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
 
@@ -413,7 +430,7 @@ export function Explore() {
               if (m.kind === 'door') img = g.visited.includes(k) ? 'puerta_abierta' : 'puerta_cerrada';
               if (m.kind === 'secret') img = g.found.includes(m.id) ? 'losa_secreta' : undefined;
               if (m.kind === 'exit') img = 'escaleras';
-              if (m.kind === 'thicket') img = 'arbusto_espinoso';
+              if (m.kind === 'thicket') img = m.id === 'b2_r06-b2_r08' ? 'muro_raices' : 'arbusto_espinoso';
               // Descanso desde el que se vuelve al pueblo: con una casita encima (el autor 2026-11-06).
               if (m.kind === 'rest' && m.id === townRest(g.zone)) {
                 const sz = S * 1.5;
@@ -429,7 +446,7 @@ export function Explore() {
               }
               if (m.kind === 'rest') img = restImg;
               if (m.kind === 'trap') img = g.done.includes(m.id) || g.spotted?.includes(m.id) ? ADVS[advOf(g.zone)].trapImg : undefined;
-              if (m.kind === 'gate') img = g.done.includes(m.id) ? undefined : 'celda_reja';
+              if (m.kind === 'gate') img = g.done.includes(m.id) ? undefined : m.id === 'b2_g01' ? 'verja_raices' : 'celda_reja';
               if (m.kind === 'lever') img = 'palanca';
               // Escena por hacer: ficha redonda con su ilustración (o una losa si es la pista de un secreto).
               // Hechas o agotadas: se quedan en gris (el autor 2026-11-06).

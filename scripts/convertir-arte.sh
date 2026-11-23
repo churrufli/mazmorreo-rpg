@@ -41,6 +41,9 @@ for f in "$SRC"/mapa/*.*; do
     *) FUZZ=30% cutout "$f" 256 "$OUT/$n.webp";; esac  # 30 %: quita el halo claro que deja el recorte
 done
 cutout "$SRC/mapa/extras/5.16_altar_orvane.png" 256 "$OUT/altar_orvane.webp"
+# Objetos del mapa 5.97-5.192, ya sin fondo blanco (transparentes); la poza de resina y el abismo son texturas de casilla.
+for f in "$SRC"/mapa/transparentes/*.png; do n=$(name "$f"); case "$n" in poza_resina|abismo) convert "$f" -resize 256x256 -quality 80 "$OUT/$n.webp";;
+  *) convert "$f" -trim +repage -resize 256x256 -background none -gravity center -extent 256x256 -quality 82 "$OUT/$n.webp";; esac; done
 # Elementos dinámicos del mapa (docs/arte/elementos-dinamicos-pendientes.md): din_<tipo>_<estado>.
 # Sin recorte ni recentrado (los estados de un elemento deben conservar el mismo encuadre): ver convertir-dinamicos.py.
 for f in "$SRC"/mapa/dinamicos/*.png; do [ -e "$f" ] || continue; python3 "$(dirname "$0")/convertir-dinamicos.py" "$f" "$OUT/$(name "$f").webp"; done
