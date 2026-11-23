@@ -186,6 +186,8 @@ export function Explore() {
   const [showLog, setShowLog] = useState(false);
   const [showOpts, setShowOpts] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [roomTip, setRoomTip] = useState<{ n: number; text: string }>();
+  useEffect(() => setRoomTip(undefined), [g.zone, hkey(g.pos)]); // eslint-disable-line react-hooks/exhaustive-deps
   const zp = plan(g.zone);
   const art = zoneArt(g.zone);
 
@@ -614,11 +616,17 @@ export function Explore() {
           </Pressable>
         </View>
         {/* Sala en la que está el grupo, en su propia línea (el autor 2026-11-06). */}
-        {(() => { const r = zoneById(g.zone).rooms[rooms.get(hkey(g.pos)) ?? -1]; return r ? <Text style={st.room} numberOfLines={1}>{r.name}</Text> : null; })()}
+        {/* Tocar el nombre vuelve a enseñar la descripción de la sala. */}
+        {(() => { const r = zoneById(g.zone).rooms[rooms.get(hkey(g.pos)) ?? -1]; return r ? (
+          <Pressable onPress={() => r.description && setRoomTip(t => ({ n: (t?.n ?? 0) + 1, text: r.description }))} accessibilityRole="button" accessibilityLabel={`Sala: ${r.name}. Toca para leer su descripción.`} hitSlop={6}>
+            <Text style={st.room} numberOfLines={1}>{r.name}</Text>
+          </Pressable>
+        ) : null; })()}
       </View>
       {/* Avisos y botones apilados encima de las cartas, sin taparse entre sí. */}
       <View style={[st.stack, { bottom: ins.bottom + cardW * 1.5 + 20 }]} pointerEvents="box-none">
-        {g.note && !head ? <Toast key={`${g.visited.length}:${g.pos}:${g.note}`} text={g.note} onReread={rereadAt(g, hkey(g.pos)).length ? reread : undefined} /> : null}
+        {roomTip && !head ? <Toast key={`sala${roomTip.n}`} text={roomTip.text} onEnd={() => setRoomTip(undefined)} />
+          : g.note && !head ? <Toast key={`${g.visited.length}:${g.pos}:${g.note}`} text={g.note} onReread={rereadAt(g, hkey(g.pos)).length ? reread : undefined} /> : null}
         {g.visited.length < 5 && !head && !g.note ? (
           <Text style={st.hint} pointerEvents="none">Toca una casilla para moverte (o la oscuridad para avanzar hacia allí). Pellizca para acercar o alejar el mapa. Mantén pulsada una carta para verla en grande.</Text>
         ) : null}
@@ -701,9 +709,10 @@ export function Explore() {
 }
 
 /** Aviso breve que se va solo. */
-function Toast({ text, onReread }: { text: string; onReread?: () => void }) {
+function Toast({ text, onReread, onEnd }: { text: string; onReread?: () => void; onEnd?: () => void }) {
   const [on, setOn] = useState(true);
-  useEffect(() => { const t = setTimeout(() => setOn(false), onReread ? 6000 : 3200); return () => clearTimeout(t); }, [onReread]);
+  // Los textos largos (descripción de una sala) se quedan más para que dé tiempo a leerlos.
+  useEffect(() => { const t = setTimeout(() => { setOn(false); onEnd?.(); }, Math.max(onReread ? 6000 : 3200, text.length * 55)); return () => clearTimeout(t); }, [onReread]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!on) return null;
   return (
     <FadeIn style={st.toastWrap}>
@@ -736,7 +745,7 @@ function MapInfo({ g, onClose }: { g: ReturnType<typeof useStore.getState>['game
   return (
     <Modal transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={st.logBg} onPress={onClose}>
-        <View style={[st.logPanel, { flex: 0 }]}>
+        <View style={[st.logPanel, st.infoPanel]}>
           <Text style={st.logTitle}>{zoneById(g.zone).name}</Text>
           {rows.map(([k, v]) => (
             <View key={k} style={st.infoRow}>
@@ -759,6 +768,8 @@ const st = StyleSheet.create({
   logBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', padding: 16, paddingVertical: 50 },
   logPanel: { flex: 1, backgroundColor: C.panel, borderColor: C.gold, borderWidth: 1, borderRadius: 8, padding: 14 },
   logTitle: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 20, textAlign: 'center', marginBottom: 8 },
+  // La caja de información crece con su contenido (con flex: 0 la web la dejaba a la altura del título).
+  infoPanel: { flexGrow: 0, flexShrink: 1, flexBasis: 'auto' },
   hitNum: { position: 'absolute', top: '28%', alignSelf: 'center', fontFamily: F.titleBold, fontSize: 30, color: C.damage, textShadowColor: '#000', textShadowRadius: 6 },
   top: { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: 14, paddingBottom: 8, backgroundColor: 'rgba(0,0,0,0.7)' },
   topRow: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },

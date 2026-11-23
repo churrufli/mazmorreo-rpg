@@ -70,7 +70,15 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
   // En la carta ampliada (full) los textos e iconos pueden llegar al doble de tamaño.
   const grow = full ? 2 : 1;
   const fs = Math.max(9, Math.min(17 * grow, w * 0.11));
-  const down = info.hp <= 0;
+  // En combate los PG cambian cuando llega el golpe (fxDelay), no antes: primero se ve el dado y luego baja la vida.
+  const [hpLate, setHpLate] = useState(info.hp);
+  useEffect(() => {
+    if (!fxDelay) return;
+    const t = setTimeout(() => setHpLate(info.hp), fxDelay);
+    return () => clearTimeout(t);
+  }, [info.hp]); // eslint-disable-line react-hooks/exhaustive-deps
+  const hp = fxDelay ? hpLate : info.hp;
+  const down = hp <= 0;
   // Hueco de la ilustración, medido sobre el marco v3 (512x768, sin placas): entra un poco bajo el borde.
   const ax = w * 0.03, ay = h * 0.013, aw = w * 0.94, ah = h * 0.974;
   // Franja de PG y CA dentro de la ilustración, abajo, sobre un degradado (como el nombre arriba): así los números
@@ -156,7 +164,7 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
   // Caer o morir oscurece la carta poco a poco, no de golpe.
   const downV = useRef(new Animated.Value(down ? 1 : 0)).current;
   useEffect(() => {
-    Animated.timing(downV, { toValue: down ? 1 : 0, duration: fxOn() ? 450 : 0, delay: down ? fxDelay : 0, easing: EASE.out, useNativeDriver: true }).start();
+    Animated.timing(downV, { toValue: down ? 1 : 0, duration: fxOn() ? 450 : 0, easing: EASE.out, useNativeDriver: true }).start();
   }, [down]); // eslint-disable-line react-hooks/exhaustive-deps
   const popV = useRef(new Animated.Value(0)).current;
   // Sin cifra al montar: al cambiar de fila la carta se vuelve a montar y no debe repetir la del turno anterior.
@@ -181,7 +189,7 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
   useEffect(() => {
     if (!onBroken) return;
     Animated.sequence([
-      Animated.delay(500),
+      Animated.delay(Math.max(500, fxDelay + 200)),
       Animated.timing(crack, { toValue: 1, duration: 250, useNativeDriver: true }),
       Animated.delay(450),
       Animated.timing(crack, { toValue: 2, duration: 450, easing: Easing.in(Easing.quad), useNativeDriver: true }),
@@ -228,12 +236,12 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
         ) : null}
         {/* Barra de vida justo encima de la placa. */}
         <View style={{ position: 'absolute', left: ax + 1, width: aw - 2, top: plateTop - (w < 100 ? 4 : 6) }}>
-          <Bar value={info.hp} max={info.maxHp} height={w < 100 ? 3 : 5} delay={fxDelay} />
+          <Bar value={hp} max={info.maxHp} height={w < 100 ? 3 : 5} />
         </View>
         <View style={[st.band, st.stats, { top: plateTop, height: plateH, left: ax + w * 0.03, right: w - ax - aw + w * 0.03 }]}>
           <View style={st.stat}>
             <Image source={IMG.icono_puntos_golpe} style={{ width: fs * 1.15, height: fs * 1.15 }} />
-            <Text style={[st.statTxt, { fontSize: fs, lineHeight: fs * 1.5, height: fs * 1.5 }]} numberOfLines={1}>{Math.max(0, info.hp)}{w >= 90 ? `/${info.maxHp}` : ''}{info.temp ? <Text style={{ color: C.goldHi }}>+{info.temp}</Text> : null}</Text>
+            <Text style={[st.statTxt, { fontSize: fs, lineHeight: fs * 1.5, height: fs * 1.5 }]} numberOfLines={1}>{Math.max(0, hp)}{w >= 90 ? `/${info.maxHp}` : ''}{info.temp ? <Text style={{ color: C.goldHi }}>+{info.temp}</Text> : null}</Text>
           </View>
           {info.slots ? <Slots s={info.slots} size={Math.min(plateH * 0.9, fs * 1.4)} /> : null}
           <View style={st.stat}>

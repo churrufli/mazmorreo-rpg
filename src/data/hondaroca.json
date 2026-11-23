@@ -1900,7 +1900,7 @@
         {
           "id": "z2_r07",
           "name": "Galería de los tributos",
-          "description": "Una galería enana conduce a la cripta. Un jefe goblin vigila el paso y un cofre permanece oculto.",
+          "description": "Una galería enana conduce a la cripta. Algo vigila el paso desde la penumbra.",
           "kind": "corridor",
           "size_hexes": 12,
           "shape": "corridor",

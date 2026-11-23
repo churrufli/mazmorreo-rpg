@@ -14,7 +14,7 @@ import { Bg, Btn } from '../ui/kit';
 import { FaceImage } from '../ui/FaceImage';
 import { fxFull } from '../ui/movimiento';
 import { getDev, getFlag, markAction, seenAction } from '../storage';
-import { D20, FadeIn, Message, MiniDie, rollMs } from '../ui/Overlays';
+import { D20, FadeIn, Message, MiniDie, revealMs, rollMs } from '../ui/Overlays';
 import { CLASSES, DmgType, ITEMS } from '../data/srd';
 import { Settings } from '../ui/Settings';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
@@ -118,11 +118,29 @@ export function Combat() {
   const [shot, setShot] = useState<{ x: number; y: number; dx: number; dy: number; kind: 'arrow' | 'magic'; color: string }>();
   // Cada ataque se anima una sola vez: al volver a montar la pantalla no se repite el último (el autor 2026-11-10).
   const playedSwing = useRef(cb.swing?.id);
+  // Orden de cada ataque: primero se ve el resultado del dado, luego la embestida y al final baja la vida.
+  // Se calcula al pintar (no en un efecto) para que las cartas reciban ya la espera de esta tirada.
+  const reveal = useRef<{ id?: number; at: number }>({ at: 0 });
+  if (cb.roll && reveal.current.id !== cb.roll.id) reveal.current = { id: cb.roll.id, at: Date.now() + revealMs(cb.roll) };
+  const revealLeft = () => Math.max(0, reveal.current.at - Date.now());
+  const fxWait = IMPACT + revealLeft();
+  // Las líneas nuevas del registro salen cuando se ve el dado, no antes («¡Impacto!» con el d20 aún girando).
+  const [logN, setLogN] = useState(cb.log.length);
+  useEffect(() => {
+    if (cb.log.length <= logN) { setLogN(cb.log.length); return; }
+    const t = setTimeout(() => setLogN(cb.log.length), revealLeft());
+    return () => clearTimeout(t);
+  }, [cb.log.length]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const sw = cb.swing;
-    const a = sw && cardRefs.current[sw.from], b = sw && cardRefs.current[sw.to], root = rootRef.current;
-    if (!sw || !a || !b || !root || playedSwing.current === sw.id) return;
+    if (!sw || playedSwing.current === sw.id) return;
     playedSwing.current = sw.id;
+    const t = setTimeout(() => playSwing(sw), revealLeft());
+    return () => clearTimeout(t);
+  }, [cb.swing?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  function playSwing(sw: NonNullable<typeof cb.swing>) {
+    const a = cardRefs.current[sw.from], b = cardRefs.current[sw.to], root = rootRef.current;
+    if (!a || !b || !root) return;
     if (cb.fx?.[sw.to]?.id === fxSeen.current[sw.to] && cb.log.slice(-3).some(l => l.c === 'miss')) setMisses(m => ({ ...m, [sw.to]: sw.id }));
     root.measureInWindow((rx, ry) => a.measureInWindow((ax, ay, aw, ah) => b.measureInWindow((bx, by, bw, bh) => {
       const dx = bx + bw / 2 - (ax + aw / 2), dy = by + bh / 2 - (ay + ah / 2);
@@ -156,7 +174,7 @@ export function Combat() {
         Animated.timing(fly, { toValue: 1, duration: IMPACT, easing: Easing.in(Easing.quad), useNativeDriver: true }).start(() => setShot(undefined));
       }
     })));
-  }, [cb.swing?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }
   useEffect(() => { fxSeen.current = Object.fromEntries(Object.entries(cb.fx ?? {}).map(([k, v]) => [k, v.id])); }, [cb.fxId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cuándo se quita de la pantalla la última tirada: los carteles esperan a que se vea entera.
@@ -383,7 +401,7 @@ export function Combat() {
                 boss={u.side === 'enemy' && u.mon === ADVS[advOf(g.zone)].boss}
                 intent={intentOf(u)}
                 fxKey={u.key}
-                fxDelay={IMPACT}
+                fxDelay={fxWait}
                 onBroken={u.side === 'enemy' && u.dead ? () => setGone(x => [...x, u.key]) : undefined}
                 // Tocar: si se está eligiendo objetivo, lo elige; si no, amplía la carta con sus estados.
                 // En tu turno, tocar a un enemigo le ataca con tu arma (si está a tu alcance). Mantener pulsado abre su ficha.
@@ -459,7 +477,7 @@ export function Combat() {
           ) : null}
           {/* Desliza para ver todo el registro del combate. En pantallas bajas, una línea menos cuando se ve lo que queda del turno. */}
           <ScrollView ref={logRef} style={{ height: logOpen ? 85 : height < 700 && budget && !sel ? 17 : 34, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
-            {cb.log.map((l, i) => (
+            {cb.log.slice(0, logN).map((l, i) => (
               <Text key={i} style={[st.logLine, l.c === 'dmg' && { color: '#e8796b' }, l.c === 'heal' && { color: '#7fcf8f' }, l.c === 'big' && { color: C.goldHi }, l.c === 'miss' && { color: C.textDim }]}>{l.t}</Text>
             ))}
           </ScrollView>
