@@ -23,6 +23,7 @@ import { allyCap, finishTalk, nextTalk, short, talkLines, talksDone } from '../e
 import { Dialogue } from '../ui/Overlays';
 import { Galeria } from './Galeria';
 import { OptionsButton } from '../ui/Settings';
+import { useEscritorio } from '../ui/escritorio';
 
 type Place = 'menu' | 'tienda' | 'templo' | 'posada' | 'puerta' | 'diario' | 'galeria';
 const HEAL_COST = 10;
@@ -37,6 +38,8 @@ export function Town() {
   const { game, edit, leaveTown, travel } = useStore();
   const g = game!;
   const ins = useSafeAreaInsets();
+  const esc = useEscritorio();
+  const placeBtn = esc.on ? { width: '49%' as const } : undefined;
   const [place, setPlace] = useState<Place>('menu');
   // Al volver desde cualquier mapa, entrar siempre al menú principal del pueblo.
   useEffect(() => {
@@ -167,12 +170,15 @@ export function Town() {
                 <Btn small label="Cancelar" onPress={() => setAsking(false)} />
               </View>
             ) : null}
-            <Btn label="Tienda" sub="Comprar y vender" onPress={() => { setPlace('tienda'); say(''); }} />
-            <Btn label="Templo" sub="Curar heridas pagando oro" onPress={() => { setPlace('templo'); say(''); }} />
-            <Btn label="Posada" sub={allies.some(c => nextTalk(g, c) !== undefined) ? 'Descansar, elegir compañeros y charlar (hay charlas nuevas)' : 'Descansar, elegir compañeros y charlar'} onPress={() => { setPlace('posada'); say(''); }} />
-            <Btn label="Diario" sub="Historias y diálogos vividos" onPress={() => { setPlace('diario'); say(''); }} />
-            <Btn label="Puerta del pueblo" sub="Viajar por el reino" onPress={() => { setPlace('puerta'); say(''); }} />
-            <Btn label="Galería" sub="Personajes, enemigos y lugares que habéis conocido" onPress={() => { setPlace('galeria'); say(''); }} />
+            {/* Escritorio: los lugares en dos columnas para que quepan sin desplazar. */}
+            <View style={esc.on ? st.placeGrid : undefined}>
+            <Btn label="Tienda" sub="Comprar y vender" style={placeBtn} onPress={() => { setPlace('tienda'); say(''); }} />
+            <Btn label="Templo" sub="Curar heridas pagando oro" style={placeBtn} onPress={() => { setPlace('templo'); say(''); }} />
+            <Btn label="Posada" sub={allies.some(c => nextTalk(g, c) !== undefined) ? 'Descansar, elegir compañeros y charlar (hay charlas nuevas)' : 'Descansar, elegir compañeros y charlar'} style={placeBtn} onPress={() => { setPlace('posada'); say(''); }} />
+            <Btn label="Diario" sub="Historias y diálogos vividos" style={placeBtn} onPress={() => { setPlace('diario'); say(''); }} />
+            <Btn label="Puerta del pueblo" sub="Viajar por el reino" style={placeBtn} onPress={() => { setPlace('puerta'); say(''); }} />
+            <Btn label="Galería" sub="Personajes, enemigos y lugares que habéis conocido" style={placeBtn} onPress={() => { setPlace('galeria'); say(''); }} />
+            </View>
             <View style={st.partyRow}>
               {g.party.map(c => <View key={c.id} style={{ margin: 2 }}><Card info={charInfo(c)} width={70} dim={c.dead} onPress={() => setSheet(c.id)} /></View>)}
             </View>
@@ -542,6 +548,7 @@ export function Defeat() {
 }
 
 const st = StyleSheet.create({
+  placeGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   arrival: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: '22%' },
   arrivalBox: { marginHorizontal: 16, backgroundColor: 'rgba(0,0,0,0.55)', borderRadius: 10, paddingHorizontal: 22, paddingVertical: 12, borderWidth: 1, borderColor: C.gold },
   arrivalTxt: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 28, textAlign: 'center', textShadowColor: '#000', textShadowRadius: 6 },

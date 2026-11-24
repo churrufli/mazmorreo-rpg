@@ -2,6 +2,7 @@
 export const IMG = {
   boton_padre: require('../assets/ui/boton_padre.png'),
   boton_hijo: require('../assets/ui/boton_hijo.png'),
+  grano: require('../assets/ui/grano.png'),
   abuela_ortiga: require('../assets/img/abuela_ortiga.webp'),
   agua_bendita: require('../assets/img/agua_bendita.webp'),
   agua_cienaga: require('../assets/img/agua_cienaga.webp'),

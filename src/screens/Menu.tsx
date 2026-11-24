@@ -277,7 +277,9 @@ export function Create() {
   // Primero hombre o mujer, con el guerrero o la guerrera (el autor 2026-11-05).
   const img = step === 0 ? heroImg('fighter', 'human', sex) : heroImg(cls, sp, sex);
   const ok = name.trim().length > 0;
-  const artH = Math.round(height * 0.4);
+  const artH = Math.round(height * (esc ? 0.62 : 0.4));
+  // En escritorio la ilustración se funde por los cuatro lados al negro que la rodea.
+  const edge = esc ? '#010101' : '#0d0b09';
   // Si el nombre es de los sorteados, cambia con la especie.
   const pickHero = (c: ClassId, s: SpeciesId) => {
     setCls(c); setSp(s);
@@ -295,11 +297,8 @@ export function Create() {
     setSel(undefined);
   };
   const forward = () => (step < 4 ? setStep(step + 1) : create(name.trim(), cls, sp, abil, img));
-  return (
-    <Bg src={IMG.titulo} dim={0.82}>
-      {/* Detrás del contenido: solo se ven sobre el fondo, no sobre botones ni textos. */}
-      <Particles n={18} />
-      <ScrollView contentContainerStyle={{ paddingTop: ins.top + 8, paddingBottom: ins.bottom + 20 }} keyboardShouldPersistTaps="handled">
+  const head = (
+      <>
         <Text style={st.createTitle}>Crea a tu héroe</Text>
         <View style={st.steps}>
           {STEPS.map((t, i) => (
@@ -310,22 +309,25 @@ export function Create() {
             </Pressable>
           ))}
         </View>
+      </>
+  );
+  const art = (
         <View style={{ height: artH, overflow: 'hidden' }}>
           <FadeIn key={img} from={0}><Crop img={img} w={width} h={artH} zoom={Math.max(1.75, (width * 1.5) / artH)} fy={0.2} /></FadeIn>
           <Svg width={width} height={artH} style={StyleSheet.absoluteFill} pointerEvents="none">
             <Defs>
               <LinearGradient id={`fade${gid}`} x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#0d0b09" stopOpacity={esc ? 0.9 : 0} />
-                <Stop offset={esc ? 0.15 : 0} stopColor="#0d0b09" stopOpacity="0" />
-                <Stop offset="0.62" stopColor="#0d0b09" stopOpacity="0" />
-                <Stop offset="1" stopColor="#0d0b09" stopOpacity="1" />
+                <Stop offset="0" stopColor={edge} stopOpacity={esc ? 1 : 0} />
+                <Stop offset={esc ? 0.18 : 0} stopColor={edge} stopOpacity="0" />
+                <Stop offset={esc ? 0.78 : 0.62} stopColor={edge} stopOpacity="0" />
+                <Stop offset="1" stopColor={edge} stopOpacity="1" />
               </LinearGradient>
               {/* En escritorio, la ilustración se funde del todo por los lados para no verse cortada. */}
               <LinearGradient id={`sides${gid}`} x1="0" y1="0" x2="1" y2="0">
-                <Stop offset="0" stopColor={esc ? '#010101' : '#0d0b09'} stopOpacity={esc ? 1 : 0.9} />
-                <Stop offset={esc ? 0.24 : 0.14} stopColor={esc ? '#010101' : '#0d0b09'} stopOpacity="0" />
-                <Stop offset={esc ? 0.76 : 0.86} stopColor={esc ? '#010101' : '#0d0b09'} stopOpacity="0" />
-                <Stop offset="1" stopColor={esc ? '#010101' : '#0d0b09'} stopOpacity={esc ? 1 : 0.9} />
+                <Stop offset="0" stopColor={edge} stopOpacity={esc ? 1 : 0.9} />
+                <Stop offset={esc ? 0.24 : 0.14} stopColor={edge} stopOpacity="0" />
+                <Stop offset={esc ? 0.76 : 0.86} stopColor={edge} stopOpacity="0" />
+                <Stop offset="1" stopColor={edge} stopOpacity={esc ? 1 : 0.9} />
               </LinearGradient>
             </Defs>
             <Rect x="0" y="0" width={width} height={artH} fill={`url(#sides${gid})`} />
@@ -351,6 +353,8 @@ export function Create() {
           ) : null}
           <Text style={st.heroSub}>{step === 0 ? (sex === 'man' ? 'Hombre' : 'Mujer') : `${step > 1 ? `${CLASSES[cls].name} · ` : ''}${SPECIES[sp].name}`}</Text>
         </View>
+  );
+  const controls = (
         <View style={{ paddingHorizontal: 16 }}>
           {step === 0 ? (
             <View style={st.chips}>{(['man', 'woman'] as const).map(x => <Chip key={x} label={x === 'man' ? 'Hombre' : 'Mujer'} on={sex === x} onPress={() => setSex(x)} />)}</View>
@@ -403,6 +407,22 @@ export function Create() {
           <Btn primary label={NEXT[step]} disabled={step === 4 && !ok} onPress={forward} style={{ marginTop: 12 }} />
           <Btn label={step ? 'Atrás' : 'Volver'} onPress={() => (step ? setStep(step - 1) : go('slots'))} />
         </View>
+  );
+  return (
+    <Bg src={IMG.titulo} dim={esc ? 0.94 : 0.82} full={esc}>
+      {/* Detrás del contenido: solo se ven sobre el fondo, no sobre botones ni textos. */}
+      <Particles n={18} />
+      <ScrollView contentContainerStyle={[{ paddingTop: ins.top + 8, paddingBottom: ins.bottom + 20 }, esc && { flexGrow: 1, justifyContent: 'center' }]} keyboardShouldPersistTaps="handled">
+        {esc ? (
+          // Escritorio: el héroe a la izquierda y las opciones a la derecha, sin desplazar la pantalla.
+          <View style={{ width: width * 2 + 32, alignSelf: 'center' }}>
+            {head}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 32 }}>
+              <View style={{ width }}>{art}</View>
+              <View style={{ width }}>{controls}</View>
+            </View>
+          </View>
+        ) : <>{head}{art}{controls}</>}
       </ScrollView>
     </Bg>
   );

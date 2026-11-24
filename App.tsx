@@ -99,7 +99,7 @@ function Router() {
         </Message>
       ) : null}
       {/* Pantallas sin rueda de ajustes propia: el botón de opciones flota arriba a la derecha. */}
-      {OWN_GEAR.has(screen) ? null : <OptionsButton style={{ position: 'absolute', top: ins.top + 8, right: esc.on ? (esc.width - esc.col) / 2 + 12 : 12, padding: 6, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.55)' }} />}
+      {OWN_GEAR.has(screen) ? null : <OptionsButton style={{ position: 'absolute', top: ins.top + 8, right: esc.on ? (esc.width - (screen === 'create' ? esc.col * 2 + 32 : esc.col)) / 2 + 12 : 12, padding: 6, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.55)' }} />}
     </>
   );
 }
