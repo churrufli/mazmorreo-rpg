@@ -19,7 +19,9 @@ export const getFlag = (k: string) => get('opt:' + k) !== 'off';
 export const setFlag = (k: string, on: boolean) => set('opt:' + k, on ? 'on' : 'off');
 export const getLevel = (k: string, def: number) => { const v = Number(get('vol:' + k)); return get('vol:' + k) !== null && v >= 0 && v <= 10 ? v : def; };
 export const setLevel = (k: string, v: number) => set('vol:' + k, String(v));
-export const getZoom = () => { const v = Number(get('opt:zoom')); return v >= 0.5 && v <= 2.2 ? v : 1.4; };
+export const getZoom = () => { const v = Number(get('opt:zoom')); return v >= 0.5 && v <= 2.2 ? v : escritorio() ? 1.9 : 1.4; };
+/** Web apaisada y ancha: el mapa empieza más ampliado (mismo criterio que useEscritorio). */
+const escritorio = () => typeof window !== 'undefined' && window.innerWidth > window.innerHeight && window.innerWidth >= 900;
 export const setZoom = (v: number) => set('opt:zoom', String(v));
 export const getDev = () => get('opt:dev') === 'on';
 export const setDev = (on: boolean) => set('opt:dev', on ? 'on' : 'off');

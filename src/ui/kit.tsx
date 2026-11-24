@@ -16,7 +16,7 @@ export function Bg({ src, dim = 0.35, children, style, full }: { src: ImageSourc
   // Tamaño explícito: en Android, una Image solo con absoluteFill puede salir a su tamaño natural.
   const { width, height } = useWindowDimensions();
   const esc = useEscritorio();
-  const gid = React.useId().replace(/:/g, '');
+  const gid = React.useId().replace(/[^a-zA-Z0-9]/g, '');
   if (esc.on) {
     const iw = Math.min(width, height * BG_RATIO * 1.35), ih = iw / BG_RATIO;
     const fade = iw * 0.24;

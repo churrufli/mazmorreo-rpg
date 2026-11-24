@@ -5,6 +5,7 @@ import { LogModal } from '../ui/LogModal';
 import { Settings } from '../ui/Settings';
 import Svg, { Circle, ClipPath, Defs, G, Image as SvgImage, Path, Pattern, Polygon } from 'react-native-svg';
 import { useEscritorio } from '../ui/escritorio';
+import { useRuedaZoom } from '../ui/rueda';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
@@ -347,6 +348,14 @@ export function Explore() {
     },
     onPanResponderTerminate: () => setZoom(zoomNow.current),
   }), [pan, scale, setZoom]);
+
+  // Web en escritorio: la rueda del ratón acerca y aleja el mapa, con los mismos límites que el pellizco.
+  const wheelSave = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useRuedaZoom('mazmorreo-map', f => {
+    scale.setValue(Math.max(0.5, Math.min(2.2, zoomNow.current * f)));
+    clearTimeout(wheelSave.current);
+    wheelSave.current = setTimeout(() => setZoom(zoomNow.current), 300);
+  });
 
   // Punto del mapa que queda en el centro de la vista: el héroe (más el desplazamiento del dedo).
   const sx = view.w / 2, sy = view.h * 0.42;

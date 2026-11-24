@@ -479,7 +479,7 @@ export function Combat() {
             </View>
           ) : null}
           {/* Desliza para ver todo el registro del combate. En pantallas bajas, una línea menos cuando se ve lo que queda del turno. */}
-          <ScrollView ref={logRef} style={{ height: logOpen ? 85 : height < 700 && budget && !sel ? 17 : 34, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
+          <ScrollView ref={logRef} style={{ height: logOpen ? 85 : (height < 700 || esc.on) && budget && !sel ? 17 : 34, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
             {cb.log.slice(0, logN).map((l, i) => (
               <Text key={i} style={[st.logLine, l.c === 'dmg' && { color: '#e8796b' }, l.c === 'heal' && { color: '#7fcf8f' }, l.c === 'big' && { color: C.goldHi }, l.c === 'miss' && { color: C.textDim }]}>{l.t}</Text>
             ))}
@@ -500,7 +500,7 @@ export function Combat() {
           </View>
         ) : null}
       </View>
-      <View testID="combat-controls" style={[st.actions, esc.on && { alignSelf: 'center', borderWidth: 1, borderTopLeftRadius: 8, borderTopRightRadius: 8 }, { height: landscape ? height : 204 + ins.bottom, width: controlsWidth, flexGrow: 0, flexShrink: 0, paddingTop: landscape ? ins.top + 4 : 3, paddingBottom: ins.bottom + 3 }]}>
+      <View testID="combat-controls" style={[st.actions, esc.on && { alignSelf: 'center', borderWidth: 1, borderTopLeftRadius: 8, borderTopRightRadius: 8 }, { height: landscape ? height : esc.on ? 176 : 204 + ins.bottom, width: controlsWidth, flexGrow: 0, flexShrink: 0, paddingTop: landscape ? ins.top + 4 : 3, paddingBottom: ins.bottom + 3 }]}>
         {auto ? (
           <Text style={st.wait}>{me.side === 'enemy' ? `${me.name} actúa…` : me.paralyzed ? `${me.name} está paralizado y no puede actuar…` : `${me.name} no puede actuar…`}</Text>
         ) : !cb.result ? (
