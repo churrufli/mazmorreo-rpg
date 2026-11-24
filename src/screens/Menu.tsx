@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { mdiAlertOutline, mdiDiceMultipleOutline, mdiPencilOutline, mdiShareVariantOutline, mdiTrashCanOutline } from '@mdi/js';
+import { useEscritorio } from '../ui/escritorio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG } from '../assets';
 import { C, F } from '../theme';
@@ -270,7 +271,7 @@ export function Create() {
   const [rolls, setRolls] = useState(0); // 0 = recomendados; 1 = tirada; 2 = ya repetida
   const [sel, setSel] = useState<Ability>();
   const ins = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
+  const { col: width, height } = useEscritorio();
   const [sex, setSex] = useState<Sex>('man');
   // Primero hombre o mujer, con el guerrero o la guerrera (el autor 2026-11-05).
   const img = step === 0 ? heroImg('fighter', 'human', sex) : heroImg(cls, sp, sex);

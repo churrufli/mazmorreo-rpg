@@ -41,3 +41,9 @@ html,body,#root{height:100%;min-height:100%;margin:0;background:#14100e}*{box-si
 /* Deslizar horizontalmente gira la carta; conserva scroll vertical y pellizco. */
 #character-card-flip{touch-action:pan-y pinch-zoom}
 #character-card-flip img{-webkit-user-drag:none}
+
+/* Modo escritorio (apaisado ancho): negro con un poco de grano a los lados de la columna. */
+@media (orientation:landscape) and (min-width:900px) {
+  html,body{background-color:#0a0908!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .92 0 0 0 0 .8 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")!important}
+  #root{background:transparent}
+}
