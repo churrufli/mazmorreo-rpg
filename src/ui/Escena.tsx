@@ -11,7 +11,7 @@ import { isDown } from '../engine/rules';
 import { Bg, Btn, Panel } from './kit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { zoneArt } from '../engine/dungeon';
-import { getDev } from '../storage';
+import { getDevOpt } from '../storage';
 import { FadeIn, HOLD_MS, useHold } from './Overlays';
 import { DUR } from './movimiento';
 
@@ -52,7 +52,7 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
               {g.party.filter(c => !isDown(c)).sort((a, b) => testBonus(b, o.attr!) - testBonus(a, o.attr!)).map(c => (
                 <Btn key={c.id} small label={`${c.name} (${sign(testBonus(c, o.attr!))})`} sub={`≈ ${testChance(c, o.attr!, o.dc ?? 10)} % de lograrlo`} onPress={() => { setAsk(undefined); onChoose(ask!, c.id); }} />
               ))}
-              {getDev() ? <Btn small label="Superar (20)" onPress={() => { const index = ask!; const best = bestFor(g, o.attr!); setAsk(undefined); onChoose(index, best?.id, true); }} /> : null}
+              {getDevOpt('escenas') ? <Btn small label="Superar (20)" onPress={() => { const index = ask!; const best = bestFor(g, o.attr!); setAsk(undefined); onChoose(index, best?.id, true); }} /> : null}
               <Btn small label="Volver" onPress={() => setAsk(undefined)} />
             </FadeIn>
           ) : (

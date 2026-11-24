@@ -100,9 +100,12 @@ export function Settings({ onClose }: { onClose: () => void }) {
               {upd?.url ? <Btn small label="Descargar la nueva versión" onPress={() => Linking.openURL(upd.url!)} /> : null}
               <View style={st.dev}>
                 <Text style={st.devTitle}>Modo desarrollador</Text>
-                <Text style={st.note}>Para probar el juego: mapa descubierto y botón para ganar combates.</Text>
+                <Text style={st.note}>Para probar el juego. Al activarlo, elige qué ayudas quieres.</Text>
                 {dev ? (
-                  <Btn small label="Desactivar modo desarrollador" onPress={() => { storage.setDev(false); setDev(false); }} />
+                  <>
+                    <OpcionesDev />
+                    <Btn small label="Desactivar modo desarrollador" onPress={() => { storage.setDev(false); setDev(false); }} />
+                  </>
                 ) : pidiendo ? (
                   <>
                     <TextInput style={st.clave} keyboardType="number-pad" secureTextEntry placeholder="Clave" placeholderTextColor={C.textDim} onSubmitEditing={e => activarDev(e.nativeEvent.text)} onChangeText={t => { if (t === CLAVE_DEV) activarDev(t); }} accessibilityLabel="Clave del modo desarrollador" />
@@ -172,6 +175,33 @@ function Row({ label, value, onChange }: { label: string; value: boolean; onChan
       <Text style={st.label}>{label}</Text>
       <Switch value={value} onValueChange={onChange} accessibilityLabel={label} trackColor={{ false: C.border, true: C.gold }} thumbColor={value ? C.goldHi : C.textDim} />
     </View>
+  );
+}
+
+/** Cada efecto del modo desarrollador, con su interruptor y lo que hace. */
+const DEV_OPTS: [storage.DevOpt, string, string][] = [
+  ['mapa', 'Ver el mapa entero', 'Sin niebla: el plano completo con sus decorados.'],
+  ['salto', 'Teletransporte', 'Tocar una casilla lleva al grupo allí directamente.'],
+  ['superar', 'Superar obstáculos', 'Botón «Superar» en obstáculos que no ceden y salidas cerradas con llave.'],
+  ['escenas', 'Superar pruebas', 'Botón «Superar (20)» en las pruebas de las escenas.'],
+  ['ganar', 'Ganar combate', 'Botón GANAR COMBATE.'],
+  ['oro', 'Oro infinito', 'En el pueblo, comprar, curar y resucitar no cuestan nada.'],
+  ['viajar', 'Viajar a cualquier pueblo', 'Sin haber vencido al jefe de la aventura anterior.'],
+  ['nivel', 'Subir al nivel de la aventura', 'Al viajar, el grupo tiene el nivel, los compañeros y el equipo con que llegaría jugando.'],
+  ['cero', 'Empezar la aventura de cero', 'Al viajar, se borra el avance de esa aventura y de las siguientes.'],
+];
+
+function OpcionesDev() {
+  const [on, setOn] = useState(() => Object.fromEntries(DEV_OPTS.map(([k]) => [k, storage.getDevOpt(k)])));
+  return (
+    <>
+      {DEV_OPTS.map(([k, label, nota]) => (
+        <View key={k}>
+          <Row label={label} value={on[k]} onChange={v => { storage.setDevOpt(k, v); setOn({ ...on, [k]: v }); }} />
+          <Text style={st.devNote}>{nota}</Text>
+        </View>
+      ))}
+    </>
   );
 }
 
@@ -267,6 +297,7 @@ const st = StyleSheet.create({
   temaTitle: { fontFamily: F.title, color: C.gold, fontSize: 17, marginBottom: 4 },
   parrafo: { fontFamily: F.rules, color: C.text, fontSize: 14.5, lineHeight: 22, marginBottom: 6 },
   dev: { marginTop: 14, borderTopWidth: 1, borderColor: C.border, paddingTop: 10 },
+  devNote: { fontFamily: F.italic, color: C.textDim, fontSize: 14, marginTop: -4, marginBottom: 6 },
   devTitle: { fontFamily: F.title, color: C.gold, fontSize: 16, textAlign: 'center' },
   clave: { fontFamily: F.text, color: C.text, borderColor: C.gold, borderWidth: 1, borderRadius: 4, padding: 8, marginTop: 6, textAlign: 'center', fontSize: 18 },
 });

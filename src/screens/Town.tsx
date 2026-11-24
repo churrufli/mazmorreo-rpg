@@ -69,9 +69,11 @@ export function Town() {
   const town = TOWNS[townId];
   const adv = ADVS[town.adv];
   // Modo desarrollador: oro infinito (comprar, curar y resucitar no cuestan nada).
-  const dev = storage.getDev();
+  const dev = storage.getDevOpt('oro');
   const pay = (n: number) => (dev ? 0 : n);
   const afford = (n: number) => dev || g.gold >= n;
+  const devViajar = storage.getDevOpt('viajar');
+  const devNivel = storage.getDevOpt('nivel');
   const sold = g.sold?.[townId] ?? [];
   const firstDone = g.won || !!g.wins?.length;
   // Lo que se vende depende de los enemigos de la aventura del pueblo (el autor 2026-11-20).
@@ -80,7 +82,7 @@ export function Town() {
   const started = !!g.saved?.[adv.data.zones[0].id] || (advOf(g.zone) === town.adv && g.visited.length > 0);
   const prevOf = (t: TownId) => ADVS[TOWNS[t].adv].prev;
   // La siguiente aventura se abre al vencer al jefe de la anterior (el autor 2026-11-06).
-  const open = (t: TownId) => { const p = prevOf(t); return !p || dev || wonAdv(g, p); };
+  const open = (t: TownId) => { const p = prevOf(t); return !p || devViajar || wonAdv(g, p); };
   const lockText = (t: TownId) => {
     const p = ADVS[prevOf(t)!];
     return `Vence al jefe de ${p.name} para abrir el camino`;
@@ -338,7 +340,7 @@ export function Town() {
             <T>Más allá de la puerta se extiende el reino. ¿Adónde viajáis?</T>
             {(Object.keys(TOWNS) as TownId[]).filter(t => t !== townId).map(t => (
               <Btn key={t} label={`Viajar a ${TOWNS[t].name}`} disabled={!open(t)}
-                sub={open(t) ? `Pueblo de ${ADVS[TOWNS[t].adv].name}${dev ? ` · el grupo empieza con nivel ${entryLevel(TOWNS[t].adv)}, sus compañeros y su equipo` : ''}` : lockText(t)}
+                sub={open(t) ? `Pueblo de ${ADVS[TOWNS[t].adv].name}${devNivel ? ` · el grupo empieza con nivel ${entryLevel(TOWNS[t].adv)}, sus compañeros y su equipo` : ''}` : lockText(t)}
                 onPress={() => { travel(t); setPlace('menu'); say(''); setArrival(TOWNS[t].name); }} />
             ))}
           </Panel>

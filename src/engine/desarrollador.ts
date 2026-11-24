@@ -87,13 +87,15 @@ function freshHero(h: Char): Char {
 }
 
 /**
- * Modo desarrollador, al viajar al pueblo de una aventura: el grupo queda como llegaría jugando.
- * Nivel de entrada, aventuras anteriores ganadas, sus compañeros, su equipo permanente y sus trofeos.
- * Si se viaja a una aventura anterior, sobra lo de las siguientes y se quita.
- * La aventura de destino (y las siguientes) empieza de cero.
+ * Modo desarrollador, al viajar al pueblo de una aventura (cada parte se puede apagar en Ajustes).
+ * `nivel`: el grupo queda como llegaría jugando: nivel de entrada, aventuras anteriores ganadas, sus compañeros,
+ * su equipo permanente y sus trofeos.
+ * `cero`: la aventura de destino (y las siguientes) empieza de cero; si se viaja a una aventura anterior,
+ * sobra lo de las siguientes y se quita.
  */
-export function devSetup(g: Game, a: AdvId): string[] {
-  resetAdventures(g, a);
+export function devSetup(g: Game, a: AdvId, nivel = true, cero = true): string[] {
+  if (cero) resetAdventures(g, a);
+  if (!nivel) return [`Modo desarrollador: ${ADVS[a].name} empieza de cero.`];
   const before = ADV_LIST.slice(0, ADV_LIST.findIndex(x => x.id === a)).map(x => x.id);
   const lv = entryLevel(a);
   const hero = freshHero([...g.party, ...(g.bench ?? [])].find(c => c.isHero)!);
@@ -103,9 +105,11 @@ export function devSetup(g: Game, a: AdvId): string[] {
   g.chosen = undefined;
   g.escort = undefined;
   for (const c of g.party) raiseTo(c, lv);
-  g.wins = before;
-  g.won = before.includes('hondaroca');
-  g.trophies = before.map(b => ADVS[b].reward.item).filter(Boolean) as string[];
+  // Sin empezar de cero, se conservan las aventuras ya ganadas y sus trofeos.
+  const trophies = before.map(b => ADVS[b].reward.item).filter(Boolean) as string[];
+  g.wins = cero ? before : [...new Set([...(g.wins ?? []), ...before])];
+  g.won = g.wins.includes('hondaroca');
+  g.trophies = cero ? trophies : [...new Set([...(g.trophies ?? []), ...trophies])];
   for (const id of before.flatMap(gearOf)) giveGear(g, id);
   return [`Modo desarrollador: el grupo empieza ${ADVS[a].name} con nivel ${lv}${allies.length ? ` y ${allies.length} compañeros` : ''}.`];
 }
