@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useEscritorio } from '../ui/escritorio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG } from '../assets';
 import { C, F } from '../theme';
@@ -53,9 +54,11 @@ export function Combat() {
   const cb = combat!;
   const ins = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const landscape = width >= 700 && width > height;
-  const controlsWidth = landscape ? Math.min(420, width * 0.48) : width;
-  const boardWidth = landscape ? width - controlsWidth : width;
+  // Escritorio (web apaisada ancha): tablero ancho arriba y botones abajo en la columna central.
+  const esc = useEscritorio();
+  const landscape = width >= 700 && width > height && !esc.on;
+  const controlsWidth = esc.on ? esc.col : landscape ? Math.min(420, width * 0.48) : width;
+  const boardWidth = esc.on ? Math.min(width, Math.max(esc.col, height * 1.25)) : landscape ? width - controlsWidth : width;
   const lastCommit = useRef(0);
   // Acción seleccionada: el primer toque la explica (y marca objetivos); el segundo, o tocar un objetivo, la ejecuta.
   const [sel, setSel] = useState<Action>();
@@ -420,9 +423,9 @@ export function Combat() {
   };
 
   return (
-    <Bg src={IMG[cb.bg]} dim={0.45}>
+    <Bg src={IMG[cb.bg]} dim={0.45} full>
       <View style={{ flex: 1, flexDirection: landscape ? 'row' : 'column' }}>
-      <View testID="combat-field" ref={rootRef} collapsable={false} style={{ flex: 1, minHeight: 0, overflow: 'hidden', paddingTop: ins.top + 4, paddingHorizontal: 6 }} onLayout={e => setArea(e.nativeEvent.layout.height - ins.top - 4)}>
+      <View testID="combat-field" ref={rootRef} collapsable={false} style={[{ flex: 1, minHeight: 0, overflow: 'hidden', paddingTop: ins.top + 4, paddingHorizontal: 6 }, esc.on && { width: boardWidth, alignSelf: 'center' }]} onLayout={e => setArea(e.nativeEvent.layout.height - ins.top - 4)}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         {/* Orden de turnos arriba (maqueta aprobada por el autor 2026-11-06): asalto, retratos por iniciativa y engranaje. */}
         <View style={[st.turns, lit('turns')]}>
@@ -476,7 +479,7 @@ export function Combat() {
             </View>
           ) : null}
           {/* Desliza para ver todo el registro del combate. En pantallas bajas, una línea menos cuando se ve lo que queda del turno. */}
-          <ScrollView ref={logRef} style={{ height: logOpen ? 85 : height < 700 && budget && !sel ? 17 : 34, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
+          <ScrollView ref={logRef} style={{ height: logOpen ? 85 : (height < 700 || esc.on) && budget && !sel ? 17 : 34, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
             {cb.log.slice(0, logN).map((l, i) => (
               <Text key={i} style={[st.logLine, l.c === 'dmg' && { color: '#e8796b' }, l.c === 'heal' && { color: '#7fcf8f' }, l.c === 'big' && { color: C.goldHi }, l.c === 'miss' && { color: C.textDim }]}>{l.t}</Text>
             ))}
@@ -497,7 +500,7 @@ export function Combat() {
           </View>
         ) : null}
       </View>
-      <View testID="combat-controls" style={[st.actions, { height: landscape ? height : 204 + ins.bottom, width: controlsWidth, flexGrow: 0, flexShrink: 0, paddingTop: landscape ? ins.top + 4 : 3, paddingBottom: ins.bottom + 3 }]}>
+      <View testID="combat-controls" style={[st.actions, esc.on && { alignSelf: 'center', borderWidth: 1, borderTopLeftRadius: 8, borderTopRightRadius: 8 }, { height: landscape ? height : esc.on ? 176 : 204 + ins.bottom, width: controlsWidth, flexGrow: 0, flexShrink: 0, paddingTop: landscape ? ins.top + 4 : 3, paddingBottom: ins.bottom + 3 }]}>
         {auto ? (
           <Text style={st.wait}>{me.side === 'enemy' ? `${me.name} actúa…` : me.paralyzed ? `${me.name} está paralizado y no puede actuar…` : `${me.name} no puede actuar…`}</Text>
         ) : !cb.result ? (

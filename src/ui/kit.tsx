@@ -7,11 +7,35 @@ import { FACE } from '../data/caras';
 import { buttonLabelLayout } from './buttonLabel';
 import { sfx } from '../sonido';
 import { DUR, EASE, fxOn } from './movimiento';
+import { useEscritorio } from './escritorio';
 
-/** Fondo a pantalla completa: se amplía sin deformarse hasta llegar a todos los bordes (el autor 2026-11-02). */
-export function Bg({ src, dim = 0.35, children, style }: { src: ImageSourcePropType; dim?: number; children?: React.ReactNode; style?: ViewStyle }) {
+/** Fondo a pantalla completa: se amplía sin deformarse hasta llegar a todos los bordes (el autor 2026-11-02).
+ * En la web apaisada (modo escritorio) la ilustración vertical se ajusta al alto, se amplía como mucho un 35 %
+ * y se funde a negro por los lados; el contenido va en una columna centrada salvo con `full`. */
+export function Bg({ src, dim = 0.35, children, style, full }: { src: ImageSourcePropType; dim?: number; children?: React.ReactNode; style?: ViewStyle; full?: boolean }) {
   // Tamaño explícito: en Android, una Image solo con absoluteFill puede salir a su tamaño natural.
   const { width, height } = useWindowDimensions();
+  const esc = useEscritorio();
+  const gid = React.useId().replace(/[^a-zA-Z0-9]/g, '');
+  if (esc.on) {
+    const iw = Math.min(width, height * BG_RATIO * 1.35), ih = iw / BG_RATIO;
+    const fade = iw * 0.24;
+    return (
+      <View style={[s.fill, { backgroundColor: 'transparent' }, style]}>
+        <Image source={src} style={{ position: 'absolute', left: (width - iw) / 2, top: (height - ih) / 2, width: iw, height: ih }} resizeMode="cover" />
+        <Svg width={width} height={height} style={StyleSheet.absoluteFill} pointerEvents="none">
+          <Defs>
+            <LinearGradient id={`l${gid}`} x1="0" y1="0" x2="1" y2="0"><Stop offset="0" stopColor={BG_EDGE} stopOpacity={1} /><Stop offset="1" stopColor={BG_EDGE} stopOpacity={0} /></LinearGradient>
+            <LinearGradient id={`r${gid}`} x1="0" y1="0" x2="1" y2="0"><Stop offset="0" stopColor={BG_EDGE} stopOpacity={0} /><Stop offset="1" stopColor={BG_EDGE} stopOpacity={1} /></LinearGradient>
+          </Defs>
+          <Path d={`M${(width - iw) / 2 - 1} 0h${fade + 1}v${height}h-${fade + 1}Z`} fill={`url(#l${gid})`} />
+          <Path d={`M${(width + iw) / 2 - fade} 0h${fade + 1}v${height}h-${fade + 1}Z`} fill={`url(#r${gid})`} />
+        </Svg>
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: `rgba(0,0,0,${dim})` }]} />
+        {full ? children : <View style={{ flex: 1, width: esc.col, alignSelf: 'center' }}>{children}</View>}
+      </View>
+    );
+  }
   const box = { position: 'absolute' as const, left: 0, top: 0, width, height };
   return (
     <View style={[s.fill, style]}>
@@ -21,6 +45,9 @@ export function Bg({ src, dim = 0.35, children, style }: { src: ImageSourcePropT
     </View>
   );
 }
+/** Proporción de los fondos (720 × 1279) y color al que se funden en escritorio. */
+const BG_RATIO = 720 / 1279;
+const BG_EDGE = '#0a0908';
 
 /**
  * Recorte de una ilustración de personaje centrado en su cara.

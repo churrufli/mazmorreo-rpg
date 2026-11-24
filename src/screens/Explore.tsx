@@ -4,6 +4,8 @@ import { mdiCogOutline, mdiInformationOutline, mdiSwordCross, mdiHomeVariant, md
 import { LogModal } from '../ui/LogModal';
 import { Settings } from '../ui/Settings';
 import Svg, { Circle, ClipPath, Defs, G, Image as SvgImage, Path, Pattern, Polygon } from 'react-native-svg';
+import { useEscritorio } from '../ui/escritorio';
+import { useRuedaZoom } from '../ui/rueda';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
@@ -186,6 +188,7 @@ export function Explore() {
   const g = game!;
   const ins = useSafeAreaInsets();
   const win = useWindowDimensions();
+  const esc = useEscritorio();
   // Daño fuera de combate (trampas): número rojo sobre la carta pequeña de quien lo recibe.
   const hpBefore = useRef<Record<string, number>>({});
   const [hits, setHits] = useState<Record<string, { n: number; k: number }>>({});
@@ -346,6 +349,14 @@ export function Explore() {
     onPanResponderTerminate: () => setZoom(zoomNow.current),
   }), [pan, scale, setZoom]);
 
+  // Web en escritorio: la rueda del ratón acerca y aleja el mapa, con los mismos límites que el pellizco.
+  const wheelSave = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useRuedaZoom('mazmorreo-map', f => {
+    scale.setValue(Math.max(0.5, Math.min(2.2, zoomNow.current * f)));
+    clearTimeout(wheelSave.current);
+    wheelSave.current = setTimeout(() => setZoom(zoomNow.current), 300);
+  });
+
   // Punto del mapa que queda en el centro de la vista: el héroe (más el desplazamiento del dedo).
   const sx = view.w / 2, sy = view.h * 0.42;
   const cx = box.w / 2, cy = box.h / 2;
@@ -407,7 +418,7 @@ export function Explore() {
   const reach = useRef(() => ({ x: viewRef.current.w / 2 / zoomNow.current + S, y: viewRef.current.h / 2 / zoomNow.current + S })).current;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#000' }}>
+    <View style={{ flex: 1, backgroundColor: esc.on ? 'transparent' : '#000' }}>
       <View nativeID="mazmorreo-map" style={{ flex: 1, overflow: 'hidden' }} onLayout={e => setView({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...responder.panHandlers}>
         <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: box.w, height: box.h, transform: [{ translateX: tx }, { translateY: ty }, { scale }] }}>
           <Ground zone={g.zone} box={box} art={art} vis={vis} visKey={visKey} pass={pass} blocked={blocked} rooms={rooms} visited={g.visited} onTap={tapRef} />

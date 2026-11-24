@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { mdiAlertOutline, mdiDiceMultipleOutline, mdiPencilOutline, mdiShareVariantOutline, mdiTrashCanOutline } from '@mdi/js';
+import { useEscritorio } from '../ui/escritorio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG } from '../assets';
 import { C, F } from '../theme';
@@ -270,7 +271,8 @@ export function Create() {
   const [rolls, setRolls] = useState(0); // 0 = recomendados; 1 = tirada; 2 = ya repetida
   const [sel, setSel] = useState<Ability>();
   const ins = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
+  const { col: width, height, on: esc } = useEscritorio();
+  const gid = React.useId().replace(/[^a-zA-Z0-9]/g, '');
   const [sex, setSex] = useState<Sex>('man');
   // Primero hombre o mujer, con el guerrero o la guerrera (el autor 2026-11-05).
   const img = step === 0 ? heroImg('fighter', 'human', sex) : heroImg(cls, sp, sex);
@@ -312,20 +314,22 @@ export function Create() {
           <FadeIn key={img} from={0}><Crop img={img} w={width} h={artH} zoom={Math.max(1.75, (width * 1.5) / artH)} fy={0.2} /></FadeIn>
           <Svg width={width} height={artH} style={StyleSheet.absoluteFill} pointerEvents="none">
             <Defs>
-              <LinearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#0d0b09" stopOpacity="0" />
+              <LinearGradient id={`fade${gid}`} x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0" stopColor="#0d0b09" stopOpacity={esc ? 0.9 : 0} />
+                <Stop offset={esc ? 0.15 : 0} stopColor="#0d0b09" stopOpacity="0" />
                 <Stop offset="0.62" stopColor="#0d0b09" stopOpacity="0" />
                 <Stop offset="1" stopColor="#0d0b09" stopOpacity="1" />
               </LinearGradient>
-              <LinearGradient id="sides" x1="0" y1="0" x2="1" y2="0">
-                <Stop offset="0" stopColor="#0d0b09" stopOpacity="0.9" />
-                <Stop offset="0.14" stopColor="#0d0b09" stopOpacity="0" />
-                <Stop offset="0.86" stopColor="#0d0b09" stopOpacity="0" />
-                <Stop offset="1" stopColor="#0d0b09" stopOpacity="0.9" />
+              {/* En escritorio, la ilustración se funde del todo por los lados para no verse cortada. */}
+              <LinearGradient id={`sides${gid}`} x1="0" y1="0" x2="1" y2="0">
+                <Stop offset="0" stopColor={esc ? '#010101' : '#0d0b09'} stopOpacity={esc ? 1 : 0.9} />
+                <Stop offset={esc ? 0.24 : 0.14} stopColor={esc ? '#010101' : '#0d0b09'} stopOpacity="0" />
+                <Stop offset={esc ? 0.76 : 0.86} stopColor={esc ? '#010101' : '#0d0b09'} stopOpacity="0" />
+                <Stop offset="1" stopColor={esc ? '#010101' : '#0d0b09'} stopOpacity={esc ? 1 : 0.9} />
               </LinearGradient>
             </Defs>
-            <Rect x="0" y="0" width={width} height={artH} fill="url(#sides)" />
-            <Rect x="0" y="0" width={width} height={artH} fill="url(#fade)" />
+            <Rect x="0" y="0" width={width} height={artH} fill={`url(#sides${gid})`} />
+            <Rect x="0" y="0" width={width} height={artH} fill={`url(#fade${gid})`} />
           </Svg>
           {/* Motas también sobre el héroe. */}
           <Particles n={10} h={artH} />

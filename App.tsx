@@ -11,6 +11,7 @@ import { Defeat, Town, Victory } from './src/screens/Town';
 import { FadeIn, Message } from './src/ui/Overlays';
 import { Btn } from './src/ui/kit';
 import { OptionsButton } from './src/ui/Settings';
+import { useEscritorio } from './src/ui/escritorio';
 import * as storage from './src/storage';
 import { startSound } from './src/sonido';
 
@@ -25,6 +26,7 @@ const OWN_GEAR = new Set<string>(['title', 'game', 'victory']);
 
 function Router() {
   const ins = useSafeAreaInsets();
+  const esc = useEscritorio();
   const screen = useStore(s => s.screen);
   const game = useStore(s => s.game);
   const combat = useStore(s => s.combat);
@@ -97,7 +99,7 @@ function Router() {
         </Message>
       ) : null}
       {/* Pantallas sin rueda de ajustes propia: el botón de opciones flota arriba a la derecha. */}
-      {OWN_GEAR.has(screen) ? null : <OptionsButton style={{ position: 'absolute', top: ins.top + 8, right: 12, padding: 6, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.55)' }} />}
+      {OWN_GEAR.has(screen) ? null : <OptionsButton style={{ position: 'absolute', top: ins.top + 8, right: esc.on ? (esc.width - esc.col) / 2 + 12 : 12, padding: 6, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.55)' }} />}
     </>
   );
 }
