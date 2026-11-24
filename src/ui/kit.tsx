@@ -10,18 +10,21 @@ import { DUR, EASE, fxOn } from './movimiento';
 import { useEscritorio } from './escritorio';
 
 /** Fondo a pantalla completa: se amplía sin deformarse hasta llegar a todos los bordes (el autor 2026-11-02).
- * En la web apaisada (modo escritorio) la ilustración vertical se ajusta al alto, se amplía como mucho un 35 %
- * y se funde a negro por los lados; el contenido va en una columna centrada salvo con `full`. */
+ * En la web apaisada (modo escritorio) la ilustración vertical se ajusta al alto, se amplía como mucho un 60 %
+ * y se funde por los lados a negro con grano (opaco: no deja ver lo que hay debajo); el contenido va en una
+ * columna centrada salvo con `full`. */
 export function Bg({ src, dim = 0.35, children, style, full }: { src: ImageSourcePropType; dim?: number; children?: React.ReactNode; style?: ViewStyle; full?: boolean }) {
   // Tamaño explícito: en Android, una Image solo con absoluteFill puede salir a su tamaño natural.
   const { width, height } = useWindowDimensions();
   const esc = useEscritorio();
   const gid = React.useId().replace(/[^a-zA-Z0-9]/g, '');
+  const ratio = useRatio(src, esc.on);
   if (esc.on) {
-    const iw = Math.min(width, height * BG_RATIO * 1.35), ih = iw / BG_RATIO;
+    const iw = Math.min(width, height * ratio * BG_ZOOM), ih = iw / ratio;
     const fade = iw * 0.24;
     return (
-      <View style={[s.fill, { backgroundColor: 'transparent' }, style]}>
+      <View style={[s.fill, { backgroundColor: BG_EDGE }, style]}>
+        <Image source={IMG.grano} resizeMode="repeat" style={StyleSheet.absoluteFill} />
         <Image source={src} style={{ position: 'absolute', left: (width - iw) / 2, top: (height - ih) / 2, width: iw, height: ih }} resizeMode="cover" />
         <Svg width={width} height={height} style={StyleSheet.absoluteFill} pointerEvents="none">
           <Defs>
@@ -45,9 +48,22 @@ export function Bg({ src, dim = 0.35, children, style, full }: { src: ImageSourc
     </View>
   );
 }
-/** Proporción de los fondos (720 × 1279) y color al que se funden en escritorio. */
-const BG_RATIO = 720 / 1279;
+/** Ampliación máxima de los fondos en escritorio, color al que se funden y proporción si aún no se conoce. */
+const BG_ZOOM = 1.6;
 const BG_EDGE = '#0a0908';
+const BG_RATIO = 720 / 1279;
+const ratios: Record<string, number> = {};
+/** Proporción ancho/alto de una ilustración (solo hace falta en escritorio). */
+function useRatio(src: ImageSourcePropType, on: boolean) {
+  const uri = (src as { uri?: string })?.uri;
+  const [r, setR] = useState(uri ? ratios[uri] ?? BG_RATIO : BG_RATIO);
+  useEffect(() => {
+    if (!on || !uri) return;
+    if (ratios[uri]) { setR(ratios[uri]); return; }
+    Image.getSize(uri, (w, h) => { ratios[uri] = w / h; setR(w / h); }, () => undefined);
+  }, [on, uri]);
+  return r;
+}
 
 /**
  * Recorte de una ilustración de personaje centrado en su cara.

@@ -10,6 +10,7 @@ import type { Roll } from '../engine/combat';
 import { speaker } from '../engine/aventuras';
 import { dado } from '../sonido';
 import { ITEMS } from '../data/srd';
+import { useEscritorio } from './escritorio';
 import { DUR, EASE, fxFull, fxOn } from './movimiento';
 
 /** Retrato: recorte de la cara de la ilustración de la carta. */
@@ -194,6 +195,7 @@ export function Dialogue({ lines, hero, onDone, met, onMeet }: {
 }) {
   const [i, setI] = useState(0);
   const [n, setN] = useState(0);
+  const esc = useEscritorio();
   const line = lines[i];
   const full = line?.text ?? '';
   // Lo conocido al abrir el diálogo: así la línea no cambia de formato al apuntarse.
@@ -233,7 +235,7 @@ export function Dialogue({ lines, hero, onDone, met, onMeet }: {
   }
   return (
     <Pressable style={st.dlgWrap} onPress={tap} accessibilityLabel="Continuar diálogo">
-      <FadeIn from={40} style={{ alignSelf: 'stretch' }}>
+      <FadeIn from={40} style={esc.on ? { alignSelf: 'center', width: esc.col } : { alignSelf: 'stretch' }}>
       <Panel style={st.dlg}>
         <View style={{ flexDirection: 'row' }}>
           {sp.img ? <Portrait img={sp.img} /> : null}
@@ -282,6 +284,8 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
   const pop = useRef(new Animated.Value(0)).current;
   const [shown, show] = useHold(hold);
   const { height } = useWindowDimensions();
+  // Escritorio: avisos estrechos, no del ancho de la columna.
+  const esc = useEscritorio();
   const steps = (img2 ? 1 : 0) + rolls.length + 1;
   // Sin pasos animados (victoria, avisos) el texto sale desde el principio, sin esperar a ningún temporizador.
   const [k, setK] = useState(steps === 1 ? 1 : 0);
@@ -301,7 +305,7 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
   // Las líneas del final entran en cascada (muy rápida: el texto se puede leer enseguida).
   const step = fxOn() ? 70 : 0;
   const panel = (
-    <Animated.View style={{ width: '88%', opacity: pop, transform: [{ scale }] }}>
+    <Animated.View style={{ width: esc.on ? Math.min(480, esc.col * 0.88) : '88%', opacity: pop, transform: [{ scale }] }}>
       {celebrate && fxOn() ? <Rays /> : null}
       <Pressable onPress={() => setK(steps)} accessibilityLabel={title}>
         <Panel style={st.msgPanel}>

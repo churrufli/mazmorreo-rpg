@@ -57,7 +57,8 @@ export function Combat() {
   // Escritorio (web apaisada ancha): tablero ancho arriba y botones abajo en la columna central.
   const esc = useEscritorio();
   const landscape = width >= 700 && width > height && !esc.on;
-  const controlsWidth = esc.on ? esc.col : landscape ? Math.min(420, width * 0.48) : width;
+  // En escritorio los botones van en tres columnas para que quepan más sin desplazar.
+  const controlsWidth = esc.on ? Math.min(width - 24, 880) : landscape ? Math.min(420, width * 0.48) : width;
   const boardWidth = esc.on ? Math.min(width, Math.max(esc.col, height * 1.25)) : landscape ? width - controlsWidth : width;
   const lastCommit = useRef(0);
   // Acción seleccionada: el primer toque la explica (y marca objetivos); el segundo, o tocar un objetivo, la ejecuta.
@@ -515,8 +516,8 @@ export function Combat() {
                 ))}
               </View>
             ) : null}
-            <ScrollView testID="combat-action-scroll" style={{ flex: 1 }} contentContainerStyle={st.actionGrid} nestedScrollEnabled>
-              {grouped.map(a => <Btn key={a.id} small combatTone="child" icon={COST_ICON[a.cost]} disabled={!ready} onInfo={() => choose(a, true)} onLongPress={() => choose(a, true)} primary={sel?.id === a.id || tip?.a?.id === a.id} label={a.label.toLocaleUpperCase('es-ES')} off={!!a.off} onPress={() => choose(a)} style={st.gridBtn} />)}
+            <ScrollView testID="combat-action-scroll" style={{ flex: 1 }} contentContainerStyle={[st.actionGrid, esc.on && { justifyContent: 'flex-start', columnGap: 4 }]} nestedScrollEnabled>
+              {grouped.map(a => <Btn key={a.id} small combatTone="child" icon={COST_ICON[a.cost]} disabled={!ready} onInfo={() => choose(a, true)} onLongPress={() => choose(a, true)} primary={sel?.id === a.id || tip?.a?.id === a.id} label={a.label.toLocaleUpperCase('es-ES')} off={!!a.off} onPress={() => choose(a)} style={esc.on ? { ...st.gridBtn, width: Math.floor((controlsWidth - 28) / 3) } : st.gridBtn} />)}
             </ScrollView>
             <View style={[st.fixedRow, lit('fixed')]}>
               {dodgeAct ? <Btn small combatTone="child" icon={COST_ICON[dodgeAct.cost]} disabled={!ready} onInfo={() => choose(dodgeAct, true)} onLongPress={() => choose(dodgeAct, true)} primary={tip?.a?.id === dodgeAct.id} label="ESQUIVAR" tight off={!!dodgeAct.off} onPress={() => choose(dodgeAct)} style={st.fixedBtn} /> : null}
@@ -700,19 +701,22 @@ function EncounterIntro({ cb, onDone }: { cb: ReturnType<typeof useStore.getStat
   const foes = cb.units.filter(u => u.side === 'enemy');
   // Con los mismos nombres que las cartas, y los repetidos agrupados («dos enjambres de murciélagos»).
   const foeText = foeList(foes.map(f => f.name));
+  // Escritorio: cuadros estrechos, como los avisos.
+  const esc = useEscritorio();
+  const boxW = esc.on ? Math.min(480, esc.col * 0.88) : '86%';
   return (
     <View style={st.introBg}>
       <Animated.Text style={[st.introTitle, { opacity: v, transform: [{ scale }] }]}>¡Combate!</Animated.Text>
       <FadeIn delay={500}><Text style={st.introSub}>{foeText}</Text></FadeIn>
       {cb.goal ? (
-        <FadeIn delay={700} style={{ width: '86%', marginBottom: 10 }}>
+        <FadeIn delay={700} style={{ width: boxW, marginBottom: 10 }}>
           <View style={st.goalIntro}>
             <Icon path={mdiBullseyeArrow} size={22} color={C.goldHi} />
             <Text style={st.goalIntroTxt}>Objetivo opcional: {cb.goal.g.text}</Text>
           </View>
         </FadeIn>
       ) : null}
-      <FadeIn delay={900} style={{ width: '86%' }}>
+      <FadeIn delay={900} style={{ width: boxW }}>
         <Panel>
           <Text style={st.initTitle}>Iniciativa</Text>
           {order.map((u, i) => {
