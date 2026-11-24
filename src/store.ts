@@ -74,7 +74,7 @@ interface State {
   swapOut: (charId: string) => void;
 }
 
-const isDev = () => storage.getDev();
+const devOpt = storage.getDevOpt;
 
 /** Sale al pueblo de la aventura; al volver se aparece en esta misma casilla. */
 function enterTown(g: Game) {
@@ -192,14 +192,14 @@ export const useStore = create<State>((set, get) => {
       // Tocar la escalera de entrada estando encima: se vuelve a la zona anterior.
       if (hkey(h) === hkey(game.pos)) { if (atEntrance(game)) get().goBack(); return; }
       // Modo desarrollador: salto directo; solo cuenta lo que haya en la casilla de destino.
-      if (isDev()) {
+      if (devOpt('salto')) {
         if (passable(game, game.zone).has(hkey(h))) mutate(g => ({ walking: [], goal: undefined, ...advance(g, step(g, h, true)) }), true);
         return;
       }
-      const p = findPath(game, h, isDev());
+      const p = findPath(game, h, devOpt('mapa'));
       if (p?.length) { set({ walking: p, goal: undefined }); return; }
       // Casilla en la oscuridad: se avanza hacia ella hasta llegar, encontrar algo o no poder seguir.
-      const t = pathToward(game, h, isDev());
+      const t = pathToward(game, h, devOpt('mapa'));
       if (t?.length) set({ walking: t, goal: h });
     },
     walkStep: () => {
@@ -220,7 +220,7 @@ export const useStore = create<State>((set, get) => {
         if (hkey(g.pos) !== hkey(h)) return { walking: [], goal: undefined };
         const goal = get().goal;
         if (!goal || hkey(goal) === hkey(g.pos)) return { walking: rest, goal: rest.length ? goal : undefined };
-        const p = pathToward(g, goal, isDev());
+        const p = pathToward(g, goal, devOpt('mapa'));
         return p?.length ? { walking: p } : { walking: [], goal: undefined };
       });
     },
@@ -276,10 +276,10 @@ export const useStore = create<State>((set, get) => {
       }, cb.result === 'win');
     },
     edit: (fn, save = false) => mutate(g => { fn(g); }, save),
-    devWin: () => mutate((g, cb) => { if (cb) devWin(g, cb); }),
+    devWin: () => mutate((g, cb) => { if (cb && devOpt('ganar')) devWin(g, cb); }),
     devPass: () => {
       const ev = get().queue[0];
-      if (ev?.kind !== 'msg' || !ev.pass || !isDev()) return;
+      if (ev?.kind !== 'msg' || !ev.pass || !devOpt('superar')) return;
       mutate(g => advance(g, [...devPass(g, ev.pass!), ...get().queue.slice(1)]), true);
     },
     goBack: () => {
@@ -337,7 +337,7 @@ export const useStore = create<State>((set, get) => {
       g.town = t;
       g.log.push(`— Viajáis a ${TOWNS[t].name} —`);
       // Modo desarrollador: nivel, compañeros y equipo como se llegaría jugando a esa aventura (también hacia atrás).
-      if (isDev()) g.log.push(...devSetup(g, TOWNS[t].adv));
+      if (devOpt('nivel') || devOpt('cero')) g.log.push(...devSetup(g, TOWNS[t].adv, devOpt('nivel'), devOpt('cero')));
     }, true),
     drop: (charId, uid) => mutate(g => {
       const c = g.party.find(x => x.id === charId)!;
@@ -351,7 +351,7 @@ export const useStore = create<State>((set, get) => {
     sceneChoose: (i, charId, force20) => {
       const ev = get().queue[0];
       if (ev?.kind !== 'scene') return;
-      mutate(g => advance(g, [...chooseOption(g, ev.id, i, charId, isDev() && force20), ...get().queue.slice(1)]), true);
+      mutate(g => advance(g, [...chooseOption(g, ev.id, i, charId, devOpt('escenas') && force20), ...get().queue.slice(1)]), true);
     },
     sceneLeave: () => {
       const ev = get().queue[0];

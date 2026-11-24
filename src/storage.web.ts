@@ -23,6 +23,9 @@ export const getZoom = () => { const v = Number(get('opt:zoom')); return v >= 0.
 export const setZoom = (v: number) => set('opt:zoom', String(v));
 export const getDev = () => get('opt:dev') === 'on';
 export const setDev = (on: boolean) => set('opt:dev', on ? 'on' : 'off');
+export type DevOpt = 'mapa' | 'salto' | 'superar' | 'escenas' | 'ganar' | 'oro' | 'viajar' | 'nivel' | 'cero';
+export const getDevOpt = (k: DevOpt) => getDev() && get('opt:dev:' + k) !== 'off';
+export const setDevOpt = (k: DevOpt, on: boolean) => set('opt:dev:' + k, on ? 'on' : 'off');
 export const seenAction = (k: string) => get('seen:' + k) === '1';
 export const markAction = (k: string) => set('seen:' + k, '1');
 

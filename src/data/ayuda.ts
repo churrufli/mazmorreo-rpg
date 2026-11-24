@@ -78,6 +78,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Al tocar una carta en combate, cada estado dice cuánto le dura o cómo se le pasa: turnos que le quedan ardiendo, la CD para soltarse, quién mantiene la concentración…',
     'El diario muestra los personajes conocidos de cada aventura y, en Hondaroca, los preparativos que ya tenéis contra Maese Orvane.',
     'Música nueva para el bosque y música propia para la montaña.',
+    'Modo desarrollador: en Ajustes, cada ayuda tiene su interruptor (mapa entero, teletransporte, superar obstáculos y pruebas, ganar combate, oro infinito, viajar, subir de nivel y empezar de cero). Al activarlo, todas encendidas.',
     'Los mapas de las cuatro aventuras tienen casi cien decorados nuevos que cuentan las salas: entibados, montacargas, nichos funerarios, nidos, juncos, tronos, jaulas…',
   ] },
   { version: 'v0.147', items: [

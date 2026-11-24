@@ -13,7 +13,7 @@ import { LogModal } from '../ui/LogModal';
 import { Bg, Btn } from '../ui/kit';
 import { FaceImage } from '../ui/FaceImage';
 import { fxFull } from '../ui/movimiento';
-import { getDev, getFlag, markAction, seenAction } from '../storage';
+import { getDevOpt, getFlag, markAction, seenAction } from '../storage';
 import { D20, FadeIn, Message, MiniDie, revealMs, rollMs } from '../ui/Overlays';
 import { CLASSES, DmgType, ITEMS } from '../data/srd';
 import { Settings } from '../ui/Settings';
@@ -448,7 +448,7 @@ export function Combat() {
               <Text style={st.fleeTxt}>HUIR</Text>
             </Pressable>
           ) : null}
-          {!auto && !cb.result && getDev() ? <Pressable accessibilityRole="button" accessibilityLabel="GANAR COMBATE" onPress={devWin} style={st.devControl}><Text style={st.devText}>GANAR COMBATE</Text></Pressable> : null}
+          {!auto && !cb.result && getDevOpt('ganar') ? <Pressable accessibilityRole="button" accessibilityLabel="GANAR COMBATE" onPress={devWin} style={st.devControl}><Text style={st.devText}>GANAR COMBATE</Text></Pressable> : null}
           <Pressable onPress={() => setOpts(true)} accessibilityRole="button" accessibilityLabel="Ajustes" hitSlop={12} style={{ marginLeft: 4 }}>
             <Icon path={mdiCogOutline} size={22} />
           </Pressable>

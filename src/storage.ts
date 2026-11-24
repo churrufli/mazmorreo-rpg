@@ -43,6 +43,10 @@ export const getZoom = () => { const v = Number(kv.getString('opt:zoom')); retur
 export const setZoom = (v: number) => kv.set('opt:zoom', String(v));
 export const getDev = () => kv.getString('opt:dev') === 'on';
 export const setDev = (on: boolean) => kv.set('opt:dev', on ? 'on' : 'off');
+/** Cada efecto del modo desarrollador se puede apagar en Ajustes; sin tocar, todos encendidos. */
+export const getDevOpt = (k: DevOpt) => getDev() && kv.getString(`opt:dev:${k}`) !== 'off';
+export const setDevOpt = (k: DevOpt, on: boolean) => kv.set(`opt:dev:${k}`, on ? 'on' : 'off');
+export type DevOpt = 'mapa' | 'salto' | 'superar' | 'escenas' | 'ganar' | 'oro' | 'viajar' | 'nivel' | 'cero';
 
 /** Acciones de combate cuya explicación ya ha visto cada personaje (la primera vez sale sola). */
 export const seenAction = (k: string) => kv.getString(`seen:${k}`) === '1';

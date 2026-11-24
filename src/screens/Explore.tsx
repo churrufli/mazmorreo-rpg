@@ -23,7 +23,7 @@ import { fxFull, useFxMode } from '../ui/movimiento';
 import { AmbienteAgua, AmbienteAire, AmbienteSuelo, Vineta, useAmbientActive } from '../ui/ambiente';
 import { ElementoMapa } from '../ui/ElementoMapa';
 import { elemBlocked, elemPasses, elemState, zoneElements } from '../engine/elementos';
-import { getDev } from '../storage';
+import { getDevOpt } from '../storage';
 import { MAX_ITEMS, isDown, needsRest, sightRadius } from '../engine/rules';
 import { FeatPicker } from '../ui/FeatPicker';
 
@@ -217,8 +217,9 @@ export function Explore() {
   const X = (x: number) => x - box.minX;
   const Y = (y: number) => y - box.minY;
 
-  const dev = getDev();
+  const dev = getDevOpt('mapa');
   const vis = useMemo(() => visibleCells(g, dev), [g, dev]);
+  const devPasar = getDevOpt('superar');
   const pass = useMemo(() => passable(g, g.zone), [g]);
   // Las rejas cerradas se dibujan como suelo con la reja encima, pero no se pisan.
   const blocked = useMemo(() => {
@@ -674,7 +675,7 @@ export function Explore() {
       {/* Resultado de una escena: su ilustración de fondo, entera, en vez de una imagen pequeña recortada (el autor 2026-11-06). */}
       {head?.kind === 'msg' ? (
         <Message key={`m${queue.length}:${head.title}:${head.lines[0]}`} {...head} {...(head.img?.startsWith('escena_') && !head.img2 ? { img: undefined, bg: head.img, low: true } : {})} hold={head.bg ? HOLD_MS : 0} onDone={next}>
-          {head.pass && dev ? <><Btn primary label="Continuar" onPress={next} /><Btn small label="Superar" sub="Modo desarrollador" onPress={devPass} /></> : undefined}
+          {head.pass && devPasar ? <><Btn primary label="Continuar" onPress={next} /><Btn small label="Superar" sub="Modo desarrollador" onPress={devPass} /></> : undefined}
         </Message>
       ) : null}
       {head?.kind === 'trap' ? (
