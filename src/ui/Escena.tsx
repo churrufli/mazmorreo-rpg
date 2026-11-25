@@ -38,7 +38,7 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
   return (
     // Pantalla entera: de fondo, la ilustración de la escena (o la de la zona si no tiene propia); el texto, abajo.
     <View style={StyleSheet.absoluteFill}>
-      <Bg src={IMG[s.img ?? g.zoneBg ?? zoneArt(g.zone).combat]} dim={0.15}>
+      <Bg src={IMG[s.img ?? g.zoneBg ?? zoneArt(g.zone).combat]} dim={0.15} wash>
       {!shown ? <Pressable style={{ flex: 1 }} onPress={show} accessibilityLabel="Continuar" /> : (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end', padding: 12, paddingBottom: ins.bottom + 12, paddingTop: ins.top + 40 }}>
       {/* El cuadro sube al aparecer y su contenido cambia con un fundido corto (pregunta ↔ quién lo intenta). */}

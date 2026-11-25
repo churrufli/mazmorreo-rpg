@@ -254,7 +254,7 @@ export function Dialogue({ lines, hero, onDone, met, onMeet }: {
 export interface MessageProps {
   title: string; lines: string[]; table?: [string, string][]; intro?: string; img?: ImgKey; img2?: ImgKey; /** Objetos (id de ITEMS: al tocarlos se lee su descripción) o imágenes sueltas. */ items?: string[]; portrait?: ImgKey; rolls?: ShownRoll[];
   bg?: ImgKey; onDone?: () => void; children?: React.ReactNode;
-  /** Victoria: rayos de luz tras el cuadro, título con un golpe de escala y las líneas apareciendo en cascada. */
+  /** Victoria: título con un golpe de escala y las líneas apareciendo en cascada. */
   celebrate?: boolean;
   /** Con fondo: el cuadro abajo, para ver la ilustración entera (resultado de una escena). */
   low?: boolean;
@@ -306,7 +306,6 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
   const step = fxOn() ? 70 : 0;
   const panel = (
     <Animated.View style={{ width: esc.on ? Math.min(480, esc.col * 0.88) : '88%', opacity: pop, transform: [{ scale }] }}>
-      {celebrate && fxOn() ? <Rays /> : null}
       <Pressable onPress={() => setK(steps)} accessibilityLabel={title}>
         <Panel style={st.msgPanel}>
           {portrait ? <View style={{ alignSelf: 'center', marginBottom: 6 }}><Portrait img={portrait} size={84} /></View> : null}
@@ -348,7 +347,7 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
     </Animated.View>
   );
   const wait = <Pressable style={StyleSheet.absoluteFill} onPress={show} accessibilityLabel="Continuar" />;
-  if (bg) return <View style={StyleSheet.absoluteFill}><Bg src={IMG[bg]} dim={low ? 0.15 : 0.3}>{shown ? <View style={[st.center0, low && { justifyContent: 'flex-end', paddingBottom: 40 }]}>{panel}</View> : wait}</Bg></View>;
+  if (bg) return <View style={StyleSheet.absoluteFill}><Bg src={IMG[bg]} dim={low ? 0.15 : 0.3} wash>{shown ? <View style={[st.center0, low && { justifyContent: 'flex-end', paddingBottom: 40 }]}>{panel}</View> : wait}</Bg></View>;
   if (!shown) return wait;
   return <View style={st.center}>{panel}</View>;
 }
@@ -370,27 +369,6 @@ function TitlePunch({ children }: { children: React.ReactNode }) {
   const v = useRef(new Animated.Value(fxOn() ? 0 : 1)).current;
   useEffect(() => { if (fxOn()) Animated.timing(v, { toValue: 1, duration: 520, delay: 120, easing: EASE.settle, useNativeDriver: true }).start(); }, [v]);
   return <Animated.View style={{ opacity: v.interpolate({ inputRange: [0, 0.3], outputRange: [0, 1], extrapolate: 'clamp' }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1.5, 1] }) }] }}>{children}</Animated.View>;
-}
-
-/** Rayos de luz detrás del cuadro de victoria: se abren, giran un poco una sola vez y se quedan tenues. */
-function Rays() {
-  const v = useRef(new Animated.Value(0)).current;
-  useEffect(() => { Animated.timing(v, { toValue: 1, duration: 1600, easing: EASE.out, useNativeDriver: true }).start(); }, [v]);
-  // Más grandes que la pantalla: las puntas de los rayos salen por los bordes y no se ven cortadas.
-  const { width, height } = useWindowDimensions();
-  const S = Math.ceil(Math.hypot(width, height) * 2.2);
-  return (
-    <Animated.View pointerEvents="none" style={{ position: 'absolute', alignSelf: 'center', top: '50%', width: S, height: S, marginTop: -S / 2,
-      opacity: v.interpolate({ inputRange: [0, 0.25, 1], outputRange: [0, fxFull() ? 0.5 : 0.3, 0.22] }),
-      transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }, { rotate: v.interpolate({ inputRange: [0, 1], outputRange: ['-12deg', fxFull() ? '10deg' : '-12deg'] }) }] }}>
-      <Svg width={S} height={S} viewBox="0 0 100 100">
-        {Array.from({ length: 14 }, (_, i) => {
-          const a = (i / 14) * Math.PI * 2;
-          return <Polygon key={i} points={`50,50 ${50 + Math.cos(a - 0.07) * 50},${50 + Math.sin(a - 0.07) * 50} ${50 + Math.cos(a + 0.07) * 50},${50 + Math.sin(a + 0.07) * 50}`} fill={i % 2 ? '#e0b56e' : '#fff1c4'} />;
-        })}
-      </Svg>
-    </Animated.View>
-  );
 }
 
 /** Destellos dorados que saltan una vez alrededor de un objeto (cofre que se abre). */
@@ -439,13 +417,7 @@ const calcOf = (r: Roll) => {
 
 /** Dado de veinte caras animado para las tiradas importantes. */
 /** Lo que tarda en irse de la pantalla una tirada (giro, pausa y fundido). */
-/** Milisegundos hasta que se ve el resultado de la tirada: el d20 ya parado y los dados de daño en su cara final. */
-export const revealMs = (r: Roll) => {
-  const spin = r.enemy ? 320 : 500;
-  if (!r.dice?.length) return r.d20 ? spin : 0;
-  const start = r.d20 === 0 ? 0 : spin;
-  return Math.max(...r.dice.map((d, i) => start + i * 90 + (d.f === 6 ? 750 : 600)));
-};
+export { revealMs } from './ritmos';
 export const rollMs = (r: Roll) => (r.enemy ? 320 : 500) + (r.enemy ? 900 : 650) + (r.dice ? 700 : 0) + 250;
 
 export function D20({ roll }: { roll?: Roll }) {

@@ -59,8 +59,10 @@ export function Combat() {
   const esc = useEscritorio();
   const landscape = width >= 700 && width > height && !esc.on;
   // En escritorio los botones van en tres columnas para que quepan más sin desplazar.
-  const controlsWidth = esc.on ? Math.min(width - 24, 880) : landscape ? Math.min(420, width * 0.48) : width;
-  const boardWidth = esc.on ? Math.min(width, Math.max(esc.col, height * 1.25)) : landscape ? width - controlsWidth : width;
+  // En escritorio, los botones de abajo miden lo mismo que las cajas del campo (tablero menos su margen de 6 px por lado).
+  const deskBoard = Math.min(width, Math.max(esc.col, height * 1.25));
+  const controlsWidth = esc.on ? deskBoard - 12 : landscape ? Math.min(420, width * 0.48) : width;
+  const boardWidth = esc.on ? deskBoard : landscape ? width - controlsWidth : width;
   const lastCommit = useRef(0);
   // Acción seleccionada: el primer toque la explica (y marca objetivos); el segundo, o tocar un objetivo, la ejecuta.
   const [sel, setSel] = useState<Action>();

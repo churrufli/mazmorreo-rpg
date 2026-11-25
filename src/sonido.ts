@@ -6,6 +6,7 @@ import type { Combat } from './engine/combat';
 import type { Game } from './engine/game';
 import { DmgType, ITEMS } from './data/srd';
 import { bossEncounter } from './engine/dungeon';
+import { revealMs } from './ui/ritmos';
 
 /** Efectos de sonido y ambiente. Los archivos están en android/app/src/main/res/raw (OGG). */
 
@@ -122,10 +123,15 @@ const MAGIC: Partial<Record<DmgType, Fx>> = { fuego: 'fireball', frío: 'ice_spe
 const SLIMY = ['Zombie', 'Shambling Mound'];
 
 /** Sonidos de un paso del combate: ataque, golpe o fallo, conjuro, curación, crítico, final. */
+// El golpe de la carta espera a que se vea la tirada (Combat.tsx); su sonido, también.
+let revealAt = 0;
+const later = (f: () => void) => { const t = revealAt - Date.now(); if (t > 0) setTimeout(f, t); else f(); };
+
 function combatSounds(a: Combat | undefined, b: Combat) {
   if (!a) { sfx('monster_growl', 0.7); return; }
+  if (b.roll && b.roll.id !== a.roll?.id) revealAt = Date.now() + revealMs(b.roll);
   const sw = b.swing;
-  if (sw && sw.id !== a.swing?.id) {
+  if (sw && sw.id !== a.swing?.id) later(() => {
     const from = b.units.find(u => u.key === sw.from);
     const hit = b.pops?.[sw.to] && b.pops[sw.to].id !== a.pops?.[sw.to]?.id;
     if (hit && from?.side === 'enemy') vibra(40);
@@ -134,11 +140,11 @@ function combatSounds(a: Combat | undefined, b: Combat) {
     else if (!hit) sfx('sword_hit_shield');
     else if (from?.side === 'enemy' && !from.weapon) sfx(SLIMY.includes(from.mon ?? '') ? 'slime' : 'punch');
     else sfx('sword_swing');
-  }
+  });
   for (const [k, f] of Object.entries(b.fx ?? {})) {
     if (a.fx?.[k]?.id === f.id) continue;
-    if (f.kind === 'heal') sfx('heal');
-    else if (f.kind === 'crit') { sfx('explosion_big', 0.35); vibra(90); }
+    if (f.kind === 'heal') later(() => sfx('heal'));
+    else if (f.kind === 'crit') later(() => { sfx('explosion_big', 0.35); vibra(90); });
   }
   if (b.goal?.status === 'ok' && a.goal?.status !== 'ok') sfx('confirm');
   if (b.result && !a.result) sfx(b.result === 'lose' ? 'ui_derrota' : b.result === 'win' ? 'ui_victoria_corta' : 'error');
