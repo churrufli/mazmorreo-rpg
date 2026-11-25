@@ -6,6 +6,7 @@ import { chooseOption, leaveScene, sceneSpent, spentMsg } from './engine/escenas
 import { allyCap, endAdventure, sendToInn } from './engine/posada';
 import { migrateElements } from './engine/elementos';
 import { guide } from './engine/guia';
+import { stabilize } from './engine/muerte';
 import { markReturn, react, atEntrance, atTownRest, backToPrevious, previousZone, rereadAt, bossEncounter, devPass, doRest, dropKey, enterZone, Ev, findPath, giveItem, storeTrophies, Hex, hkey, passable, pathToward, step, trap, logEvs } from './engine/dungeon';
 import { ADVS, ADV_LIST, AdvId, TOWNS, TownId, advOf, firstZone, wonAdv } from './engine/aventuras';
 import { ITEMS } from './data/srd';
@@ -65,6 +66,8 @@ interface State {
   travel: (t: TownId) => void;
   drop: (charId: string, uid: string) => void;
   pickUp: () => void;
+  /** Socorrer a un caído en el mapa: un compañero intenta estabilizarle (Medicina CD 10). */
+  stabilize: (charId: string) => void;
   /** Escena con opciones: elegir una (y quién tira) o dejarla para luego. */
   sceneChoose: (i: number, charId?: string, force20?: boolean) => void;
   sceneLeave: () => void;
@@ -370,6 +373,10 @@ export const useStore = create<State>((set, get) => {
         return advance(g, [{ kind: 'msg', title: 'Vuelve a la posada', portrait: c.img, lines }, ...get().queue.slice(1)]);
       }, true);
     },
+    stabilize: charId => mutate(g => {
+      const ev = stabilize(g, charId);
+      return ev ? advance(g, [ev, ...get().queue]) : undefined;
+    }, true),
     pickUp: () => mutate(g => {
       const k = dropKey(g);
       const left = [];
