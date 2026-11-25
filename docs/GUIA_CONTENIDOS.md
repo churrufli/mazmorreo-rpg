@@ -49,7 +49,7 @@ Rocas, puertas, verjas, puentes, palancas o barreras que cambian de estado se de
 - `use`: mecanismo que se acciona al pisarlo; puede ser reversible y cambiar otros elementos con `set`.
 - Un elemento no puede cortar el camino a la salida, la llave ni el jefe, ni encerrar al grupo: lo comprueba `src/engine/elementos.test.ts`.
 - Su casilla debe ser suelo libre en el plano (sin otra marca) y la historia no debe depender de cómo se dibuje.
-- Imágenes de cada estado: `docs/arte/elementos-dinamicos-pendientes.md`.
+- Imágenes de cada estado: `docs/arte/elementos-dinamicos-pendientes.md` (las 11 actuales ya están en el juego).
 
 ## 4. Equilibrio de encuentros
 
@@ -66,7 +66,9 @@ Rocas, puertas, verjas, puentes, palancas o barreras que cambian de estado se de
 npm ci
 npm run validate:adventures
 npx tsc --noEmit
+npm run lint
 npm test -- --runInBand
+npm run web:build
 ```
 
 Para el estudio opcional con bot:
@@ -79,4 +81,4 @@ Verificar también en Android la legibilidad de escenas, las consecuencias de el
 
 ## 6. APK y versiones
 
-El workflow `.github/workflows/android.yml` se inicia **manualmente** con **Run workflow**. Compila y publica un APK de prueba con nombre `mazmorreo-N.apk` y etiqueta `v0.N`, siendo `N` el número de ejecución. Fusionar una PR no compila automáticamente el APK.
+El workflow `.github/workflows/android.yml` se inicia **manualmente** con **Run workflow**. Compila y publica un APK de prueba con nombre `mazmorreo-N.apk` y etiqueta `v0.N`, siendo `N` el número de ejecución. Fusionar una PR no compila automáticamente el APK, pero sí publica la web en GitHub Pages.

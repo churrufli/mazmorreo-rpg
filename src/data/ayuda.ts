@@ -29,8 +29,8 @@ export const COMO_FUNCIONA: { icon: string; title: string; text: string[] }[] = 
     'Algunos cofres están tras un obstáculo (un pozo, una telaraña, una losa…). Si alguien lleva el objeto que hace falta (cuerda, antorcha, palanqueta, fuego de alquimista, agua bendita…), se usa solo; si no, el grupo te dice qué necesita.',
   ] },
   { icon: mdiMapOutline, title: 'El reino', text: [
-    'Desde la Puerta del pueblo se viaja por el reino. Valdescarcha lleva a Hondaroca; Vegaumbría, a El Corazón Hueco (se abre al vencer en Hondaroca), y Cumbrenieve, a El Invierno del Dragón (se abre al vencer en el bosque).',
-    'Cada aventura tiene un nivel máximo: 2 en Hondaroca, 3 en el bosque y 4 en la montaña. Dentro de ella nadie lo pasa (los PX de más no cuentan) y, al entrar en la sala del jefe, quien no lo tenga sube a él.',
+    'Desde la Puerta del pueblo se viaja por el reino. Valdescarcha lleva a Hondaroca; Vegaumbría, a El Corazón Hueco (se abre al vencer en Hondaroca), Cumbrenieve, a El Invierno del Dragón (se abre al vencer en el bosque), y Arenaroja, a La Tumba de los Reyes Serpiente (se abre al vencer a Vharzûl).',
+    'Cada aventura tiene un nivel máximo: 2 en Hondaroca, 3 en el bosque, 4 en la montaña y 5 en la tumba. Dentro de ella nadie lo pasa (los PX de más no cuentan) y, al entrar en la sala del jefe, quien no lo tenga sube a él.',
     'La salida de cada zona está cerrada: su llave se ve en el mapa, en la sala más alejada. En la primera zona, la puerta de entrada lleva al pueblo.',
   ] },
   { icon: mdiAccountGroupOutline, title: 'Compañeros y afinidad', text: [
@@ -80,6 +80,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Música nueva para el bosque y música propia para la montaña.',
     'Modo desarrollador: en Ajustes, cada ayuda tiene su interruptor (mapa entero, teletransporte, superar obstáculos y pruebas, ganar combate, oro infinito, viajar, subir de nivel y empezar de cero). Al activarlo, todas encendidas.',
     'Los mapas de las cuatro aventuras tienen casi cien decorados nuevos que cuentan las salas: entibados, montacargas, nichos funerarios, nidos, juncos, tronos, jaulas…',
+    'Web en el ordenador: con la ventana apaisada, el juego pasa a un modo escritorio con la interfaz en una columna central, pueblo y tienda en dos columnas, el registro del combate al lado y atajos de teclado en combate (1-9 para las acciones, Esc para cancelar).',
   ] },
   { version: 'v0.147', items: [
     'Cuarta aventura: La Tumba de los Reyes Serpiente. Se abre al vencer a Vharzûl. Desde Arenaroja, en las Colinas de Ocre, bajáis a una tumba de hombres serpiente en busca de los pastores y caravaneros desaparecidos.',

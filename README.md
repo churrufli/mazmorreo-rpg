@@ -27,7 +27,7 @@
 
 El juego está **pensado para jugar en español** y se dirige sobre todo a quienes juegan a **Dragones y Mazmorras en español**: textos, reglas y nombres están en castellano, sin traducciones a otros idiomas por ahora.
 
-El sistema parte de las reglas de quinta edición del **SRD 5.2.1** (2024), adaptadas a una experiencia táctil y a grupos de uno a cuatro personajes. Es un proyecto independiente, en desarrollo, y los APK publicados son **versiones de prueba**. La versión web es para probarlo en el navegador; la experiencia de referencia es Android con el móvil en vertical (el modo horizontal queda para más adelante).
+El sistema parte de las reglas de quinta edición del **SRD 5.2.1** (2024), adaptadas a una experiencia táctil y a grupos de uno a cuatro personajes. Es un proyecto independiente, en desarrollo, y los APK publicados son **versiones de prueba**. La experiencia de referencia es Android con el móvil en vertical. La versión web se juega igual en el móvil y, en una ventana apaisada de ordenador, pasa a un **modo escritorio** propio.
 
 ## Las cuatro aventuras
 
@@ -42,13 +42,14 @@ Las aventuras se desbloquean **en orden**. Cada una tiene **cuatro zonas**, sala
 
 ## Cómo se juega
 
-- **Héroe y aliados:** crea tu personaje, escoge especie y clase y forma un grupo de hasta **cuatro** (tu héroe y tres aliados). Los aliados conocidos pueden cambiarse en la **posada**; no es obligatorio llevar siempre a los mismos.
+- **Héroe y aliados:** crea tu personaje, escoge especie (humano, elfo, enano, mediano, dracónido o tiefling) y clase (guerrero, clérigo, pícaro, mago, explorador, paladín, bárbaro o brujo) y forma un grupo de hasta **cuatro** (tu héroe y tres aliados). Los aliados conocidos pueden cambiarse en la **posada**; no es obligatorio llevar siempre a los mismos.
 - **Exploración hexagonal:** descubre zonas con niebla de guerra, muévete tocando el mapa, investiga secretos y vuelve a lugares anteriores. Hay encuentros al explorar y al regresar a determinadas zonas.
-- **Combate táctico por turnos:** iniciativa, tiradas de d20, ataques, conjuros, habilidades, estados y dos filas de combate (**vanguardia y retaguardia**). Algunas batallas incluyen objetivos opcionales.
+- **Combate táctico por turnos:** iniciativa, tiradas de d20, ataques, conjuros, habilidades, estados y dos filas de combate (**vanguardia y retaguardia**). Las fichas de los enemigos siguen el SRD 5.2.1 y cada familia tiene su carácter (los goblins huyen si cae su jefe, los no muertos no sueltan a su presa…). Algunas batallas incluyen objetivos opcionales con consecuencias. El primer combate trae un tutorial.
 - **Escenas con decisiones:** puedes negociar, ayudar, arriesgarte, investigar o evitar enfrentamientos. Las elecciones pueden alterar oro, objetos, pistas, secretos y composición de encuentros.
-- **Progresión y recursos:** equipo, armas, pociones, botín, descansos cortos y largos, templo, tiendas y un baúl compartido entre posadas.
+- **Progresión y recursos:** equipo, armas, pociones y consumibles del SRD (red, fuego de alquimista, pociones de velocidad, heroísmo o resistencia…), botín, descansos cortos y largos, templo, tiendas y un baúl compartido entre posadas. Al comprar o repartir equipo se compara con lo que ya lleva cada personaje.
 - **Relaciones con compañeros:** conversaciones desbloqueables en la posada y **afinidad**; al completar su tercera charla, un aliado obtiene **Inspiración heroica**.
-- **Diario y galería:** registro de acontecimientos, pistas pendientes e ilustraciones de personajes, lugares y escenas.
+- **Diario y galería:** registro de acontecimientos, personajes conocidos, pistas pendientes e ilustraciones de personajes, lugares y escenas.
+- **Copias de partida:** cada archivo de guardado se puede exportar (con Compartir en Android, como archivo en la web) y restaurar en un archivo vacío.
 
 ## Equilibrio y dificultad
 
@@ -72,7 +73,9 @@ La revisión narrativa de las cuatro aventuras incluye introducciones de escenas
 
 ## Versión para navegador
 
-La adaptación web reutiliza el juego con React Native Web. Incluye guardado local, ilustraciones, fuentes y audio. Se puede jugar en **[churrufli.github.io/mazmorreo-rpg](https://churrufli.github.io/mazmorreo-rpg/)**, y es **la forma recomendada de jugar**: la web recibe las novedades antes y con más frecuencia que la APK. Las partidas se guardan en tu navegador, sin cuentas ni registro. Consulta [la guía web](docs/WEB.md) para ejecución, pruebas y publicación.
+La adaptación web reutiliza el juego con React Native Web. Incluye guardado local, ilustraciones, fuentes y audio. Se puede jugar en **[churrufli.github.io/mazmorreo-rpg](https://churrufli.github.io/mazmorreo-rpg/)**, y es **la forma recomendada de jugar**: la web recibe las novedades antes y con más frecuencia que la APK. Las partidas se guardan en tu navegador, sin cuentas ni registro.
+
+En el móvil se ve igual que en Android. En una ventana apaisada de al menos 900 px de ancho se activa el **modo escritorio**: la interfaz va en una columna central con las ilustraciones fundidas a negro a los lados, el pueblo, la tienda y la posada en dos columnas, el registro del combate como panel lateral, la rueda del ratón para acercar el mapa y **atajos de teclado en combate** (1-9 eligen las acciones de la categoría abierta y Esc cancela). Consulta [la guía web](docs/WEB.md) para ejecución, pruebas y publicación.
 
 ## Descargar e instalar en Android
 
@@ -91,9 +94,11 @@ La adaptación web reutiliza el juego con React Native Web. Incluye guardado loc
 
 ```bash
 npm ci
-npm test
 npx tsc --noEmit
+npm run lint
+npm test -- --ci --runInBand
 npm run validate:adventures
+npm run web:build
 ```
 
 Para ejecutar en Android con un entorno React Native configurado:
@@ -117,7 +122,13 @@ EQUILIBRIO=1 npx jest equilibrio --runInBand
 ESTUDIO=1 N=20 npx jest estudio --runInBand
 ```
 
+Otro estudio con el bot mide a qué nivel llega el grupo a cada jefe: `NIVELES=1 N=10 npx jest niveles --runInBand`.
+
 En PowerShell, establece las variables con `$env:ESTUDIO="1"; $env:N="20"` antes del comando Jest. El estudio con bot es **informativo**, no una prueba concluyente de equilibrio, y no sustituye las pruebas en dispositivos reales.
+
+### Modo desarrollador
+
+En **Ajustes**, con su clave, se activa el modo desarrollador. Cada ayuda tiene su interruptor (todas encendidas al activarlo): mapa entero, teletransporte, superar obstáculos, superar pruebas, ganar combate, oro infinito, viajar a cualquier pueblo, subir al nivel de la aventura y empezar la aventura de cero. Sirve para probar el juego; no es para partidas normales.
 
 ### Archivos principales
 
@@ -130,22 +141,32 @@ En PowerShell, establece las variables con `$env:ESTUDIO="1"; $env:N="20"` antes
 | `src/data/charlas.json` | Conversaciones de afinidad de los aliados. |
 | `src/engine/aventuras.ts` | Registro de aventuras, pueblos, jefes, aliados y progresión. |
 | `src/engine/escenas.ts` | Resolución de decisiones, secretos y ajuste de enemigos. |
-| `src/engine/combat.ts` | Combate por turnos y recompensas. |
+| `src/engine/combat.ts` | Combate por turnos, IA enemiga y recompensas. |
+| `src/engine/elementos.ts` | Elementos dinámicos del mapa (puertas, verjas, palancas, barreras). |
+| `src/engine/copia.ts` | Copias de seguridad de las partidas. |
+| `src/engine/desarrollador.ts` | Ayudas del modo desarrollador. |
+| `src/data/srd.ts` | Clases, especies, objetos y criaturas del SRD 5.2.1. |
 | `src/data/ayuda.ts` | Ayuda integrada y novedades del juego. |
 | `src/engine/*.test.ts` | Pruebas de reglas, escenas, economía, equilibrio y partidas. |
 | `scripts/validar-aventuras.mjs` | Validación de datos de aventuras. |
 | `scripts/generar-plano.mjs` | Generación del plano hexagonal. |
 | `scripts/convertir-arte.sh` | Conversión del arte a WebP y generación de referencias. |
+| `src/ui/escritorio.ts`, `src/ui/teclado.web.ts` | Modo escritorio y atajos de teclado de la web. |
 | `.github/workflows/android.yml` | Compilación manual del APK y publicación de pruebas. |
+| `.github/workflows/pages.yml` | Publicación de la web en GitHub Pages al actualizar `master`. |
 
 ## Documentación adicional
 
 - [Historial de cambios destacados](CHANGELOG.md).
 - [Guía de mantenimiento de contenido, narrativa y equilibrio](docs/GUIA_CONTENIDOS.md).
+- [Guía de la versión web](docs/WEB.md).
+- [Guía de arte](docs/GUIA_ARTE.md) e [imagen maestra](docs/arte/referencia-maestra.png).
+- [Colaborar con tu IA](docs/COLABORAR_CON_IA.md).
+- [Créditos](CREDITS.md), [avisos](NOTICE.md) y [licencias del contenido](LICENSE-CONTENIDO.md).
 
 ## Estado del proyecto
 
-**En desarrollo activo.** Las cuatro aventuras están integradas en el repositorio y se han revisado la narrativa, el equilibrio de encuentros, la gestión de aliados y la documentación del juego. Sigue siendo necesario **verificar las compilaciones, ejecutar las pruebas y comprobar la dificultad en partidas reales** tras los cambios.
+**En desarrollo activo.** Las cuatro aventuras están integradas en el repositorio y se han revisado la narrativa, las fichas de los enemigos frente al SRD 5.2.1, el equilibrio de encuentros, la gestión de aliados y la documentación del juego. La música de la cuarta aventura es provisional. Sigue siendo necesario **verificar las compilaciones, ejecutar las pruebas y comprobar la dificultad en partidas reales** tras los cambios.
 
 Repositorio: [github.com/churrufli/mazmorreo-rpg](https://github.com/churrufli/mazmorreo-rpg).
 
