@@ -2,6 +2,39 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 24 y 25 de noviembre de 2026 — La web en modo escritorio
+
+- **Modo escritorio** (`src/ui/escritorio.ts`): en la web, con la ventana apaisada y al menos 900 px de ancho, la interfaz va en una columna centrada de 520 a 600 px y las ilustraciones verticales se funden a negro con grano por los lados. En escenas y decisiones, los lados muestran la misma ilustración estirada y desenfocada (`Bg` con `wash`). En Android y en móviles no cambia nada.
+- Crear héroe, pueblo, tienda y posada en dos columnas; galería con seis miniaturas por fila; registro del combate como panel lateral; avisos e iniciativa más estrechos; barras de desplazamiento oscuras.
+- **Combate**: botones abajo, del ancho de las cajas del campo, y **atajos de teclado** (`src/ui/teclado.web.ts`): 1-9 usan las acciones de la categoría abierta y Esc cancela.
+- **Mapa**: empieza más ampliado y la rueda del ratón acerca y aleja (`src/ui/rueda.web.ts`).
+- El sonido del golpe, el crítico y la curación espera a que se vea la tirada (`revealMs` en `src/ui/ritmos.ts`). El cuadro de Victoria ya no lleva rayos de luz.
+
+## 24 de noviembre de 2026 — Modo desarrollador por casillas
+
+- En Ajustes, con el modo desarrollador activado, cada ayuda tiene su interruptor: mapa entero, teletransporte, superar obstáculos, superar pruebas, ganar combate, oro infinito, viajar a cualquier pueblo, subir al nivel de la aventura y empezar la aventura de cero. Se guardan en el dispositivo y, sin tocar, están todas encendidas.
+
+## 23 de noviembre de 2026 — Copias de partida, decorados y música
+
+- **Copias de seguridad** (`src/engine/copia.ts`): cada archivo se exporta (Compartir en Android, archivo en la web) y se restaura en un archivo vacío, con aviso si la copia es de una versión más nueva.
+- **Comparar equipo**: al comprar, mirar o repartir un objeto se ve la CA con y sin él, o el ataque y el daño medio frente al arma que lleva.
+- Los estados de las cartas dicen cuánto duran o cómo se pasan. El **diario** muestra los personajes conocidos y, en Hondaroca, los preparativos contra Maese Orvane.
+- **96 decorados nuevos** en los mapas de las cuatro aventuras, sacados de lo que cuentan salas, diálogos y escenas, sin cortar el paso.
+- **Mapa**: al entrar por primera vez en una sala sale su descripción; tocando su nombre se vuelve a leer. La caja de información crece con su contenido.
+- **Combate**: primero se ve el dado, después embiste la carta y al final bajan los PG; el registro sigue al dado. Botones con etiquetas de dos líneas en vez de cortarse.
+- Música nueva para el bosque y música propia para la montaña (`mus_montana`).
+
+## 21 y 22 de noviembre de 2026 — Narrativas revisadas de las cuatro aventuras
+
+- Textos revisados a mano de Hondaroca, El Corazón Hueco, El Invierno del Dragón y La Tumba de los Reyes Serpiente: introducciones, salas, diálogos, escenas, charlas y finales, fieles a la historia original y sin presuponer salas ni decisiones opcionales.
+
+## 19 y 20 de noviembre de 2026 — Fichas del SRD, consumibles y pulido
+
+- **Fichas de enemigos** revisadas contra el SRD 5.2.1 (kobold, cría de dragón blanco, mefit de hielo, lobo invernal, espectro, dríade, bruja verde, necrófago y otros). Las adaptaciones hechas a propósito (jefes, basilisco, constrictora, oso lechuza, hongo chillón) se mantienen.
+- **Consumibles del SRD** en cofres y tiendas: pociones de velocidad, heroísmo, crecimiento, fuerza de gigante y resistencia, elixir de salud, veneno básico, frasco de aceite, polvo de desaparición y pergaminos de conjuro, con iconos propios.
+- Las tiendas solo venden remedios (antídoto, resistencias, agua bendita, espejo) donde algún enemigo trae esa amenaza (`src/engine/botin.ts`).
+- Diario con botón para volver a ver el final de cada aventura; sin ataque automático; aviso al terminar el turno sin gastar nada; PNJ visibles mientras se habla con ellos; combate en vertical más despejado.
+
 ## 19 de noviembre de 2026 — Enemigos con carácter, primera partida guiada y pistas
 
 - **IA enemiga por familias** (`decide` y `chooseTarget` en `combat.ts`): goblins sin su jefe (`leaderDown`) huyen a la mitad de PG; no muertos con presa fija (`Unit.prey`); sectarios contra quien hirió a su líder (`isLeader`); lanzadores que se retiran si alguien les cubre.
@@ -29,6 +62,13 @@ Este documento resume hitos funcionales comprobados en el código y en las PR re
 - 20 retratos más del otro sexo (`hero_*_b`) para dracónidos, tieflings y brujos, y corregido el sexo de los cuatro dracónidos varones en `baseSex`.
 - **Aliados sin repetir**: Kallux (brujo tiefling) sustituye al Hermano Ismerel, Ghaldra (guerrera dracónida de plata) a Syrael e Iskarra (bárbara dracónida de latón) a la Hermana Yara; Teodor pasa a brujo. Cada clase tiene dos aliados. Las aliadas dracónidas tienen su propio linaje (`draconic`).
 - **Vurka, orca** (especie `orc`, solo para ella): Aguante incansable y Descarga de adrenalina del SRD 5.2.1. La visión en la oscuridad no está modelada, como en las demás especies.
+
+## 17 de noviembre de 2026 — Cuarta aventura: La Tumba de los Reyes Serpiente
+
+- Basada en *Tomb of the Serpent Kings*, de Skerples (CC BY-NC-SA). Se abre al vencer a Vharzûl; pueblo de **Arenaroja** y zonas `s1`-`s4` (tumba falsa, tumba superior, salas del sacrificio y madrigueras) hasta el hechicero **Xiximanter**. Se llega al jefe con **nivel 5**.
+- Criaturas del SRD 5.2.1: momia, gelatina ocre, pudin negro, basilisco, íncubo, goblins de hongo y guardián cobra. El espejo de acero ayuda contra el basilisco y el hongo chillón atrae a otro enemigo.
+- Aliados en la posada de Arenaroja, con sus charlas. Música de demostración (`mus_arenaroja`, `mus_tumba`, `mus_combate_tumba`) mientras se busca la definitiva.
+- **Modo desarrollador**: botón «Superar» en obstáculos y salidas cerradas, y al viajar a un pueblo el grupo queda como llegaría jugando (nivel, compañeros y equipo mágico).
 
 ## 17 de noviembre de 2026 — Niveles más bajos: 2, 3 y 4
 
@@ -98,11 +138,13 @@ Este documento resume hitos funcionales comprobados en el código y en las PR re
 
 ## Sistemas presentes en el juego
 
-- Tres aventuras encadenadas, cuatro zonas por aventura y pueblos de partida.
+- Cuatro aventuras encadenadas (niveles 2, 3, 4 y 5 al llegar al jefe), cuatro zonas por aventura y un pueblo de partida en cada una.
+- Seis especies elegibles (humano, elfo, enano, mediano, dracónido y tiefling) y ocho clases (guerrero, clérigo, pícaro, mago, explorador, paladín, bárbaro y brujo).
 - Héroe con hasta tres aliados intercambiables, afinidad y charlas en la posada.
-- Exploración hexagonal, secretos, decisiones con consecuencias y combates por turnos con dos filas.
-- Descansos, tiendas, templo, inventario, baúl, diario y progresión entre aventuras.
-- Validación de aventuras, pruebas automatizadas y estudio opcional con bot.
+- Exploración hexagonal, elementos dinámicos, secretos, decisiones con consecuencias y combates por turnos con dos filas y enemigos del SRD 5.2.1.
+- Descansos, tiendas, templo, inventario, consumibles, baúl, diario, galería, copias de partida y progresión entre aventuras.
+- Versión web con modo escritorio y atajos de teclado en combate; modo desarrollador con un interruptor por ayuda.
+- Validación de aventuras, lint, pruebas automatizadas, pruebas en navegador y estudio opcional con bot.
 
 ## Advertencia sobre pruebas
 

@@ -1,6 +1,8 @@
 # Elementos dinámicos: imágenes pendientes (fase 2)
 
-Los mapas tienen elementos que cambian de estado durante la aventura (un derrumbe que se retira, una verja que se alza, una barrera que se apaga…). Ya funcionan con **marcadores provisionales** dibujados con formas sencillas. Este documento recoge todas las imágenes que hacen falta para sustituirlos.
+Los mapas tienen elementos que cambian de estado durante la aventura (un derrumbe que se retira, una verja que se alza, una barrera que se apaga…). Al principio funcionaban con **marcadores provisionales** dibujados con formas sencillas. Este documento recoge las imágenes que los sustituyen.
+
+> **Estado (noviembre de 2026):** las 11 imágenes de esta lista ya están en el juego (`assets/img/din_*.webp`). Los marcadores provisionales solo se ven en estados o tipos nuevos que aún no tengan imagen. El documento sigue sirviendo de plantilla para añadir más.
 
 Cómo funciona por dentro: `src/engine/elementos.ts` (motor y catálogo de tipos), `src/ui/ElementoMapa.tsx` (dibujo) y el campo `elements` de cada zona en `src/data/*.json`.
 

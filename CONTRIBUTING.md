@@ -38,7 +38,7 @@ La guía completa, con plantillas por área para copiar y pegar, está en [docs/
 | Estrategia de combate | Tácticas de los enemigos, acciones, conjuros, estados, objetivos opcionales | `src/engine/combat.ts` (tipos de IA en `src/data/srd.ts`), `docs/flujo-combate-y-textos.md` |
 | Exploración del mapa | Mapas hexagonales, niebla, secretos, trampas, obstáculos, descansos | `src/engine/dungeon.ts`, `src/screens/Explore.tsx`, `scripts/generar-plano.mjs` |
 | Jugabilidad | Progresión, economía, tienda, posada, aliados y afinidad, nuevas aventuras | `src/engine/aventuras.ts`, `src/engine/rules.ts`, `src/engine/posada.ts`, `src/screens/Town.tsx` |
-| Interfaz y usabilidad | Botones, legibilidad en móvil en vertical, accesibilidad, modo horizontal (aún no previsto) | `src/ui/`, `src/screens/`, `docs/estudio-usabilidad-combate.md` |
+| Interfaz y usabilidad | Botones, legibilidad en móvil en vertical, accesibilidad, modo escritorio de la web | `src/ui/`, `src/screens/`, `src/ui/escritorio.ts`, `docs/WEB.md`, `docs/estudio-usabilidad-combate.md` |
 | Equilibrio y diseño | Encuentros, recompensas, criaturas del SRD, dificultad | `.claude/rules/aventuras.md`, `scripts/validar-aventuras.mjs`, `src/engine/equilibrio.test.ts` |
 | Arte | Ilustraciones, fondos, objetos, iconos | `assets/img/` (WebP), `scripts/convertir-arte.sh` |
 | Sonido | Efectos y música | Solo CC0 o CC BY, con autor y enlace en `CREDITS.md` |
@@ -70,6 +70,7 @@ Antes de abrir la PR:
 ```bash
 npm ci
 npx tsc --noEmit
+npm run lint
 npm test -- --ci --runInBand
 node scripts/validar-aventuras.mjs src/data/hondaroca.json src/data/corazon.json src/data/montana.json src/data/tumba.json
 npm run web:build
