@@ -1,7 +1,7 @@
 // La Tumba de los Reyes Serpiente: Xiximanter es el mago del SRD 5.2.1.
 import { newGame } from './game';
 import { ZONE_IDS, enterZone, plan, zoneById } from './dungeon';
-import { enemyTurn, startCombat } from './combat';
+import { endTurn, enemyTurn, startCombat } from './combat';
 import { createAlly } from './rules';
 
 function boss() {
@@ -36,22 +36,29 @@ describe('Xiximanter', () => {
 });
 
 describe('Hongo chillón', () => {
-  it('su primer chillido atrae a un enemigo más del tipo más débil; luego solo chilla', () => {
+  it('su primer chillido atrae a una criatura pequeña al asalto siguiente, también con el héroe solo; luego solo chilla', () => {
     const g = newGame(1, 'Prueba', 'fighter', 'human');
     g.rng.seed = 5;
-    for (const id of ['tiko', 'liss', 'brunna']) g.party.push(createAlly(id, 5, 6500));
     enterZone(g, 's4');
     const cb = startCombat(g, 's4_e01');
-    const goblins = cb.units.filter(u => u.mon === 'Fungus Goblin');
-    for (const u of goblins.slice(1)) { u.hp = 0; u.dead = true; }
     const sh = cb.units.find(u => u.mon === 'Shrieker')!;
     const turn = () => { cb.turn = cb.order.indexOf(sh.key); cb.acted = cb.bonus = cb.moved = false; enemyTurn(g, cb); };
-    const before = cb.units.length;
+    const grito = () => cb.units.filter(u => u.key.startsWith('e_grito_'));
+    const r0 = cb.round;
     turn();
-    expect(cb.units.length).toBe(before + 1);
-    expect(cb.units[cb.units.length - 1].mon).toBe('Fungus Goblin');
+    expect(cb.log.some(l => l.t.includes('Algo se acerca'))).toBe(true);
+    // Durante el asalto del grito no llega nadie; al empezar el siguiente, sí.
+    if (cb.round === r0) {
+      expect(grito()).toHaveLength(0);
+      cb.turn = cb.order.length - 1;
+      endTurn(g, cb);
+    }
+    expect(cb.round).toBe(r0 + 1);
+    const added = grito();
+    expect(added).toHaveLength(1);
+    expect(['Rat', 'Lizard']).toContain(added[0].mon);
     turn();
-    expect(cb.units.length).toBe(before + 1);
+    expect(grito()).toHaveLength(1);
     expect(cb.log.some(l => l.t.includes('sigue chillando'))).toBe(true);
   });
 });

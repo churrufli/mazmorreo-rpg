@@ -28,7 +28,8 @@ export function Bg({ src, dim = 0.35, children, style, full, wash }: { src: Imag
         {wash ? <Image source={src} resizeMode="stretch" blurRadius={24} style={{ position: 'absolute', left: 0, top: 0, width, height }} /> : null}
         <Image source={IMG.grano} resizeMode="repeat" style={[StyleSheet.absoluteFill, wash && { opacity: 0.25 }]} />
         {wash ? <View style={[StyleSheet.absoluteFill, { backgroundColor: `rgba(0,0,0,${WASH})` }]} /> : null}
-        <Image source={src} style={[{ position: 'absolute', left: (width - iw) / 2, top: (height - ih) / 2, width: iw, height: ih }, wash && WASH_MASK]} resizeMode="cover" />
+        {/* Si no cabe en alto, se recorta solo por abajo: la parte de arriba (caras, cabezas) siempre se ve (el autor 2026-11-25). */}
+        <Image source={src} style={[{ position: 'absolute', left: (width - iw) / 2, top: Math.max(0, (height - ih) / 2), width: iw, height: ih }, wash && WASH_MASK]} resizeMode="cover" />
         {wash ? null : <Svg width={width} height={height} style={StyleSheet.absoluteFill} pointerEvents="none">
           <Defs>
             <LinearGradient id={`l${gid}`} x1="0" y1="0" x2="1" y2="0"><Stop offset="0" stopColor={BG_EDGE} stopOpacity={1} /><Stop offset="1" stopColor={BG_EDGE} stopOpacity={0} /></LinearGradient>

@@ -61,8 +61,9 @@ export interface Unit {
   recharge?: Record<string, boolean>;
   shieldSlots?: number;
   rays?: number;
-  /** Hongo chillón que ya ha llamado a alguien con su grito. */
+  /** Hongo chillón que ya ha chillado, y asalto de su primer grito (su llamada llega al asalto siguiente). */
   shrieked?: boolean;
+  shriekAt?: number;
   temp?: number;
   /** Apresado (red o telaraña): CD para soltarse. */
   restrained?: number;
@@ -436,28 +437,31 @@ function bossRound(g: Game, cb: Combat) {
 
 /**
  * Hongo chillón: no ataca. Su reacción del SRD 5.2.1 (Chillar) es un grito que se oye a 90 m.
- * En el juego, el primer grito atrae a una criatura más del tipo más débil del grupo, si cabe.
+ * En el juego, su primer grito atrae a una criatura pequeña (rata o lagarto) al empezar el asalto siguiente
+ * (el autor 2026-11-25). Llega aunque el grupo sea pequeño: el hongo no ataca, así que el combate no se endurece.
  */
 function shriek(g: Game, cb: Combat, u: Unit) {
   if (u.shrieked) { say(cb, `${u.name} sigue chillando.`, 'info'); return; }
   u.shrieked = true;
-  const foes = cb.units.filter(x => x.side === 'enemy' && alive(x));
-  const kin = cb.units.filter(x => x.side === 'enemy' && x.mon && x.mon !== 'Shrieker' && MONSTERS[x.mon].xp > 0)
-    .sort((a, b) => MONSTERS[a.mon!].xp - MONSTERS[b.mon!].xp)[0];
-  const cap = maxFoesFor(g.party.filter(c => !c.dead).length);
-  if (!kin || foes.filter(x => x.row === 'front').length >= MAX_ROW || foes.length >= cap) {
-    say(cb, `${u.name} lanza un chillido que retumba por los pasillos.`, 'big');
-    return;
+  u.shriekAt = cb.round;
+  say(cb, `${u.name} lanza un chillido que retumba por los pasillos. Algo se acerca.`, 'big');
+}
+
+/** Principio de asalto: acude la criatura que llamó el hongo chillón en el asalto anterior. */
+function shriekCall(g: Game, cb: Combat) {
+  for (const u of cb.units.filter(x => x.mon === 'Shrieker' && x.shriekAt === cb.round - 1)) {
+    const mon = pick(g.rng, ['Rat', 'Lizard']);
+    const m = MONSTERS[mon];
+    const front = cb.units.filter(x => x.side === 'enemy' && alive(x) && x.row === 'front').length < MAX_ROW;
+    const v: Unit = {
+      key: `e_grito_${u.key}`, side: 'enemy', mon, name: m.name, img: m.img, hp: m.hp, maxHp: m.hp,
+      ac: m.ac, row: front ? 'front' : 'back', init: die(g.rng, 20) + m.dexMod, recharge: {},
+    };
+    cb.units.push(v);
+    cb.order.push(v.key);
+    cb.bonusXp = (cb.bonusXp ?? 0) + m.xp;
+    say(cb, `Atraído por el chillido, acude otro enemigo: ${v.name}.`, 'big');
   }
-  const m = MONSTERS[kin.mon!];
-  const v: Unit = {
-    key: `e_grito_${u.key}`, side: 'enemy', mon: kin.mon, name: `${kin.name.replace(/ \d+$/, '')} de refresco`, img: kin.img, hp: m.hp, maxHp: m.hp,
-    ac: m.ac, row: 'front', init: die(g.rng, 20) + m.dexMod, recharge: {}, weapon: kin.weapon, shieldSlots: m.shieldSlots,
-  };
-  cb.units.push(v);
-  cb.order.push(v.key);
-  cb.bonusXp = (cb.bonusXp ?? 0) + m.xp;
-  say(cb, `${u.name} lanza un chillido. ¡Acude otro enemigo: ${v.name}!`, 'big');
 }
 
 function heal(cb: Combat, u: Unit, amount: number) {
@@ -762,6 +766,7 @@ export function endTurn(g: Game, cb: Combat) {
 
 function reinforce(g: Game, cb: Combat) {
   bossRound(g, cb);
+  shriekCall(g, cb);
   for (const id of [...cb.pending]) {
     if (cb.reinforced) break;
     if (g.done.includes(id)) { cb.pending = cb.pending.filter(x => x !== id); continue; }

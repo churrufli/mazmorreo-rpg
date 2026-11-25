@@ -8,8 +8,9 @@ import { VOL_DEF, refresh, sfx } from '../sonido';
 import * as storage from '../storage';
 import { BUILD } from '../version';
 import { CAMBIOS } from '../versionWeb';
-import { COMO_FUNCIONA, CREDITOS, NOVEDADES, PRIVACIDAD } from '../data/ayuda';
+import { CREDITOS, NOVEDADES, PRIVACIDAD } from '../data/ayuda';
 import { FxMode, setFx, useFxMode } from './movimiento';
+import { ComoFunciona } from './ComoFunciona';
 
 const RELEASES = 'https://api.github.com/repos/churrufli/mazmorreo-rpg/releases?per_page=10';
 const RELEASES_PAGE = 'https://github.com/churrufli/mazmorreo-rpg/releases';
@@ -122,15 +123,7 @@ export function Settings({ onClose }: { onClose: () => void }) {
           {view === 'como' ? (
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={st.title}>Cómo funciona</Text>
-              {COMO_FUNCIONA.map(t => (
-                <View key={t.title} style={st.tema}>
-                  <View style={st.temaHead}>
-                    <Svg width={26} height={26} viewBox="0 0 24 24"><Path d={t.icon} fill={C.goldHi} /></Svg>
-                    <Text style={st.temaTitle}>{t.title}</Text>
-                  </View>
-                  {t.text.map((p, i) => <Text key={i} style={st.parrafo}>{p}</Text>)}
-                </View>
-              ))}
+              <ComoFunciona />
               <Btn label="Volver" onPress={() => setView('main')} />
             </ScrollView>
           ) : null}
@@ -276,7 +269,8 @@ function Enlace({ label, onPress }: { label: string; onPress: () => void }) {
 
 const st = StyleSheet.create({
   bg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', padding: 20 },
-  panel: { backgroundColor: C.panel, borderColor: C.gold, borderWidth: 1, borderRadius: 8, padding: 16, maxHeight: '90%' },
+  // En escritorio no ocupa todo el ancho (el autor 2026-11-25); en el móvil el tope no se nota.
+  panel: { width: '100%', maxWidth: 560, alignSelf: 'center', backgroundColor: C.panel, borderColor: C.gold, borderWidth: 1, borderRadius: 8, padding: 16, maxHeight: '90%' },
   title: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 22, textAlign: 'center', marginBottom: 10 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 6, minHeight: 48 },
   label: { fontFamily: F.textBold, color: C.text, fontSize: 18 },
@@ -293,7 +287,6 @@ const st = StyleSheet.create({
   note: { fontFamily: F.italic, color: C.textDim, fontSize: 15, marginVertical: 6, textAlign: 'center' },
   version: { fontFamily: F.title, color: C.gold, fontSize: 15, textAlign: 'center', marginTop: 10, marginBottom: 4 },
   tema: { marginBottom: 12 },
-  temaHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
   temaTitle: { fontFamily: F.title, color: C.gold, fontSize: 17, marginBottom: 4 },
   parrafo: { fontFamily: F.rules, color: C.text, fontSize: 14.5, lineHeight: 22, marginBottom: 6 },
   dev: { marginTop: 14, borderTopWidth: 1, borderColor: C.border, paddingTop: 10 },

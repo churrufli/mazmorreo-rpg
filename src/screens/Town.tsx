@@ -6,12 +6,13 @@ import { C, F } from '../theme';
 import { useStore } from '../store';
 import { Bg, Btn, Panel, T } from '../ui/kit';
 import { ITEMS } from '../data/srd';
-import { MAX_ITEMS, compareItem, itemOwnership, keeps, longRest, needsRest, newItem, shortRest } from '../engine/rules';
+import { MAX_ITEMS, itemOwnership, keeps, longRest, needsRest, newItem, shortRest } from '../engine/rules';
 import { reopenScenes, sceneSpent } from '../engine/escenas';
 import { FeatPicker } from '../ui/FeatPicker';
 import { CLASSES } from '../data/srd';
 import * as storage from '../storage';
 import { Card, CardModal, charInfo } from '../ui/Card';
+import { FichaObjeto } from '../ui/FichaObjeto';
 import { FaceImage } from '../ui/FaceImage';
 import { FadeIn, PopIn, Portrait } from '../ui/Overlays';
 import { EASE, fxOn } from '../ui/movimiento';
@@ -123,7 +124,7 @@ export function Town() {
   if (arrival) {
     return (
       <FadeIn key="arrival" from={0} duration={600} style={{ flex: 1 }}>
-        <Bg src={IMG[town.bg.menu]} dim={0.05}>
+        <Bg src={IMG[town.bg.menu]} dim={0.05} wash>
           <Pressable testID="town-arrival" style={st.arrival} onPress={() => setArrival(undefined)} accessibilityRole="button" accessibilityLabel={`Llegasteis a ${arrival}. Toca para continuar.`}>
             <FadeIn delay={400} duration={700} from={12} style={st.arrivalBox}>
               <Text style={st.arrivalTxt}>{`Llegasteis a ${arrival}`}</Text>
@@ -137,9 +138,9 @@ export function Town() {
   return (
     // Al cambiar de lugar, la ilustración nueva entra con un fundido.
     <FadeIn key={place} from={0} duration={500} style={{ flex: 1 }}>
-    <Bg src={IMG[town.bg[place === 'diario' ? 'posada' : place === 'galeria' ? 'menu' : place]]} dim={place === 'menu' ? 0.15 : 0.45} full={esc.on}>
-      {/* Escritorio: tienda, posada y galería usan un ancho mayor (dos columnas); el resto, la columna normal. */}
-      <View style={esc.on ? { flex: 1, alignSelf: 'center', width: WIDE.includes(place) ? Math.min(esc.width - 48, 1120) : esc.col } : { flex: 1 }}>
+    <Bg src={IMG[town.bg[place === 'diario' ? 'posada' : place === 'galeria' ? 'menu' : place]]} dim={place === 'menu' ? 0.15 : 0.45} full={esc.on} wash>
+      {/* Escritorio: tienda, posada y galería usan un ancho mayor (dos columnas); el pueblo, algo más que la columna normal (el autor 2026-11-25); el resto, la columna normal. */}
+      <View style={esc.on ? { flex: 1, alignSelf: 'center', width: WIDE.includes(place) ? Math.min(esc.width - 48, 1120) : place === 'menu' ? Math.min(esc.width - 48, 860) : esc.col } : { flex: 1 }}>
       <View style={[st.top, { paddingTop: ins.top + 8 }]}>
         <Text style={st.title}>{place === 'menu' ? town.name : place === 'galeria' ? 'Galería' : place[0].toUpperCase() + place.slice(1)}</Text>
         <View style={st.topRight}>
@@ -199,9 +200,8 @@ export function Town() {
             {buyer.items.length >= MAX_ITEMS ? <Text style={st.full}>Inventario lleno: {buyer.name.split(' ')[0]} no puede llevar más objetos. Vende algo o elige a otro.</Text> : null}
             {stock.map(id => buying === id ? (
               <View key={id} style={st.confirm}>
-                <ItemHead id={id} />
+                <FichaObjeto id={id} owner={buyer} value={false} />
                 <Text style={st.itemName}>¿Comprar {ITEMS[id].name} para {buyer.name.split(' ')[0]} por {pay(ITEMS[id].value)} po?</Text>
-                {compareItem(buyer, id) ? <Text style={st.itemDesc}>{compareItem(buyer, id)}</Text> : null}
                 <Text style={st.itemDesc}>{itemOwnership([...g.party, ...(g.bench ?? []), ...(g.captive ? [g.captive] : [])], id)}</Text>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
                   <Btn small primary label="Comprar" disabled={!afford(ITEMS[id].value) || buyer.items.length >= MAX_ITEMS} onPress={() => {
@@ -232,7 +232,7 @@ export function Town() {
               const v = sellPrice(ITEMS[it.id].value);
               return selling === it.uid ? (
                 <View key={it.uid} style={st.confirm}>
-                  <ItemHead id={it.id} />
+                  <FichaObjeto id={it.id} owner={buyer} item={it} value={false} />
                   <Text style={st.itemName}>¿Vender {ITEMS[it.id].name} por {v} po?</Text>
                   <View style={{ flexDirection: 'row', gap: 8 }}>
                     <Btn small primary label="Vender" onPress={() => {
@@ -308,7 +308,7 @@ export function Town() {
                 </Pressable>;
               })}
             </View>
-            {buyer.items.find(i => i.uid === bagSel) ? <Text style={st.itemDesc}>{ITEMS[buyer.items.find(i => i.uid === bagSel)!.id].desc}</Text> : null}
+            {buyer.items.find(i => i.uid === bagSel) ? <FichaObjeto id={buyer.items.find(i => i.uid === bagSel)!.id} owner={buyer} item={buyer.items.find(i => i.uid === bagSel)} /> : null}
             {buyer.items.find(i => i.uid === bagSel) ? <Btn small label={`Guardar ${ITEMS[buyer.items.find(i => i.uid === bagSel)!.id].name} ↓`}
               onPress={() => { const uid = bagSel!; edit(gg => { const c = gg.party.find(x => x.id === buyer.id)!; const it = c.items.find(x => x.uid === uid); if (!it || keeps(it)) return; c.items = c.items.filter(x => x.uid !== uid); gg.chest = [...(gg.chest ?? []), it]; }, true); setBagSel(undefined); }} /> : null}
             <Text style={st.itemDesc}>Baúl · {(g.chest ?? []).length} objetos. Selecciona uno para sacarlo al inventario del personaje elegido.</Text>
@@ -319,7 +319,7 @@ export function Town() {
               </Pressable>)}
             </View>
             {(g.chest ?? []).find(i => i.uid === chestSel) ? <>
-              <Text style={st.itemDesc}>{ITEMS[(g.chest ?? []).find(i => i.uid === chestSel)!.id].desc}</Text>
+              <FichaObjeto id={(g.chest ?? []).find(i => i.uid === chestSel)!.id} owner={buyer} />
               <Btn small label={`Sacar ↑ para ${buyer.name}`} onPress={() => {
                 if (buyer.items.length >= MAX_ITEMS) { say('Inventario lleno.'); return; }
                 const uid = chestSel!;
@@ -459,18 +459,6 @@ function Diary() {
 }
 
 /** Objeto elegido en la tienda: imagen, nombre y descripción completa antes de comprar o vender (el autor 2026-11-19). */
-function ItemHead({ id }: { id: string }) {
-  return (
-    <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-      <Image source={IMG[ITEMS[id].img]} style={{ width: 56, height: 56 }} />
-      <View style={{ flex: 1 }}>
-        <Text style={st.itemName}>{ITEMS[id].name}</Text>
-        <Text style={st.itemDesc}>{ITEMS[id].desc}</Text>
-      </View>
-    </View>
-  );
-}
-
 function ItemRow({ img, name, desc, price, onPress, disabled }: { img: ImgKey; name: string; desc: string; price: string; onPress: () => void; disabled?: boolean }) {
   return (
     // Aunque no se pueda comprar, al tocarlo se lee su descripción.
@@ -511,7 +499,7 @@ export function Victory() {
   const done = n >= full.length;
   const tap = () => (!shown ? setShown(true) : setN(full.length));
   return (
-    <Bg src={IMG[A.victoryImg]} dim={0}>
+    <Bg src={IMG[A.victoryImg]} dim={0} wash>
       <Pressable style={{ flex: 1 }} onPress={tap} disabled={shown && done} accessibilityLabel={shown ? 'Mostrar todo el texto' : 'Continuar'}>
         <FadeIn style={{ ...st.endTop, paddingTop: ins.top + 12 }} duration={700}>
           <Text style={st.endTitle}>¡Victoria!</Text>
@@ -550,7 +538,7 @@ export function Defeat() {
   const ins = useSafeAreaInsets();
   const A = ADVS[advOf(game!.zone)];
   return (
-    <Bg src={IMG[A.defeatImg]} dim={0.25}>
+    <Bg src={IMG[A.defeatImg]} dim={0.25} wash>
       <View style={{ flex: 1, justifyContent: 'flex-end', padding: 16, paddingBottom: ins.bottom + 20 }}>
         <Panel>
           <T h={2} style={{ textAlign: 'center' }}>Derrota</T>

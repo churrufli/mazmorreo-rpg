@@ -73,7 +73,7 @@ export function Title() {
   useEffect(() => { Animated.timing(logo, { toValue: 1, duration: 2200, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, [logo]);
   const scale = logo.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] });
   return (
-    <Bg src={IMG.titulo} dim={0.15}>
+    <Bg src={IMG.titulo} dim={0.15} wash>
       <Particles />
       <View style={[st.titleWrap, { paddingTop: ins.top + 40 }]}>
         <Animated.View style={{ alignSelf: 'stretch', alignItems: 'center', opacity: logo, transform: [{ scale }] }}>
@@ -110,7 +110,7 @@ export function Slots() {
   const [, refresh] = useState(0);
   const ins = useSafeAreaInsets();
   return (
-    <Bg src={IMG.titulo} dim={0.6}>
+    <Bg src={IMG.titulo} dim={0.6} wash>
       <Particles n={18} />
       <View style={{ flex: 1, padding: 16, paddingTop: ins.top + 20, justifyContent: 'center' }}>
         <T h={2} style={{ textAlign: 'center' }}>{slotMode === 'new' ? 'Selecciona archivo de guardado' : 'Cargar partida'}</T>
@@ -182,7 +182,7 @@ function RestoreCopy({ onClose }: { onClose: () => void }) {
   return (
     <Modal transparent animationType="fade" onRequestClose={onClose}>
       <View style={st.delBg}>
-        <Panel>
+        <Panel style={st.delPanel}>
           <Text style={[st.slotTitle, { textAlign: 'center', fontSize: 18, marginBottom: 6 }]}>Restaurar una copia</Text>
           {free ? (
             <>
@@ -210,7 +210,7 @@ function RenameSlot({ slot, onClose }: { slot: number; onClose: () => void }) {
   return (
     <Modal transparent animationType="fade" onRequestClose={onClose}>
       <View style={st.delBg}>
-        <Panel>
+        <Panel style={st.delPanel}>
           <Text style={[st.slotTitle, { textAlign: 'center', fontSize: 18, marginBottom: 6 }]}>Nombre del archivo</Text>
           <TextInput value={txt} onChangeText={setTxt} autoFocus selectTextOnFocus maxLength={24} placeholder={`Archivo ${slot}`} placeholderTextColor="#5a4a36" style={[st.delInput, { letterSpacing: 0, fontSize: 20 }]} accessibilityLabel="Nombre del archivo de guardado" />
           <View style={{ flexDirection: 'row' }}>
@@ -230,7 +230,7 @@ function DeleteSlot({ slot, onClose }: { slot: number; onClose: (deleted: boolea
   return (
     <Modal transparent animationType="fade" onRequestClose={() => onClose(false)}>
       <View style={st.delBg}>
-        <Panel style={{ borderColor: C.damage }}>
+        <Panel style={[st.delPanel, { borderColor: C.damage }]}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
             <Icon path={mdiAlertOutline} size={24} color={C.damage} />
             <Text style={[st.slotTitle, { marginLeft: 8, fontSize: 18 }]}>Borrar {storage.slotName(slot)}</Text>
@@ -448,7 +448,7 @@ export function Intro() {
   // Primero se ve la ilustración; el texto llega a los dos segundos (o al tocar).
   const [shown, show] = useHold(HOLD_MS);
   return (
-    <Bg src={IMG[A.intro]} dim={0.1}>
+    <Bg src={IMG[A.intro]} dim={0.1} wash>
       {shown ? <><View style={{ flex: 1 }} /><Dialogue lines={lines} hero={{ name: hero.name, img: hero.img }} onDone={closeIntro} /></>
         : <Pressable style={{ flex: 1 }} onPress={show} accessibilityLabel="Continuar" />}
     </Bg>
@@ -461,6 +461,7 @@ const st = StyleSheet.create({
   version: { fontFamily: F.italic, color: C.textDim, textAlign: 'center', marginTop: 10, fontSize: 14 },
   legal: { fontFamily: F.italic, color: C.textDim, textAlign: 'center', marginTop: 4, fontSize: 11, paddingHorizontal: 16 },
   trash: { padding: 6, alignSelf: 'flex-start' },
+  delPanel: { width: '100%', maxWidth: 560, alignSelf: 'center' },
   delBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', padding: 20 },
   delInput: { fontFamily: F.titleBold, fontWeight: 'bold', color: C.goldHi, fontSize: 26, letterSpacing: 10, textAlign: 'center', borderWidth: 1, borderColor: C.border, borderRadius: 6, marginVertical: 12, paddingVertical: 8, backgroundColor: '#0008' },
   slot: { flexDirection: 'row', marginVertical: 6, alignItems: 'center' },

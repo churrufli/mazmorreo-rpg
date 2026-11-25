@@ -1,51 +1,66 @@
 // Textos de Ajustes: cómo funciona, novedades y créditos. Cambiar aquí, no en las pantallas.
+import type { ImgKey } from '../assets';
 import { mdiAccountGroupOutline, mdiBedOutline, mdiCardsOutline, mdiCompassOutline, mdiMapOutline, mdiSkullOutline, mdiStorefrontOutline, mdiSwordCross } from '@mdi/js';
 
-export const COMO_FUNCIONA: { icon: string; title: string; text: string[] }[] = [
-  { icon: mdiCompassOutline, title: 'Explorar', text: [
-    'Toca una casilla para moverte. Lo que no has visto está oscuro: toca la oscuridad y el grupo avanzará hacia allí hasta toparse con algo.',
-    'Los enemigos se marcan con un círculo rojo y los aliados que esperan, con uno dorado. El icono de información junto al nombre de la zona enseña sus estadísticas.',
-    'Pellizca la pantalla para acercar o alejar el mapa. Mantén pulsada una carta para verla en grande.',
-    'La escalera de la casilla de entrada lleva a la zona anterior: tócala (o tócala otra vez si ya estás encima).',
-    'Si no cabe un objeto, puedes dejar otro desde la ficha de la carta («Dejar en el suelo»). Se queda en esa casilla para siempre y lo recoges cuando quieras. También puedes venderlo en la tienda del pueblo.',
+/**
+ * «Cómo funciona» (Ajustes): un tema por apartado, plegable, con un resumen de una línea y puntos cortos.
+ * Entre ** ** va lo que se resalta en dorado. `img`: captura con números que explican los puntos marcados (1), (2)…
+ * (el autor 2026-11-25: «más fácil de entender y más bonito de ver, no bloques de texto»).
+ */
+export const COMO_FUNCIONA: { icon: string; title: string; sub: string; img?: ImgKey; text: string[] }[] = [
+  { icon: mdiCompassOutline, title: 'Explorar', sub: 'Moverse por el mapa', img: 'ayuda_mapa', text: [
+    '(1) **Toca una casilla** para moverte. Si tocas la oscuridad, el grupo avanza hasta toparse con algo.',
+    '(2) **Círculo rojo**: enemigos. **Círculo dorado**: aliados que esperan.',
+    '(3) El **icono de información**, junto al nombre de la zona, enseña sus estadísticas.',
+    '**Pellizca** para acercar o alejar el mapa. **Mantén pulsada una carta** para verla en grande.',
+    'La **escalera** de la casilla de entrada lleva a la zona anterior.',
+    '¿No cabe un objeto? **Déjalo en el suelo** desde la ficha de la carta. Se queda en esa casilla y lo recoges cuando quieras.',
   ] },
-  { icon: mdiSwordCross, title: 'Combate', text: [
-    'Cada personaje actúa por turnos: elige una acción y toca el objetivo.',
-    'Las filas importan: la vanguardia recibe los golpes cuerpo a cuerpo; la retaguardia, los disparos y los conjuros. Un enemigo de la vanguardia protege a los de detrás de los golpes cuerpo a cuerpo.',
-    'Abre ATACAR, HABILIDADES u OBJETOS y elige una opción. ESQUIVAR queda junto a TERMINAR TURNO; cambiar de fila usa IR ATRÁS / IR DELANTE. ATACAR siempre muestra las armas, aunque solo lleves una. Mantén pulsado un botón (o toca su pestaña dorada) para ver su explicación sin usarlo. HUIR queda arriba y pide confirmación; si ya has gastado la acción, te explica por qué no puedes huir. Si no queda nada útil, incluido cambiar de fila, el turno acaba solo.',
-    'El registro ampliado permite revisar lo ocurrido. La ayuda, las fichas, el registro y las explicaciones detienen el avance automático mientras los lees. Las pestañas doradas permiten consultar sin ejecutar.',
-    'Sobre cada enemigo, un icono dice lo que prepara (espada, arco, magia, fuego o escudo si cubre a un tirador) y los retratos redondos, a quién apunta.',
-    'Algunos combates tienen un objetivo opcional (arriba del registro): vencer a tiempo, derribar primero a alguien o que no caiga nadie. Si lo cumples, hay premio; si no, ganas igual.',
-    'Al elegir objetivo, cada enemigo enseña la probabilidad aproximada de impactar. Es una ayuda: la tirada sigue siendo la del dado.',
+  { icon: mdiSwordCross, title: 'Combate', sub: 'Turnos, filas y acciones', img: 'ayuda_combate', text: [
+    '(1) **Enemigos**. El icono de encima dice lo que preparan; los retratos redondos, a quién apuntan.',
+    '(2) **Registro**: de quién es el turno y qué ha pasado. Arriba, el **objetivo opcional** si lo hay.',
+    '(3) **Tu grupo**. La carta iluminada es la que actúa.',
+    '(4) **Acciones**: ATACAR, HABILIDADES y OBJETOS. Elige una y toca el objetivo.',
+    '(5) **Esquivar**, **cambiar de fila** y **terminar turno**. Si no queda nada útil, el turno acaba solo.',
+    '**Filas**: la vanguardia recibe los golpes cuerpo a cuerpo y protege a los de detrás.',
+    '**Mantén pulsado un botón** (o toca su pestaña dorada) para leer qué hace sin usarlo.',
+    'Al elegir objetivo verás la **probabilidad de impactar**. Decide el dado.',
+    '**HUIR** está arriba y pide confirmación.',
   ] },
-  { icon: mdiBedOutline, title: 'Descanso', text: [
-    'Los puntos de descanso permiten un descanso corto (gastando dados de golpe) o largo (todo el grupo recupera PG y conjuros). Cada punto se usa una vez.',
-    'La posada da un descanso largo por zona: tras terminar una zona (o una aventura). Si no, solo un descanso corto.',
-    'Puedes volver a una zona anterior: la encontrarás tal como la dejaste, con sus descansos.',
+  { icon: mdiBedOutline, title: 'Descanso', sub: 'Recuperar fuerzas', text: [
+    '**Puntos de descanso**: corto (gastas dados de golpe) o largo (recuperáis PG y conjuros). Cada uno se usa una vez.',
+    '**Posada**: un descanso largo por zona terminada. Si no, solo corto.',
+    'Si vuelves a una zona anterior, sigue **como la dejaste**, con sus descansos.',
   ] },
-  { icon: mdiStorefrontOutline, title: 'Los pueblos', text: [
-    'Desde el último punto de descanso de cada mapa (en el mapa del jefe, el primero) puedes ir al pueblo para comprar, curar en el templo o descansar en la posada. Al volver, apareces en ese mismo punto.',
-    'El templo devuelve la vida a los muertos por 50 po. Lo que vendes se queda en la tienda y puedes recomprarlo.',
-    'Algunos cofres están tras un obstáculo (un pozo, una telaraña, una losa…). Si alguien lleva el objeto que hace falta (cuerda, antorcha, palanqueta, fuego de alquimista, agua bendita…), se usa solo; si no, el grupo te dice qué necesita.',
+  { icon: mdiStorefrontOutline, title: 'Los pueblos', sub: 'Tienda, templo y posada', text: [
+    'Ve al pueblo desde el **último punto de descanso** de cada mapa. Al volver, apareces allí.',
+    '**Templo**: cura y devuelve la vida a los muertos por 50 po.',
+    '**Tienda**: lo que vendes se queda en ella y puedes recomprarlo.',
+    'Algunos cofres están **tras un obstáculo**. Si alguien lleva lo necesario (cuerda, antorcha, palanqueta…), se usa solo.',
   ] },
-  { icon: mdiMapOutline, title: 'El reino', text: [
-    'Desde la Puerta del pueblo se viaja por el reino. Valdescarcha lleva a Hondaroca; Vegaumbría, a El Corazón Hueco (se abre al vencer en Hondaroca), Cumbrenieve, a El Invierno del Dragón (se abre al vencer en el bosque), y Arenaroja, a La Tumba de los Reyes Serpiente (se abre al vencer a Vharzûl).',
-    'Cada aventura tiene un nivel máximo: 2 en Hondaroca, 3 en el bosque, 4 en la montaña y 5 en la tumba. Dentro de ella nadie lo pasa (los PX de más no cuentan) y, al entrar en la sala del jefe, quien no lo tenga sube a él.',
-    'La salida de cada zona está cerrada: su llave se ve en el mapa, en la sala más alejada. En la primera zona, la puerta de entrada lleva al pueblo.',
+  { icon: mdiMapOutline, title: 'El reino', sub: 'Aventuras y niveles', text: [
+    'Desde la **Puerta del pueblo** se viaja por el reino.',
+    '**Valdescarcha** → Hondaroca. **Vegaumbría** → El Corazón Hueco. **Cumbrenieve** → El Invierno del Dragón. **Arenaroja** → La Tumba de los Reyes Serpiente.',
+    'Cada aventura se abre al **vencer la anterior**.',
+    '**Nivel máximo**: 2, 3, 4 y 5. Al entrar en la sala del jefe, quien no lo tenga sube a él.',
+    'La **salida de cada zona** está cerrada. Su llave está en la sala más alejada.',
   ] },
-  { icon: mdiAccountGroupOutline, title: 'Compañeros y afinidad', text: [
-    'El grupo es el héroe y hasta tres aliados. En la posada eliges quién te acompaña; los demás esperan allí. Al empezar el bosque o la montaña solo te acompaña uno, hasta que se une el primer aliado de esa aventura.',
-    'Si conoces a un aliado nuevo con el grupo lleno, eliges quién vuelve a la posada. Lo que no sea su equipo de siempre (llaves, pociones, hallazgos) se lo deja a los demás.',
-    'Afinidad: cada aventura que terminas con un aliado en el grupo abre una charla nueva con él en la posada («Charlas»). Son tres por aliado.',
-    'Con la tercera charla la afinidad llega al máximo y el aliado gana Inspiración heroica: una vez por aventura repite una tirada fallida (un ataque o una prueba), sin que tengas que hacer nada.',
+  { icon: mdiAccountGroupOutline, title: 'Compañeros y afinidad', sub: 'Quién os acompaña', text: [
+    'El grupo es **el héroe y hasta tres aliados**. En la posada eliges quién va.',
+    'Al empezar el bosque o la montaña **solo va uno**, hasta que se une el primer aliado de esa aventura.',
+    'Con el grupo lleno, al conocer a alguien **eliges quién vuelve** a la posada.',
+    '**Afinidad**: cada aventura terminada con un aliado abre una **charla nueva** con él en la posada. Son tres.',
+    'Tras la tercera, gana **Inspiración heroica**: repite una tirada fallida una vez por aventura.',
   ] },
-  { icon: mdiCardsOutline, title: 'Las cartas', text: [
-    'Cada personaje y enemigo es una carta: la ilustración por delante y la ficha por detrás («Ver ficha» o desliza la carta para girarla). Toca la ilustración de la carta ampliada para ver el arte a pantalla completa.',
-    'En la ficha, toca un objeto para ver sus datos. Un personaje puede dar objetos a otro desde su ficha.',
+  { icon: mdiCardsOutline, title: 'Las cartas', sub: 'Personajes y enemigos', text: [
+    'Cada personaje y enemigo es **una carta**: ilustración delante, **ficha detrás**.',
+    '**Desliza** la carta o toca «Ver ficha» para girarla. Toca la ilustración para verla a pantalla completa.',
+    'En la ficha, **toca un objeto** para ver sus datos o dárselo a otro.',
   ] },
-  { icon: mdiSkullOutline, title: 'Caídos y muertos', text: [
-    'A 0 PG el personaje cae. Si el combate termina antes de que muera, se levanta con 1 PG.',
-    'Cada turno, el caído tira salvaciones contra la muerte. Tres fallos y está muerto: solo el templo de un pueblo puede devolverle la vida.',
+  { icon: mdiSkullOutline, title: 'Caídos y muertos', sub: 'Qué pasa a 0 PG', text: [
+    'A **0 PG** el personaje cae. Si el combate acaba antes, se levanta con 1 PG.',
+    'Cada turno tira **salvaciones contra la muerte**. **Tres fallos**: muerto.',
+    'Solo el **templo** puede devolverle la vida.',
   ] },
 ];
 
@@ -81,6 +96,13 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Modo desarrollador: en Ajustes, cada ayuda tiene su interruptor (mapa entero, teletransporte, superar obstáculos y pruebas, ganar combate, oro infinito, viajar, subir de nivel y empezar de cero). Al activarlo, todas encendidas.',
     'Los mapas de las cuatro aventuras tienen casi cien decorados nuevos que cuentan las salas: entibados, montacargas, nichos funerarios, nidos, juncos, tronos, jaulas…',
     'Web en el ordenador: con la ventana apaisada, el juego pasa a un modo escritorio con la interfaz en una columna central, pueblo y tienda en dos columnas, el registro del combate al lado y atajos de teclado en combate (1-9 para las acciones, Esc para cancelar).',
+    'Web en el ordenador: los fondos de todas las pantallas se amplían con la misma ilustración desenfocada, las imágenes ya no se cortan por arriba y los ajustes y las ventanas no ocupan todo el ancho.',
+    'Cómo funciona: temas plegables, puntos cortos con lo importante resaltado y capturas numeradas del mapa y del combate.',
+    'El cuadro de victoria separa cada subida de nivel y sus novedades del resumen de PX y botín.',
+    'Los objetos se ven igual en la tienda, el baúl de la posada y los cofres que en el inventario.',
+    'El hongo chillón ya atrae a alguien: tras su grito, en el asalto siguiente acude una rata o un lagarto.',
+    'El icono de cada combate en el mapa es el enemigo que de verdad os vais a encontrar.',
+    'Si una decisión os enseña un acceso o un escondite que ya habíais descubierto, ahora lo dice.',
   ] },
   { version: 'v0.147', items: [
     'Cuarta aventura: La Tumba de los Reyes Serpiente. Se abre al vencer a Vharzûl. Desde Arenaroja, en las Colinas de Ocre, bajáis a una tumba de hombres serpiente en busca de los pastores y caravaneros desaparecidos.',

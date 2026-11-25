@@ -435,7 +435,7 @@ export function Combat() {
   };
 
   return (
-    <Bg src={IMG[cb.bg]} dim={0.45} full>
+    <Bg src={IMG[cb.bg]} dim={0.45} full wash>
       <View style={{ flex: 1, flexDirection: landscape ? 'row' : 'column' }}>
       <View testID="combat-field" ref={rootRef} collapsable={false} style={[{ flex: 1, minHeight: 0, overflow: 'hidden', paddingTop: ins.top + 4, paddingHorizontal: 6 }, esc.on && { width: boardWidth, alignSelf: 'center' }]} onLayout={e => setArea(e.nativeEvent.layout.height - ins.top - 4)}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
@@ -850,7 +850,7 @@ const st = StyleSheet.create({
   turns: { height: GEAR_H, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: C.border, borderRadius: 10, backgroundColor: 'rgba(0,0,0,0.55)', paddingHorizontal: 6 },
   turnsRound: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 11, textAlign: 'center', marginRight: 4, lineHeight: 13 },
   helpBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', paddingHorizontal: 16 },
-  helpPanel: { flex: 1, backgroundColor: C.panel, borderColor: C.gold, borderWidth: 1, borderRadius: 8, padding: 14 },
+  helpPanel: { flex: 1, width: '100%', maxWidth: 560, alignSelf: 'center',  backgroundColor: C.panel, borderColor: C.gold, borderWidth: 1, borderRadius: 8, padding: 14 },
   helpSub: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 17, marginTop: 6, marginBottom: 8, borderBottomWidth: 1, borderColor: C.border, paddingBottom: 2 },
   helpRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
   num: { width: 22, height: 22, borderRadius: 11, backgroundColor: C.goldHi, alignItems: 'center', justifyContent: 'center' },
