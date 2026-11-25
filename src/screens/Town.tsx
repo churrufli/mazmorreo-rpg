@@ -137,7 +137,9 @@ export function Town() {
   return (
     // Al cambiar de lugar, la ilustración nueva entra con un fundido.
     <FadeIn key={place} from={0} duration={500} style={{ flex: 1 }}>
-    <Bg src={IMG[town.bg[place === 'diario' ? 'posada' : place === 'galeria' ? 'menu' : place]]} dim={place === 'menu' ? 0.15 : 0.45}>
+    <Bg src={IMG[town.bg[place === 'diario' ? 'posada' : place === 'galeria' ? 'menu' : place]]} dim={place === 'menu' ? 0.15 : 0.45} full={esc.on}>
+      {/* Escritorio: tienda, posada y galería usan un ancho mayor (dos columnas); el resto, la columna normal. */}
+      <View style={esc.on ? { flex: 1, alignSelf: 'center', width: WIDE.includes(place) ? Math.min(esc.width - 48, 1120) : esc.col } : { flex: 1 }}>
       <View style={[st.top, { paddingTop: ins.top + 8 }]}>
         <Text style={st.title}>{place === 'menu' ? town.name : place === 'galeria' ? 'Galería' : place[0].toUpperCase() + place.slice(1)}</Text>
         <View style={st.topRight}>
@@ -187,8 +189,12 @@ export function Town() {
         {place === 'galeria' ? <Galeria g={g} /> : null}
         {place === 'tienda' ? (
           <Panel>
+            <Cols on={esc.on}
+              a={<>
             <Text style={st.h}>Personajes · toca el seleccionado para ver su ficha</Text>
             {renderPartyBar()}
+              </>}
+              b={<>
             <Text style={st.h}>Comprar</Text>
             {buyer.items.length >= MAX_ITEMS ? <Text style={st.full}>Inventario lleno: {buyer.name.split(' ')[0]} no puede llevar más objetos. Vende algo o elige a otro.</Text> : null}
             {stock.map(id => buying === id ? (
@@ -219,6 +225,8 @@ export function Town() {
                 disabled={!afford(ITEMS[id].value) || buyer.items.length >= MAX_ITEMS}
                 onPress={() => setBuying(id)} />
             ))}
+              </>}
+              c={<>
             <Text style={st.h}>Vender (mitad de su valor)</Text>
             {buyer.items.filter(it => !keeps(it)).map(it => {
               const v = sellPrice(ITEMS[it.id].value);
@@ -245,6 +253,7 @@ export function Town() {
               );
             })}
             {buyer.items.some(keeps) ? <Text style={st.itemDesc}>Las llaves no se venden.</Text> : null}
+              </>} />
           </Panel>
         ) : null}
         {place === 'templo' ? (
@@ -262,6 +271,8 @@ export function Town() {
         ) : null}
         {place === 'posada' ? (
           <Panel>
+            <Cols on={esc.on}
+              a={<>
             <T>La posada ofrece cama caliente y un rincón tranquilo para escribir el diario.</T>
             {/* Un descanso largo por zona: solo se duerme de verdad tras terminar una zona; si no, descanso corto. */}
             {(() => {
@@ -280,6 +291,8 @@ export function Town() {
               );
             })()}
             <Btn label="Guardar partida" onPress={() => { storage.save(g); say('Partida guardada.'); }} />
+              </>}
+              b={<>
             {/* Baúl de la posada, el mismo en todos los pueblos (el autor 2026-11-06). */}
             <Text style={st.h}>Personajes · toca el seleccionado para ver su ficha</Text>
             {renderPartyBar()}
@@ -315,6 +328,8 @@ export function Town() {
               }} />
               <Text style={st.itemDesc}>Las armas y armaduras se equipan automáticamente según las reglas de la clase al incorporarlas al inventario.</Text>
             </> : null}
+              </>}
+              c={<>
             {allies.length ? (
               <View>
                 <Text style={st.h}>Compañeros para la próxima salida</Text>
@@ -339,6 +354,7 @@ export function Town() {
                 })}
               </View>
             ) : null}
+              </>} />
           </Panel>
         ) : null}
         {place === 'puerta' ? (
@@ -354,6 +370,7 @@ export function Town() {
         {place === 'diario' ? <Diary /> : null}
         </FadeIn>
       </ScrollView>
+      </View>
       {sheet ? (
         <CardModal key={sheet} char={g.party.find(c => c.id === sheet)} info={charInfo(g.party.find(c => c.id === sheet)!)} party={g.party} others={g.party.filter(c => c.id !== sheet).map(c => ({ key: c.id, info: charInfo(c) }))} onPick={setSheet} town={town.name} onClose={() => setSheet(undefined)}
           onUse={(uid, to) => { let t = ''; edit(gg => { t = itemOutside(gg, sheet, uid, to); }, true); say(t); }}
@@ -544,6 +561,21 @@ export function Defeat() {
         </Panel>
       </View>
     </Bg>
+  );
+}
+
+/**
+ * Escritorio: dos columnas (a y c a la izquierda, b a la derecha). En móvil, a, b y c una tras otra, como siempre.
+ */
+const WIDE: string[] = ['tienda', 'posada', 'galeria'];
+
+function Cols({ on, a, b, c }: { on: boolean; a: React.ReactNode; b: React.ReactNode; c: React.ReactNode }) {
+  if (!on) return <>{a}{b}{c}</>;
+  return (
+    <View style={{ flexDirection: 'row', gap: 24 }}>
+      <View style={{ flex: 1 }}>{a}{c}</View>
+      <View style={{ flex: 1 }}>{b}</View>
+    </View>
   );
 }
 

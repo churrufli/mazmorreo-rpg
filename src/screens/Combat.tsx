@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useEscritorio } from '../ui/escritorio';
+import { useTeclas } from '../ui/teclado';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG } from '../assets';
 import { C, F } from '../theme';
@@ -310,6 +311,14 @@ export function Combat() {
     setTip(undefined);
     setSel(a);
   };
+  // Web: 1-9 usan las acciones de la categoría abierta (como tocarlas) y Esc cancela la acción elegida.
+  useTeclas(key => {
+    if (key === 'Escape') { close(); return; }
+    const n = Number(key);
+    if (!ready || auto || cb.result || !n) return;
+    const a = grouped[n - 1];
+    if (a) choose(a);
+  });
   const showCategory = (id: string) => { setSel(undefined); setTip({ title: (CATEGORIES.find(c => c[0] === id)?.[1] ?? '').toLocaleUpperCase('es-ES'), text: CATEGORY_HELP[id] }); };
   const useTip = () => {
     const a = tip?.a;
