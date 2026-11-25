@@ -5,6 +5,7 @@ import type { LogLine } from '../engine/combat';
 import { C, F } from '../theme';
 import { Btn, Icon } from './kit';
 import { groupLog } from './registro';
+import { useEscritorio } from './escritorio';
 
 /** Icono y color de cada tipo de línea del registro de combate. */
 const TONE: Record<NonNullable<LogLine['c']> | 'none', { icon: string; color: string }> = {
@@ -19,11 +20,13 @@ const TONE: Record<NonNullable<LogLine['c']> | 'none', { icon: string; color: st
 /** Registro de todo lo que ha pasado en la partida. Con `combat`, se ordena por rondas y turnos. */
 export function LogModal({ lines, combat, onClose, title = 'Registro' }: { lines: string[]; combat?: LogLine[]; onClose: () => void; title?: string }) {
   const ref = useRef<ScrollView>(null);
+  // Escritorio: panel lateral a la derecha, sin tapar el tablero ni el mapa.
+  const esc = useEscritorio();
   return (
     <Modal transparent animationType="fade" onRequestClose={onClose}>
-      <View style={st.logBg}>
+      <View style={[st.logBg, esc.on && { backgroundColor: 'rgba(0,0,0,0.45)', paddingVertical: 16 }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Cerrar" />
-        <View style={st.logPanel}>
+        <View style={[st.logPanel, esc.on && { width: 460, alignSelf: 'flex-end' }]}>
           <Text style={st.logTitle}>{title}</Text>
           <ScrollView ref={ref} onContentSizeChange={() => ref.current?.scrollToEnd({ animated: false })} style={{ flex: 1 }}>
             {combat?.length ? groupLog(combat).map(round => (

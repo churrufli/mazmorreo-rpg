@@ -6,6 +6,7 @@ import { Btn, Crop, Panel } from '../ui/kit';
 import { ADV_LIST, AdvId, TOWNS, TownId, advOf } from '../engine/aventuras';
 import { MONSTERS } from '../data/srd';
 import type { Game } from '../engine/game';
+import { useEscritorio } from '../ui/escritorio';
 
 interface Pic { img: ImgKey; name: string; known: boolean; hint?: string }
 
@@ -51,7 +52,9 @@ export function Galeria({ g }: { g: Game }) {
   const [open, setOpen] = useState<{ list: Pic[]; i: number }>();
   const { width, height } = useWindowDimensions();
   const cats = picsOf(g, adv);
-  const tw = (width - 92) / 4;
+  // Escritorio: el ancho de la galería (el mismo que en Town) y seis miniaturas por fila.
+  const esc = useEscritorio();
+  const tw = esc.on ? Math.floor((Math.min(width - 48, 1120) - 90) / 6) : (width - 92) / 4;
   return (
     <Panel>
       <View style={st.tabs}>
