@@ -9,6 +9,7 @@ import {
   Char, MAX_ITEMS, abilMod, allyFor, createAlly, isDown, newItem, passivePerception, raiseTo, sightRadius, shortRest, longRest, needsRest,
 } from './rules';
 import type { Game } from './game';
+import { bleed } from './muerte';
 import { bumpElement, elemAt, elemBlocked, elemCells, elemNews, elemPasses, elemState, enterElement, isMechanism, zoneElements } from './elementos';
 
 export type Hex = [number, number];
@@ -326,7 +327,10 @@ export function step(g: Game, to: Hex, free = false): Ev[] {
   const first = !g.visited.includes(k);
   if (first) g.visited.push(k);
   g.note = note(g, k, first);
-  const evs: Ev[] = elemNews(g);
+  // Los caídos sin estabilizar tiran una salvación contra la muerte por casilla (el autor 2026-11-25).
+  const blood = bleed(g);
+  if (blood.note) g.note = blood.note;
+  const evs: Ev[] = [...blood.evs, ...elemNews(g)];
   // Mecanismo que se acciona al pisarlo, portal activo o aviso del elemento de la casilla.
   if (el) {
     const r = enterElement(g, el);

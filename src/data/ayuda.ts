@@ -58,9 +58,12 @@ export const COMO_FUNCIONA: { icon: string; title: string; sub: string; img?: Im
     'En la ficha, **toca un objeto** para ver sus datos o dárselo a otro.',
   ] },
   { icon: mdiSkullOutline, title: 'Caídos y muertos', sub: 'Qué pasa a 0 PG', text: [
-    'A **0 PG** el personaje cae. Si el combate acaba antes, se levanta con 1 PG.',
-    'Cada turno tira **salvaciones contra la muerte**. **Tres fallos**: muerto.',
-    'Solo el **templo** puede devolverle la vida.',
+    'A **0 PG** el personaje cae y tira **salvaciones contra la muerte**: 10 o más es un éxito; un 20 le levanta con 1 PG.',
+    'En combate tira una por turno. Fuera del combate, **una por casilla** que avanza el grupo.',
+    '**Tres éxitos**: queda estable a 0 PG. **Tres fallos**: muerto.',
+    'Para salvarle, **cúrale con una poción** desde su ficha o pulsa **Estabilizar** (Medicina CD 10 de un compañero).',
+    'Los **jefes** a veces rematan a un caído que tienen delante: cada golpe cuenta como dos fallos.',
+    'Solo el **templo** puede devolver la vida a un muerto.',
   ] },
 ];
 
@@ -103,6 +106,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'El hongo chillón ya atrae a alguien: tras su grito, en el asalto siguiente acude una rata o un lagarto.',
     'El icono de cada combate en el mapa es el enemigo que de verdad os vais a encontrar.',
     'Si una decisión os enseña un acceso o un escondite que ya habíais descubierto, ahora lo dice.',
+    'Los caídos ya no se estabilizan solos al acabar el combate: en el mapa tiran una salvación contra la muerte por casilla hasta que les curéis, les estabilicéis (Medicina CD 10) o mueran. Los jefes a veces rematan a un caído.',
   ] },
   { version: 'v0.147', items: [
     'Cuarta aventura: La Tumba de los Reyes Serpiente. Se abre al vencer a Vharzûl. Desde Arenaroja, en las Colinas de Ocre, bajáis a una tumba de hombres serpiente en busca de los pastores y caravaneros desaparecidos.',

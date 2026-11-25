@@ -2,6 +2,11 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 25 de noviembre de 2026 — Morir de verdad
+
+- **Salvaciones fuera del combate** (`src/engine/muerte.ts`): al acabar el combate los caídos ya no quedan estables solos. En el mapa tiran una salvación por casilla hasta estabilizarse, levantarse con un 20 o morir. Aviso con sus éxitos y fallos, botón **Estabilizar** (Medicina CD 10 de un compañero) o poción desde la ficha.
+- **Jefes**: un tercio de las veces rematan cuerpo a cuerpo a un caído que tienen delante (crítico automático del SRD: dos fallos).
+
 ## 25 de noviembre de 2026 — Nuevas modificaciones
 
 - **Fondos**: todas las pantallas con ilustración (salvo crear héroe) usan en escritorio la misma imagen desenfocada a los lados (`Bg` con `wash`), y la ilustración se ancla arriba para que no se corten caras ni cabezas.

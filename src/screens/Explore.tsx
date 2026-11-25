@@ -14,12 +14,13 @@ import { hasPortraitFrame } from '../data/portraitFrames';
 import { SvgFaceImage } from '../ui/FaceImage';
 import { Escena } from '../ui/Escena';
 import { firstFoe, sceneById, sceneSpent } from '../engine/escenas';
+import { dying, medic } from '../engine/muerte';
 import { townRest, rereadAt, sceneOn, sceneFight, wonCell, itemOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, hkey, passable, disarmBonus, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
 import { ITEMS } from '../data/srd';
 import { MONSTERS } from '../data/srd';
 import { Card, CardInfo, CardModal, charInfo } from '../ui/Card';
-import { Dialogue, FadeIn, HOLD_MS, Message } from '../ui/Overlays';
+import { Dialogue, FadeIn, HOLD_MS, Message, Portrait } from '../ui/Overlays';
 import { Btn, Icon } from '../ui/kit';
 import { fxFull, useFxMode } from '../ui/movimiento';
 import { AmbienteAgua, AmbienteAire, AmbienteSuelo, Vineta, useAmbientActive } from '../ui/ambiente';
@@ -184,7 +185,7 @@ const PartyCard = memo(function PartyCard({ info, id, width, dead, onOpen }: { i
 }, (a, b) => a.width === b.width && a.dead === b.dead && JSON.stringify(a.info) === JSON.stringify(b.info));
 
 export function Explore() {
-  const { game, queue, walking, walkTo, walkStep, next, rest, trapChoice, edit, zoom, setZoom, goTown, drop, pickUp, sceneChoose, sceneLeave, swapOut, reread, devPass } = useStore();
+  const { game, queue, walking, walkTo, walkStep, next, rest, trapChoice, edit, zoom, setZoom, goTown, drop, pickUp, sceneChoose, sceneLeave, swapOut, reread, devPass, stabilize } = useStore();
   const g = game!;
   const ins = useSafeAreaInsets();
   const win = useWindowDimensions();
@@ -659,6 +660,18 @@ export function Explore() {
         {g.visited.length < 5 && !head && !g.note ? (
           <Text style={st.hint} pointerEvents="none">Toca una casilla para moverte (o la oscuridad para avanzar hacia allí). Pellizca para acercar o alejar el mapa. Mantén pulsada una carta para verla en grande.</Text>
         ) : null}
+        {/* Caídos que se desangran: sus salvaciones y cómo socorrerles (el autor 2026-11-25). */}
+        {!head ? g.party.filter(dying).map(c => (
+          <View key={`dying${c.id}`} style={st.dying}>
+            <Portrait img={c.img} size={44} />
+            <View style={{ flex: 1 }}>
+              <Text style={st.dyingName}>{c.name.split(' ')[0]} se desangra</Text>
+              <Text style={st.dyingTxt}>Éxitos <Text style={{ color: '#7fcf8f' }}>{'●'.repeat(c.deathS)}{'○'.repeat(3 - c.deathS)}</Text>  Fallos <Text style={{ color: '#e06b5b' }}>{'●'.repeat(Math.min(3, c.deathF))}{'○'.repeat(Math.max(0, 3 - c.deathF))}</Text></Text>
+              <Text style={st.dyingTxt}>Una salvación por casilla. Cúrale con una poción desde su ficha o estabilízale.</Text>
+            </View>
+            {medic(g, c.id) ? <Btn small label="Estabilizar" sub="Medicina CD 10" disabled={!!walking.length} onPress={() => stabilize(c.id)} /> : null}
+          </View>
+        )) : null}
         {!head && !walking.length && (atTownRest(g) || here.length) ? (
           <View style={st.travel}>
             {here.length ? <Btn small label={`Recoger (${here.length})`} onPress={pickUp} /> : null}
@@ -812,6 +825,9 @@ const st = StyleSheet.create({
   logBtn: { marginLeft: 14 },
   stack: { position: 'absolute', left: 12, right: 12, alignItems: 'center', gap: 6 },
   travel: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 8 },
+  dying: { flexDirection: 'row', alignItems: 'center', gap: 8, width: '100%', maxWidth: 520, padding: 8, borderRadius: 8, borderWidth: 1, borderColor: '#a4382c', backgroundColor: 'rgba(40,10,8,0.92)' },
+  dyingName: { fontFamily: F.titleBold, color: '#f0a090', fontSize: 14 },
+  dyingTxt: { fontFamily: F.rules, color: C.text, fontSize: 12.5, lineHeight: 17 },
   token: { position: 'absolute', left: 0, top: 0, width: S * 2, height: S * 2 },
   toastWrap: { alignItems: 'center' },
   toast: { fontFamily: F.italic, color: C.text, fontSize: 16, backgroundColor: 'rgba(20,17,13,0.92)', borderColor: C.border, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, textAlign: 'center' },

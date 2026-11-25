@@ -844,8 +844,8 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
       delete g.enemyHp[id];
     }
     const drops = cb.units.filter(u => u.side === 'enemy' && u.dead && u.drop).map(u => u.drop!);
-    // Como en el SRD, los caídos no se levantan solos: quedan estables a 0 PG hasta que alguien los cure o descansen.
-    for (const c of g.party) if (!c.dead && c.hp <= 0) { c.stable = true; c.deathS = c.deathF = 0; }
+    // Como en el SRD, los caídos no se levantan solos ni se estabilizan al acabar el combate: en el mapa siguen
+    // tirando salvaciones hasta que alguien los estabilice o los cure (el autor 2026-11-25; ver muerte.ts).
     // Héroe solo: tras cada victoria recupera el aliento (ajuste de equilibrio de la zona 1).
     g.gold += gold;
     const alive0 = g.party.filter(c => !c.dead).length;
@@ -1540,6 +1540,10 @@ export function enemyTurn(g: Game, cb: Combat) {
     const pool = reach(cb, u, ranged);
     let t = cb.units.find(x => x.key === p.targets[i] && pool.includes(x) && conscious(x));
     if (!t) t = chooseTarget(g, cb, u, pool.filter(x => !lost.includes(x.key)), ranged);
+    // Jefe: a veces remata a un caído a su alcance (cuerpo a cuerpo contra un caído es crítico: dos fallos; el autor 2026-11-25).
+    const down = !ranged && i === 0 && pool.length && bossUnit(g, cb, u)
+      ? cb.units.find(x => x.side === 'party' && alive(x) && x.hp <= 0 && (x.row === 'front' || !frontHeld(cb, 'party'))) : undefined;
+    if (down && rand(g.rng) < 1 / 3) { t = down; say(cb, `${u.name} se vuelve hacia ${down.name}, que está en el suelo.`, 'big'); }
     if (!t) break;
     // Quien está escondido solo recibe el golpe si el enemigo le encuentra; si no, busca otro objetivo.
     if (t.hidden && !spot(g, cb, u, t)) {
@@ -1661,6 +1665,9 @@ export function planAll(g: Game, cb: Combat) {
 }
 
 /** Jefe de su grupo (jefe goblin, Orvane, la bruja…): varios ataques o conjuros. */
+/** El jefe de la zona: el enemigo de más PX en el combate del jefe. */
+const bossUnit = (g: Game, cb: Combat, u: Unit) => cb.encounters.includes(bossEncounter(g.zone)) &&
+  u === cb.units.filter(x => x.side === 'enemy' && x.mon).sort((a, b) => MONSTERS[b.mon!].xp - MONSTERS[a.mon!].xp)[0];
 const isLeader = (x: Unit) => !!x.mon && (MONSTERS[x.mon].ai === 'caster' || (MONSTERS[x.mon].multi ?? 1) >= 2);
 /** Ha caído el jefe de su misma familia (y él no es jefe). */
 const leaderDown = (cb: Combat, u: Unit) => !isLeader(u) && cb.units.some(x => x.side === 'enemy' && x.dead && isLeader(x) && MONSTERS[x.mon!].ai === MONSTERS[u.mon!].ai);
