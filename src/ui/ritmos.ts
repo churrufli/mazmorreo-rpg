@@ -1,3 +1,5 @@
+import type { Roll } from '../engine/combat';
+
 // Ritmos en bucle de la ambientación del mapa: pasos de [valor, duración en ms]. El bucle vuelve al último valor.
 // En Android los anima Animated en el hilo nativo (un valor compartido por ritmo); en la web, animaciones CSS.
 export type Paso = [number, number];
@@ -28,3 +30,11 @@ export const reposo = (k: Ritmo) => REPOSO[k] ?? 1;
 /** Periodos de la deriva de la bruma: el vertical y la respiración no coinciden con el horizontal. */
 export const derivaY = (period: number) => Math.round(period * 0.63);
 export const respira = (period: number): Paso[] => [[0.7, Math.round(period * 0.41)], [1, Math.round(period * 0.47)]];
+
+/** Milisegundos hasta que se ve el resultado de la tirada: el d20 ya parado y los dados de daño en su cara final. */
+export const revealMs = (r: Roll) => {
+  const spin = r.enemy ? 320 : 500;
+  if (!r.dice?.length) return r.d20 ? spin : 0;
+  const start = r.d20 === 0 ? 0 : spin;
+  return Math.max(...r.dice.map((d, i) => start + i * 90 + (d.f === 6 ? 750 : 600)));
+};
