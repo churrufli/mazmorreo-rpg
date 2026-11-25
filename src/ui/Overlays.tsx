@@ -11,6 +11,8 @@ import { speaker } from '../engine/aventuras';
 import { dado } from '../sonido';
 import { ITEMS } from '../data/srd';
 import { useEscritorio } from './escritorio';
+import { victoryLines } from './victoria';
+import { FichaObjeto } from './FichaObjeto';
 import { DUR, EASE, fxFull, fxOn } from './movimiento';
 
 /** Retrato: recorte de la cara de la ilustración de la carta. */
@@ -220,7 +222,7 @@ export function Dialogue({ lines, hero, onDone, met, onMeet }: {
     return (
       <Pressable style={StyleSheet.absoluteFill} onPress={tap} accessibilityLabel="Continuar diálogo">
         <FadeIn key={i} from={0} duration={500} style={{ flex: 1 }}>
-          <Bg src={IMG[sp.img!]} dim={0.1}>
+          <Bg src={IMG[sp.img!]} dim={0.1} wash>
             <View style={{ flex: 1, justifyContent: 'flex-end', padding: 12, paddingBottom: 28 }}>
               <Panel style={st.dlg}>
                 <Text style={[st.speaker, { fontSize: 22 }]}>{sp.name}</Text>
@@ -326,7 +328,7 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
               {items?.length ? <View style={st.items}>{items.map((it, i) => ITEMS[it]
                 ? <Pressable key={i} onPress={() => setLook(x => (x === it ? undefined : it))} accessibilityRole="button" accessibilityLabel={`Ver ${ITEMS[it].name}`}><PopIn delay={i * 90}><Image source={IMG[ITEMS[it].img]} style={[st.itemImg, look === it && st.itemSel]} /></PopIn></Pressable>
                 : <PopIn key={i} delay={i * 90}><Image source={IMG[it as ImgKey]} style={st.itemImg} /></PopIn>)}</View> : null}
-              {look && ITEMS[look] ? <View style={st.itemInfo}><Text style={st.itemInfoName}>{ITEMS[look].name}</Text><Text style={st.itemInfoTxt}>{ITEMS[look].desc}</Text></View> : null}
+              {look && ITEMS[look] ? <View style={st.itemInfo}><FichaObjeto id={look} /></View> : null}
               {!look && items?.some(it => ITEMS[it]) ? <Text style={st.itemHint}>Toca un objeto para leer qué hace.</Text> : null}
               {table?.map(([k, v]) => (
                 <View key={k} style={st.tRow}>
@@ -335,9 +337,20 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
                 </View>
               ))}
               {table?.length ? <View style={{ height: 8 }} /> : null}
-              {lines.map((l, i) => /sube a nivel/.test(l)
-                ? <FadeIn key={i} delay={i * step} from={6} duration={DUR.panel}><LevelUp text={l} /></FadeIn>
-                : <FadeIn key={i} delay={i * step} from={6} duration={DUR.panel}><Text style={[st.msgLine, /^Objetivo cumplido/.test(l) && st.goalOk, /^Objetivo fallado/.test(l) && st.goalKo]}>{l}</Text></FadeIn>)}
+              {victoryLines(lines).map((l, i) => (
+                <FadeIn key={i} delay={i * step} from={6} duration={DUR.panel}>
+                  {l.kind === 'level' ? <LevelUp text={l.title} hp={l.hp} />
+                    : l.kind === 'feature' ? (
+                      <View style={st.feat}>
+                        {l.tag ? <Text style={st.featTag}>{l.tag.toUpperCase()}</Text> : null}
+                        <Text style={st.featName}>{l.name}</Text>
+                        {l.text ? <Text style={st.featTxt}>{l.text}</Text> : null}
+                      </View>
+                    )
+                    : l.kind === 'summary' ? <Text style={st.summary}>{l.text}</Text>
+                    : <Text style={[st.msgLine, /^Objetivo cumplido/.test(l.text) && st.goalOk, /^Objetivo fallado/.test(l.text) && st.goalKo]}>{l.text}</Text>}
+                </FadeIn>
+              ))}
               </ScrollView>
               {children ?? <Btn primary label="Continuar" onPress={onDone} />}
             </View>
@@ -390,7 +403,7 @@ function Glints({ size }: { size: number }) {
 }
 
 /** Subida de nivel: el recuadro dorado se enciende una vez, con un brillo que lo recorre. */
-function LevelUp({ text }: { text: string }) {
+function LevelUp({ text, hp }: { text: string; hp?: string }) {
   const v = useRef(new Animated.Value(fxOn() ? 0 : 1)).current;
   const [w, setW] = useState(0);
   useEffect(() => { if (fxOn()) Animated.timing(v, { toValue: 1, duration: 900, delay: 200, easing: EASE.inOut, useNativeDriver: true }).start(); }, [v]);
@@ -400,6 +413,7 @@ function LevelUp({ text }: { text: string }) {
         transform: [{ translateX: v.interpolate({ inputRange: [0, 1], outputRange: [-40, w + 10] }) }, { skewX: '-20deg' }] }} /> : null}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#e0b56e', opacity: v.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 0.22, 0.06] }) }]} />
       <Text style={st.levelUpTxt}>{text}</Text>
+      {hp ? <Text style={st.levelUpHp}>{hp}</Text> : null}
     </View>
   );
 }
@@ -503,13 +517,19 @@ const st = StyleSheet.create({
   rollResLong: { fontSize: 14, lineHeight: 18, textAlign: 'center' },
   levelUp: { marginVertical: 8, padding: 8, borderWidth: 1, borderColor: C.gold, borderRadius: 6, backgroundColor: '#e0b56e18' },
   levelUpTxt: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 19, textAlign: 'center' },
+  // Los PG ganados van aparte, en una etiqueta: así no se parten entre dos líneas.
+  levelUpHp: { alignSelf: 'center', marginTop: 4, paddingHorizontal: 8, paddingVertical: 1, borderRadius: 10, backgroundColor: '#7fcf8f22', color: '#9fe0ad', fontFamily: F.rulesBold, fontSize: 13 },
+  // Novedades del personaje bajo su banda: etiqueta, nombre en dorado y descripción, con un filete a la izquierda.
+  feat: { marginLeft: 6, marginBottom: 8, paddingLeft: 10, borderLeftWidth: 2, borderColor: C.gold },
+  featTag: { fontFamily: F.rulesBold, color: C.textDim, fontSize: 11, letterSpacing: 1 },
+  featName: { fontFamily: F.textBold, color: C.goldHi, fontSize: 17, lineHeight: 21 },
+  featTxt: { fontFamily: F.rules, color: C.text, fontSize: 14, lineHeight: 20 },
+  summary: { fontFamily: F.italic, color: C.textDim, fontSize: 16, lineHeight: 21, marginBottom: 4 },
   winTitle: { fontSize: 28, textShadowColor: '#e0b56e', textShadowRadius: 12 },
   items: { flexDirection: 'row', justifyContent: 'center', marginBottom: 6 },
   itemImg: { width: 56, height: 56, marginHorizontal: 6 },
   itemSel: { borderWidth: 1.5, borderColor: C.gold, borderRadius: 6 },
   itemInfo: { borderWidth: 1, borderColor: C.border, borderRadius: 6, padding: 8, marginBottom: 8, backgroundColor: 'rgba(0,0,0,0.35)' },
-  itemInfoName: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 15 },
-  itemInfoTxt: { fontFamily: F.rules, color: C.text, fontSize: 13.5, lineHeight: 19 },
   itemHint: { fontFamily: F.italic, color: C.textDim, fontSize: 12, textAlign: 'center', marginBottom: 6 },
   msgLine: { fontFamily: F.text, color: C.text, fontSize: 17, lineHeight: 23, marginBottom: 6 },
   d20: { position: 'absolute', alignSelf: 'center', top: '36%', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.6)', padding: 12, borderRadius: 12 },

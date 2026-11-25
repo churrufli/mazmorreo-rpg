@@ -314,3 +314,12 @@ test('equilibrio: Orvane combate con su escolta de mefits, empiece el combate po
   expect(foes(party(['tiko']), ['z4_e05', 'z4_e04'])).toEqual(a);
   expect(a.orvane).toBe(1);
 });
+
+// El minero del agua negra os «señalaba una ruta» que ya habíais encontrado con la corriente de aire.
+test('una recompensa que revela algo ya descubierto lo dice en vez de prometer algo nuevo en el mapa', () => {
+  const g = game();
+  g.found.push('z1_s01');
+  const txt = JSON.stringify(chooseOption(g, 'z1_q02', 0));
+  expect(txt).toContain('Ya lo habíais descubierto');
+  expect(txt).not.toContain('Ya lo puedes ver en el mapa');
+});

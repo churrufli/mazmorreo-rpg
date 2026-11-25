@@ -168,6 +168,8 @@ export const IMG = {
   escena_kobold_puente: require('../assets/img/escena_kobold_puente.webp'),
   escena_marcas_altas: require('../assets/img/escena_marcas_altas.webp'),
   escena_minero_agua_negra: require('../assets/img/escena_minero_agua_negra.webp'),
+  ayuda_combate: require('../assets/img/ayuda_combate.webp'),
+  ayuda_mapa: require('../assets/img/ayuda_mapa.webp'),
   escena_ofrenda_guardian: require('../assets/img/escena_ofrenda_guardian.webp'),
   escena_pozo_engendro: require('../assets/img/escena_pozo_engendro.webp'),
   escena_registro_excavador: require('../assets/img/escena_registro_excavador.webp'),

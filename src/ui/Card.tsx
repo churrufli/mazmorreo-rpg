@@ -6,6 +6,7 @@ import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Bar, Btn, Crop, Icon } from './kit';
 import { mdiBagPersonalOutline, mdiCardAccountDetailsOutline, mdiCheck, mdiStarShooting } from '@mdi/js';
 import { PopIn, Portrait } from './Overlays';
+import { FichaObjeto } from './FichaObjeto';
 import { FACE } from '../data/caras';
 import type { FxKind } from '../engine/combat';
 import { ABIL_NAME, ABIL_SHORT, Ability, CLASSES, DmgType, ITEMS, MONSTERS, SPECIES } from '../data/srd';
@@ -536,16 +537,7 @@ function Sheet({ c, party, onGive, onDrop, onUse, onFlip }: { c: Char; party?: C
       </View>
       {it ? (
         <View style={st.itemBox}>
-          <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-            <Image source={IMG[ITEMS[it.id].img]} style={st.itemBig} />
-            <View style={{ flex: 1 }}>
-              <Text style={st.itemName}>{ITEMS[it.id].name}{it.charges !== undefined ? ` (${it.charges} cargas)` : ''}</Text>
-              <Text style={st.small}>{ITEMS[it.id].desc}</Text>
-              {equipState(c, it) ? <Text style={[st.small, { color: equipState(c, it)!.on ? '#7fcf8f' : C.textDim }]}>{equipState(c, it)!.on ? 'Equipado.' : 'Sin equipar.'}{equipState(c, it)!.why ? ` ${equipState(c, it)!.why}` : ''}</Text> : null}
-              {compareItem(c, it.id, it.uid) ? <Text style={st.small}>{compareItem(c, it.id, it.uid)}</Text> : null}
-              <Text style={st.small}>{keeps(it) ? 'Llave: no se vende ni se deja en el suelo.' : `Valor: ${ITEMS[it.id].value} po`}</Text>
-            </View>
-          </View>
+          <FichaObjeto id={it.id} owner={c} item={it} />
           {onUse && party && usableOutside(it.id) ? (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 4 }}>
               {party.filter(p => !p.dead && p.hp < p.maxHp).map(p => (
@@ -731,7 +723,6 @@ const st = StyleSheet.create({
   slotSel: { borderColor: C.goldHi, borderWidth: 2 },
   slotOn: { borderColor: C.gold },
   onMark: { position: 'absolute', right: 2, top: 2, width: 16, height: 16, borderRadius: 8, backgroundColor: C.goldHi, alignItems: 'center', justifyContent: 'center' },
-  itemBig: { width: 110, height: 110 },
   itemBox: { marginTop: 6, padding: 8, borderWidth: 1, borderColor: C.border, borderRadius: 6 },
   itemName: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 14, marginBottom: 2 },
   featureCard: { borderWidth: 1, borderColor: C.border, borderRadius: 7, backgroundColor: '#211f1a', padding: 8, marginBottom: 5 },

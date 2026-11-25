@@ -126,6 +126,9 @@ export function applyEffect(g: Game, e: Effect, who?: Char): { lines: string[]; 
     // El descubrimiento se registra en el juego, pero el relato no presupone
     // que exista un saco, pared, puerta o pasadizo visible en la ilustración.
     lines.push('Ya lo puedes ver en el mapa.');
+  } else if (e.reveal) {
+    // Otra escena ya lo había descubierto: que el texto no prometa algo nuevo en el mapa (el autor 2026-11-25).
+    lines.push('Ya lo habíais descubierto: no hay nada nuevo en el mapa.');
   }
   if (e.open && !g.done.includes(e.open)) g.done.push(e.open);
   setElems(g, e.set);
@@ -258,6 +261,17 @@ export function sizeEncounter(g: Game, ids: string[], boss: boolean) {
     g.encSize[id]--;
     if (count() === before) { g.encSize[id]++; break; }
   }
+}
+
+/**
+ * Primer enemigo que tendrá el combate, ya ajustado al grupo y a las escenas: es el que se ve en el mapa
+ * (antes salía el primero del encuentro original, aunque el ajuste lo quitara; el autor 2026-11-25).
+ * Se calcula sobre una copia: mirar el mapa no fija el tamaño del combate.
+ */
+export function firstFoe(g: Game, id: string, boss: boolean): any {
+  const t = { ...g };
+  sizeEncounter(t, [id], boss);
+  return enemiesOf(t, id)[0] ?? rolledEnemies(g, id)[0];
 }
 
 /** Elige una opción. Devuelve lo que se enseña después (resultado, la escena otra vez o un combate). */

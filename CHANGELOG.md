@@ -2,6 +2,16 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 25 de noviembre de 2026 — Nuevas modificaciones
+
+- **Fondos**: todas las pantallas con ilustración (salvo crear héroe) usan en escritorio la misma imagen desenfocada a los lados (`Bg` con `wash`), y la ilustración se ancla arriba para que no se corten caras ni cabezas.
+- **Escritorio**: Ajustes, información de la zona, ayuda del combate y ventanas de partidas con un ancho máximo de 560 px; el pueblo, más ancho.
+- **Cómo funciona** (`src/ui/ComoFunciona.tsx`): temas plegables con resumen, puntos cortos con resaltes y capturas numeradas del mapa y del combate.
+- **Victoria** (`src/ui/victoria.ts`): banda por subida de nivel con los PG aparte, novedades con nombre y descripción, y resumen discreto de PX, botín y nivel máximo.
+- **Ficha de objeto común** (`src/ui/FichaObjeto.tsx`) en inventario, tienda, baúl y cofres.
+- **Hongo chillón**: su primer grito trae una rata o un lagarto al empezar el asalto siguiente, también con el grupo pequeño.
+- **Mapa**: el icono de cada combate sale del grupo ya ajustado (`firstFoe`). Las decisiones que revelan algo ya descubierto lo dicen.
+
 ## 24 y 25 de noviembre de 2026 — La web en modo escritorio
 
 - **Modo escritorio** (`src/ui/escritorio.ts`): en la web, con la ventana apaisada y al menos 900 px de ancho, la interfaz va en una columna centrada de 520 a 600 px y las ilustraciones verticales se funden a negro con grano por los lados. En escenas y decisiones, los lados muestran la misma ilustración estirada y desenfocada (`Bg` con `wash`). En Android y en móviles no cambia nada.
