@@ -5319,7 +5319,7 @@
       }
     ],
     "dialogue_selection_rule": "Utiliza pre_boss_dialogue_brunna únicamente cuando Brunna haya sustituido a Liss y esté presente en el encuentro final. En los demás casos utiliza pre_boss_dialogue, que no depende de ningún aliado.",
-    "victory_reward": "Orvane cae derrotado. El cristal oscuro se agrieta y se deshace. Sin su energía, las aguas del monasterio empiezan a descender.\nLos cultistas supervivientes huyen. Tras la cámara de estudio encontráis a los mineros que siguen vivos, encerrados y agotados.\nLos liberáis y regresáis con ellos a Valdescarcha. Las familias vuelven a reunirse.\nLos documentos confirman que Aldric cerró el camino y los monjes sumergieron el cristal para proteger el valle. Hondaroca ya no está en peligro."
+    "victory_reward": "Orvane cae derrotado. El cristal oscuro se agrieta y se deshace en polvo. Sin su energía, las aguas del monasterio empiezan a descender.\nEl vapor pierde fuerza. El agua vuelve a circular por los canales de los monjes y los sellos dejan de recibir energía.\nLos cultistas supervivientes huyen y abandonan las ruinas. Tras la cámara de estudio encontráis a los mineros que siguen vivos, encerrados y agotados.\nLos liberáis y regresáis con ellos a Valdescarcha. Quienes escaparon antes podrán contar lo ocurrido.\nEn Valdescarcha hay abrazos y también duelo por quienes no vuelven. Las familias conocen al fin el destino de los desaparecidos.\nLos documentos confirman que Aldric cerró el camino y los monjes sumergieron el cristal para proteger el valle. Renunciaron a un poder inmenso para proteger a otros.\nLa amenaza del cristal ha terminado. Hondaroca queda en silencio y los supervivientes están a salvo."
   },
   "items": [
     {
