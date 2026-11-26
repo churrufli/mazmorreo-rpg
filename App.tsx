@@ -10,7 +10,7 @@ import { Combat } from './src/screens/Combat';
 import { Defeat, Town, Victory } from './src/screens/Town';
 import { FadeIn, Message } from './src/ui/Overlays';
 import { Btn } from './src/ui/kit';
-import { OptionsButton } from './src/ui/Settings';
+import { OptionsButton, Settings } from './src/ui/Settings';
 import { useEscritorio } from './src/ui/escritorio';
 import * as storage from './src/storage';
 import { startSound } from './src/sonido';
@@ -35,6 +35,14 @@ function Router() {
   const showEnding = useStore(s => s.showEnding);
 
   const [askExit, setAskExit] = useState(false);
+  // Web: los ajustes se abren desde el menú único de arriba (web/main.tsx), no con una rueda en cada pantalla.
+  const [webOpts, setWebOpts] = useState(false);
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const open = () => setWebOpts(true);
+    window.addEventListener('mazmorreo:ajustes', open);
+    return () => window.removeEventListener('mazmorreo:ajustes', open);
+  }, []);
   // Contador de tiempo jugado: suma solo con una partida abierta y la app delante. Se guarda con la partida.
   const playing = !!game && screen !== 'title' && screen !== 'slots' && screen !== 'create';
   useEffect(() => {
@@ -99,6 +107,7 @@ function Router() {
         </Message>
       ) : null}
       {/* Pantallas sin rueda de ajustes propia: el botón de opciones flota arriba a la derecha. */}
+      {webOpts ? <Settings onClose={() => setWebOpts(false)} /> : null}
       {OWN_GEAR.has(screen) ? null : <OptionsButton style={{ position: 'absolute', top: ins.top + 8, right: esc.on ? (esc.width - (screen === 'create' ? esc.col * 2 + 32 : esc.col)) / 2 + 12 : 12, padding: 6, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.55)' }} />}
     </>
   );

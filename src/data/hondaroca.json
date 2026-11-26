@@ -224,7 +224,7 @@
         {
           "id": "z1_r03",
           "name": "Almacén de herramientas",
-          "description": "Un ensanchamiento de la galería contiene cajas, lámparas, picos y vagonetas. Bajo unos tablones hay un pequeño cofre.",
+          "description": "Un ensanchamiento de la galería contiene cajas, lámparas, picos y vagonetas.",
           "kind": "room",
           "size_hexes": 12,
           "shape": "round",
@@ -381,7 +381,7 @@
         {
           "id": "z1_r04",
           "name": "Cruce de los raíles",
-          "description": "Tres galerías convergen en una cámara de roca. Una vagoneta bloquea parcialmente el paso. Los goblins han colocado allí un puesto de vigilancia.",
+          "description": "Tres galerías convergen en una cámara de roca. Una vagoneta bloquea parcialmente el paso. Alguien ha apilado tablones a modo de parapeto.",
           "kind": "room",
           "size_hexes": 13,
           "shape": "cross",
@@ -1500,7 +1500,7 @@
         {
           "id": "z2_r03",
           "name": "Galería de las arañas",
-          "description": "Una galería cubierta de telarañas atraviesa antiguas estatuas enanas. Los cuerpos de varios goblins cuelgan del techo. La oscuridad oculta una criatura peligrosa.",
+          "description": "Una galería cubierta de telarañas atraviesa antiguas estatuas enanas. Los cuerpos de varios goblins cuelgan del techo.",
           "kind": "corridor",
           "size_hexes": 11,
           "shape": "corridor",
@@ -1584,7 +1584,7 @@
         {
           "id": "z2_r04",
           "name": "Sala de los murciélagos",
-          "description": "Una sala abovedada contiene antiguos respiraderos. El techo está cubierto de murciélagos que reaccionan al ruido y a la luz.",
+          "description": "Una sala abovedada contiene antiguos respiraderos. El techo se pierde en la oscuridad y huele a guano.",
           "kind": "room",
           "size_hexes": 15,
           "shape": "round",
@@ -2669,7 +2669,7 @@
         {
           "id": "z3_r03",
           "name": "Sala de los guardianes",
-          "description": "Una cámara de piedra contiene sarcófagos abiertos. Los esqueletos de antiguos soldados se levantan cuando el grupo se acerca.",
+          "description": "Una cámara de piedra contiene sarcófagos abiertos. Los restos de antiguos soldados yacen en ellos.",
           "kind": "room",
           "size_hexes": 14,
           "shape": "round",
@@ -2850,7 +2850,7 @@
         {
           "id": "z3_r05",
           "name": "Cámara de las ofrendas",
-          "description": "Las paredes están decoradas con escenas de la coronación de Aldric. Un sarcófago secundario contiene ofrendas de oro. Los muertos protegen el lugar.",
+          "description": "Las paredes están decoradas con escenas de la coronación de Aldric. Un sarcófago secundario permanece sellado. El aire huele a polvo antiguo.",
           "kind": "room",
           "size_hexes": 15,
           "shape": "irregular",
@@ -3894,7 +3894,7 @@
         {
           "id": "z4_r03",
           "name": "Laboratorio de los cristales",
-          "description": "Una cámara de investigación contiene mesas de piedra, recipientes rotos y cristales que flotan sobre pedestales. Los cultistas vigilan la estancia.",
+          "description": "Una cámara de investigación contiene mesas de piedra, recipientes rotos y cristales que flotan sobre pedestales. Hay velas recién encendidas.",
           "kind": "room",
           "size_hexes": 16,
           "shape": "irregular",
@@ -4140,7 +4140,7 @@
         {
           "id": "z4_r04",
           "name": "Galería de los penitentes",
-          "description": "Una galería parcialmente inundada contiene estatuas de monjes arrodillados. Los cultistas han colocado símbolos arcanos sobre sus rostros.",
+          "description": "Una galería parcialmente inundada contiene estatuas de monjes arrodillados. Alguien ha pintado símbolos arcanos sobre sus rostros.",
           "kind": "corridor",
           "size_hexes": 14,
           "shape": "corridor",
@@ -4298,7 +4298,7 @@
         {
           "id": "z4_r05",
           "name": "Cámara de estudio",
-          "description": "Una cámara de estudio contiene libros mojados, instrumentos arcanos y una mesa de alquimia. Los cultistas protegen los últimos recursos del monasterio.",
+          "description": "Una cámara de estudio contiene libros mojados, instrumentos arcanos y una mesa de alquimia.",
           "kind": "room",
           "size_hexes": 15,
           "shape": "round",
@@ -4504,7 +4504,7 @@
         {
           "id": "z4_r07",
           "name": "Cámara del poder prohibido",
-          "description": "En una gran cámara medio inundada flota el cristal oscuro. Orvane lo rodea de magia, protegido por criaturas de vapor.",
+          "description": "En una gran cámara medio inundada flota el cristal oscuro. Orvane lo rodea de magia.",
           "kind": "room",
           "size_hexes": 20,
           "shape": "round",
@@ -4968,7 +4968,7 @@
         {
           "id": "z4_s02_r01",
           "name": "Depósito del vínculo",
-          "description": "Una habitación seca con un estante de tablillas y un arcón de piedra. Las raíces fosilizadas no son de ningún árbol de la montaña.",
+          "description": "Una habitación seca con un estante de tablillas. Las raíces fosilizadas no son de ningún árbol de la montaña.",
           "exits": [
             {
               "to": "z4_r06",

@@ -370,7 +370,8 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
   const strip = others && others.length > 0 && onPick ? others : undefined;
   const miniW = strip ? Math.min(52, (width - 24 - (strip.length - 1) * 6) / strip.length) : 0;
   const stripH = strip ? miniW * 1.5 + 14 : 0;
-  const W = Math.min(width - 24, (height - 135 - stripH - sts.length * 46) / 1.5);
+  // Lo más grande que quepa: 4 px de margen a cada lado y el alto justo para los botones (el autor 2026-11-25).
+  const W = Math.min(width - 8, (height - 118 - stripH - sts.length * 46) / 1.5);
   return (
     <Modal transparent animationType="fade" onRequestClose={art ? () => setArt(false) : onClose}>
       <View style={st.modalBg}>

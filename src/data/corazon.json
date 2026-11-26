@@ -535,7 +535,7 @@
         {
           "id": "b1_r07",
           "name": "Barricada de ramas",
-          "description": "Los últimos bandidos defienden una salida.",
+          "description": "Una salida estrecha entre rocas. Huele a hoguera reciente.",
           "kind": "room",
           "size_hexes": 12,
           "shape": "round",
@@ -1227,7 +1227,7 @@
         {
           "id": "b2_r02",
           "name": "Tronco partido",
-          "description": "Una bestia rebusca en una mochila abandonada.",
+          "description": "Una mochila abandonada, desgarrada y revuelta.",
           "kind": "room",
           "size_hexes": 5,
           "shape": "corridor",
@@ -1712,7 +1712,7 @@
         {
           "id": "b2_r06",
           "name": "Barrera de colmillos",
-          "description": "Un gran lobo defiende un paso estrecho.",
+          "description": "Un paso estrecho entre peñas, con huesos roídos en el suelo.",
           "kind": "room",
           "size_hexes": 10,
           "shape": "irregular",
@@ -1967,7 +1967,7 @@
         {
           "id": "b2_r09",
           "name": "Anillo de resina",
-          "description": "Un círculo de troncos heridos rodea una poza de resina endurecida. Unas tablas llevan hasta una caja abandonada.",
+          "description": "Un círculo de troncos heridos rodea una poza de resina endurecida. Unas tablas cruzan la resina.",
           "exits": [
             {
               "to": "b2_r04",
@@ -2266,7 +2266,7 @@
         {
           "id": "b2_s01_r01",
           "name": "Orilla olvidada",
-          "description": "Una charca pequeña donde se acumulan objetos perdidos: un morral hundido y una caja metálica.",
+          "description": "Una charca pequeña donde se acumulan objetos perdidos.",
           "exits": [
             {
               "to": "b2_r07",
@@ -3680,7 +3680,7 @@
         {
           "id": "b4_r03",
           "name": "Altar de savia",
-          "description": "Una figura feérica vigila el altar.",
+          "description": "Un altar cubierto de flores frescas en pleno bosque.",
           "kind": "room",
           "size_hexes": 9,
           "shape": "irregular",
@@ -3962,7 +3962,7 @@
         {
           "id": "b4_r05",
           "name": "Máscara caída",
-          "description": "Brezna espera junto a una puerta de raíces. Su apariencia de anciana es una ilusión.",
+          "description": "Brezna espera junto a una puerta de raíces.",
           "kind": "room",
           "size_hexes": 6,
           "shape": "long",

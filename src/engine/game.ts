@@ -83,7 +83,7 @@ export interface Game {
   encSize?: Record<string, number>;
   /** Combates en los que los goblins guerreros pasan a esbirros (héroe solo en la zona 1). */
   weak?: string[];
-  /** Casilla fija de cada grupo vencido; las partidas antiguas pueden guardar la del jugador. */
+  /** Casilla donde se venció a cada grupo (la del grupo al acabar el combate); las partidas de antes guardan la del enemigo. */
   wonAt?: Record<string, string>;
   /** Baúl de la posada, el mismo en todos los pueblos. */
   chest?: Item[];

@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useEscritorio } from '../ui/escritorio';
 import { useTeclas } from '../ui/teclado';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -285,6 +285,14 @@ export function Combat() {
     const title = rows[0].p!.save ? 'Probabilidad de que falle la salvación' : 'Probabilidad aproximada de impactar';
     return { title, rows: rows.map(({ t, p }) => ({ name: t.name, pct: p!.pct, why: p!.why.join('; ') })) };
   };
+  // Ventaja o desventaja contra todos los objetivos posibles: se avisa en el botón (el autor 2026-11-25).
+  const advTag = (a: Action): { adv: number; melee: boolean } => {
+    if (a.off || (a.target !== 'enemy' && a.target !== 'enemy-melee')) return { adv: 0, melee: false };
+    const ps = targetsFor(cb, a).map(t => preview(g, cb, a, t)).filter((p): p is NonNullable<typeof p> => !!p && !p.save);
+    if (!ps.length) return { adv: 0, melee: false };
+    const adv = ps.every(p => p.adv < 0) ? -1 : ps.every(p => p.adv > 0) ? 1 : 0;
+    return { adv, melee: adv < 0 && ps.every(p => p.why.some(w => w.includes('cuerpo a cuerpo'))) };
+  };
   const explain = (a: Action) => { setSel(undefined); setTip({ title: a.label.toLocaleUpperCase('es-ES'), text: '', parts: descOf(a), odds: odds(a), a }); };
   // Imagen del objeto del que depende la acción (arma, poción, arrojadizo, varita o pergamino).
   const imgOf = (a: Action) => {
@@ -306,6 +314,12 @@ export function Combat() {
       if (tip?.a?.id === a.id || seenAction(k)) return go(a);
       markAction(k);
       return explain(a);
+    }
+    // La primera vez que se dispara con un enemigo encima, se explica por qué va con desventaja.
+    if (advTag(a).melee && !seenAction('desventaja_cac')) {
+      markAction('desventaja_cac');
+      setSel(undefined);
+      return setTip({ title: a.label.toLocaleUpperCase('es-ES'), text: 'Disparar con un enemigo en vuestra vanguardia da desventaja: se tiran dos d20 y se queda el peor. Retrocede a la retaguardia o usa un arma cuerpo a cuerpo.', parts: descOf(a), odds: odds(a), a });
     }
     const ts = targetsFor(cb, a);
     if (ts.length === 1) return go(a, ts[0].key); // Con varios, elige el jugador aunque tengan los mismos PG (el autor 2026-11-20).
@@ -464,9 +478,12 @@ export function Combat() {
             </Pressable>
           ) : null}
           {!auto && !cb.result && getDevOpt('ganar') ? <Pressable accessibilityRole="button" accessibilityLabel="GANAR COMBATE" onPress={devWin} style={st.devControl}><Text style={st.devText}>GANAR COMBATE</Text></Pressable> : null}
-          <Pressable onPress={() => setOpts(true)} accessibilityRole="button" accessibilityLabel="Ajustes" hitSlop={12} style={{ marginLeft: 4 }}>
-            <Icon path={mdiCogOutline} size={22} />
-          </Pressable>
+          {/* En la web, los ajustes van en el menú único de arriba. */}
+          {Platform.OS === 'web' ? null : (
+            <Pressable onPress={() => setOpts(true)} accessibilityRole="button" accessibilityLabel="Ajustes" hitSlop={12} style={{ marginLeft: 4 }}>
+              <Icon path={mdiCogOutline} size={22} />
+            </Pressable>
+          )}
         </View>
         {renderRow('enemy', 'back')}
         {renderRow('enemy', 'front')}
@@ -528,7 +545,7 @@ export function Combat() {
               </View>
             ) : null}
             <ScrollView testID="combat-action-scroll" style={{ flex: 1 }} contentContainerStyle={[st.actionGrid, esc.on && { justifyContent: 'flex-start', columnGap: 4 }]} nestedScrollEnabled>
-              {grouped.map(a => <Btn key={a.id} small combatTone="child" icon={COST_ICON[a.cost]} disabled={!ready} onInfo={() => choose(a, true)} onLongPress={() => choose(a, true)} primary={sel?.id === a.id || tip?.a?.id === a.id} label={a.label.toLocaleUpperCase('es-ES')} off={!!a.off} onPress={() => choose(a)} style={esc.on ? { ...st.gridBtn, width: Math.floor((controlsWidth - 28) / 3) } : st.gridBtn} />)}
+              {grouped.map(a => { const t = advTag(a); return <Btn key={a.id} small combatTone="child" icon={COST_ICON[a.cost]} badge={t.adv < 0 ? { text: 'DESVENTAJA', color: '#e0705f' } : t.adv > 0 ? { text: 'VENTAJA', color: '#7fcf8f' } : undefined} disabled={!ready} onInfo={() => choose(a, true)} onLongPress={() => choose(a, true)} primary={sel?.id === a.id || tip?.a?.id === a.id} label={a.label.toLocaleUpperCase('es-ES')} off={!!a.off} onPress={() => choose(a)} style={esc.on ? { ...st.gridBtn, width: Math.floor((controlsWidth - 28) / 3) } : st.gridBtn} />; })}
             </ScrollView>
             <View style={[st.fixedRow, lit('fixed')]}>
               {dodgeAct ? <Btn small combatTone="child" icon={COST_ICON[dodgeAct.cost]} disabled={!ready} onInfo={() => choose(dodgeAct, true)} onLongPress={() => choose(dodgeAct, true)} primary={tip?.a?.id === dodgeAct.id} label="ESQUIVAR" tight off={!!dodgeAct.off} onPress={() => choose(dodgeAct)} style={st.fixedBtn} /> : null}

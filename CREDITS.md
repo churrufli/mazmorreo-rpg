@@ -29,7 +29,7 @@ Todo el audio está en `android/app/src/main/res/raw/`, convertido a OGG, recort
 
 ### Música
 
-Las siete pistas (`mus_principal`, `mus_pueblo`, `mus_combate`, `mus_minas`, `mus_bosque`, `mus_montana` y `mus_jefe`) se crearon con [Suno](https://suno.com) en su plan gratuito.
+Las nueve pistas (`mus_principal`, `mus_pueblo`, `mus_combate`, `mus_minas`, `mus_bosque`, `mus_montana`, `mus_jefe`, `mus_victoria` y `mus_derrota`) se crearon con [Suno](https://suno.com) en su plan gratuito. `mus_combate` es «Ancient Menace», `mus_victoria` «The Iron Cathedral» (desde el segundo 27,5) y `mus_derrota` «The Fall of the Dark King» (desde el segundo 5).
 
 **Excepción a las licencias del proyecto.** Según las condiciones de Suno, estas pistas pertenecen a Suno y solo se pueden usar sin fines comerciales y citando a Suno. Por eso **no** van con la licencia CC BY-NC-SA 4.0 ni con la MIT del proyecto:
 
@@ -37,7 +37,7 @@ Las siete pistas (`mus_principal`, `mus_pueblo`, `mus_combate`, `mus_minas`, `mu
 - No se pueden reutilizar fuera de Mazmorreo ni en una versión con fines comerciales.
 - Si haces una versión derivada del juego, sustitúyelas o comprueba antes las condiciones de Suno.
 
-**Música de demostración (cuarta aventura).** Las pistas `mus_arenaroja`, `mus_tumba` y `mus_combate_tumba` también se crearon con Suno en su plan gratuito y se tratan igual que las anteriores. Son provisionales: sirven para ambientar el juego mientras se busca música definitiva.
+**Música de demostración (cuarta aventura).** Las pistas `mus_arenaroja` y `mus_tumba` también se crearon con Suno en su plan gratuito y se tratan igual que las anteriores. Son provisionales: sirven para ambientar el juego mientras se busca música definitiva.
 
 ### Ambientes
 

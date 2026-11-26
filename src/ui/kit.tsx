@@ -143,9 +143,11 @@ function ButtonSkin({ tone, width, height, selected, dim }: { tone: 'parent' | '
 }
 
 /** off = se ve apagado pero se puede tocar (para explicar por qué no sirve ahora). */
-export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, style, danger, primary, combatTone, onInfo, icon, tight }: {
+export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, badge, style, danger, primary, combatTone, onInfo, icon, tight }: {
   /** Botón de combate estrecho (tres en una fila): sin icono y con la zona de información más estrecha. */
   tight?: boolean;
+  /** Etiqueta pequeña sobre el borde de abajo (por ejemplo, «Desventaja» en rojo); no ocupa alto. */
+  badge?: { text: string; color: string };
   label: string; onPress?: () => void; onLongPress?: () => void; disabled?: boolean; off?: boolean; small?: boolean; sub?: string; style?: ViewStyle; danger?: boolean; primary?: boolean; combatTone?: 'parent' | 'child'; onInfo?: () => void; icon?: string;
 }) {
   const { width: screenWidth, fontScale } = useWindowDimensions();
@@ -224,6 +226,7 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, st
             : <Text style={[s.btnText, small && s.btnTextSmall, { color: ink, ...(combatTone ? { fontSize: combatFont, letterSpacing: 0 } : {}) }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={combatTone ? 1 : 0.7}>{caption}</Text>}
           {onInfo ? <Pressable accessibilityRole="button" accessibilityLabel={`Información sobre ${label}`} onPress={e => { e.stopPropagation(); onInfo(); }} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: tight ? 28 : 36, minHeight: 40 }} /> : null}
           {sub ? <Text style={[s.btnSub, primary && { color: '#4a3b26' }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{sub}</Text> : null}
+          {badge ? <View pointerEvents="none" style={[s.badge, { borderColor: badge.color }]}><Text style={[s.badgeTxt, { color: badge.color }]} numberOfLines={1}>{badge.text}</Text></View> : null}
         </>
       )}
     </Pressable>
@@ -295,6 +298,8 @@ const s = StyleSheet.create({
   btnOff: { opacity: 0.55 },
   btnText: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 17, letterSpacing: 1 },
   btnTextSmall: { fontSize: 13, letterSpacing: 0.5 },
+  badge: { position: 'absolute', bottom: -7, alignSelf: 'center', paddingHorizontal: 6, borderWidth: 1, borderRadius: 7, backgroundColor: '#1a1612', zIndex: 2 },
+  badgeTxt: { fontFamily: F.rules, fontSize: 9.5, lineHeight: 12, letterSpacing: 0.4 },
   btnSub: { fontFamily: F.text, color: C.textDim, fontSize: 13, marginTop: 1 },
   panel: { backgroundColor: 'rgba(20,17,13,0.94)', borderColor: C.border, borderWidth: 1, borderRadius: 8, padding: 14 },
   h1: { fontFamily: F.titleBold, color: C.gold, fontSize: 38, textAlign: 'center', letterSpacing: 2 },

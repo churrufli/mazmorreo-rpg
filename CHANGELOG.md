@@ -2,6 +2,14 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 26 de noviembre de 2026 — Más anotaciones
+
+- **Música** (`src/sonido.ts`): «Ancient Menace» en todas las batallas salvo las de jefe (sustituye a `mus_combate_tumba`), música de victoria que suena una vez en el cuadro de Victoria y música de derrota.
+- **Mapa**: las espadas de un combate ganado van en la casilla donde estaba el grupo (`wonAt`), y por casillas ya vistas se anda algo más despacio (130 ms por paso). El zoom máximo sube de 2,2 a 2,6.
+- **Combate**: el botón de un ataque lleva la etiqueta «Desventaja» o «Ventaja» cuando afecta a todos los objetivos, con una explicación la primera vez que se dispara con un enemigo encima. La carta ampliada usa casi todo el ancho.
+- **Web**: un único menú (`web/main.tsx`) con pantalla completa, ajustes, atajos de teclado y volver al menú. Desaparecen las ruedas de ajustes de cada pantalla.
+- **Aventuras**: 26 descripciones de sala que destripaban cofres o enemigos, reescritas sin tocar las pistas de ambiente.
+
 ## 26 de noviembre de 2026 — Efectos de los packs CC0
 
 - **Animaciones por fotogramas** (`src/ui/Destello.tsx`): magia según el tipo de daño, curación y críticos sobre la carta, del «RPG VFX Pack» de System G6 (CC0). Solo con los efectos visuales completos.

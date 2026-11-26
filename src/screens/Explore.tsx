@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Modal, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Modal, PanResponder, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { mdiCogOutline, mdiInformationOutline, mdiSwordCross, mdiHomeVariant, mdiKeyVariant, mdiScriptTextOutline } from '@mdi/js';
 import { LogModal } from '../ui/LogModal';
 import { Settings } from '../ui/Settings';
@@ -251,7 +251,7 @@ export function Explore() {
   useEffect(() => {
     if (!walking.length) return;
     quick.current = g.visited.includes(hkey(walking[0]));
-    const t = setTimeout(walkStep, quick.current ? 90 : 190);
+    const t = setTimeout(walkStep, quick.current ? 130 : 190); // Por lo ya visto, algo más despacio que antes (el autor 2026-11-25).
     return () => clearTimeout(t);
   }, [walking, walkStep]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -309,11 +309,11 @@ export function Explore() {
     const far = Math.hypot(to.x - lastPos.current.x, to.y - lastPos.current.y) > S * 4;
     lastPos.current = to;
     if (far) { hx.setValue(to.x); hy.setValue(to.y); pan.setValue({ x: 0, y: 0 }); dragged.current = false; return; }
-    if (fxFull()) { bob.setValue(0); Animated.timing(bob, { toValue: 1, duration: quick.current ? 110 : 235, easing: Easing.linear, useNativeDriver: true }).start(); }
+    if (fxFull()) { bob.setValue(0); Animated.timing(bob, { toValue: 1, duration: quick.current ? 155 : 235, easing: Easing.linear, useNativeDriver: true }).start(); }
     Animated.parallel([
       // En el hilo nativo: la cámara y la ficha se deslizan sin tirones aunque el mapa se esté redibujando.
-      Animated.timing(hx, { toValue: to.x, duration: quick.current ? 110 : 235, easing: Easing.linear, useNativeDriver: true }),
-      Animated.timing(hy, { toValue: to.y, duration: quick.current ? 110 : 235, easing: Easing.linear, useNativeDriver: true }),
+      Animated.timing(hx, { toValue: to.x, duration: quick.current ? 155 : 235, easing: Easing.linear, useNativeDriver: true }),
+      Animated.timing(hy, { toValue: to.y, duration: quick.current ? 155 : 235, easing: Easing.linear, useNativeDriver: true }),
       ...(dragged.current ? [] : [Animated.timing(pan, { toValue: { x: 0, y: 0 }, duration: 300, useNativeDriver: true })]),
     ]).start();
   }, [px, py, box]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -340,7 +340,7 @@ export function Explore() {
       if (t.length >= 2) {
         const d = Math.hypot(t[0].pageX - t[1].pageX, t[0].pageY - t[1].pageY);
         if (!gesture.current.d0) gesture.current.d0 = d;
-        scale.setValue(Math.max(0.5, Math.min(2.2, gesture.current.s0 * (d / gesture.current.d0))));
+        scale.setValue(Math.max(0.5, Math.min(2.6, gesture.current.s0 * (d / gesture.current.d0))));
       } else if (!gesture.current.d0) { dragged.current = true; pan.setValue({ x: gesture.current.p0.x + gs.dx, y: gesture.current.p0.y + gs.dy }); }
     },
     onPanResponderRelease: (_e, gs) => {
@@ -353,7 +353,7 @@ export function Explore() {
   // Web en escritorio: la rueda del ratón acerca y aleja el mapa, con los mismos límites que el pellizco.
   const wheelSave = useRef<ReturnType<typeof setTimeout>>(undefined);
   useRuedaZoom('mazmorreo-map', f => {
-    scale.setValue(Math.max(0.5, Math.min(2.2, zoomNow.current * f)));
+    scale.setValue(Math.max(0.5, Math.min(2.6, zoomNow.current * f)));
     clearTimeout(wheelSave.current);
     wheelSave.current = setTimeout(() => setZoom(zoomNow.current), 300);
   });
@@ -524,7 +524,7 @@ export function Explore() {
               const [x, y] = center(...(el.at.split(',').map(Number) as [number, number]));
               return <ElementoMapa key={`x${el.id}`} type={el.type} state={state} x={X(x)} y={Y(y)} s={S} />;
             })}
-            {/* Combates ganados: espadas cruzadas en la posición fija de cada grupo enemigo (el autor 2026-11-05/06). */}
+            {/* Combates ganados: espadas cruzadas en la casilla donde se luchó (el autor 2026-11-25). */}
             {[...new Set(zp.marks.filter(m => m.kind === 'encounter').map(m => wonCell(g, m.id)).filter((k): k is string => !!k && vis.has(k)))].map(k => {
               const [x, y] = center(...(k.split(',').map(Number) as [number, number]));
               return (
@@ -638,9 +638,12 @@ export function Explore() {
           })()}
           <View style={{ flex: 1 }} />
           <Text style={st.gold}>{g.gold} po</Text>
-          <Pressable onPress={() => setShowOpts(true)} accessibilityRole="button" accessibilityLabel="Ajustes" style={st.logBtn} hitSlop={10}>
-            <Icon path={mdiCogOutline} size={24} />
-          </Pressable>
+          {/* En la web, los ajustes van en el menú único de arriba. */}
+          {Platform.OS === 'web' ? null : (
+            <Pressable onPress={() => setShowOpts(true)} accessibilityRole="button" accessibilityLabel="Ajustes" style={st.logBtn} hitSlop={10}>
+              <Icon path={mdiCogOutline} size={24} />
+            </Pressable>
+          )}
           <Pressable onPress={() => setShowLog(true)} accessibilityRole="button" accessibilityLabel="Registro de la partida" style={st.logBtn} hitSlop={10}>
             <Icon path={mdiScriptTextOutline} size={24} />
           </Pressable>

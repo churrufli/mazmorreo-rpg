@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Linking, Modal, PanResponder, Pressable, ScrollView, StyleProp, StyleSheet, Switch, Text, TextInput, View, ViewStyle } from 'react-native';
+import { Linking, Modal, PanResponder, Platform, Pressable, ScrollView, StyleProp, StyleSheet, Switch, Text, TextInput, View, ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { mdiChevronRight, mdiCogOutline } from '@mdi/js';
 import { C, F } from '../theme';
@@ -22,6 +22,8 @@ const tagNum = (t: string) => Number(t.replace(/^v0\./, '')) || 0;
 /** Botón de ajustes (rueda dentada) que abre el panel de opciones: tiene que estar en todas las pantallas. */
 export function OptionsButton({ style, size = 24 }: { style?: StyleProp<ViewStyle>; size?: number }) {
   const [open, setOpen] = useState(false);
+  // En la web los ajustes van en el menú único de arriba (el autor 2026-11-25).
+  if (Platform.OS === 'web') return null;
   return (
     <>
       <Pressable onPress={() => setOpen(true)} accessibilityRole="button" accessibilityLabel="Ajustes" hitSlop={10} style={style}>

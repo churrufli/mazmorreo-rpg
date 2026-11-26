@@ -2407,7 +2407,7 @@
         {
           "id": "m3_r06",
           "name": "Patio de los saqueadores",
-          "description": "Kobolds vigilan una carga de suministros.",
+          "description": "Una carga de suministros espera bajo una lona. Hay huellas pequeñas alrededor.",
           "kind": "room",
           "size_hexes": 10,
           "shape": "irregular",
@@ -3515,7 +3515,7 @@
         {
           "id": "m4_r05",
           "name": "Galería de los tributos",
-          "description": "Monedas y cajas aparecen atrapadas en el hielo.",
+          "description": "Formas oscuras aparecen atrapadas en el hielo.",
           "kind": "room",
           "size_hexes": 9,
           "shape": "cross",
@@ -3670,7 +3670,7 @@
         {
           "id": "m4_r06",
           "name": "Última barricada",
-          "description": "Los kobolds vigilan el acceso al santuario.",
+          "description": "Un acceso estrecho lleva al santuario. Quedan restos de una hoguera pequeña.",
           "kind": "corridor",
           "size_hexes": 10,
           "shape": "corridor",
@@ -3800,7 +3800,7 @@
         {
           "id": "m4_r08",
           "name": "Trono de hielo",
-          "description": "Vharzûl se yergue sobre el tesoro entregado durante generaciones.",
+          "description": "Una caverna inmensa de hielo azul. Algo enorme respira en la penumbra.",
           "kind": "room",
           "size_hexes": 14,
           "shape": "irregular",
@@ -4128,7 +4128,7 @@
         {
           "id": "m4_s01_r01",
           "name": "Cámara de los últimos emisarios",
-          "description": "Un cofre de ofrendas y unos mantos doblados permanecen junto al hielo.",
+          "description": "Unos mantos doblados permanecen junto al hielo.",
           "exits": [
             {
               "to": "m4_r05",
