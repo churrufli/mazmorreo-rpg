@@ -13,6 +13,10 @@
       "expected_party_level": 3,
       "entry_dialogue": [
         {
+          "speaker": "narrator",
+          "text": "A la salida de Cumbrenieve os espera un anciano de barba blanca. Es Eldran Barbanieve, el sabio del pueblo. Dicen que conoce cada sendero de la montaña."
+        },
+        {
           "speaker": "sabio",
           "text": "La tormenta no explica por sí sola tanto hielo. Los hitos enanos aún indican el camino hacia la fortaleza, si la ventisca permite verlos."
         },
@@ -57,7 +61,7 @@
                 },
                 {
                   "speaker": "hero",
-                  "text": "Buscaremos la verdad en sus salones."
+                  "text": "Buscaremos la verdad en la cumbre."
                 }
               ]
             },

@@ -91,6 +91,10 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
   { version: 'v0.148', items: [
+    'Los finales de Hondaroca y de El Corazón Hueco vuelven a ser largos, y el texto del final se puede desplazar con el botón siempre a la vista.',
+    'En el Claro maldito ya no hay atajo: primero la abuela Brezna, luego la bruja, después el Corazón Hueco y al final la Raíz silenciosa.',
+    'Al elegir quién te acompaña, cada compañero lleva su cara al lado del botón, también en la posada.',
+    'En la montaña, el narrador presenta al sabio Eldran Barbanieve antes de que hable.',
     'Música nueva: una para todas las batallas (salvo los jefes), otra que suena una vez al ganar un combate y otra para la derrota.',
     'Las espadas de un combate ganado quedan en la casilla donde luchasteis, no en la de la que salieron los enemigos.',
     'Si un ataque va con ventaja o desventaja contra todos los objetivos, su botón lo avisa. La primera vez que disparas con un enemigo encima se explica por qué.',

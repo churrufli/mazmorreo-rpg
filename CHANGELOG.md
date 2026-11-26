@@ -2,6 +2,13 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 26 de noviembre de 2026 — Puntos 22 a 26
+
+- **Finales** (`Victory` en `src/screens/Town.tsx`): el texto va en un panel con desplazamiento y el botón de volver queda fijo debajo. Vuelven los finales largos de Hondaroca (sin el aprendiz ni el escribiente) y de El Corazón Hueco. La música de victoria espera a que se abra el cuadro de Victoria.
+- **Claro maldito** (`plano.json`, zona `b4`): el pasillo que iba de la Garganta de raíces a la Cámara del descanso se saltaba a Brezna. Ahora une las dos mitades de la Garganta y el orden es fijo: abuela, bruja, Corazón y Raíz silenciosa (`claro-maldito.test.ts`).
+- **Compañeros**: retrato junto a cada botón al elegir quién os acompaña y en la posada.
+- **Montaña**: el narrador presenta a Eldran Barbanieve, y «Buscaremos la verdad en la cumbre».
+
 ## 26 de noviembre de 2026 — Más anotaciones
 
 - **Música** (`src/sonido.ts`): «Ancient Menace» en todas las batallas salvo las de jefe (sustituye a `mus_combate_tumba`), música de victoria que suena una vez en el cuadro de Victoria y música de derrota.

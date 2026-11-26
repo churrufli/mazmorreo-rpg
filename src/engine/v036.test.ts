@@ -111,8 +111,14 @@ describe('obstáculos cerrados no se cruzan', () => {
 
   it('nunca dejan sin camino a la salida, la llave o el jefe', () => {
     const g = newGame(1, 'Prueba', 'wizard', 'human');
+    // Claro maldito: los espinos vivos cierran su hueco, pero el Corazón sigue a vuestro alcance (el autor 2026-11-26).
     g.zone = 'b4';
-    expect([...closedDoors(g).values()]).not.toContain('b4_o01');
+    g.pos = plan('b4').start;
+    g.visited = plan('b4').cells.map(([q, r]: number[]) => `${q},${r}`);
+    for (const id of ['b4_e03', 'b4_e04', 'b4_c01', 'b4_c03']) {
+      const m = plan('b4').marks.find((x: { id: string }) => x.id === id)!;
+      expect(findPath(g, [m.q, m.r])).not.toBeNull();
+    }
     g.zone = 'b1';
     expect([...closedDoors(g).values()]).not.toContain('b1_o02');
   });

@@ -168,7 +168,13 @@ export function Town() {
               <View style={st.escort}>
                 <Text style={st.h}>¿Quién te acompaña {adv.escortWhere}?</Text>
                 <Text style={st.itemDesc}>Irá contigo hasta que se una a vosotros alguien de {adv.id === 'tumba' ? 'la tumba' : adv.id === 'montana' ? 'la montaña' : 'el bosque'}; entonces volverá al pueblo.</Text>
-                {escorts.map(c => <Btn key={c.id} label={c.name} sub={`${CLASSES[c.cls].name} · nivel ${c.level} · ${c.hp}/${c.maxHp} PG`} onPress={() => { setAsking(false); setPlace('menu'); leaveTown(c.id); }} />)}
+                {/* Con la cara de cada uno a la izquierda, para reconocerlo de un vistazo (el autor 2026-11-26). */}
+                {escorts.map(c => (
+                  <View key={c.id} style={st.faceRow}>
+                    <Portrait img={c.img} size={44} />
+                    <Btn style={{ flex: 1 }} small label={c.name} sub={`${CLASSES[c.cls].name} · nivel ${c.level} · ${c.hp}/${c.maxHp} PG`} onPress={() => { setAsking(false); setPlace('menu'); leaveTown(c.id); }} />
+                  </View>
+                ))}
                 <Btn label="Ir solo" onPress={() => { setAsking(false); setPlace('menu'); leaveTown(); }} />
                 <Btn small label="Cancelar" onPress={() => setAsking(false)} />
               </View>
@@ -336,12 +342,17 @@ export function Town() {
                 <Text style={st.itemDesc}>{firstStart ? `Al empezar ${adv.name} solo os acompaña uno: lo eliges al salir hacia la mazmorra. Los demás esperan aquí y suben de nivel con el grupo.` : `Elige hasta ${cap}${cap < 3 ? ` (en esta zona de ${adv.name} no caben más)` : ''}. Los demás esperan aquí y suben de nivel con el grupo.`}</Text>
                 {firstStart ? null : allies.map(c => {
                   const on = going.includes(c);
-                  return <Btn key={c.id} small primary={on} label={`${on ? '✓ ' : ''}${c.name}`} sub={`${CLASSES[c.cls].name} · nivel ${c.level}${c.inspired ? ' · Inspiración heroica' : ''}`}
-                    onPress={() => edit(gg => {
-                      const cur = gg.chosen ?? going.map(x => x.id);
-                      gg.chosen = on ? cur.filter(x => x !== c.id) : cur.length < cap ? [...cur, c.id] : cur;
-                      if (!on && cur.length >= cap) say(`Ya van ${cap}: quita a alguien antes.`);
-                    }, true)} />;
+                  return (
+                    <View key={c.id} style={st.faceRow}>
+                      <Portrait img={c.img} size={44} />
+                      <Btn style={{ flex: 1 }} small primary={on} label={`${on ? '✓ ' : ''}${c.name}`} sub={`${CLASSES[c.cls].name} · nivel ${c.level}${c.inspired ? ' · Inspiración heroica' : ''}`}
+                        onPress={() => edit(gg => {
+                          const cur = gg.chosen ?? going.map(x => x.id);
+                          gg.chosen = on ? cur.filter(x => x !== c.id) : cur.length < cap ? [...cur, c.id] : cur;
+                          if (!on && cur.length >= cap) say(`Ya van ${cap}: quita a alguien antes.`);
+                        }, true)} />
+                    </View>
+                  );
                 })}
                 <Text style={st.h}>Charlas</Text>
                 <T>Cada aventura terminada juntos abre una charla con ese aliado. Con la tercera, la afinidad llega al máximo y gana Inspiración heroica: una vez por aventura repetirá una tirada fallida.</T>
@@ -498,6 +509,7 @@ export function Victory() {
   }, [shown, full]);
   const done = n >= full.length;
   const tap = () => (!shown ? setShown(true) : setN(full.length));
+  const scroll = useRef<ScrollView>(null);
   return (
     <Bg src={IMG[A.victoryImg]} dim={0} wash>
       <Pressable style={{ flex: 1 }} onPress={tap} disabled={shown && done} accessibilityLabel={shown ? 'Mostrar todo el texto' : 'Continuar'}>
@@ -508,7 +520,7 @@ export function Victory() {
         </FadeIn>
         <View style={{ flex: 1 }} />
         {shown ? (
-          <FadeIn duration={500} style={{ padding: 12, paddingBottom: ins.bottom + 16 }}>
+          <FadeIn duration={500} style={{ flexShrink: 1, minHeight: 0, padding: 12, paddingBottom: ins.bottom + 16 }}>
             <View style={st.endParty}>
               {team.map(c => (
                 <View key={c.id} style={st.endHero}>
@@ -518,8 +530,11 @@ export function Victory() {
                 </View>
               ))}
             </View>
-            <Panel>
-              <T>{full.slice(0, n)}</T>
+            {/* Texto largo: se desplaza dentro del panel y el botón queda fijo debajo (el autor 2026-11-26). */}
+            <Panel style={{ flexShrink: 1, minHeight: 0 }}>
+              <ScrollView ref={scroll} style={{ flexShrink: 1 }} onContentSizeChange={() => { if (!done) scroll.current?.scrollToEnd({ animated: false }); }}>
+                <T>{full.slice(0, n)}</T>
+              </ScrollView>
               {done
                 ? ending
                   ? <Btn label="Volver" onPress={() => showEnding()} style={{ marginTop: 10 }} />
@@ -583,6 +598,7 @@ const st = StyleSheet.create({
   endHeroLvl: { fontFamily: F.text, color: C.goldHi, fontSize: 12 },
   full: { fontFamily: F.textBold, color: '#e8796b', fontSize: 16, marginBottom: 6 },
   escort: { borderTopWidth: 1, borderColor: C.border, marginTop: 6, paddingTop: 4 },
+  faceRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 8, backgroundColor: 'rgba(0,0,0,0.6)' },
   diaryRow: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 6, borderBottomWidth: 1, borderColor: '#3a2e22' },
   diaryWho: { fontFamily: F.textBold, color: C.goldHi, fontSize: 14 },

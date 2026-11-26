@@ -71,7 +71,7 @@ export const ADVS: Record<AdvId, Adv> = {
   corazon_hueco: {
     id: 'corazon_hueco', name: BD.dungeon.name, data: BD, town: 'vegahumbria', boss: 'Treant', sub: 'telmo',
     intro: 'intro_bosque', victoryImg: 'victoria_corazon', defeatImg: 'derrota_generica',
-    victoryText: 'El Corazón cae. Sus raíces liberan a todos los cautivos. Los caminos se abren y los desaparecidos regresan a Vegaumbría.',
+    victoryText: 'El Corazón Hueco cae y sus raíces liberan a los desaparecidos. Los caminos vuelven a abrirse.\nLos cautivos despiertan y regresan a Vegaumbría. Sin Brezna, nadie volverá a alimentarse de ellos.\nEntre los restos encontráis 75 monedas de oro y la Astilla del Corazón.',
     defeatText: 'El Corazón Hueco derrota al grupo. Los desaparecidos siguen presos entre sus raíces.',
     reward: { gold: 75, item: 'heart_fragment' },
     art: { b1: art('linde'), b2: art('bosque_profundo'), b3: art('cienaga'), b4: { ...art('claro_maldito'), bg: 'ambiente_interior_corazon', combat: 'combate_interior_corazon' } },
