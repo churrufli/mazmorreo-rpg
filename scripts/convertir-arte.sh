@@ -57,6 +57,8 @@ for p in 3.37_abuela_ortiga:abuela_ortiga pnj_exploradora_elfa_pelirroja:ally_ma
 convert "$SRC/ui/7.3_mapa_reino.png" -resize 1080x -quality 75 "$OUT/mapa_reino.webp"
 for f in "$SRC"/ui/iconos/*.*; do cutout "$f" 96 "$OUT/icono_$(name "$f" | sed 's/^7\.1_//').webp"; done
 cp "$SRC/ui/logo_definitivo_sombra.webp" "$OUT/logo.webp"
+# Animaciones por fotogramas (RPG VFX Pack, CC0), ya reducidas a hojas de 8 columnas: se copian tal cual.
+cp "$SRC"/efectos-animados/vfx_*.webp "$OUT"/
 convert "$SRC/ui/1.7_marco_carta.png" -alpha set -fuzz 10% -transparent white -resize 512x768 -quality 85 "$OUT/marco_carta.webp"
 {
   echo "// Generado por scripts/convertir-arte.sh. No editar a mano."

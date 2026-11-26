@@ -642,5 +642,17 @@ export const IMG = {
   jaula_cana: require('../assets/img/jaula_cana.webp'),
   pepinos_azules: require('../assets/img/pepinos_azules.webp'),
   trono_reyes: require('../assets/img/trono_reyes.webp'),
+  vfx_acido: require('../assets/img/vfx_acido.webp'),
+  vfx_critico: require('../assets/img/vfx_critico.webp'),
+  vfx_curacion: require('../assets/img/vfx_curacion.webp'),
+  vfx_frio: require('../assets/img/vfx_frio.webp'),
+  vfx_fuego: require('../assets/img/vfx_fuego.webp'),
+  vfx_fuerza: require('../assets/img/vfx_fuerza.webp'),
+  vfx_necrotico: require('../assets/img/vfx_necrotico.webp'),
+  vfx_psiquico: require('../assets/img/vfx_psiquico.webp'),
+  vfx_radiante: require('../assets/img/vfx_radiante.webp'),
+  vfx_relampago: require('../assets/img/vfx_relampago.webp'),
+  vfx_trueno: require('../assets/img/vfx_trueno.webp'),
+  vfx_veneno: require('../assets/img/vfx_veneno.webp'),
 };
 export type ImgKey = keyof typeof IMG;

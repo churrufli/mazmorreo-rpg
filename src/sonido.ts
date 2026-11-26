@@ -4,7 +4,7 @@ import * as storage from './storage';
 import { useStore } from './store';
 import type { Combat } from './engine/combat';
 import type { Game } from './engine/game';
-import { DmgType, ITEMS } from './data/srd';
+import { DmgType, ITEMS, MONSTERS } from './data/srd';
 import { bossEncounter } from './engine/dungeon';
 import { revealMs } from './ui/ritmos';
 
@@ -12,10 +12,14 @@ import { revealMs } from './ui/ritmos';
 
 type Fx = 'dado' | 'arrow_shot' | 'chest_open' | 'click_soft' | 'coin_pickup' | 'coins_pouch' | 'confirm' | 'door_wood_open' | 'error'
   | 'explosion_big' | 'fireball' | 'heal' | 'ice_spell' | 'lightning' | 'monster_growl' | 'potion_drink' | 'punch' | 'slime'
-  | 'sword_hit_shield' | 'sword_swing' | 'ui_nivel' | 'ui_victoria' | 'ui_victoria_corta' | 'ui_objeto' | 'ui_derrota';
+  | 'sword_hit_shield' | 'sword_swing' | 'ui_nivel' | 'ui_victoria' | 'ui_victoria_corta' | 'ui_objeto' | 'ui_derrota'
+  | 'unsheathe' | 'bite' | 'shade' | 'giant' | 'beast' | 'wolf' | 'spell';
 
 /** Variantes de cada efecto: se elige una al azar para que no suene siempre igual. */
-const VARIANTS: Partial<Record<Fx, string[]>> = { sword_swing: ['02'], dado: ['01'] };
+const VARIANTS: Partial<Record<Fx, string[]>> = {
+  sword_swing: ['02'], dado: ['01'], wolf: ['01'], spell: ['01'],
+  unsheathe: ['01', '02', '03', '04', '05'], bite: ['01', '02', '03'], shade: ['01', '02', '03', '04'], giant: ['01', '02', '03', '04'], beast: ['01', '02', '03', '04'],
+};
 const files = (k: Fx) => (k.startsWith('ui_') ? [k] : (VARIANTS[k] ?? ['01', '02']).map(v => `sfx_${k}_${v}`));
 
 /** Volumen: los del mapa más bajos que los del combate. */
@@ -119,8 +123,24 @@ export function refresh() {
   loop(walking ? (forest(g!) ? 'sfx_steps_grass_01' : 'sfx_steps_stone_01') : undefined, steps, STEPS * level('efectos'));
 }
 
-const MAGIC: Partial<Record<DmgType, Fx>> = { fuego: 'fireball', frío: 'ice_spell', radiante: 'heal' };
-const SLIMY = ['Zombie', 'Shambling Mound'];
+const MAGIC: Partial<Record<DmgType, Fx>> = { fuego: 'fireball', frío: 'ice_spell', radiante: 'heal', relámpago: 'lightning', trueno: 'lightning' };
+const SLIMY = ['Zombie', 'Shambling Mound', 'Ochre Jelly', 'Black Pudding'];
+/** Bichos pequeños que muerden: su golpe suena a mordisco, no a puñetazo. */
+const BITERS = ['Giant Rat', 'Rat', 'Bat', 'Giant Bat', 'Swarm of Bats', 'Spider', 'Giant Spider', 'Giant Fire Beetle', 'Scorpion', 'Lizard', 'Giant Weasel', 'Venomous Snake'];
+/** Voz de cada criatura al empezar el combate (RPG Sound Pack de artisticdude). */
+const BIG = ['Ogre', 'Brown Bear', 'Polar Bear', 'Treant', 'Walking Tree', 'Awakened Tree', 'Manticore', 'White Dragon Wyrmling', 'Giant Boar', 'Giant Constrictor Snake', 'Basilisk'];
+const WOLVES = ['Wolf', 'Dire Wolf', 'Winter Wolf', 'Mastiff', 'Panther', 'Saber-Toothed Tiger'];
+function voiceOf(cb: Combat): Fx | undefined {
+  const foes = cb.units.filter(u => u.side === 'enemy' && u.mon);
+  const mon = foes.map(u => u.mon!).find(m => BIG.includes(m)) ?? foes[0]?.mon;
+  if (!mon) return undefined;
+  if (MONSTERS[mon]?.ai === 'undead') return mon === 'Zombie' ? 'beast' : 'shade';
+  if (BIG.includes(mon)) return 'giant';
+  if (WOLVES.includes(mon)) return 'wolf';
+  if (SLIMY.includes(mon)) return 'slime';
+  if (BITERS.includes(mon)) return 'bite';
+  return MONSTERS[mon]?.ai === 'beast' ? 'beast' : undefined;
+}
 
 /** Sonidos de un paso del combate: ataque, golpe o fallo, conjuro, curación, crítico, final. */
 // El golpe de la carta espera a que se vea la tirada (Combat.tsx); su sonido, también.
@@ -128,7 +148,8 @@ let revealAt = 0;
 const later = (f: () => void) => { const t = revealAt - Date.now(); if (t > 0) setTimeout(f, t); else f(); };
 
 function combatSounds(a: Combat | undefined, b: Combat) {
-  if (!a) { sfx('monster_growl', 0.7); return; }
+  // Al empezar: el grupo desenvaina y la criatura gruñe, chilla o muerde según lo que sea.
+  if (!a) { sfx('unsheathe', 0.7); const v = voiceOf(b); setTimeout(() => sfx(v ?? 'monster_growl', 0.7), 250); return; }
   if (b.roll && b.roll.id !== a.roll?.id) revealAt = Date.now() + revealMs(b.roll);
   const sw = b.swing;
   if (sw && sw.id !== a.swing?.id) later(() => {
@@ -136,9 +157,9 @@ function combatSounds(a: Combat | undefined, b: Combat) {
     const hit = b.pops?.[sw.to] && b.pops[sw.to].id !== a.pops?.[sw.to]?.id;
     if (hit && from?.side === 'enemy') vibra(40);
     if (sw.kind === 'arrow') sfx('arrow_shot');
-    else if (sw.kind === 'magic') sfx(MAGIC[sw.type] ?? 'lightning');
+    else if (sw.kind === 'magic') sfx(MAGIC[sw.type] ?? 'spell');
     else if (!hit) sfx('sword_hit_shield');
-    else if (from?.side === 'enemy' && !from.weapon) sfx(SLIMY.includes(from.mon ?? '') ? 'slime' : 'punch');
+    else if (from?.side === 'enemy' && !from.weapon) sfx(SLIMY.includes(from.mon ?? '') ? 'slime' : BITERS.includes(from.mon ?? '') ? 'bite' : 'punch');
     else sfx('sword_swing');
   });
   for (const [k, f] of Object.entries(b.fx ?? {})) {

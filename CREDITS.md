@@ -21,6 +21,7 @@
 ## Ilustraciones
 
 - Generadas con ChatGPT (OpenAI) a partir de indicaciones del proyecto, y seleccionadas, corregidas y recortadas a mano. Licencia en [LICENSE-CONTENIDO.md](LICENSE-CONTENIDO.md).
+- **Animaciones de magia, curación y críticos** (`assets/img/vfx_*.webp`): [RPG VFX Pack](https://opengameart.org/content/rpg-vfx-pack) de System G6 (Qoma), CC0. Hojas reducidas a fotogramas de 128 px (96 px la psíquica).
 
 ## Música, ambientes y efectos de sonido
 
@@ -57,7 +58,7 @@ Las siete pistas (`mus_principal`, `mus_pueblo`, `mus_combate`, `mus_minas`, `mu
 | `ui_victoria`, `ui_victoria_corta`, `ui_nivel`, `ui_objeto`, `ui_derrota` | [Music Jingles](https://kenney.nl/assets/music-jingles) (pizzicato) | Kenney | CC0 |
 | `sfx_fireball`, `sfx_ice_spell`, `sfx_monster_growl`, `sfx_slime`, `sfx_coin_pickup`, `sfx_chest_open_01` | [80 CC0 RPG SFX](https://opengameart.org/content/80-cc0-rpg-sfx) | rubberduck | CC0 |
 | `sfx_sword_hit_shield`, `sfx_arrow_shot`, `sfx_potion_drink` | [Fantasy Sound Effects (Tinysized SFX)](https://opengameart.org/content/fantasy-sound-effects-tinysized-sfx) | Vehicle (Jan Schupke) | CC0 |
-| `sfx_sword_swing`, `sfx_lightning` | [RPG Sound Pack](https://opengameart.org/content/rpg-sound-pack) | artisticdude | CC0 |
+| `sfx_sword_swing`, `sfx_lightning`, `sfx_unsheathe`, `sfx_bite`, `sfx_shade`, `sfx_giant`, `sfx_beast`, `sfx_wolf`, `sfx_spell` | [RPG Sound Pack](https://opengameart.org/content/rpg-sound-pack) | artisticdude | CC0 |
 
 ## Librerías
 
