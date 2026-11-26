@@ -18,6 +18,7 @@ import { fxFull } from '../ui/movimiento';
 import { getDevOpt, getFlag, markAction, seenAction } from '../storage';
 import { D20, FadeIn, Message, MiniDie, revealMs, rollMs } from '../ui/Overlays';
 import { CLASSES, DmgType, ITEMS } from '../data/srd';
+import { setEndOpen } from '../sonido';
 import { Settings } from '../ui/Settings';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 import { Icon, Panel } from '../ui/kit';
@@ -215,6 +216,8 @@ export function Combat() {
     const t = setTimeout(() => setEndShown(true), delay + (cb.endLine ? END_MS : 300));
     return () => clearTimeout(t);
   }, [cb.result]); // eslint-disable-line react-hooks/exhaustive-deps
+  // La música de victoria o derrota empieza con el cuadro, no con el golpe final.
+  useEffect(() => { setEndOpen(endShown); return () => setEndOpen(false); }, [endShown]);
 
   useLayoutEffect(() => {
     setTargetFeedback(undefined);
