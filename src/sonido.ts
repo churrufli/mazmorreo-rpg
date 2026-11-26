@@ -90,6 +90,13 @@ const steps: { name?: string; s?: Sound } = {};
 const amb: { name?: string; s?: Sound } = {};
 const mus: { name?: string; s?: Sound } = {};
 const MUSIC = 0.5;
+/** El cuadro del final del combate ya está a la vista (lo avisa Combat.tsx): solo entonces suena la música de victoria o derrota. */
+let endOpen = false;
+export function setEndOpen(open: boolean) {
+  if (endOpen === open) return;
+  endOpen = open;
+  refresh();
+}
 /** Con el juego en segundo plano no suena nada. */
 let away = false;
 
@@ -109,8 +116,9 @@ export function refresh() {
     const tomb = g.zone.startsWith('s');
     if (g.place === 'town') track = g.town === 'arenaroja' ? 'mus_arenaroja' : 'mus_pueblo';
     // Cuadro de Victoria: su música suena una vez; al cerrarlo vuelve la de la zona (el autor 2026-11-25).
-    else if (st.combat?.result === 'win') track = 'mus_victoria';
-    else if (st.combat?.result === 'lose') track = 'mus_derrota';
+    // No al dar el golpe final: espera a que se abra el cuadro de Victoria o Derrota (el autor 2026-11-26).
+    else if (st.combat?.result === 'win' && endOpen) track = 'mus_victoria';
+    else if (st.combat?.result === 'lose' && endOpen) track = 'mus_derrota';
     // Todas las batallas con la misma música salvo los jefes finales (el autor 2026-11-25).
     else if (st.combat) track = st.combat.encounters.includes(bossEncounter(g.zone)) ? 'mus_jefe' : 'mus_combate';
     else track = tomb ? 'mus_tumba' : g.zone.startsWith('m') ? 'mus_montana' : forest(g) ? 'mus_bosque' : 'mus_minas';
