@@ -65,8 +65,8 @@ export function sfx(k: Fx, vol = 1) {
   });
 }
 
-/** Sonido que se repite mientras dure (pasos, ambiente). */
-function loop(name: string | undefined, cur: { name?: string; s?: Sound }, vol: number) {
+/** Sonido que se repite mientras dure (pasos, ambiente). Con once, suena una sola vez (victoria, derrota). */
+function loop(name: string | undefined, cur: { name?: string; s?: Sound }, vol: number, once = false) {
   if (cur.name !== name) {
     const old = cur.s;
     old?.stop(() => old.release());
@@ -77,7 +77,7 @@ function loop(name: string | undefined, cur: { name?: string; s?: Sound }, vol: 
       if (err) note(name, err);
       if (err || cur.name !== name) { s.release(); return; }
       cur.s = s;
-      s.setNumberOfLoops(-1);
+      s.setNumberOfLoops(once ? 0 : -1);
       s.setVolume(vol);
       s.play();
     });
@@ -108,15 +108,20 @@ export function refresh() {
     // La tumba tiene música propia (de demostración) para Arenaroja, la exploración y los combates normales.
     const tomb = g.zone.startsWith('s');
     if (g.place === 'town') track = g.town === 'arenaroja' ? 'mus_arenaroja' : 'mus_pueblo';
-    else if (st.combat) track = st.combat.encounters.includes(bossEncounter(g.zone)) ? 'mus_jefe' : tomb ? 'mus_combate_tumba' : 'mus_combate';
+    // Cuadro de Victoria: su música suena una vez; al cerrarlo vuelve la de la zona (el autor 2026-11-25).
+    else if (st.combat?.result === 'win') track = 'mus_victoria';
+    else if (st.combat?.result === 'lose') track = 'mus_derrota';
+    // Todas las batallas con la misma música salvo los jefes finales (el autor 2026-11-25).
+    else if (st.combat) track = st.combat.encounters.includes(bossEncounter(g.zone)) ? 'mus_jefe' : 'mus_combate';
     else track = tomb ? 'mus_tumba' : g.zone.startsWith('m') ? 'mus_montana' : forest(g) ? 'mus_bosque' : 'mus_minas';
   } else if (st.screen === 'intro') {
     // Imagen de entrada de la aventura: ya suena la música de su primera zona (el autor 2026-11-06).
     const adv = st.intro?.adv ?? 'hondaroca';
     track = adv === 'hondaroca' ? 'mus_minas' : adv === 'tumba' ? 'mus_tumba' : adv === 'montana' ? 'mus_montana' : 'mus_bosque';
   } else if (st.screen === 'victory') track = 'mus_pueblo'; // Final de la aventura: suena la música del pueblo.
-  else if (st.screen !== 'defeat') track = 'mus_principal';
-  loop(!away && musicOn() && level('musica') > 0 ? track : undefined, mus, MUSIC * level('musica'));
+  else if (st.screen === 'defeat') track = 'mus_derrota';
+  else track = 'mus_principal';
+  loop(!away && musicOn() && level('musica') > 0 ? track : undefined, mus, MUSIC * level('musica'), track === 'mus_victoria' || track === 'mus_derrota');
   const ambName = inDungeon && musicOn() && level('ambiente') > 0 ? (forest(g!) ? 'amb_forest_day' : AMBIENCE[g!.zone] ?? 'amb_lava_cave') : undefined;
   loop(ambName, amb, (st.combat ? AMB_COMBAT : AMB) * level('ambiente'));
   const walking = inDungeon && !st.combat && st.walking.length > 0 && soundOn() && level('efectos') > 0;
@@ -168,7 +173,8 @@ function combatSounds(a: Combat | undefined, b: Combat) {
     else if (f.kind === 'crit') later(() => { sfx('explosion_big', 0.35); vibra(90); });
   }
   if (b.goal?.status === 'ok' && a.goal?.status !== 'ok') sfx('confirm');
-  if (b.result && !a.result) sfx(b.result === 'lose' ? 'ui_derrota' : b.result === 'win' ? 'ui_victoria_corta' : 'error');
+  // Ganar y perder ya tienen música propia; huir sigue con su aviso.
+  if (b.result === 'fled' && !a.result) sfx('error');
 }
 
 const potions = (g: Game) => g.party.reduce((n, c) => n + c.items.filter(i => /^potion|antidote/.test(i.id)).length, 0);

@@ -5,24 +5,21 @@ import { blockedCells, bridgedWater, encounterCell, enterZone, hkey, passable, p
 
 const game = () => { const g = newGame(1, 'Prueba', 'fighter', 'human'); enterZone(g, 'z1'); return g; };
 
-test('vencer desde una casilla contigua conserva la posición del enemigo y corrige partidas antiguas', () => {
+test('las espadas del combate ganado quedan donde se luchó, no en la casilla del enemigo', () => {
   const g = game();
   const cb = startCombat(g, 'z1_e01');
   expect(hkey(g.pos)).not.toBe(encounterCell('z1_e01'));
   for (const u of cb.units.filter(x => x.side === 'enemy')) { u.hp = 0; u.dead = true; }
   devWin(g, cb);
-  expect(g.wonAt?.z1_e01).toBe(encounterCell('z1_e01'));
-  g.wonAt = { z1_e01: hkey(g.pos) };
-  expect(wonCell(g, 'z1_e01')).toBe(encounterCell('z1_e01'));
+  expect(g.wonAt?.z1_e01).toBe(hkey(g.pos));
+  expect(wonCell(g, 'z1_e01')).toBe(hkey(g.pos));
 });
 
-test('los grupos de refuerzo mantienen sus posiciones y marcadores separados', () => {
+test('las partidas sin casilla apuntada usan la del grupo enemigo', () => {
   const g = game();
   g.done.push('z1_e02', 'z1_e03');
-  g.wonAt = { z1_e02: hkey(g.pos), z1_e03: hkey(g.pos) };
   expect(wonCell(g, 'z1_e02')).toBe(encounterCell('z1_e02'));
   expect(wonCell(g, 'z1_e03')).toBe(encounterCell('z1_e03'));
-  expect(wonCell(g, 'z1_e02')).not.toBe(wonCell(g, 'z1_e03'));
 });
 
 test('todos los enemigos tienen casillas exclusivas, transitables y sin objetos interactivos', () => {

@@ -91,6 +91,12 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
   { version: 'v0.148', items: [
+    'Música nueva: una para todas las batallas (salvo los jefes), otra que suena una vez al ganar un combate y otra para la derrota.',
+    'Las espadas de un combate ganado quedan en la casilla donde luchasteis, no en la de la que salieron los enemigos.',
+    'Si un ataque va con ventaja o desventaja contra todos los objetivos, su botón lo avisa. La primera vez que disparas con un enemigo encima se explica por qué.',
+    'Web: un solo menú arriba a la derecha con pantalla completa, ajustes, atajos de teclado y volver al menú.',
+    'Por zonas ya conocidas el grupo anda algo más despacio, el mapa se acerca un poco más y la carta ampliada aprovecha mejor la pantalla.',
+    'Los textos de algunas salas ya no anuncian los cofres ni los enemigos que hay dentro.',
     'Combates con más vida: la magia, las curaciones y los críticos tienen animación propia según el tipo (fuego, escarcha, rayo, necrótico, veneno…), y al empezar el grupo desenvaina y cada criatura suena a lo suyo: gruñidos, chillidos de espectro, mordiscos o rugidos de gigante.',
     'Copias de seguridad: en Cargar partida, el botón de compartir de cada archivo guarda una copia fuera del juego (en Android, con Compartir; en la web, como archivo). «Restaurar una copia» la recupera en un archivo vacío.',
     'Al comprar o repartir equipo se compara con lo que ya lleva: cómo cambia la CA, o el ataque y el daño medio frente al arma que usa ahora.',

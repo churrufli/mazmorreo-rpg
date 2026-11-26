@@ -453,10 +453,10 @@ export function encounterCell(id: string): string | undefined {
   return m ? `${m.q},${m.r}` : undefined;
 }
 
-/** Cada grupo conserva su marcador en su casilla de origen, incluidos los refuerzos. */
+/** Casilla donde se venció a cada grupo (donde estaba el grupo al luchar); si no se apuntó, la de origen del enemigo. */
 export function wonCell(g: Game, id: string): string | undefined {
   if (!g.done.includes(id) || (g.fallen?.[id] && !Object.keys(g.fallen[id]).length)) return undefined;
-  return encounterCell(id) ?? g.wonAt?.[id];
+  return g.wonAt?.[id] ?? encounterCell(id);
 }
 
 /** Los que cayeron en los combates ganados en esta casilla, con su número. */

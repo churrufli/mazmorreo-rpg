@@ -16,16 +16,18 @@ const { chromium } = require('playwright');
         assert.ok(bounds && Math.abs(bounds.width - width) < 2, 'Landscape root must fill the viewport');
         assert.ok(bounds && Math.abs(bounds.height - height) < 2, 'Landscape root must fill viewport height');
       }
-      const fullscreen = page.getByRole('button', { name: 'Pantalla completa', exact: true });
-      await fullscreen.click();
+      // Menú único: pantalla completa, ajustes, atajos y volver al menú.
+      const menu = page.getByRole('button', { name: 'Menú', exact: true });
+      const item = name => page.getByRole('menuitem', { name, exact: true });
+      await menu.click();
+      await item('Pantalla completa').click();
       await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
-      await page.getByRole('button', { name: 'Salir de pantalla completa', exact: true }).click();
+      await menu.click();
+      await item('Salir de pantalla completa').click();
       await page.waitForFunction(() => !document.fullscreenElement);
-      // Salir mediante el navegador también debe actualizar el botón.
-      await fullscreen.click();
-      await page.waitForFunction(() => !!document.fullscreenElement);
-      await page.evaluate(() => document.exitFullscreen());
-      await fullscreen.waitFor();
+      await menu.click();
+      await item('Ajustes').click();
+      await page.keyboard.press('Escape');
       await page.getByRole('button', { name: 'Nueva partida', exact: true }).click();
       await page.getByRole('button').filter({ hasText: 'Archivo 1' }).first().click();
       for (const name of ['Elegir especie', 'Elegir clase', 'Elegir atributos', 'Poner nombre', 'Empezar la aventura']) {
@@ -45,7 +47,8 @@ const { chromium } = require('playwright');
       await page.waitForTimeout(800);
       assert.ok(await page.locator('svg polygon').count(), 'Hexagonal map rendered');
       await page.screenshot({ path: `/tmp/mazmorreo-web-${width}x${height}.png` });
-      await page.getByRole('button', { name: 'Volver al menú' }).click();
+      await menu.click();
+      await item('Volver al menú').click();
       await page.getByRole('button', { name: 'Salir', exact: true }).click();
       await page.reload();
       await page.getByRole('button', { name: 'Cargar partida', exact: true }).click();

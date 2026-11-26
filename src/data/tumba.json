@@ -543,7 +543,7 @@
         {
           "id": "s1_r07",
           "name": "Sala del falso rey",
-          "description": "Un trono de piedra y tres sarcófagos. Un rey con corona de latón espera sentado.",
+          "description": "Un trono de piedra y tres sarcófagos. En el trono hay una figura inmóvil.",
           "kind": "room",
           "size_hexes": 10,
           "shape": "round",
@@ -1353,7 +1353,7 @@
         {
           "id": "s2_r06",
           "name": "Cripta de Sparamuntar",
-          "description": "Un derrumbe ha aplastado medio techo. Bajo las piedras, un sarcófago se mueve.",
+          "description": "Un derrumbe ha aplastado medio techo. Bajo las piedras asoma un sarcófago.",
           "kind": "room",
           "size_hexes": 9,
           "shape": "irregular",
@@ -2975,7 +2975,7 @@
         {
           "id": "s4_r04",
           "name": "Pozo de engendro",
-          "description": "Un pozo de lodo burbujeante del que salen brazos verdes cubiertos de hongos.",
+          "description": "Un pozo de lodo burbujeante que huele a moho.",
           "kind": "room",
           "size_hexes": 10,
           "shape": "irregular",
@@ -3325,7 +3325,7 @@
         {
           "id": "s4_r08",
           "name": "Guarida de Xiximanter",
-          "description": "Una cámara bañada en luz morada. Un hombre serpiente con bastón espera tras una mesa llena de frascos.",
+          "description": "Una cámara bañada en luz morada. Tras una mesa llena de frascos burbujea algo.",
           "kind": "room",
           "size_hexes": 14,
           "shape": "irregular",
@@ -3490,7 +3490,7 @@
         {
           "id": "s4_r11",
           "name": "Despensa del hechicero",
-          "description": "Sacos de ingredientes raros y un baúl con candado.",
+          "description": "Sacos de ingredientes raros apilados contra la pared.",
           "kind": "room",
           "size_hexes": 7,
           "shape": "round",

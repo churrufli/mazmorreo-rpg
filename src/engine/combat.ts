@@ -11,7 +11,7 @@ import {
 import { prof } from '../data/srd';
 import type { Game } from './game';
 import { ADVS, advOf } from './aventuras';
-import { bossEncounter, dropKey, encounterById, encounterCell, encounterGroup, tally } from './dungeon';
+import { bossEncounter, dropKey, encounterById, encounterGroup, tally } from './dungeon';
 import { GOALS, Goal } from '../data/objetivos';
 
 export type Row = 'front' | 'back';
@@ -839,8 +839,8 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
         if (u ? u.dead : (g.enemyHp[id]?.[n] ?? 1) <= 0) fell[en.name] = (fell[en.name] ?? 0) + 1;
       }
       g.fallen = { ...g.fallen, [id]: fell };
-      const cell = encounterCell(id);
-      if (cell) g.wonAt = { ...g.wonAt, [id]: cell };
+      // Las espadas van donde se luchó, no en la casilla de la que salió el grupo (el autor 2026-11-25).
+      g.wonAt = { ...g.wonAt, [id]: `${g.pos[0]},${g.pos[1]}` };
       delete g.enemyHp[id];
     }
     const drops = cb.units.filter(u => u.side === 'enemy' && u.dead && u.drop).map(u => u.drop!);

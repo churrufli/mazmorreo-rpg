@@ -39,7 +39,7 @@ export const setFlag = (k: string, on: boolean) => kv.set(`opt:${k}`, on ? 'on' 
 export const getLevel = (k: string, def: number) => { const v = Number(kv.getString(`vol:${k}`)); return kv.getString(`vol:${k}`) != null && v >= 0 && v <= 10 ? v : def; };
 export const setLevel = (k: string, v: number) => kv.set(`vol:${k}`, String(v));
 /** Zoom del mapa: se conserva entre pantallas y al cerrar el juego. */
-export const getZoom = () => { const v = Number(kv.getString('opt:zoom')); return v >= 0.5 && v <= 2.2 ? v : 1.4; };
+export const getZoom = () => { const v = Number(kv.getString('opt:zoom')); return v >= 0.5 && v <= 2.6 ? v : 1.4; };
 export const setZoom = (v: number) => kv.set('opt:zoom', String(v));
 export const getDev = () => kv.getString('opt:dev') === 'on';
 export const setDev = (on: boolean) => kv.set('opt:dev', on ? 'on' : 'off');
