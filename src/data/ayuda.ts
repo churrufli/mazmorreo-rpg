@@ -91,6 +91,7 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
   { version: 'v0.148', items: [
+    'Combates con más vida: la magia, las curaciones y los críticos tienen animación propia según el tipo (fuego, escarcha, rayo, necrótico, veneno…), y al empezar el grupo desenvaina y cada criatura suena a lo suyo: gruñidos, chillidos de espectro, mordiscos o rugidos de gigante.',
     'Copias de seguridad: en Cargar partida, el botón de compartir de cada archivo guarda una copia fuera del juego (en Android, con Compartir; en la web, como archivo). «Restaurar una copia» la recupera en un archivo vacío.',
     'Al comprar o repartir equipo se compara con lo que ya lleva: cómo cambia la CA, o el ataque y el daño medio frente al arma que usa ahora.',
     'Al tocar una carta en combate, cada estado dice cuánto le dura o cómo se le pasa: turnos que le quedan ardiendo, la CD para soltarse, quién mantiene la concentración…',
@@ -467,4 +468,5 @@ export const CREDITOS: string[] = [
   'Aventura «La Tumba de los Reyes Serpiente»: basada en Tomb of the Serpent Kings, de Skerples (Coins and Scrolls), con licencia CC BY-NC-SA. Adaptada a Mazmorreo.',
   'Efectos de sonido: Kenney (kenney.nl), «80 CC0 RPG SFX» de rubberduck, «Tinysized SFX» de Vehicle y «RPG Sound Pack» de artisticdude, CC0.',
   'Ambientes: pack «Ambience» de yewbic (CC0) y «Nature Sounds Pack» de Antoine Goumain (CC BY 4.0).',
+  'Animaciones de magia, curación y críticos: «RPG VFX Pack» de System G6 (Qoma), CC0.',
 ];

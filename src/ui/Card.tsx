@@ -16,6 +16,7 @@ import { XP_LEVELS } from '../data/srd';
 import { StateOrb, StateTag, STATES } from './estados';
 import { ElementFx, FlashFx, GOOD_STATES, HealFx, ImpactFx, ShardsFx, StateFx, elementOf } from './efectos';
 import { DUR, EASE, fxFull, fxOn, useFxMode } from './movimiento';
+import { Destello, VfxSheet, sheetFor } from './Destello';
 import { slotsAt } from '../engine/rules';
 
 export interface CardInfo {
@@ -113,9 +114,13 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
     a.start();
     return () => a.stop();
   }, [liftTo]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Animación por fotogramas (RPG VFX Pack) de la magia, la curación y los críticos.
+  const [sprite, setSprite] = useState<{ id: number; sheet: VfxSheet }>();
   useEffect(() => {
     if (!fx) return;
     if (fxKey) { if (PLAYED.get(fxKey) === fx.id) return; PLAYED.set(fxKey, fx.id); }
+    const sheet = fxFull() ? sheetFor(fx.kind, fx.type) : undefined;
+    setSprite(sheet ? { id: fx.id, sheet } : undefined);
     anim.setValue(0);
     // Los daños mágicos con efecto propio duran algo más para que se aprecien.
     Animated.timing(anim, { toValue: 1, duration: elementOf(fx.type) && fxOn() ? 950 : 700, delay: fxDelay, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
@@ -254,11 +259,13 @@ export function Card({ info, width, active, target, help, dim, onPress, onLongPr
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: info.dead ? 'rgba(0,0,0,0.55)' : 'rgba(50,6,6,0.4)', opacity: downV }]} />
         {stFx && fxOn() ? <StateFx key={stFx.n} w={w} h={h} t={stV} good={stFx.good} /> : null}
         {fx && fxFull() && fx.kind !== 'heal' ? <FlashFx key={`fl${fx.id}`} t={anim} crit={fx.kind === 'crit'} /> : null}
-        {fx && fxOn() ? (
+        {/* Con animación por fotogramas no se pinta además la imagen fija del golpe. */}
+        {fx && fxOn() && !(fxFull() && sheetFor(fx.kind, fx.type)) ? (
           <Animated.View pointerEvents="none" style={{ position: 'absolute', left: w * 0.1, top: h * 0.2, opacity: fxOpacity, transform: [{ scale: fxScale }] }}>
             <Image source={IMG[FX_IMG[fx.kind]]} style={{ width: w * 0.8, height: w * 0.8 }} />
           </Animated.View>
         ) : null}
+        {sprite ? <Destello key={`sp${sprite.id}`} sheet={sprite.sheet} w={w} h={h} delay={fxDelay} onEnd={() => setSprite(undefined)} /> : null}
         {fx?.kind === 'heal' && fxOn() ? <HealFx key={`h${fx.id}`} w={w} h={h} t={anim} uid={`${fxKey ?? info.name}_${fx.id}`} /> : null}
         {fx?.type && fxOn() ? <ElementFx key={fx.id} type={fx.type} w={w} h={h} t={anim} uid={`${fxKey ?? info.name}_${fx.id}`} /> : null}
         {breaking ? (

@@ -2,6 +2,11 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 26 de noviembre de 2026 — Efectos de los packs CC0
+
+- **Animaciones por fotogramas** (`src/ui/Destello.tsx`): magia según el tipo de daño, curación y críticos sobre la carta, del «RPG VFX Pack» de System G6 (CC0). Solo con los efectos visuales completos.
+- **Sonidos** del «RPG Sound Pack» de artisticdude (CC0): desenvainar al empezar el combate, voz de cada criatura (espectros, gigantes, lobos, bestias, limos, bichos), mordiscos de los bichos pequeños y un conjuro para la magia sin sonido propio.
+
 ## 25 de noviembre de 2026 — Morir de verdad
 
 - **Salvaciones fuera del combate** (`src/engine/muerte.ts`): al acabar el combate los caídos ya no quedan estables solos. En el mapa tiran una salvación por casilla hasta estabilizarse, levantarse con un 20 o morir. Aviso con sus éxitos y fallos, botón **Estabilizar** (Medicina CD 10 de un compañero) o poción desde la ficha.
