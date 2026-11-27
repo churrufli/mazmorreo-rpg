@@ -103,6 +103,21 @@ export interface Unit {
   plan?: Plan;
   /** No muertos: la presa que persiguen hasta que cae. */
   prey?: string;
+  /** Jefe: golpe grande anunciado para su próximo turno (nombre del ataque) y fila a la que apunta. */
+  warn?: string;
+  aim?: Row;
+  /** Jefe que ya ha bajado a la mitad de sus PG (cambia de táctica una vez). */
+  half?: boolean;
+  /** Vharzûl en vuelo: cuerpo a cuerpo no le alcanza. `flown`: ya ha volado en este combate. */
+  flying?: boolean;
+  flown?: boolean;
+  /** Vharzûl: el aliento está listo al aterrizar; `weakBreath`: el primero sale a mitad de daño (preparativo). */
+  breathNow?: boolean;
+  weakBreath?: boolean;
+  /** Daño recibido de cada personaje (Xiximanter se centra en quien más le ha herido). */
+  dmgBy?: Record<string, number>;
+  /** Xiximanter acaba de lanzar su bola de fuego: no anuncia otra este turno. */
+  cool?: boolean;
 }
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
@@ -162,6 +177,20 @@ const MAX_ROW = 3;
 const DRAGON = 'Young White Dragon';
 /** El aliento del dragón sale en los asaltos 2, 5, 8... (diseño de la aventura). */
 const breathRound = (cb: Combat) => cb.round >= 2 && (cb.round - 2) % 3 === 0;
+/** Los cuatro jefes de las aventuras: anuncian su golpe grande y cambian de táctica a mitad de PG. */
+export const BOSS_MONS = ['Orvane', 'Treant', 'Young White Dragon', 'Xiximanter'];
+const isBoss = (u: Unit) => !!u.mon && BOSS_MONS.includes(u.mon);
+/** ¿Echa Vharzûl el aliento en este turno? En los asaltos fijos o al aterrizar. */
+const breathNow = (cb: Combat, u: Unit) => breathRound(cb) || !!u.breathNow;
+/** El Corazón Hueco tensa sus raíces bajo la retaguardia en los asaltos 3, 6, 9... */
+const rootRound = (r: number) => r >= 3 && r % 3 === 0;
+/** Frase de cada jefe al bajar a la mitad de sus PG. */
+const HALF_LINE: Record<string, string> = {
+  Orvane: 'Orvane retrocede hasta el cristal: «¡No acabaréis conmigo!». Ahora va a por el más débil.',
+  Treant: 'El Corazón Hueco cruje de dolor. Deja de brotar arbustos, pero sus raíces ahora apresan.',
+  'Young White Dragon': 'Vharzûl ruge, herido. Va a alzar el vuelo.',
+  Xiximanter: 'Xiximanter escupe una maldición: se centra en quien más daño le ha hecho.',
+};
 /** Clases con Ataque adicional desde el nivel 5. */
 const EXTRA_ATTACK = ['fighter', 'ranger', 'paladin', 'barbarian'];
 /** ¿Resiste el frío? (poción, anillo de calor o botas de las tierras invernales) */
@@ -225,7 +254,9 @@ export function validTargets(cb: Combat, attacker: Unit, kind: 'melee' | 'ranged
   const foes = sideUnits(cb, foe).filter(u => attacker.side === 'party' ? u.hp > 0 : true);
   if (kind === 'melee') {
     if (attacker.row !== 'front') return [];
-    return frontHeld(cb, foe) ? foes.filter(u => u.row === 'front') : foes;
+    // Vharzûl en vuelo: solo se le alcanza a distancia o con conjuros.
+    const near = foes.filter(u => !u.flying);
+    return frontHeld(cb, foe) ? near.filter(u => u.row === 'front') : near;
   }
   return foes;
 }
@@ -286,6 +317,13 @@ export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, t
   const before = target.hp;
   target.hp = Math.max(0, target.hp - amount);
   say(cb, `${target.name} recibe ${amount} de daño (${type}).`, 'dmg');
+  if (isBoss(target) && from.side === 'party') target.dmgBy = { ...target.dmgBy, [from.key]: (target.dmgBy?.[from.key] ?? 0) + amount };
+  // Jefe a la mitad de sus PG: una frase y un cambio de táctica (sin curarse ni ganar PG).
+  if (isBoss(target) && !target.half && target.hp > 0 && target.hp <= target.maxHp / 2) {
+    target.half = true;
+    say(cb, HALF_LINE[target.mon!], 'big');
+    if (target.mon === 'Orvane' && target.row === 'front' && rowSpace(cb, 'enemy', 'back')) target.row = 'back';
+  }
   if (target.concentration && amount > 0) {
     if (target.hp <= 0 || !saveRoll(g, cb, target, 'con', Math.max(10, Math.floor(amount / 2)), 'Concentración')) endConcentration(cb, target);
   }
@@ -422,7 +460,7 @@ function bossRound(g: Game, cb: Combat) {
     say(cb, `Los nudos de raíz alimentan al Corazón: recupera ${h} PG.`, 'info');
   }
   const enemies = cb.units.filter(u => u.side === 'enemy' && alive(u));
-  if ((cb.round === 2 || cb.round === 4) && enemies.filter(u => u.row === 'front').length < MAX_ROW && enemies.length < cap) {
+  if (!boss.half && (cb.round === 2 || cb.round === 4) && enemies.filter(u => u.row === 'front').length < MAX_ROW && enemies.length < cap) {
     const m = MONSTERS['Awakened Shrub'];
     const u: Unit = {
       key: `e_brote_${cb.round}`, side: 'enemy', mon: 'Awakened Shrub', name: 'Arbusto despertado', img: m.img, hp: m.hp, maxHp: m.hp,
@@ -654,6 +692,7 @@ export function startCombat(g: Game, encounterId: string): Combat {
   group.now.forEach(id => addEncounter(g, cb, id, true));
   // Sin refuerzos de grupos vecinos (el autor 2026-11-06): cada grupo lucha solo.
   cb.pending = [];
+  bossPrepFx(g, cb);
   const goal = GOALS.find(x => cb.encounters.includes(x.enc) && !g.goals?.[x.enc]);
   // «Primero» pide que haya alguien más a quien dejar para después; «que no caiga nadie», compañeros a los que cuidar.
   const foes = cb.units.filter(x => x.side === 'enemy');
@@ -669,6 +708,20 @@ export function startCombat(g: Game, encounterId: string): Combat {
   say(cb, `¡Combate! Iniciativa: ${cb.order.map(k => cb.units.find(u => u.key === k)!.name).join(', ')}.`, 'info');
   startTurn(g, cb);
   return cb;
+}
+
+/** Preparativos ganados en la aventura (ver bossPrep en dungeon.ts): el jefe llega con algo menos. */
+function bossPrepFx(g: Game, cb: Combat) {
+  const has = (f: string) => !!g.flags?.includes(f);
+  for (const u of cb.units.filter(x => x.side === 'enemy')) {
+    if (u.mon === DRAGON && has('m3_valvulas')) u.weakBreath = true;
+    if (u.mon === 'Xiximanter' && has('s4_libres')) u.spent = 1;
+  }
+  const knot = cb.units.find(x => x.mon && MONSTERS[x.mon].knot);
+  if (knot && has('b4_promesa') && cb.units.some(x => x.mon === 'Treant')) {
+    cb.units = cb.units.filter(x => x !== knot);
+    say(cb, 'Una de las raíces que prometieron proteger no obedece: falta un nudo junto al Corazón.', 'info');
+  }
 }
 
 function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean {
@@ -744,6 +797,7 @@ export const autoTurn = (cb: Combat) => {
 
 export function endTurn(g: Game, cb: Combat) {
   const u = current(cb);
+  if (u.side === 'enemy' && isBoss(u) && conscious(u)) bossWarn(g, cb, u);
   if (u.paralyzed && conscious(u)) {
     if (saveRoll(g, cb, u, 'con', 10, 'Constitución')) { u.paralyzed = false; say(cb, `${u.name} ya puede moverse.`, 'info'); }
   }
@@ -1485,7 +1539,20 @@ export function enemyTurn(g: Game, cb: Combat) {
     endTurn(g, cb);
     return;
   }
-  for (const a of m.attacks) if (a.save?.recharge && u.recharge![a.name] === false && die(g.rng, 6) >= a.save.recharge) u.recharge![a.name] = true;
+  // Los jefes recargan al acabar su turno, para anunciar el golpe antes (ver bossWarn).
+  if (!isBoss(u)) for (const a of m.attacks) if (a.save?.recharge && u.recharge![a.name] === false && die(g.rng, 6) >= a.save.recharge) u.recharge![a.name] = true;
+  // Vharzûl a mitad de PG: alza el vuelo un asalto; al bajar, el aliento está listo.
+  if (u.mon === DRAGON && u.flying) {
+    u.flying = false;
+    u.breathNow = true;
+    say(cb, `${u.name} desciende en picado.`, 'big');
+  } else if (u.mon === DRAGON && u.half && !u.flown) {
+    u.flying = u.flown = true;
+    u.plan = undefined;
+    say(cb, `${u.name} alza el vuelo: cuerpo a cuerpo no le alcanzáis.`, 'big');
+    endTurn(g, cb);
+    return;
+  }
   // Lo que había anunciado (si sigue valiendo) o una decisión nueva.
   const p = u.plan && planOk(cb, u, u.plan) ? u.plan : decide(g, cb, u);
   u.plan = undefined;
@@ -1509,8 +1576,13 @@ export function enemyTurn(g: Game, cb: Combat) {
     u.spent = (u.spent ?? 0) + 1;
     if (!area.save!.uses || u.spent >= area.save!.uses) u.recharge![area.name] = false;
     say(cb, `${u.name} usa ${area.name}.`, 'big');
-    const dmg = roll(g.rng, area.dice);
+    u.warn = u.aim = undefined;
+    if (u.mon === DRAGON) u.breathNow = false;
+    if (u.mon === 'Xiximanter') u.cool = true;
+    let dmg = roll(g.rng, area.dice);
+    if (u.mon === DRAGON && u.weakBreath) { u.weakBreath = false; dmg = Math.floor(dmg / 2); say(cb, 'El aire templado de las válvulas debilita el aliento: hace la mitad de daño.', 'info'); }
     const hit = u.mon === DRAGON ? cb.units.filter(x => p.targets.includes(x.key) && conscious(x)) : cb.units.filter(x => x.side === 'party' && conscious(x) && x.row === 'front');
+    if (!hit.length) say(cb, 'El golpe no alcanza a nadie: os habíais apartado a tiempo.', 'info');
     for (const t of hit) {
       const ok = saveRoll(g, cb, t, area.save!.abil, area.save!.dc, area.save!.abil === 'con' ? 'Constitución' : 'Destreza');
       applyDamage(g, cb, t, ok ? Math.floor(dmg / 2) : dmg, area.type, u);
@@ -1536,8 +1608,11 @@ export function enemyTurn(g: Game, cb: Combat) {
   if (!atks.length) { endTurn(g, cb); return; }
   let told = false;
   const lost: string[] = [];
+  // El Corazón Hueco había tensado las raíces bajo la retaguardia: esta vez llegan allí.
+  const roots = u.mon === 'Treant' && u.warn ? cb.units.filter(x => x.side === 'party' && conscious(x) && x.row === 'back') : [];
+  if (u.mon === 'Treant') u.warn = u.aim = undefined;
   for (let i = 0; i < p.targets.length; i++) {
-    const pool = reach(cb, u, ranged);
+    const pool = roots.length ? roots : reach(cb, u, ranged);
     let t = cb.units.find(x => x.key === p.targets[i] && pool.includes(x) && conscious(x));
     if (!t) t = chooseTarget(g, cb, u, pool.filter(x => !lost.includes(x.key)), ranged);
     // Jefe: a veces remata a un caído a su alcance (cuerpo a cuerpo contra un caído es crítico: dos fallos; el autor 2026-11-25).
@@ -1559,6 +1634,10 @@ export function enemyTurn(g: Game, cb: Combat) {
     const a = atks[i % atks.length];
     // Maltrecho (la mitad de sus PG o menos): algunos monstruos hacen menos daño (SRD 5.2.1).
     const hit = attack(g, cb, u, t, toOpts(a.bloodied && u.hp <= u.maxHp / 2 ? { ...a, dice: a.bloodied } : a));
+    if (hit && u.mon === 'Treant' && u.half && conscious(t) && !t.restrained) {
+      t.restrained = 13;
+      say(cb, `Las raíces apresan a ${t.name} (Fuerza CD 13 para soltarse).`, 'big');
+    }
     if (hit && a.paralyze && conscious(t) && !t.paralyzed && !saveRoll(g, cb, t, 'con', a.paralyze.dc, 'Constitución')) {
       // Basilisco: con el espejo de acero se le mira por el reflejo y la salvación se repite.
       const mirror = u.mon === 'Basilisk' && t.side === 'party' && charOf(g, t).items.some(i => i.id === 'steel_mirror');
@@ -1593,7 +1672,9 @@ const isGuard = (cb: Combat, u: Unit, row: Row) => row === 'front' && u.maxHp >=
   cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'back' && MONSTERS[x.mon!].attacks.some(a => a.ranged));
 
 const planOk = (cb: Combat, u: Unit, p: Plan) => {
-  if (u.mon === DRAGON && (p.kind === 'area') !== breathRound(cb)) return false;
+  if (u.mon === DRAGON && (p.kind === 'area') !== breathNow(cb, u)) return false;
+  // El golpe anunciado de un jefe sale aunque ya no alcance a nadie (apartarse era la respuesta).
+  if (p.kind === 'area' && isBoss(u) && u.warn) return true;
   if (p.kind === 'area') return cb.units.some(x => x.side === 'party' && conscious(x) && (x.row === 'front' || u.mon === DRAGON));
   if (p.move && p.move !== u.row && !rowSpace(cb, 'enemy', p.move) && !(p.swap && cb.units.some(x => x.key === p.swap && conscious(x) && x.row === p.move))) return false;
   const pool = p.kind === 'magic' ? cb.units.filter(x => x.side === 'party' && conscious(x)) : reach(cb, u, p.kind === 'ranged', p.move ?? u.row);
@@ -1611,10 +1692,22 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
     for (let i = 0; i < times; i++) { const t = chooseTarget(g, cb, u, pool, ranged); if (t) out.push(t.key); }
     return out;
   };
-  if (m.reach) return { kind: 'melee', targets: picks(reach(cb, u, false), false) };
+  if (m.reach) {
+    // Raíces bajo la retaguardia (anunciadas): con todos los nudos rotos, solo un golpe.
+    const back = u.warn ? up.filter(x => x.row === 'back') : [];
+    if (back.length) {
+      const n = knotsUp(cb) ? times : 1;
+      return { kind: 'melee', targets: Array.from({ length: n }, () => chooseTarget(g, cb, u, back)!.key) };
+    }
+    return { kind: 'melee', targets: picks(reach(cb, u, false), false) };
+  }
   if (u.mon === DRAGON) {
-    // Aliento en asaltos fijos contra hasta tres personajes (primero los de delante).
-    if (breathRound(cb)) return { kind: 'area', targets: [...up.filter(x => x.row === 'front'), ...up.filter(x => x.row === 'back')].slice(0, 3).map(x => x.key) };
+    if (u.flying) return undefined;
+    // Aliento en asaltos fijos (o al aterrizar) contra la fila anunciada; quien está escondido no es objetivo.
+    if (breathNow(cb, u)) {
+      const row = u.aim ?? breathAim(cb);
+      return { kind: 'area', targets: up.filter(x => x.row === row && !x.hidden).slice(0, 3).map(x => x.key) };
+    }
     // Mientras su vanguardia aguante, espera detrás; cuando cae, avanza.
     if (u.row === 'back' && cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'front')) return undefined;
     const targets = picks(reach(cb, u, false, 'front'), false);
@@ -1622,7 +1715,9 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
   }
   const area = m.attacks.find(a => a.save);
   const partyFront = up.filter(x => x.row === 'front');
-  if (area && u.recharge![area.name] !== false && (partyFront.length >= 2 || m.ai !== 'caster') && partyFront.length)
+  // Los jefes solo usan su golpe grande después de anunciarlo (ver bossWarn).
+  if (area && isBoss(u)) { if (u.warn === area.name) return { kind: 'area', targets: partyFront.map(x => x.key) }; }
+  else if (area && u.recharge![area.name] !== false && (partyFront.length >= 2 || m.ai !== 'caster') && partyFront.length)
     return { kind: 'area', targets: partyFront.map(x => x.key) };
   // Lanzador delante con alguien que le cubra: se retira a la retaguardia y lanza desde allí.
   const cover = cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'front');
@@ -1653,6 +1748,75 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
   const targets = picks(reach(cb, u, useRanged, row), useRanged);
   if (!targets.length) return undefined;
   return { kind: useRanged ? 'ranged' : 'melee', targets, move: row !== u.row ? row : undefined, guard: isGuard(cb, u, row), swap: row !== u.row ? swap : undefined };
+}
+
+/**
+ * Cómo se comporta un enemigo, en una o dos frases para su carta (sale de la misma IA que decide su turno).
+ * Así se juega contra un plan y no contra un dado oculto.
+ */
+export function behaviorOf(g: Game, cb: Combat, u: Unit): string[] {
+  if (u.side !== 'enemy' || !u.mon) return [];
+  const m = MONSTERS[u.mon];
+  const out: string[] = [];
+  const first = (k?: string) => cb.units.find(x => x.key === k)?.name.split(' ')[0];
+  if (m.knot) return ['Alimenta al Corazón: mientras quede algún nudo, el Corazón se cura y resiste el daño.'];
+  if (u.mon === 'Shrieker') return ['No ataca: si chilla, atrae a otra criatura.'];
+  if (u.warn) out.push(u.mon === 'Treant' ? 'Prepara un golpe de raíz contra la retaguardia.'
+    : `Prepara ${m.attacks.find(a => a.name === u.warn)?.name ?? u.warn} contra la ${u.mon === DRAGON && u.aim === 'back' ? 'retaguardia' : 'vanguardia'}.`);
+  if (u.flying) out.push('En vuelo: solo se le alcanza a distancia o con conjuros.');
+  if (isBoss(u)) {
+    if (u.mon === 'Treant') out.push(u.half ? 'Sus raíces apresan a quien golpean.' : 'Cada pocos asaltos brota un arbusto despertado.');
+    else if (u.mon === 'Orvane') out.push(u.half ? 'Va a por el más débil.' : 'Se protege con Escudo y ataca al de menor CA.');
+    else if (u.mon === 'Xiximanter') out.push(u.half ? 'Se centra en quien más daño le ha hecho.' : 'Ataca al de menor CA desde detrás de sus siervos.');
+    else if (u.mon === DRAGON) out.push('Espera detrás mientras le cubren; su aliento sale cada pocos asaltos.');
+    out.push('Puede rematar a un caído que tenga a su alcance.');
+    return out;
+  }
+  if (m.ai === 'goblin') {
+    const lead = cb.units.some(x => x.side === 'enemy' && conscious(x) && isLeader(x) && MONSTERS[x.mon!].ai === 'goblin' && x !== u);
+    out.push(isLeader(u) ? 'Jefe de su grupo: si cae, los demás huyen antes.' : lead ? 'Huye si cae su jefe o si queda malherido.' : 'Va a por el más débil y huye si queda malherido.');
+  } else if (m.ai === 'undead') out.push(first(u.prey) ? `No suelta a ${first(u.prey)} hasta que caiga.` : 'Elige a alguien de delante y no lo suelta hasta que cae.');
+  else if (m.ai === 'caster') out.push('Se retira detrás si alguien le cubre y ataca al de menor CA.');
+  else if (m.ai === 'cultist') out.push(isLeader(u) ? 'Sus seguidores le defienden.' : 'Defiende a su líder: va a por quien le hiera.');
+  else if (m.packTactics) out.push('Caza en manada: va a por el más débil.');
+  else out.push(first(u.lastHitBy) ? `Se revuelve contra ${first(u.lastHitBy)}, que le ha herido.` : 'Se revuelve contra quien le hiera.');
+  if (m.attacks.some(a => a.ranged) && !m.attacks.every(a => a.ranged)) out.push('Si queda malherido y alguien le cubre, se retira a disparar desde atrás.');
+  return out;
+}
+
+/** Fila a la que apunta el aliento de Vharzûl: la que tenga más personajes a la vista (si empatan, la delantera). */
+function breathAim(cb: Combat): Row {
+  const n = (r: Row) => cb.units.filter(x => x.side === 'party' && conscious(x) && x.row === r && !x.hidden).length;
+  return n('back') > n('front') ? 'back' : 'front';
+}
+
+/**
+ * Al acabar su turno, cada jefe anuncia el golpe grande del turno siguiente (diseño de jefes del 23-nov):
+ * Orvane recarga la Onda, el Corazón tensa raíces bajo la retaguardia, Vharzûl toma aire y Xiximanter traza runas.
+ */
+function bossWarn(g: Game, cb: Combat, u: Unit) {
+  const m = MONSTERS[u.mon!];
+  const area = m.attacks.find(a => a.save);
+  if (u.warn) return;
+  if (u.mon === 'Orvane' && area) {
+    if (u.recharge![area.name] === false && die(g.rng, 6) >= area.save!.recharge!) u.recharge![area.name] = true;
+    if (u.recharge![area.name] !== false) { u.warn = area.name; say(cb, 'Orvane reúne energía: el próximo turno estallará contra la vanguardia.', 'big'); }
+  } else if (u.mon === 'Xiximanter' && area) {
+    // Una bola de fuego anunciada cada dos turnos, mientras le queden.
+    if (u.cool) u.cool = false;
+    else if ((u.spent ?? 0) < (area.save!.uses ?? 1) && u.recharge![area.name] !== false) {
+      u.warn = area.name;
+      say(cb, 'Xiximanter traza runas de fuego: el próximo turno, bola de fuego contra la vanguardia.', 'big');
+    }
+  } else if (u.mon === DRAGON && !u.flying) {
+    if (breathRound({ ...cb, round: cb.round + 1 })) { u.warn = area!.name; u.aim = breathAim(cb); say(cb, `Vharzûl toma aire: su aliento irá contra la ${u.aim === 'front' ? 'vanguardia' : 'retaguardia'}.`, 'big'); }
+  } else if (u.mon === DRAGON && u.flying) {
+    u.warn = area!.name; u.aim = breathAim(cb);
+    say(cb, `Vharzûl vuela en círculos y toma aire: al bajar, su aliento irá contra la ${u.aim === 'front' ? 'vanguardia' : 'retaguardia'}.`, 'big');
+  } else if (u.mon === 'Treant' && rootRound(cb.round + 1)) {
+    u.warn = 'Raíz'; u.aim = 'back';
+    say(cb, 'Las raíces se tensan bajo la retaguardia: el próximo turno el Corazón golpeará allí.', 'big');
+  }
 }
 
 /** Anuncia (o corrige) lo que harán los enemigos: se llama al empezar cada turno y tras cada acción. */
@@ -1695,6 +1859,8 @@ function chooseTarget(g: Game, cb: Combat, u: Unit, opts: Unit[], ranged = false
   // Manadas (ratas, lobos) y cualquiera que ya no tenga a nadie delante: a por el más débil.
   if (MONSTERS[u.mon!].packTactics || (!ranged && !frontHeld(cb, 'party'))) return weakest(pool);
   if (ai === 'beast') return pool.find(x => x.key === u.lastHitBy) ?? pick(g.rng, pool);
+  if (u.half && u.mon === 'Orvane') return weakest(pool);
+  if (u.half && u.mon === 'Xiximanter') return [...pool].sort((a, b) => (u.dmgBy?.[b.key] ?? 0) - (u.dmgBy?.[a.key] ?? 0) || a.hp - b.hp)[0];
   if (ai === 'caster') return [...pool].sort((a, b) => a.ac - b.ac || a.hp - b.hp)[0];
   // Sectarios: defienden a su líder y van a por quien le ha herido.
   if (ai === 'cultist') {

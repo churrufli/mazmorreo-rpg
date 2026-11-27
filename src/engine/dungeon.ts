@@ -1225,12 +1225,17 @@ export function react(g: Game, why: 'hurt' | 'clear' | 'close'): Ev | undefined 
   return { kind: 'dialogue', lines: [{ speaker: who.isHero ? 'hero' : who.id, text: pick(g.rng, REACT[why === 'close' && g.party.some(c => c.dead) ? 'closeDead' : why]) }] };
 }
 
-/** Lo que las decisiones anteriores cambian en el combate contra el jefe (por ahora, Maese Orvane). */
+/** Lo que las decisiones anteriores cambian en el combate contra el jefe de cada aventura. */
 export function bossPrep(g: Game, boss: string): string[] {
-  if (boss !== 'Orvane') return [];
   const out: string[] = [];
-  if (g.flags?.includes('z4_compuertas')) out.push('El agua vuelve a cubrir el cristal: Orvane no podrá sacar de él tanta magia. Tendrá un Escudo menos.');
-  if (g.goals?.z4_e03 === 'ok') out.push('Cortasteis su ritual: tendrá un Rayo abrasador menos.');
+  const has = (f: string) => !!g.flags?.includes(f);
+  if (boss === 'Orvane') {
+    if (has('z4_compuertas')) out.push('El agua vuelve a cubrir el cristal: Orvane no podrá sacar de él tanta magia. Tendrá un Escudo menos.');
+    if (g.goals?.z4_e03 === 'ok') out.push('Cortasteis su ritual: tendrá un Rayo abrasador menos.');
+  }
+  if (boss === 'Treant' && has('b4_promesa')) out.push('Recordasteis al Corazón su promesa: una de sus raíces ya no le obedece. Tendrá un nudo menos.');
+  if (boss === 'Young White Dragon' && has('m3_valvulas')) out.push('Reparasteis las válvulas: el aire templado sube por la fortaleza. El primer aliento de Vharzûl hará la mitad de daño.');
+  if (boss === 'Xiximanter' && has('s4_libres')) out.push('Los prisioneros que liberasteis rompieron sus pergaminos de fuego. Xiximanter tendrá una Bola de fuego menos.');
   return out;
 }
 

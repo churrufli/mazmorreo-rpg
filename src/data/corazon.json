@@ -4489,7 +4489,8 @@
                   "dc": 14,
                   "ok": {
                     "text": "Vuestras palabras llegan al Corazón. Una de las raíces que lo protegen deja de obedecerlo.",
-                    "sub": "b4_e04"
+                    "sub": "b4_e04",
+                    "flag": "b4_promesa"
                   },
                   "fail": {
                     "text": "Las raíces siguen moviéndose. El Corazón no responde."

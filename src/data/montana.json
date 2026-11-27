@@ -2998,7 +2998,8 @@
                   "dc": 13,
                   "ok": {
                     "text": "La tubería libera aire templado. Abrís el cajón y encontráis monedas.",
-                    "gold": 9
+                    "gold": 9,
+                    "flag": "m3_valvulas"
                   },
                   "fail": {
                     "text": "La rueda no cede."
@@ -3030,7 +3031,8 @@
                   "label": "Dejar que Durnok ajuste la válvula",
                   "ok": {
                     "text": "Durnok conoce estas válvulas: gira la rueda pequeña antes que la grande. El cajón queda libre y encontráis monedas.",
-                    "gold": 9
+                    "gold": 9,
+                    "flag": "m3_valvulas"
                   }
                 }
               ]

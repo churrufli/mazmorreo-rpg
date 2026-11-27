@@ -8,7 +8,7 @@ import { IMG } from '../assets';
 import { C, F } from '../theme';
 import { foeList } from '../ui/anuncio';
 import { useStore } from '../store';
-import { Action, MASTERY_NAME, Unit, actionsFor, autoTurn, current, hasUseful, masteryOf, preview, targetsFor } from '../engine/combat';
+import { Action, MASTERY_NAME, Unit, actionsFor, autoTurn, behaviorOf, current, hasUseful, masteryOf, preview, targetsFor } from '../engine/combat';
 import { Card, CardInfo, CardModal, resetFx, slotsOf } from '../ui/Card';
 import { statesOf } from '../ui/estados';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
@@ -656,7 +656,7 @@ export function Combat() {
         const pick = (key: string) => setSheet(cb.units.find(u => u.key === key));
         return sheet.side === 'party'
           ? <CardModal key={sheet.key} char={g.party.find(c => c.id === sheet.charId)} town={TOWNS[ADVS[advOf(g.zone)].town].name} info={info(cb.units.find(u => u.key === sheet.key)!)} others={others} onPick={pick} onClose={() => setSheet(undefined)} />
-          : <CardModal key={sheet.key} monster={sheet.mon} info={info(cb.units.find(u => u.key === sheet.key)!)} intent={intentOf(cb.units.find(u => u.key === sheet.key)!)} others={others} onPick={pick} onClose={() => setSheet(undefined)} />;
+          : <CardModal key={sheet.key} monster={sheet.mon} info={info(cb.units.find(u => u.key === sheet.key)!)} intent={intentOf(cb.units.find(u => u.key === sheet.key)!)} notes={behaviorOf(g, cb, cb.units.find(u => u.key === sheet.key)!)} others={others} onPick={pick} onClose={() => setSheet(undefined)} />;
       })() : null}
     </Bg>
   );

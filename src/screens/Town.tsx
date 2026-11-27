@@ -5,7 +5,7 @@ import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
 import { useStore } from '../store';
 import { Bg, Btn, Panel, T } from '../ui/kit';
-import { ITEMS } from '../data/srd';
+import { ITEMS, MONSTERS } from '../data/srd';
 import { MAX_ITEMS, itemOwnership, keeps, longRest, needsRest, newItem, shortRest } from '../engine/rules';
 import { reopenScenes, sceneSpent } from '../engine/escenas';
 import { FeatPicker } from '../ui/FeatPicker';
@@ -429,11 +429,11 @@ function Diary() {
                 {pendingNotes(g, a.id).map((t, i) => <Text key={i} style={[st.itemDesc, { color: C.text, fontSize: 15 }]}>• {t}</Text>)}
               </View>
             ) : null}
-            {/* Lo que ya juega a vuestro favor contra el jefe (por ahora, Maese Orvane). */}
-            {a.id === 'hondaroca' && !wonAdv(g, a.id) && bossPrep(g, 'Orvane').length ? (
+            {/* Lo que ya juega a vuestro favor contra el jefe de la aventura. */}
+            {!wonAdv(g, a.id) && bossPrep(g, a.boss).length ? (
               <View style={{ marginVertical: 6 }}>
-                <Text style={st.diaryWho}>Preparativos contra Maese Orvane</Text>
-                {bossPrep(g, 'Orvane').map((t, i) => <Text key={i} style={[st.itemDesc, { color: C.text, fontSize: 15 }]}>• {t}</Text>)}
+                <Text style={st.diaryWho}>Preparativos contra {MONSTERS[a.boss].name}</Text>
+                {bossPrep(g, a.boss).map((t, i) => <Text key={i} style={[st.itemDesc, { color: C.text, fontSize: 15 }]}>• {t}</Text>)}
               </View>
             ) : null}
             {/* Quién es quién: cada personaje con el que se ha hablado, una sola vez. */}
