@@ -1,6 +1,7 @@
 // La posada: quién acompaña al héroe, charlas con los aliados (afinidad e Inspiración heroica)
 // y aviso de la aventura siguiente.
 import CH from '../data/charlas.json';
+import { rumorsAfter } from '../data/hilo';
 import type { AdvId } from './aventuras';
 import { ADVS, ADV_LIST, wonAdv } from './aventuras';
 import { DialogueLine, handOver } from './dungeon';
@@ -60,7 +61,7 @@ export function endAdventure(g: Game, adv: AdvId) {
   const next = ADV_LIST.find(a => a.prev === adv);
   if (g.errands?.includes(adv)) return;
   g.errands = [...(g.errands ?? []), adv];
-  const news: string[] = next ? [`Ya podéis viajar a la siguiente aventura, ${next.name}: id a la puerta del pueblo.`] : [];
+  const news: string[] = next ? [`Ya podéis viajar a la siguiente aventura, ${next.name}: id a la puerta del pueblo.`, ...rumorsAfter(adv, g.flags)] : [];
   if (news.length) g.news = [...(g.news ?? []), ...news];
 }
 
