@@ -8,7 +8,7 @@ const CANTRIPS = ['sacred_flame', 'fire_bolt', 'ray_frost', 'eldritch', 'inferna
 export function groupOf(a: Action): CombatGroup {
   const id = a.id.split(':')[0];
   if (['potion', 'throw', 'web', 'wand', 'scroll', 'dust'].includes(id)) return 'items';
-  if (['dodge', 'row', 'flee'].includes(id)) return 'other';
+  if (['dodge', 'row', 'flank', 'flee'].includes(id)) return 'other';
   return id === 'atk' || id === 'haste' || CANTRIPS.includes(id) ? 'attack' : 'skills';
 }
 

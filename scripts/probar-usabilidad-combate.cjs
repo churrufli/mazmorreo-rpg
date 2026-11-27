@@ -32,6 +32,8 @@ const {chromium}=require('playwright');
             useStore.setState({game:g,combat:cb,screen:'game'});
           },
           flags:(flags)=>{const cb=JSON.parse(JSON.stringify(useStore.getState().combat));Object.assign(cb,flags);useStore.setState({combat:cb});},
+          // El ataque de oportunidad al ir atrás puede ser crítico y tumbar al héroe (9 PG): unos PG temporales lo evitan.
+          sturdy:()=>{const cb=JSON.parse(JSON.stringify(useStore.getState().combat));current(cb).temp=50;useStore.setState({combat:cb});},
           paralyze:()=>{const cb=JSON.parse(JSON.stringify(useStore.getState().combat));current(cb).paralyzed=true;useStore.setState({combat:cb});},
           data:()=>{const cb=useStore.getState().combat;return {cb,actor:current(cb),snapshot:JSON.stringify(cb)};},
         };
@@ -72,7 +74,7 @@ const {chromium}=require('playwright');
       await page.getByText(/Ya has utilizado la acción de este turno/).waitFor();
       await page.waitForTimeout(1300);assert.equal((await data()).snapshot,spent);
       await footer();await page.screenshot({path:`/tmp/mazmorreo-usabilidad-movimiento-${width}x${height}.png`});
-      await button('CANCELAR ACCIÓN').click();await button('IR ATRÁS').click();
+      await button('CANCELAR ACCIÓN').click();await page.evaluate(()=>window.ux.sturdy());await button('IR ATRÁS').click();
       assert.equal((await data()).actor.row,'back');assert.ok(!(await data()).actor.dodge);
       await prepare(true);await page.evaluate(()=>window.ux.flags({bonus:true}));
       const beforeInfo=(await data()).snapshot;await button('Información sobre ESQUIVAR').click();assert.equal((await data()).snapshot,beforeInfo);

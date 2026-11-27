@@ -233,6 +233,7 @@ export function Combat() {
   const menu = !auto && !cb.result ? menuActionsFor(g, cb) : [];
   const fleeAct = menu.find(a => a.id === 'flee');
   const rowAct = menu.find(a => a.id === 'row');
+  const flankAct = menu.find(a => a.id === 'flank');
   const dodgeAct = menu.find(a => a.id === 'dodge');
   const groups = CATEGORIES.map(([id]) => id).filter(id => menu.some(a => groupOf(a) === id));
   const activeGroup = groups.includes(actionGroup as typeof groups[number]) ? actionGroup : groups[0];
@@ -250,13 +251,25 @@ export function Combat() {
     return () => clearTimeout(t);
   }, [idle, cb, endTurn]);
   const targets = pending ? targetsFor(cb, pending).map(u => u.key) : [];
-  const rowOf = (side: Unit['side'], row: Unit['row']) => cb.units.filter(u => u.side === side && u.row === row && !u.fled && !(u.side === 'enemy' && u.dead && gone.includes(u.key)));
+  const rowOf = (side: Unit['side'], row: Unit['row']) => cb.units.filter(u => u.side === side && u.row === row && !u.flank && !u.fled && !(u.side === 'enemy' && u.dead && gone.includes(u.key)));
+  // El flanco (2026-11-27): una columna aparte, a la izquierda o a la derecha, con la pieza y quien esté junto a ella.
+  const flankUs = cb.units.filter(u => u.flank && !u.fled && !(u.side === 'enemy' && u.dead && gone.includes(u.key)));
+  const pieceU = flankUs.find(u => u.key === 'piece');
+  const flankSide = cb.goal?.g.piece?.side ?? 'right';
   // Las filas enemigas vacías apenas ocupan sitio; las del grupo se ven siempre (se puede tocar para moverse allí).
   const counts = (['enemy', 'party'] as const).flatMap(sd => (['front', 'back'] as const).map(r => rowOf(sd, r).length)).filter(n => n > 0);
   const emptyH = (['front', 'back'] as const).reduce((n, r) => n + (rowOf('enemy', r).length ? 0 : 14) + (rowOf('party', r).length ? 0 : EMPTY_ROW + 4), 0);
   // Alto real libre para las cartas: zona superior menos el registro (los botones de abajo ya se restan solos).
   const free = area && logH ? area - logH - 8 - GEAR_H - 4 * counts.length - emptyH : height - ins.top - ins.bottom - 320;
-  const cardW = Math.max(30, Math.min((boardWidth - 12) / Math.max(2.2, ...counts) - 6, free / Math.max(2, counts.length) / 1.5));
+  // La columna del flanco puede ser más alta que las filas enemigas: la pieza, quien esté junto a ella y el botón.
+  const flankNear = flankUs.filter(u => u !== pieceU);
+  const enemyRows = (['front', 'back'] as const).filter(r => rowOf('enemy', r).length).length;
+  const flankRows = flankUs.length ? (pieceU ? 1 : 0) + flankNear.length * 0.72 : 0;
+  const flankPx = flankUs.length ? 22 + (flankAct && !flankAct.off ? 38 : 0) : 0;
+  const byWidth = (boardWidth - 12) / (Math.max(2.2, ...counts) + (flankUs.length ? 1 : 0)) - 6;
+  const byHeight = free / Math.max(2, counts.length) / 1.5;
+  // Con el flanco, las cartas encogen para que quepa la columna, pero nunca por debajo del 80 %: si no cabe, el campo se desliza.
+  const cardW = Math.max(30, Math.min(byWidth, Math.max(byHeight * 0.8, (free - flankPx) / (Math.max(2, counts.length) + Math.max(0, flankRows - enemyRows)) / 1.5)));
 
   const close = () => { setTip(undefined); setTargetFeedback(undefined); setSel(undefined); };
   const go = (a: Action, t?: string) => {
@@ -398,6 +411,64 @@ export function Combat() {
     </View>
   ) : null;
 
+  const renderUnit = (u: Unit, w: number, tag?: string) => {
+    const isT = targets.includes(u.key);
+    return (
+      <Animated.View testID={`combat-unit-${u.key}`} key={u.key} ref={(r: View | null) => { cardRefs.current[u.key] = r; }} collapsable={false} style={{ marginHorizontal: 3, zIndex: lungeKey === u.key ? 5 : 0, transform: lungeKey === u.key ? [...lunge.getTranslateTransform(), { rotate: rot }, { scale: punch }] : [] }}>
+        {flash?.key === u.key ? <Blink key={flash.n} onActive={u.key === me.key && !cb.result} /> : null}
+        <Card
+          info={info(u)}
+          minTouchSize={44}
+          selecting={!!pending}
+          tag={isT && pending && u.side === 'enemy' ? (() => { const p = preview(g, cb, pending, u); return p ? `${p.pct} %${p.adv > 0 ? ' ▲' : p.adv < 0 ? ' ▼' : ''}` : undefined; })() : tag}
+          interactionHint={!auto && u.side === 'enemy' ? 'Toca para atacar si hay un arma disponible que le alcance. Mantén pulsado para consultar la ficha sin atacar.' : 'Toca para consultar la ficha.'}
+          width={w}
+          active={u.key === me.key && !cb.result}
+          target={isT && pending?.target !== 'ally'}
+          help={isT && pending?.target === 'ally'}
+          dim={u.dead || (!!pending && !pending.off && pending.target !== 'none' && !isT)}
+          fx={cb.fx?.[u.key]}
+          pop={cb.pops?.[u.key]}
+          miss={misses[u.key]}
+          boss={u.side === 'enemy' && u.mon === ADVS[advOf(g.zone)].boss}
+          intent={intentOf(u)}
+          fxKey={u.key}
+          fxDelay={fxWait}
+          onBroken={u.side === 'enemy' && u.dead ? () => setGone(x => [...x, u.key]) : undefined}
+          // Tocar: si se está eligiendo objetivo, lo elige; si no, amplía la carta con sus estados.
+          // En tu turno, tocar a un enemigo le ataca con tu arma (si está a tu alcance). Mantener pulsado abre su ficha.
+          onPress={() => {
+            if (pending) { if (isT) go(pending, u.key); else setTargetFeedback(pending.target === 'ally' ? 'elige un aliado resaltado' : 'elige un objetivo resaltado'); return; }
+            const quick = !auto && !busy && ready && u.side === 'enemy' && !u.dead ? quickAttack(g, cb, u.key) : undefined;
+            if (quick) go(quick, u.key); else setSheet(u);
+          }}
+          onLongPress={() => setSheet(u)}
+        />
+      </Animated.View>
+    );
+  };
+
+  // El flanco: la pieza arriba (con el asalto en que se activa) y, debajo, quien esté junto a ella.
+  const renderFlank = () => {
+    const by = cb.goal?.g.by;
+    const tag = pieceU && !pieceU.dead && by ? (cb.fired ? '¡Activa!' : `⌛ ${by}`) : undefined;
+    const near = flankNear;
+    const w = cardW * 0.72;
+    return (
+      <View testID="combat-flank" style={[st.rowBand, st.flank, { width: cardW + 12 }, lit('enemies')]}>
+        <Text numberOfLines={1} style={st.flankLabel}>Flanco</Text>
+        {pieceU ? renderUnit(pieceU, cardW, tag) : null}
+        {near.length ? <View style={st.flankNear}>{near.map(u => renderUnit(u, w))}</View> : null}
+        {flankAct && !flankAct.off ? (
+          <Pressable testID="combat-flank-move" disabled={!ready} onPress={() => go(flankAct)} onLongPress={() => choose(flankAct, true)} accessibilityRole="button" accessibilityLabel={flankAct.label} style={[st.flankBtn, { width: cardW + 4 }]}>
+            <Icon path={COST_ICON.move} size={12} color={C.goldHi} />
+            <Text numberOfLines={2} style={st.flankBtnTxt}>{me.flank ? 'VOLVER' : 'IR AL FLANCO'}</Text>
+          </Pressable>
+        ) : null}
+      </View>
+    );
+  };
+
   const renderRow = (side: Unit['side'], row: Unit['row']) => {
     const us = rowOf(side, row);
     const name = row === 'front' ? 'Vanguardia' : 'Retaguardia';
@@ -412,42 +483,7 @@ export function Combat() {
     return (
       <View style={[st.row, st.rowBand, side === 'enemy' && st.rowEnemy, { minHeight: cardW * 1.5 + 2 }, lit(side === 'enemy' ? 'enemies' : 'partyRows')]}>
         <View pointerEvents="none" style={[st.rowLabelBox, { width: cardW * 1.5, left: 7 - cardW * 0.75, top: cardW * 0.75 - 6 }]}><Text numberOfLines={1} style={st.rowLabel}>{name}</Text></View>
-        {us.map(u => {
-          const isT = targets.includes(u.key);
-          return (
-            <Animated.View testID={`combat-unit-${u.key}`} key={u.key} ref={(r: View | null) => { cardRefs.current[u.key] = r; }} collapsable={false} style={{ marginHorizontal: 3, zIndex: lungeKey === u.key ? 5 : 0, transform: lungeKey === u.key ? [...lunge.getTranslateTransform(), { rotate: rot }, { scale: punch }] : [] }}>
-              {flash?.key === u.key ? <Blink key={flash.n} onActive={u.key === me.key && !cb.result} /> : null}
-              <Card
-                info={info(u)}
-                minTouchSize={44}
-                selecting={!!pending}
-                tag={isT && pending && u.side === 'enemy' ? (() => { const p = preview(g, cb, pending, u); return p ? `${p.pct} %${p.adv > 0 ? ' ▲' : p.adv < 0 ? ' ▼' : ''}` : undefined; })() : undefined}
-                interactionHint={!auto && u.side === 'enemy' ? 'Toca para atacar si hay un arma disponible que le alcance. Mantén pulsado para consultar la ficha sin atacar.' : 'Toca para consultar la ficha.'}
-                width={cardW}
-                active={u.key === me.key && !cb.result}
-                target={isT && pending?.target !== 'ally'}
-                help={isT && pending?.target === 'ally'}
-                dim={u.dead || (!!pending && !pending.off && pending.target !== 'none' && !isT)}
-                fx={cb.fx?.[u.key]}
-                pop={cb.pops?.[u.key]}
-                miss={misses[u.key]}
-                boss={u.side === 'enemy' && u.mon === ADVS[advOf(g.zone)].boss}
-                intent={intentOf(u)}
-                fxKey={u.key}
-                fxDelay={fxWait}
-                onBroken={u.side === 'enemy' && u.dead ? () => setGone(x => [...x, u.key]) : undefined}
-                // Tocar: si se está eligiendo objetivo, lo elige; si no, amplía la carta con sus estados.
-                // En tu turno, tocar a un enemigo le ataca con tu arma (si está a tu alcance). Mantener pulsado abre su ficha.
-                onPress={() => {
-                  if (pending) { if (isT) go(pending, u.key); else setTargetFeedback(pending.target === 'ally' ? 'elige un aliado resaltado' : 'elige un objetivo resaltado'); return; }
-                  const quick = !auto && !busy && ready && u.side === 'enemy' && !u.dead ? quickAttack(g, cb, u.key) : undefined;
-                  if (quick) go(quick, u.key); else setSheet(u);
-                }}
-                onLongPress={() => setSheet(u)}
-              />
-            </Animated.View>
-          );
-        })}
+        {us.map(u => renderUnit(u, cardW))}
       </View>
     );
   };
@@ -489,8 +525,20 @@ export function Combat() {
             </Pressable>
           )}
         </View>
-        {renderRow('enemy', 'back')}
-        {renderRow('enemy', 'front')}
+        {flankUs.length ? (
+          <View style={{ flexDirection: flankSide === 'left' ? 'row' : 'row-reverse', alignItems: 'stretch' }}>
+            {renderFlank()}
+            <View style={{ flex: 1, minWidth: 0 }}>
+              {renderRow('enemy', 'back')}
+              {renderRow('enemy', 'front')}
+            </View>
+          </View>
+        ) : (
+          <>
+            {renderRow('enemy', 'back')}
+            {renderRow('enemy', 'front')}
+          </>
+        )}
         <View style={[st.log, height < 700 && { paddingVertical: 3 }]} onLayout={e => setLogH(e.nativeEvent.layout.height)}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text accessibilityLiveRegion="polite" style={[st.round, { flex: 1 }, !!sel && { color: C.goldHi }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{!sel ? `Turno de ${me.name}`
@@ -651,7 +699,7 @@ export function Combat() {
       ) : null}
       {sheet ? (() => {
         // En el orden del campo de batalla, de arriba abajo y de izquierda a derecha.
-        const order = [...rowOf('enemy', 'back'), ...rowOf('enemy', 'front'), ...rowOf('party', 'front'), ...rowOf('party', 'back')];
+        const order = [...rowOf('enemy', 'back'), ...rowOf('enemy', 'front'), ...flankUs, ...rowOf('party', 'front'), ...rowOf('party', 'back')];
         const others = order.filter(u => u.key !== sheet.key && u.side === sheet.side).map(u => ({ key: u.key, info: info(u) }));
         const pick = (key: string) => setSheet(cb.units.find(u => u.key === key));
         return sheet.side === 'party'
@@ -905,6 +953,11 @@ const st = StyleSheet.create({
   rowLabel: { textAlign: 'center', fontFamily: F.titleBold, color: C.text, fontSize: 9, letterSpacing: 1, textTransform: 'uppercase', textShadowColor: '#000', textShadowRadius: 4 },
   rowBand: { borderRadius: 6, borderWidth: 1, borderColor: 'rgba(201,162,92,0.25)', backgroundColor: 'rgba(0,0,0,0.18)' },
   rowEnemy: { borderColor: 'rgba(181,72,58,0.35)' },
+  flank: { alignItems: 'center', paddingTop: 2, paddingBottom: 4, marginHorizontal: 2, borderColor: 'rgba(201,162,92,0.55)', borderStyle: 'dashed' },
+  flankLabel: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 9, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2, textShadowColor: '#000', textShadowRadius: 4 },
+  flankBtn: { marginTop: 4, minHeight: 32, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 3, borderWidth: 1, borderColor: C.gold, borderRadius: 6, backgroundColor: 'rgba(75,55,32,0.9)', paddingHorizontal: 2 },
+  flankBtnTxt: { fontFamily: F.titleBold, color: C.text, fontSize: 10, textAlign: 'center', flexShrink: 1 },
+  flankNear: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 4 },
   emptyRow: { height: EMPTY_ROW, paddingTop: 0, marginVertical: 2, alignItems: 'center', justifyContent: 'center' },
   emptyRowTxt: { fontFamily: F.titleBold, color: C.textDim, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase' },
   fleeBtn: { flexDirection: 'row', alignItems: 'center', gap: 2, borderWidth: 1, borderColor: C.border, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 4, marginLeft: 4 },

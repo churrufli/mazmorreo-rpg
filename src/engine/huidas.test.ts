@@ -23,7 +23,9 @@ function fight(g: Game, enc: string, wait: number): Combat {
 
 describe('objetivos opcionales y huidas', () => {
   // El pudin negro no se vence solo con armas cortantes (se divide y es inmune): esa es la gracia de su objetivo.
+  // Los elementales de vapor son inmunes al fuego y este bot del mago solo lanza Descarga de fuego: no les haría nada.
   for (const goal of GOALS.filter(x => x.kind !== 'nosplit')) for (const hit of [false, true]) for (const cls of HERO_CLASSES as readonly ClassId[]) {
+    if (goal.enc === 'z4_e02' && cls === 'wizard') continue;
     it(`${goal.enc} (${goal.kind}) ${hit ? 'atacando' : 'esperando'} con ${cls}`, () => {
       for (let seed = 1; seed <= 6; seed++) {
         const g = newGame(seed, 'Prueba', cls, 'human');

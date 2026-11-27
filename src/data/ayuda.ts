@@ -101,6 +101,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Ataques de oportunidad al salir de la vanguardia, Destrabarse, poner a salvo a un caído, agarrar y vigilar a un aliado.',
     'Moral enemiga en los grupos con jefe, salas angostas, resbaladizas o con humo, y combates largos que atraen a los vecinos.',
     'Objetivos nuevos: romper una pieza antes de tiempo o salvar a alguien indefenso.',
+    'El flanco: en algunos combates hay un objeto a un lado del campo (un cuerno de alarma, una catapulta, una vaina de esporas, un brasero…) que hay que romper antes de que se active. Desde la vanguardia, «Ir al flanco» os pone a su lado para golpearlo; a distancia y con conjuros se le alcanza desde cualquier fila.',
     'Maestrías nuevas: Hendir, Rozar, Mella y Ralentizar, con gran hacha, mandoble y alabarda en la tienda de Valdescarcha.',
     'Rasgos de clase: Ataque temerario, Puntería firme, Golpe astuto y Expulsar muertos vivientes.',
     'Modo desafío al crear la partida, objetos mágicos con historia en cofres secretos y oro por los PX que ya no os suben de nivel.',
