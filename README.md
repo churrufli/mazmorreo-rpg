@@ -1,6 +1,7 @@
 <p align="center"><img src="assets/img/logo.webp" alt="Mazmorreo" width="480"></p>
 
 <p align="center">
+  <a href="https://churrufli.github.io/mazmorreo-rpg/presentacion/"><b>Web del proyecto</b></a> ·
   <a href="https://churrufli.github.io/mazmorreo-rpg/"><b>Jugar en el navegador</b></a> ·
   <a href="../../releases">Descargar APK</a> (se actualiza menos que la web) ·
   <a href="CONTRIBUTING.md"><b>Participa en el proyecto</b></a>
