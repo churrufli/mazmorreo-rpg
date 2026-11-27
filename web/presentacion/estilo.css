@@ -31,7 +31,7 @@ svg{fill:currentColor}
 .portada-centro{display:none}
 @media (min-aspect-ratio:4/5){
   .portada-fondo{background:none}
-  .portada-fondo::before{content:'';position:absolute;inset:-40px;background:url('../../assets/img/titulo.webp') center/cover;filter:brightness(.32)}
+  .portada-fondo::before{content:'';position:absolute;inset:-40px;background:url('../../assets/img/titulo.webp') center/cover;filter:blur(28px) brightness(.4)}
   .portada-centro{display:block;position:absolute;top:0;bottom:0;left:50%;width:min(100vw,calc(100svh * .5627));transform:translateX(-50%);
     background:url('../../assets/img/titulo.webp') center/cover;
     -webkit-mask:linear-gradient(to right,transparent,#000 18%,#000 82%,transparent);mask:linear-gradient(to right,transparent,#000 18%,#000 82%,transparent)}
@@ -123,7 +123,6 @@ figure{margin:0}
 
 /* Acabado editorial con el arte y las fuentes originales. */
 :root{--texto-dim:#c0b29d;--oro:#d4a86b;--borde:#6c5438}
-body{background:radial-gradient(ellipse at 50% 35%,#211a13 0,transparent 55%),var(--bg)}
 .portada{min-height:100svh;padding:clamp(24px,6vh,64px) 20px 72px}
 .portada-contenido{width:100%;max-width:760px;gap:clamp(12px,2.4vh,24px)}
 .logo{width:min(680px,88vw)}
@@ -179,7 +178,7 @@ a:focus-visible,.tira:focus-visible{outline:3px solid #e0b56e;outline-offset:4px
 @media (prefers-reduced-motion:reduce){.carta,.boton{transition:none!important}}
 
 /* Ambiente de mazmorra: capas decorativas sin imágenes ni dependencias nuevas. */
-.ambiente{position:absolute;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
+.ambiente{position:absolute;inset:0;pointer-events:none;z-index:-1;overflow:hidden;-webkit-mask:linear-gradient(#000 55%,transparent 92%);mask:linear-gradient(#000 55%,transparent 92%)}
 .bruma,.motas{position:absolute;inset:-10%;pointer-events:none}
 .bruma{background:radial-gradient(ellipse at 15% 80%,#a78b6029,transparent 45%),radial-gradient(ellipse at 80% 65%,#c7a46a1c,transparent 48%);opacity:.65}
 .motas{background-image:radial-gradient(circle at 18% 24%,#f8d69cbb 0 1px,transparent 2px),radial-gradient(circle at 72% 61%,#e0b56e99 0 1px,transparent 2px),radial-gradient(circle at 43% 82%,#e0b56e88 0 1px,transparent 2px);background-size:173px 211px,239px 157px,311px 263px;opacity:.5}
@@ -201,6 +200,7 @@ a:focus-visible,.tira:focus-visible{outline:3px solid #e0b56e;outline-offset:4px
   .bruma{animation:desplazar-bruma 4s ease-in-out 1 alternate}
   .motas{animation:elevar-motas 4s ease-out 1 both}
   .boton-grande::after{animation:reflejo-oro 1s .8s ease-out 1 both}
+  .pendiente{opacity:0}
   .revelado{animation:entrar-portada .55s ease-out both}
 }
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
