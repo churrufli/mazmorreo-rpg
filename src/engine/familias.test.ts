@@ -79,6 +79,8 @@ describe('familias de enemigos', () => {
       const [boss] = add(cb, foe, 'Goblin Boss', 'back');
       if (!bossAlive) { boss.dead = true; boss.hp = 0; }
       foe.hp = Math.floor(foe.maxHp * 0.4);
+      // Sin nadie delante: así no hay ataque de oportunidad al huir (se prueba aparte).
+      for (const u of cb.units) if (u.side === 'party') u.row = 'back';
       turnOf(cb, foe);
       enemyTurn(g, cb);
       if (foe.fled) bossAlive ? fledWith++ : fledWithout++;

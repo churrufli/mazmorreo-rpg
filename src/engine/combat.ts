@@ -125,6 +125,14 @@ export interface Unit {
   cursed?: boolean;
   /** Veces que se ha dividido (gelatina ocre y pudin negro: cada mitad es un tamaño menor; las pequeñas ya no se dividen). */
   splits?: number;
+  /** Asalto en que ya ha gastado su reacción (ataque de oportunidad o Vigilar). */
+  reacted?: number;
+  /** Destrabarse: hasta su siguiente turno, salir de la vanguardia no provoca ataques de oportunidad. */
+  disengaged?: boolean;
+  /** Agarrado por esa unidad: no cambia de fila ni huye hasta que se suelte. */
+  grappled?: string;
+  /** Vigilar (Preparar del SRD): si un enemigo ataca a ese aliado, le dispara con su reacción. */
+  watch?: string;
 }
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
@@ -542,6 +550,51 @@ function stoneSave(g: Game, cb: Combat, u: Unit) {
   if (u.side === 'party' && goalOpen(cb, 'nodown')) goalDone(cb, false);
 }
 
+/** CD de Agarrar (SRD 5.2.1): 8 + Fuerza + competencia. */
+const grappleDc = (c: Char) => 8 + abilMod(c, 'str') + prof(c.level);
+/** Ataque cuerpo a cuerpo de un monstruo (el primero que no sea a distancia ni de área). */
+const meleeOf = (u: Unit) => (u.mon ? MONSTERS[u.mon].attacks.find(a => !a.ranged && !a.save) : undefined);
+const canReact = (cb: Combat, x: Unit) => conscious(x) && !x.asleep && !x.paralyzed && !x.restrained && x.reacted !== cb.round;
+/** Quién del otro bando, en su vanguardia, puede dar un ataque de oportunidad a quien sale de la vanguardia. */
+function oppFoe(cb: Combat, u: Unit): Unit | undefined {
+  return cb.units.find(x => x.side !== u.side && x.row === 'front' && !x.fled && canReact(cb, x) && (x.side === 'enemy' ? !!meleeOf(x) && !MONSTERS[x.mon!].reach : true));
+}
+/** Arma cuerpo a cuerpo de un personaje, para sus reacciones. */
+const meleeWeapon = (c: Char) => weapons(c).find(w => !ITEMS[w.id].weapon?.ranged);
+
+/** Ataque de oportunidad (reacción): un solo ataque cuerpo a cuerpo contra quien se retira. */
+function opportunity(g: Game, cb: Combat, by: Unit, t: Unit) {
+  if (by.side === 'enemy') {
+    const a = meleeOf(by);
+    if (!a) return;
+    by.reacted = cb.round;
+    say(cb, `${by.name} aprovecha que ${t.name} se retira: ataque de oportunidad.`, 'big');
+    attack(g, cb, by, t, toOpts(a));
+    return;
+  }
+  const c = charOf(g, by);
+  const w = meleeWeapon(c);
+  if (!w) return;
+  by.reacted = cb.round;
+  const s = weaponStat(c, w.id), wd = ITEMS[w.id].weapon!;
+  say(cb, `${by.name} aprovecha que ${t.name} se retira: ataque de oportunidad.`, 'big');
+  attack(g, cb, by, t, { name: ITEMS[w.id].name, toHit: s.toHit, dice: wd.dice, bonus: s.dmgBonus, type: wd.type, ranged: false });
+}
+
+/** Vigilar: quien vigila a un aliado le dispara a quien le ataque (una vez, con su reacción). */
+function watchShot(g: Game, cb: Combat, foe: Unit, t: Unit) {
+  const w = cb.units.find(x => x.side === 'party' && x.watch === t.key && canReact(cb, x));
+  if (!w) return;
+  const c = charOf(g, w);
+  const bow = weapons(c).find(x => ITEMS[x.id].weapon?.ranged);
+  w.watch = undefined;
+  if (!bow) return;
+  w.reacted = cb.round;
+  const s = weaponStat(c, bow.id), wd = ITEMS[bow.id].weapon!;
+  say(cb, `${w.name} vigilaba a ${t.name} y dispara a ${foe.name}.`, 'big');
+  attack(g, cb, w, foe, { name: ITEMS[bow.id].name, toHit: s.toHit, dice: wd.dice, bonus: s.dmgBonus, type: wd.type, ranged: true });
+}
+
 function heal(cb: Combat, u: Unit, amount: number) {
   if (u.dead) return;
   if (u.cursed) { say(cb, `La maldición de la momia impide curar a ${u.name}.`, 'info'); return; }
@@ -822,6 +875,8 @@ function startTurn(g: Game, cb: Combat) {
   if (u.concentration === 'hex' && !cb.units.some(x => x.key === u.hex && conscious(x))) u.hex = undefined;
   cb.savageUsed = false;
   u.dodge = false;
+  u.disengaged = false;
+  u.watch = undefined;
   if (u.shield) u.shield = false;
   if (u.side === 'party' && u.hp <= 0 && !u.dead && !u.stable && charOf(g, u).items.some(i => i.id === 'periapt_wound_closure')) {
     u.stable = true;
@@ -1150,6 +1205,16 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     if (d.kind === 'scroll' && !d.spell && c.cls === 'wizard') A.push({ id: `scroll:${it.uid}`, label: 'Pergamino de escudo', cost: 'action', target: 'none', detail: '+5 CA' });
   }
   A.push({ id: 'help', label: 'Ayudar', cost: 'action', target: 'enemy-melee', detail: 'ventaja a un aliado' });
+  // Agarrar (SRD 5.2.1, golpe sin armas): el agarrado no cambia de fila ni huye hasta que se suelte.
+  A.push({ id: 'grapple', label: 'Agarrar', cost: 'action', target: 'enemy-melee', detail: `FUE o DES CD ${grappleDc(c)}` });
+  // Destrabarse: salir de la vanguardia este turno sin ataques de oportunidad.
+  if (u.row === 'front' && oppFoe(cb, u)) A.push({ id: 'disengage', label: 'Destrabarse', cost: 'action', target: 'none', detail: 'cambiar de fila sin ataque de oportunidad' });
+  // Poner a salvo a un caído de la vanguardia: acción y movimiento.
+  if (u.row === 'front' && !cb.moved && cb.units.some(x => x.side === 'party' && x !== u && alive(x) && x.hp <= 0 && x.row === 'front'))
+    A.push({ id: 'rescue', label: 'Poner a salvo', cost: 'action', target: 'ally-down', detail: 'llevar a un caído a la retaguardia' });
+  // Vigilar a un aliado: si le atacan, disparas con tu reacción (Preparar del SRD con un solo disparador).
+  const bow = weapons(c).find(w => ITEMS[w.id].weapon?.ranged);
+  if (bow) A.push({ id: `watch:${bow.id}`, label: 'Vigilar', cost: 'action', target: 'ally', detail: 'dispara a quien le ataque' });
   A.push({ id: 'dodge', label: 'Esquivar', cost: 'action', target: 'none' });
   A.push({ id: 'row', label: u.row === 'front' ? 'Ir atrás' : 'Ir delante', cost: 'move', target: 'none' });
   A.push({ id: 'flee', label: 'Huir', cost: 'action', target: 'none' });
@@ -1186,6 +1251,8 @@ export function targetsFor(cb: Combat, a: Action): Unit[] {
   // Las curaciones solo se ofrecen a quien le falta vida.
   if (a.detail === ELIXIR) return cb.units.filter(x => x.side === 'party' && alive(x) && (x.poisoned || x.paralyzed));
   if (a.target === 'ally' && (HEALS.includes(a.id) || a.heal)) return hurt(cb);
+  if (a.id === 'rescue') return cb.units.filter(x => x.side === 'party' && x !== u && alive(x) && x.hp <= 0 && x.row === 'front');
+  if (a.id.startsWith('watch:')) return cb.units.filter(x => x.side === 'party' && x !== u && conscious(x));
   if (a.target === 'ally' || a.target === 'ally-down') return validTargets(cb, u, 'ally');
   return [];
 }
@@ -1515,8 +1582,29 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       break;
     }
     case 'dodge': u.dodge = true; say(cb, `${u.name} se pone a la defensiva.`, 'info'); break;
+    case 'disengage': u.disengaged = true; say(cb, `${u.name} se destraba: puede retirarse sin que le golpeen.`, 'info'); break;
+    case 'rescue':
+      cb.moved = true;
+      t!.row = 'back';
+      say(cb, `${u.name} arrastra a ${t!.name} hasta la retaguardia.`, 'big');
+      break;
+    case 'watch': u.watch = t!.key; say(cb, `${u.name} vigila a ${t!.name}: disparará a quien le ataque.`, 'info'); break;
+    case 'grapple': {
+      const m = MONSTERS[t!.mon!];
+      const abil: Ability = (m.saves.str ?? 0) >= (m.saves.dex ?? 0) ? 'str' : 'dex';
+      if (saveRoll(g, cb, t!, abil, grappleDc(c), abil === 'str' ? 'Fuerza' : 'Destreza')) say(cb, `${t!.name} se zafa de ${u.name}.`, 'miss');
+      else { t!.grappled = u.key; t!.plan = undefined; say(cb, `${u.name} agarra a ${t!.name}: no podrá cambiar de fila ni huir.`, 'big'); }
+      break;
+    }
     case 'help': t!.helped = u.key; say(cb, `${u.name} distrae a ${t!.name}: el próximo ataque de un aliado contra él tendrá ventaja.`, 'info'); break;
     case 'row':
+      // Salir de la vanguardia con un enemigo cuerpo a cuerpo delante provoca un ataque de oportunidad (salvo Destrabarse).
+      if (u.row === 'front' && !u.disengaged) {
+        const foe = oppFoe(cb, u);
+        if (foe) opportunity(g, cb, foe, u);
+        if (!conscious(u) || checkEnd(g, cb)) break;
+      }
+      for (const x of cb.units) if (x.grappled === u.key) { x.grappled = undefined; say(cb, `${u.name} suelta a ${x.name}.`, 'info'); }
       u.row = u.row === 'front' ? 'back' : 'front';
       say(cb, `${u.name} pasa a la fila ${u.row === 'front' ? 'delantera' : 'trasera'}.`, 'info');
       if (u.hidden && u.row === 'front') { u.hidden = undefined; say(cb, `${u.name} sale de su escondite.`, 'info'); }
@@ -1580,11 +1668,16 @@ export function enemyTurn(g: Game, cb: Combat) {
     return;
   }
   if (u.prone) { u.prone = false; say(cb, `${u.name} se levanta del suelo.`, 'info'); }
+  // Agarre: se acaba si quien agarra cae o ya no está delante.
+  if (u.grappled && !cb.units.some(x => x.key === u.grappled && conscious(x) && x.row === 'front')) u.grappled = undefined;
   const m = MONSTERS[u.mon!];
   if (u.mon === 'Shrieker') { shriek(g, cb, u); if (!checkEnd(g, cb)) endTurn(g, cb); return; }
   // Goblins malheridos huyen; sin su jefe, antes (a la mitad de sus PG).
   const leaderless = leaderDown(cb, u);
-  if (m.ai === 'goblin' && u.hp < u.maxHp * (leaderless ? 0.5 : 0.25) && rand(g.rng) < 0.5) {
+  if (m.ai === 'goblin' && !u.grappled && u.hp < u.maxHp * (leaderless ? 0.5 : 0.25) && rand(g.rng) < 0.5) {
+    // Huir desde la vanguardia también provoca un ataque de oportunidad.
+    const opp = u.row === 'front' ? oppFoe(cb, u) : undefined;
+    if (opp) { opportunity(g, cb, opp, u); if (checkEnd(g, cb)) return; if (!conscious(u)) { endTurn(g, cb); return; } }
     u.fled = true;
     u.plan = undefined;
     say(cb, leaderless ? `${u.name} huye: sin su jefe, no piensa morir aquí.` : `${u.name} huye despavorido.`, 'info');
@@ -1614,8 +1707,23 @@ export function enemyTurn(g: Game, cb: Combat) {
   // Cuerpo a cuerpo detrás con la fila delantera llena: espera su hueco (y se dice, para que no parezca que no hace nada).
   else if (!p && u.row === 'back' && m.attacks.some(a => !a.ranged && !a.save)) say(cb, `${u.name} espera detrás a que se abra un hueco.`, 'info');
   if (!p) { endTurn(g, cb); return; }
+  // Agarrado: para cambiar de fila primero tiene que soltarse, y eso le cuesta el turno.
+  if (p.move && p.move !== u.row && u.grappled) {
+    const by = cb.units.find(x => x.key === u.grappled);
+    const dc = by?.side === 'party' ? grappleDc(charOf(g, by)) : 10;
+    const abil: Ability = (m.saves.str ?? 0) >= (m.saves.dex ?? 0) ? 'str' : 'dex';
+    if (saveRoll(g, cb, u, abil, dc, abil === 'str' ? 'Fuerza' : 'Destreza')) { u.grappled = undefined; say(cb, `${u.name} se suelta.`, 'info'); }
+    else say(cb, `${u.name} forcejea, pero sigue agarrado.`, 'info');
+    endTurn(g, cb);
+    return;
+  }
+  // Retirarse de la vanguardia con un personaje cuerpo a cuerpo delante provoca un ataque de oportunidad.
+  if (p.move === 'back' && u.row === 'front') {
+    const opp = oppFoe(cb, u);
+    if (opp) { opportunity(g, cb, opp, u); if (checkEnd(g, cb)) return; if (!conscious(u)) { endTurn(g, cb); return; } }
+  }
   if (p.move && p.move !== u.row) {
-    const mate = p.swap ? cb.units.find(x => x.key === p.swap && conscious(x) && x.row === p.move) : undefined;
+    const mate = p.swap ? cb.units.find(x => x.key === p.swap && conscious(x) && x.row === p.move && !x.grappled) : undefined;
     if (mate && !rowSpace(cb, 'enemy', p.move)) {
       mate.row = u.row;
       mate.plan = undefined;
@@ -1699,6 +1807,9 @@ export function enemyTurn(g: Game, cb: Combat) {
       say(cb, `No queda nadie delante: ${u.name} llega hasta ${t.name}.`, 'info');
     }
     const a = atks[i % atks.length];
+    watchShot(g, cb, u, t);
+    if (checkEnd(g, cb)) return;
+    if (!conscious(u)) break;
     // Maltrecho (la mitad de sus PG o menos): algunos monstruos hacen menos daño (SRD 5.2.1).
     const hit = attack(g, cb, u, t, toOpts(a.bloodied && u.hp <= u.maxHp / 2 ? { ...a, dice: a.bloodied } : a));
     if (hit && a.curse && t.side === 'party' && !t.dead && !t.cursed) {
