@@ -135,6 +135,14 @@ export interface Unit {
   watch?: string;
   /** Ralentizar: no cambia de fila en su próximo turno. */
   slowed?: boolean;
+  /** Ataque temerario (bárbaro): ventaja en sus golpes este turno; los ataques contra él, con ventaja hasta su siguiente turno. */
+  reckless?: boolean;
+  /** Puntería firme (pícaro): ventaja en su próximo ataque de este turno. */
+  steady?: boolean;
+  /** Golpe astuto (pícaro de nivel 5): cambia un d6 del ataque furtivo por derribar. */
+  trip?: boolean;
+  /** Expulsado por el clérigo: retrocede y pierde su turno hasta que le hagan daño. */
+  turned?: boolean;
 }
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
@@ -351,6 +359,7 @@ export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, t
   target.lastHitBy = from.key;
   fx(cb, target, crit ? 'crit' : PHYSICAL.includes(type) ? 'hit' : 'magic', type);
   if (target.asleep) { target.asleep = false; say(cb, `${target.name} despierta.`, 'info'); }
+  if (target.turned && amount > 0) { target.turned = undefined; say(cb, `${target.name} deja de huir de la luz.`, 'info'); }
   if (target.side === 'party' && target.hp <= 0) {
     target.deathF = (target.deathF ?? 0) + (crit ? 2 : 1);
     say(cb, `${target.name} recibe un golpe estando en el suelo.`, 'dmg');
@@ -693,6 +702,9 @@ function advFor(cb: Combat, a: Unit, t: Unit, ranged: boolean): { up: string[]; 
   if (a.mon && MONSTERS[a.mon].packTactics && cb.units.some(u => u !== a && u.side === a.side && conscious(u) && u.row === 'front')) up.push('en manada');
   if (a.side === 'party' && t.helped && t.helped !== a.key) up.push('Ayudar');
   if (a.sapped) down.push('debilitado');
+  if (a.reckless && !ranged) up.push('Ataque temerario');
+  if (t.reckless && t.side !== a.side) up.push('objetivo temerario');
+  if (a.steady) up.push('Puntería firme');
   if (a.vex && a.vex === t.key) up.push('Hostigar');
   if (t.prone) { if (ranged) down.push('derribado'); else up.push('objetivo derribado'); }
   if (a.prone) down.push('en el suelo');
@@ -712,6 +724,7 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     a.invisible = undefined;
     if (a.side === 'party' && t.helped && t.helped !== a.key) t.helped = undefined;
     a.sapped = undefined;
+    a.steady = undefined;
     if (a.vex === t.key) a.vex = undefined;
   }
   const { up, down } = why;
@@ -759,7 +772,14 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     const c = charOf(g, a);
     const ally = cb.units.some(u => u !== a && u.side === 'party' && conscious(u) && u.row === 'front') && t.row === 'front';
     if (c.cls === 'rogue' && (adv > 0 || ally)) {
-      const sa = roll(g.rng, c.level >= 5 ? '3d6' : c.level >= 3 ? '2d6' : '1d6', crit);
+      // Golpe astuto (nivel 5): un d6 menos a cambio de una salvación de Destreza o al suelo.
+      const trip = a.trip && c.level >= 5 && !HUGE.includes(t.mon ?? '') && !t.prone;
+      a.trip = undefined;
+      const sa = roll(g.rng, trip ? '2d6' : c.level >= 5 ? '3d6' : c.level >= 3 ? '2d6' : '1d6', crit);
+      if (trip) {
+        const dc = 8 + abilMod(c, 'dex') + prof(c.level);
+        if (!saveRoll(g, cb, t, 'dex', dc, 'Destreza')) { t.prone = true; say(cb, `Golpe astuto: ${t.name} cae al suelo.`, 'big'); }
+      }
       dmg += sa;
       cb.sneakUsed = true;
       say(cb, `Ataque furtivo: +${sa}.`, 'info');
@@ -969,6 +989,7 @@ function startTurn(g: Game, cb: Combat) {
   if (u.concentration === 'hex' && !cb.units.some(x => x.key === u.hex && conscious(x))) u.hex = undefined;
   cb.savageUsed = false;
   u.dodge = false;
+  u.reckless = u.steady = u.trip = undefined;
   u.disengaged = false;
   u.watch = undefined;
   if (u.shield) u.shield = false;
@@ -1233,6 +1254,8 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
       A.push({ id: 'guiding_bolt', label: 'Saeta guía', cost: 'action', target: 'enemy', detail: '4d6' });
       A.push({ id: 'bless', label: 'Bendecir', cost: 'action', target: 'none', detail: '+1d4 al grupo' });
     }
+    if (c.level >= 2 && c.channel > 0 && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.mon && MONSTERS[x.mon].ai === 'undead' && !isBoss(x) && !x.turned))
+      A.push({ id: 'turn_undead', label: 'Expulsar muertos vivientes', cost: 'action', target: 'none', detail: `SAB CD ${spellDc(c)} (${c.channel})` });
     if (c.level >= 2 && c.channel > 0) A.push({ id: 'spark', label: 'Chispa divina', cost: 'action', target: 'ally', detail: `cura 1d8+SAB (${c.channel})` });
     if (c.level >= 3 && (u.spiritual || c.slots[1] > 0)) A.push({ id: 'spiritual', label: 'Arma espiritual', cost: 'bonus', target: 'enemy', detail: '1d8+SAB' });
     if (c.level >= 5 && (c.slots[2] ?? 0) > 0) A.push({ id: 'mass_heal', label: 'Curación en masa', cost: 'bonus', target: 'none', detail: 'todo el grupo 2d4+SAB' });
@@ -1263,11 +1286,14 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
   if (c.species === 'dragonborn' && (c.racial ?? 0) > 0) A.push({ id: 'breath', label: 'Ataque de aliento', cost: 'action', target: 'enemy', detail: `una fila ${c.level >= 5 ? '2d10' : '1d10'} ${draconic(c).type} (${c.racial})` });
   if (c.species === 'tiefling' && c.cls !== 'wizard') A.push({ id: 'infernal_bolt', label: 'Descarga de fuego', cost: 'action', target: 'enemy', detail: c.level >= 5 ? '2d10' : '1d10' });
   if (c.species === 'orc' && (c.racial ?? 0) > 0) A.push({ id: 'adrenaline', label: 'Descarga de adrenalina', cost: 'bonus', target: 'none', detail: `+${prof(c.level)} PG temporales (${c.racial})` });
+  if (c.cls === 'barbarian' && c.level >= 2 && !cb.acted && !u.reckless) A.push({ id: 'reckless', label: 'Ataque temerario', cost: 'free', target: 'none', detail: 'ventaja, y contra ti' });
   if (c.cls === 'barbarian' && c.channel > 0 && !u.rage) A.push({ id: 'rage', label: 'Furia', cost: 'bonus', target: 'none', detail: `+2 daño, resiste golpes (${c.channel})` });
   if (c.cls === 'fighter') {
     if (c.secondWind > 0) A.push({ id: 'second_wind', label: 'Tomar aliento', cost: 'bonus', target: 'none', detail: `1d10+${c.level} (${c.secondWind})` });
     if (c.level >= 2 && c.actionSurge > 0 && cb.acted) A.push({ id: 'surge', label: 'Oleada de acción', cost: 'free', target: 'none', detail: 'otra acción' });
   }
+  if (c.cls === 'rogue' && c.level >= 3 && !cb.moved && !u.steady) A.push({ id: 'steady', label: 'Puntería firme', cost: 'bonus', target: 'none', detail: 'ventaja, sin moverte' });
+  if (c.cls === 'rogue' && c.level >= 5 && !cb.acted && !u.trip) A.push({ id: 'trip', label: 'Golpe astuto', cost: 'free', target: 'none', detail: 'furtivo −1d6: derribar' });
   if (c.cls === 'rogue' && c.level >= 2) A.push({ id: 'hide', label: 'Esconderse', cost: 'bonus', target: 'none', detail: 'Sigilo' });
   if (c.cls === 'ranger') {
     if (u.concentration === 'mark' && !u.mark) A.push({ id: 'mark_move', label: 'Mover Marca del cazador', cost: 'bonus', target: 'enemy', detail: 'Sin gastar conjuro' });
@@ -1657,6 +1683,17 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       for (let i = 0; i < (c.cls === 'warlock' ? pactLevel(c) + 1 : 3) && alive(t!) && t!.hp > 0; i++) attack(g, cb, u, t!, { name: 'Rayo abrasador', toHit: spellAttack(c), dice: '2d6', bonus: 0, type: 'fuego', ranged: true, spell: true });
       break;
     case 'second_wind': c.secondWind--; heal(cb, u, roll(g.rng, '1d10') + c.level); break;
+    case 'reckless': u.reckless = true; say(cb, `${u.name} ataca temerariamente: ventaja en sus golpes, pero se expone.`, 'info'); break;
+    case 'steady': u.steady = true; cb.moved = true; say(cb, `${u.name} apunta con calma: su próximo ataque tendrá ventaja.`, 'info'); break;
+    case 'trip': u.trip = true; say(cb, `${u.name} prepara un golpe astuto para derribar.`, 'info'); break;
+    case 'turn_undead': {
+      c.channel--;
+      say(cb, `${u.name} alza el símbolo sagrado: ¡Expulsar muertos vivientes!`, 'big');
+      for (const x of cb.units.filter(y => y.side === 'enemy' && conscious(y) && y.mon && MONSTERS[y.mon].ai === 'undead' && !isBoss(y))) {
+        if (!saveRoll(g, cb, x, 'wis', spellDc(c), 'Sabiduría')) { x.turned = true; x.plan = undefined; say(cb, `${x.name} queda expulsado: huirá hasta que le hagan daño.`, 'info'); }
+      }
+      break;
+    }
     case 'surge': c.actionSurge--; cb.acted = false; say(cb, `${u.name} usa Oleada de acción.`, 'info'); break;
     case 'hide': {
       // SRD 5.2.1: Sigilo (DES + pericia del pícaro) CD 15; el resultado es lo que tendrá que igualar la Percepción de quien le busque.
@@ -1764,6 +1801,12 @@ export function enemyTurn(g: Game, cb: Combat) {
   }
   if (!conscious(u)) { endTurn(g, cb); return; }
   if (u.asleep) { say(cb, `${u.name} duerme.`, 'info'); endTurn(g, cb); return; }
+  if (u.turned) {
+    if (u.row === 'front' && rowSpace(cb, 'enemy', 'back')) { u.row = 'back'; say(cb, `${u.name} huye de la luz sagrada a la retaguardia.`, 'info'); }
+    else say(cb, `${u.name} se encoge ante el símbolo sagrado.`, 'info');
+    endTurn(g, cb);
+    return;
+  }
   if (u.burn) {
     u.burn--;
     say(cb, `${u.name} sigue ardiendo.`, 'info');

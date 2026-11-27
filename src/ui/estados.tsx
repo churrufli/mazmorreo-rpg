@@ -6,7 +6,7 @@ import type { Combat, Unit } from '../engine/combat';
 import { Icon } from './kit';
 
 /** Estados que se ven en las cartas: cada uno con su esfera de color, su icono y una explicación corta. */
-export type StateKey = 'dodge' | 'bless' | 'asleep' | 'paralyzed' | 'guided' | 'hidden' | 'restrained' | 'burn' | 'poisoned' | 'mark' | 'death' | 'helped' | 'sapped' | 'prone' | 'warn' | 'flying' | 'cursed' | 'stoning' | 'grappled' | 'watch';
+export type StateKey = 'dodge' | 'bless' | 'asleep' | 'paralyzed' | 'guided' | 'hidden' | 'restrained' | 'burn' | 'poisoned' | 'mark' | 'death' | 'helped' | 'sapped' | 'prone' | 'warn' | 'flying' | 'cursed' | 'stoning' | 'grappled' | 'watch' | 'slowed' | 'reckless' | 'turned';
 
 export const STATES: Record<StateKey, { name: string; orb: ImgKey; icon: string; desc: string }> = {
   dodge: { name: 'Esquiva', orb: 'esfera_dorada', icon: mdiRunFast, desc: 'Los ataques contra él tienen desventaja hasta su siguiente turno.' },
@@ -25,6 +25,9 @@ export const STATES: Record<StateKey, { name: string; orb: ImgKey; icon: string;
   warn: { name: 'Prepara un golpe', orb: 'esfera_dorada', icon: mdiAlertDecagram, desc: 'Lo usará en su próximo turno. Podéis apartaros, esquivar o esconderos a tiempo.' },
   flying: { name: 'En vuelo', orb: 'esfera_celeste', icon: mdiFeather, desc: 'Cuerpo a cuerpo no se le alcanza: solo a distancia o con conjuros.' },
   grappled: { name: 'Agarrado', orb: 'esfera_plata', icon: mdiHandBackRight, desc: 'No puede cambiar de fila ni huir. Para soltarse gasta su turno.' },
+  slowed: { name: 'Ralentizado', orb: 'esfera_plata', icon: mdiLock, desc: 'No puede cambiar de fila en su próximo turno.' },
+  reckless: { name: 'Temerario', orb: 'esfera_roja', icon: mdiFire, desc: 'Ataca con ventaja este turno, y los ataques contra él también la tienen hasta su siguiente turno.' },
+  turned: { name: 'Expulsado', orb: 'esfera_dorada', icon: mdiRunFast, desc: 'Huye de la luz sagrada y pierde sus turnos hasta que le hagan daño.' },
   watch: { name: 'Vigila', orb: 'esfera_turquesa', icon: mdiEye, desc: 'Si un enemigo ataca al aliado que vigila, le dispara con su reacción.' },
   cursed: { name: 'Maldito', orb: 'esfera_sombra', icon: mdiSkullCrossbones, desc: 'Maldición de la momia: no recupera PG con nada. El templo del pueblo se la quita.' },
   stoning: { name: 'Volviéndose piedra', orb: 'esfera_piedra', icon: mdiLock, desc: 'Al acabar su turno repite la salvación de Constitución: si la falla, queda petrificado.' },
@@ -52,6 +55,9 @@ export function statesOf(cb: Combat, u: Unit): StateTag[] {
   if (u.grappled) add('grappled', `Agarrado por ${first(u.grappled) ?? 'alguien'}`);
   if (u.watch) add('watch', `Vigila a ${first(u.watch) ?? 'un aliado'}`);
   if (u.cursed) add('cursed');
+  if (u.slowed) add('slowed');
+  if (u.reckless) add('reckless');
+  if (u.turned) add('turned');
   if (u.warn) add('warn', `Prepara: ${u.mon === 'Treant' ? 'raíces bajo la retaguardia' : u.warn}`, u.aim ? `Contra la ${u.aim === 'back' ? 'retaguardia' : 'vanguardia'}.` : u.mon === 'Orvane' || u.mon === 'Xiximanter' ? 'Contra la vanguardia.' : undefined);
   if (u.flying) add('flying');
   if (u.prone) add('prone');
