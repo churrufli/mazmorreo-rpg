@@ -601,7 +601,8 @@
                 }
               ],
               "gold_drop": 9,
-              "xp_total": 75
+              "xp_total": 75,
+              "terrain": "smoke"
             },
             {
               "type": "dialogue",
@@ -1383,7 +1384,8 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 30
+              "xp_total": 30,
+              "terrain": "narrow"
             },
             {
               "type": "encounter",
@@ -2708,7 +2710,8 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 200
+              "xp_total": 200,
+              "terrain": "slippery"
             },
             {
               "type": "chest",

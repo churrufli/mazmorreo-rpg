@@ -315,7 +315,8 @@
                 }
               ],
               "gold_drop": 2,
-              "xp_total": 50
+              "xp_total": 50,
+              "terrain": "slippery"
             },
             {
               "type": "scene",
@@ -1269,7 +1270,8 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 200
+              "xp_total": 200,
+              "terrain": "narrow"
             },
             {
               "type": "trap",
@@ -2509,7 +2511,8 @@
                 }
               ],
               "gold_drop": 7,
-              "xp_total": 150
+              "xp_total": 150,
+              "terrain": "smoke"
             },
             {
               "type": "encounter",
@@ -3459,7 +3462,8 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 700
+              "xp_total": 700,
+              "terrain": "slippery"
             }
           ]
         },

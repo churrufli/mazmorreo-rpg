@@ -176,7 +176,8 @@
                 }
               ],
               "gold_drop": 3,
-              "xp_total": 100
+              "xp_total": 100,
+              "terrain": "narrow"
             },
             {
               "type": "dialogue",
@@ -1270,7 +1271,8 @@
                 }
               ],
               "gold_drop": 4,
-              "xp_total": 100
+              "xp_total": 100,
+              "terrain": "slippery"
             },
             {
               "type": "scene",
@@ -2068,7 +2070,8 @@
                 }
               ],
               "gold_drop": 10,
-              "xp_total": 300
+              "xp_total": 300,
+              "terrain": "smoke"
             },
             {
               "type": "scene",
@@ -2692,7 +2695,8 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 100
+              "xp_total": 100,
+              "terrain": "narrow"
             },
             {
               "type": "chest",

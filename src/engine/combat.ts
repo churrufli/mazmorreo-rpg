@@ -188,11 +188,20 @@ export interface Combat {
    * Sube cuando cae el líder, cuando uno huye o con un crítico del grupo. A la tercera, los malheridos huyen.
    */
   morale?: number;
+  /** Rasgo de la sala (afecta a los dos bandos): angosta (dos por fila), resbaladiza (cambiar de fila pide salvación de
+   * Destreza) o con humo (desventaja al disparar a la otra fila; el fuego lo disipa). */
+  terrain?: Terrain;
   /** Ataque fallado que se puede repetir con Inspiración heroica (decide el jugador). */
   reroll?: { a: string; t: string; o: AtkOpts; adv: number; total: number };
 }
 
 const MAX_ROW = 3;
+export type Terrain = 'narrow' | 'slippery' | 'smoke';
+export const TERRAIN: Record<Terrain, { name: string; desc: string }> = {
+  narrow: { name: 'Angosto', desc: 'La sala es estrecha: solo caben dos por fila, en los dos bandos.' },
+  slippery: { name: 'Resbaladizo', desc: 'El suelo resbala: para cambiar de fila hay que superar una salvación de Destreza CD 10 o se cae al suelo.' },
+  smoke: { name: 'Humo', desc: 'Hay humo: disparar a la otra fila tiene desventaja. El fuego lo disipa.' },
+};
 /** Jefe de la montaña: Vharzûl, el dragón blanco joven. */
 const DRAGON = 'Young White Dragon';
 /** El aliento del dragón sale en los asaltos 2, 5, 8... (diseño de la aventura). */
@@ -314,6 +323,7 @@ export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, t
     if (m.split && (type === 'cortante' || type === 'relámpago')) split(g, cb, target);
     return;
   }
+  if (type === 'fuego' && cb.terrain === 'smoke') { cb.terrain = undefined; say(cb, 'El fuego aviva el aire y disipa el humo.', 'info'); }
   if (type === 'fuego' && target.oiled) { target.oiled = false; amount += 5; say(cb, `El aceite prende: ${target.name} recibe 5 de fuego más.`, 'info'); }
   if (m?.resist?.includes(type)) amount = Math.floor(amount / 2);
   if (target.res?.includes(type)) amount = Math.floor(amount / 2);
@@ -656,6 +666,7 @@ function advFor(cb: Combat, a: Unit, t: Unit, ranged: boolean): { up: string[]; 
   if (a.vex && a.vex === t.key) up.push('Hostigar');
   if (t.prone) { if (ranged) down.push('derribado'); else up.push('objetivo derribado'); }
   if (a.prone) down.push('en el suelo');
+  if (cb.terrain === 'smoke' && ranged && a.row !== t.row) down.push('humo');
   return { up, down };
 }
 
@@ -802,7 +813,10 @@ export function startCombat(g: Game, encounterId: string): Combat {
   const cb: Combat = {
     units, order: [], turn: 0, round: 1, encounters: [], pending: [], moved: false, acted: false, bonus: false,
     sneakUsed: false, log: [], bg: g.zoneBg ?? 'combate_mina',
+    terrain: (encounterById(encounterId) as { terrain?: Terrain } | undefined)?.terrain,
   };
+  // Sala angosta: si delante no caben todos, los que sobran empiezan detrás.
+  if (cb.terrain === 'narrow') for (const u of units.filter(x => x.row === 'front').slice(2)) u.row = 'back';
   sizeEncounter(g, group.now, group.now.includes(bossEncounter(g.zone)));
   group.now.forEach(id => addEncounter(g, cb, id, true));
   // Sin refuerzos de grupos vecinos (el autor 2026-11-06): cada grupo lucha solo.
@@ -832,6 +846,7 @@ export function startCombat(g: Game, encounterId: string): Combat {
   if (cb.units.some(x => x.side === 'enemy' && isLeader(x)) && cb.units.filter(x => x.side === 'enemy' && moraleFoe(x)).length >= 2
     && !cb.units.some(x => x.side === 'enemy' && (isBoss(x) || !moraleFoe(x)))) cb.morale = 0;
   cb.order = [...cb.units].sort((a, b) => b.init - a.init).map(u => u.key);
+  if (cb.terrain) say(cb, `${TERRAIN[cb.terrain].name}: ${TERRAIN[cb.terrain].desc}`, 'big');
   say(cb, `¡Combate! Iniciativa: ${cb.order.map(k => cb.units.find(u => u.key === k)!.name).join(', ')}.`, 'info');
   startTurn(g, cb);
   return cb;
@@ -872,12 +887,13 @@ function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean 
     });
   }
   const count = (r: Row) => cb.units.filter(u => u.side === 'enemy' && alive(u) && u.row === r).length;
+  const rowCap = cb.terrain === 'narrow' ? 2 : MAX_ROW;
   // Refuerzos proporcionados al grupo: como mucho 2 enemigos más que personajes (y 6 en total).
   const cap = Math.min(MAX_ROW * 2, cb.units.filter(u => u.side === 'party').length + 2);
   if (!force && list.length && (count('front') + count('back') + list.length > cap)) return false;
   for (const u of list) {
-    if (count(u.row) >= MAX_ROW) u.row = u.row === 'front' ? 'back' : 'front';
-    if (count(u.row) >= MAX_ROW) continue;
+    if (count(u.row) >= rowCap) u.row = u.row === 'front' ? 'back' : 'front';
+    if (count(u.row) >= rowCap) continue;
     cb.units.push(u);
   }
   cb.encounters.push(id);
@@ -1247,8 +1263,15 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     .map(a => { const off = uselessWhy(g, cb, a); return off ? { ...a, off } : a; });
 }
 
-// El grupo cabe entero en una fila (hasta 4); los enemigos, 3 por fila como mucho.
-const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r).length < (s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
+// El grupo cabe entero en una fila (hasta 4); los enemigos, 3 por fila como mucho. En una sala angosta, dos.
+const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r).length < (cb.terrain === 'narrow' ? 2 : s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
+/** Suelo resbaladizo: cambiar de fila pide una salvación de Destreza CD 10; quien la falla cae al suelo y no se mueve. */
+function slip(g: Game, cb: Combat, u: Unit): boolean {
+  if (cb.terrain !== 'slippery' || saveRoll(g, cb, u, 'dex', 10, 'Destreza')) return false;
+  u.prone = true;
+  say(cb, `${u.name} resbala y cae al suelo.`, 'big');
+  return true;
+}
 
 const KEEP_INVISIBLE = ['dodge', 'help', 'row', 'potion', 'dust', 'surge', 'second_wind', 'rage', 'hide', 'adrenaline'];
 const CURE = 'cura el veneno';
@@ -1628,6 +1651,7 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
         if (!conscious(u) || checkEnd(g, cb)) break;
       }
       for (const x of cb.units) if (x.grappled === u.key) { x.grappled = undefined; say(cb, `${u.name} suelta a ${x.name}.`, 'info'); }
+      if (slip(g, cb, u)) break;
       u.row = u.row === 'front' ? 'back' : 'front';
       say(cb, `${u.name} pasa a la fila ${u.row === 'front' ? 'delantera' : 'trasera'}.`, 'info');
       if (u.hidden && u.row === 'front') { u.hidden = undefined; say(cb, `${u.name} sale de su escondite.`, 'info'); }
@@ -1746,6 +1770,7 @@ export function enemyTurn(g: Game, cb: Combat) {
     const opp = oppFoe(cb, u);
     if (opp) { opportunity(g, cb, opp, u); if (checkEnd(g, cb)) return; if (!conscious(u)) { endTurn(g, cb); return; } }
   }
+  if (p.move && p.move !== u.row && slip(g, cb, u)) { endTurn(g, cb); return; }
   if (p.move && p.move !== u.row) {
     const mate = p.swap ? cb.units.find(x => x.key === p.swap && conscious(x) && x.row === p.move && !x.grappled) : undefined;
     if (mate && !rowSpace(cb, 'enemy', p.move)) {

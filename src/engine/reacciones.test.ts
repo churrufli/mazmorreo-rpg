@@ -92,3 +92,30 @@ describe('moral del grupo enemigo', () => {
     expect(weak.fled || weak.dead).toBe(true);
   });
 });
+
+describe('rasgo de la sala', () => {
+  it('angosto: dos por fila; resbaladizo: cambiar de fila puede tirar al suelo; humo: el fuego lo disipa', () => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    for (const a of ['tiko', 'brunna', 'edmund']) g.party.push(createAlly(a, 2, 300));
+    enterZone(g, 'z1');
+    const cb = startCombat(g, 'z1_e07');
+    expect(cb.terrain).toBe('narrow');
+    expect(cb.units.filter(u => u.side === 'party' && u.row === 'front').length).toBeLessThanOrEqual(2);
+    expect(cb.units.filter(u => u.side === 'enemy' && u.row === 'front').length).toBeLessThanOrEqual(2);
+    let fell = 0;
+    for (let seed = 1; seed <= 20; seed++) {
+      const h = newGame(1, 'Prueba', 'wizard', 'human');
+      h.rng.seed = seed;
+      enterZone(h, 'z1');
+      const c2 = startCombat(h, 'z1_e09');
+      expect(c2.terrain).toBe('slippery');
+      const me = c2.units.find(u => u.side === 'party')!;
+      c2.turn = c2.order.indexOf(me.key);
+      c2.acted = c2.moved = false;
+      me.disengaged = true;
+      perform(h, c2, actionsFor(h, c2).find(a => a.id === 'row')!);
+      if (me.prone) fell++;
+    }
+    expect(fell).toBeGreaterThan(0);
+  });
+});
