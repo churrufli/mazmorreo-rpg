@@ -13,7 +13,7 @@ import { useStore } from '../store';
 import { hasPortraitFrame } from '../data/portraitFrames';
 import { SvgFaceImage } from '../ui/FaceImage';
 import { Escena } from '../ui/Escena';
-import { enemiesOf, firstFoe, sceneById, sceneSpent } from '../engine/escenas';
+import { firstFoe, sceneById, sceneSpent } from '../engine/escenas';
 import { dying, medic } from '../engine/muerte';
 import { townRest, rereadAt, sceneOn, sceneFight, wonCell, itemOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, hkey, passable, disarmBonus, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
@@ -719,11 +719,10 @@ export function Explore() {
         </Message>
       ) : null}
       {head?.kind === 'approach' ? (() => {
-        const foes = enemiesOf(g, head.id).filter(e => MONSTERS[e.srd_creature]);
         const sw = studyWho(g);
         const studied = g.studied?.includes(head.id);
         return (
-          <Message key={`a${head.id}`} title="Enemigos a la vista" img={MONSTERS[foes[0]?.srd_creature]?.img ?? 'trampa'}
+          <Message key={`a${head.id}`} title="Enemigos a la vista" foe img={MONSTERS[firstFoe(g, head.id, false)?.srd_creature]?.img ?? 'trampa'}
             lines={['Todavía no os han visto. ¿Cómo empezáis?']} onDone={() => undefined}>
             <Btn small label="Acercarse en sigilo" sub={`Sigilo del grupo contra CD ${sneakDc(g, head.id)}: si lo logra al menos la mitad, los sorprendéis`} onPress={() => approach('sneak')} />
             <Btn small primary label="Atacar" sub="Empieza el combate" onPress={() => approach('attack')} />

@@ -6,6 +6,7 @@ import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
 import { Bg, Btn, Panel } from './kit';
 import { FaceImage } from './FaceImage';
+import { FACE } from '../data/caras';
 import type { DialogueLine, ShownRoll } from '../engine/dungeon';
 import type { Roll } from '../engine/combat';
 import { speaker } from '../engine/aventuras';
@@ -21,6 +22,29 @@ export function Portrait({ img, size = 64 }: { img: ImgKey; size?: number }) {
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', borderWidth: 2, borderColor: C.gold, backgroundColor: '#000' }}>
       <FaceImage img={img} size={size - 4} />
+    </View>
+  );
+}
+
+/**
+ * Medallón de peligro de «Enemigos a la vista» (el autor 2026-11-27): borde dorado envejecido, remaches de
+ * hierro y un resplandor rojo. La ilustración (2:3) se ancla arriba, con la cara a un tercio del medallón.
+ */
+const MEDAL = 150;
+function FoeMedal({ img }: { img: ImgKey }) {
+  const h = MEDAL * 1.5;
+  const faceY = FACE[img]?.[1] ?? 0.2;
+  const top = -Math.max(0, Math.min(h - MEDAL, faceY * h - MEDAL * 0.36));
+  const rivet = (pos: ViewStyle) => <View style={[st.rivet, pos]} />;
+  return (
+    <View style={st.medal}>
+      <View style={st.medalIn}>
+        <Image source={IMG[img]} resizeMode="cover" style={{ position: 'absolute', left: 0, top, width: MEDAL, height: h }} />
+      </View>
+      {rivet({ top: -2, left: MEDAL / 2 - 1 })}
+      {rivet({ bottom: -2, left: MEDAL / 2 - 1 })}
+      {rivet({ left: -2, top: MEDAL / 2 - 1 })}
+      {rivet({ right: -2, top: MEDAL / 2 - 1 })}
     </View>
   );
 }
@@ -259,6 +283,8 @@ export interface MessageProps {
   bg?: ImgKey; onDone?: () => void; children?: React.ReactNode;
   /** Victoria: título con un golpe de escala y las líneas apareciendo en cascada. */
   celebrate?: boolean;
+  /** Enemigos a la vista: la imagen en un medallón de peligro, encuadrada arriba para que se vea la cara. */
+  foe?: boolean;
   /** Con fondo: el cuadro abajo, para ver la ilustración entera (resultado de una escena). */
   low?: boolean;
   /** Milisegundos en los que solo se ve la ilustración de fondo antes del cuadro (tocar la pantalla lo adelanta). */
@@ -283,7 +309,7 @@ export function useHold(ms: number): [boolean, () => void] {
  * Ventana de aviso con entrada animada. Va mostrando por pasos: la imagen (el cofre se abre),
  * cada tirada con su dado y al final el texto y los botones. Tocarla enseña todo de golpe.
  */
-export function Message({ title, lines, table, intro, img, img2, items, portrait, rolls = [], bg, low, onDone, children, celebrate, hold = 0 }: MessageProps) {
+export function Message({ title, lines, table, intro, img, img2, items, portrait, rolls = [], bg, low, onDone, children, celebrate, foe, hold = 0 }: MessageProps) {
   const pop = useRef(new Animated.Value(0)).current;
   const [shown, show] = useHold(hold);
   const { height } = useWindowDimensions();
@@ -312,7 +338,7 @@ export function Message({ title, lines, table, intro, img, img2, items, portrait
       <Pressable onPress={() => setK(steps)} accessibilityLabel={title}>
         <Panel style={st.msgPanel}>
           {portrait ? <View style={{ alignSelf: 'center', marginBottom: 6 }}><Portrait img={portrait} size={84} /></View> : null}
-          {img ? (
+          {img && foe ? <FoeMedal img={img} /> : img ? (
             <View style={st.msgImgBox}>
               {opened ? <FadeIn from={0}><Image source={IMG[img2!]} style={st.msgImg} /></FadeIn> : <Image source={IMG[img]} style={st.msgImg} />}
               {opened && fxFull() ? <Glints size={110} /> : null}
@@ -506,6 +532,10 @@ const st = StyleSheet.create({
   msgPanel: { borderColor: C.gold, borderWidth: 1.5, paddingTop: 16 },
   msgImgBox: { alignSelf: 'center', width: 110, height: 110, marginTop: -4 },
   msgImg: { width: 110, height: 110 },
+  medal: { alignSelf: 'center', width: MEDAL + 16, height: MEDAL + 16, borderRadius: (MEDAL + 16) / 2, marginTop: -4, marginBottom: 8, padding: 5,
+    backgroundColor: '#2a2119', borderWidth: 3, borderColor: C.gold, shadowColor: '#b5483a', shadowOpacity: 0.85, shadowRadius: 16, shadowOffset: { width: 0, height: 0 }, elevation: 10 },
+  medalIn: { width: MEDAL, height: MEDAL, borderRadius: MEDAL / 2, overflow: 'hidden', borderWidth: 2, borderColor: '#b5483a', backgroundColor: '#000' },
+  rivet: { position: 'absolute', width: 12, height: 12, borderRadius: 6, backgroundColor: '#4a4038', borderWidth: 2, borderColor: C.gold },
   msgTitle: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 22, textAlign: 'center', letterSpacing: 1 },
   rule: { height: 1, backgroundColor: C.gold, opacity: 0.6, marginHorizontal: 40, marginTop: 6, marginBottom: 10 },
   rollRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, backgroundColor: '#0006', borderRadius: 6, padding: 6 },

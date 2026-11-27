@@ -1,4 +1,4 @@
-import { approachable, sneak, study } from './engine/sorpresa';
+import { ambush, approachable, sneak, study } from './engine/sorpresa';
 import { create } from 'zustand';
 import type { ImgKey } from './assets';
 import type { Ability, ClassId, SpeciesId } from './data/srd';
@@ -150,7 +150,13 @@ export const useStore = create<State>((set, get) => {
         continue;
       }
       // Combate al acercarse por el mapa: antes se elige cómo empieza (sigilo, atacar o estudiarlos).
-      if (ev.kind === 'combat' && ev.walk && approachable(g, ev.id)) { q[0] = { kind: 'approach', id: ev.id }; break; }
+      if (ev.kind === 'combat' && ev.walk && approachable(g, ev.id)) {
+        // Los bichos del bosque pueden emboscaros antes de que los veáis: entonces no se elige cómo empezar.
+        const hit = ambush(g, ev.id);
+        if (hit) { q.splice(0, 1, hit, { kind: 'combat', id: ev.id }); storage.save(g); break; }
+        q[0] = { kind: 'approach', id: ev.id };
+        break;
+      }
       if (ev.kind === 'combat') {
         q.shift();
         return { queue: q, combat: startCombat(g, ev.id), walking: [] };

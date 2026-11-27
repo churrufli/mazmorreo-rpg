@@ -205,7 +205,7 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, ba
       accessibilityState={{ disabled: !!disabled, selected: !!primary }}
       aria-pressed={combatTone ? !!primary : undefined}
       onLayout={e => setBox(e.nativeEvent.layout)}
-      style={({ pressed }) => [s.btn, small && s.btnSmall, combatTone && { marginVertical: 2, marginHorizontal: 1, paddingHorizontal: combatPadding, minHeight: 40, paddingVertical: 2 }, combatTone && tight && { paddingHorizontal: 18 }, two && { paddingVertical: small ? 4 : 8 }, pressed && s.btnPressed, dim && !combatTone && s.btnOff, style]}>
+      style={({ pressed }) => [s.btn, small && s.btnSmall, combatTone && { marginVertical: 1, marginHorizontal: 1, paddingHorizontal: combatPadding, minHeight: 36, paddingVertical: 1 }, combatTone && tight && { paddingHorizontal: 18 }, two && { paddingVertical: small ? 4 : 8 }, pressed && s.btnPressed, dim && !combatTone && s.btnOff, style]}>
       {({ pressed }) => (
         <>
           {box && combatTone ? <ButtonSkin tone={combatTone} width={box.width} height={box.height} selected={primary || pressed} dim={!!dim} /> : box ? (
@@ -237,7 +237,7 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, ba
           {combatTone ? <Text testID="combat-button-label" style={[s.btnText, { color: ink, fontSize: labelLayout ? labelLayout.fontSize / fontScale : combatFont, lineHeight: (labelLayout ? labelLayout.fontSize / fontScale : combatFont) * 1.3, letterSpacing: 0, textAlign: 'center', width: '100%' }]} numberOfLines={2} ellipsizeMode="clip">{labelLayout?.lines.join('\n') ?? caption}</Text> : two
             ? <Text style={[s.btnText, { color: ink, fontSize: fs2, lineHeight: fs2 * 1.3, letterSpacing: 0, textAlign: 'center' }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={combatTone ? 1 : 0.75}>{halves[1] ? `${halves[0]}\n${halves[1]}` : caption}</Text>
             : <Text style={[s.btnText, small && s.btnTextSmall, { color: ink, ...(combatTone ? { fontSize: combatFont, letterSpacing: 0 } : {}) }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={combatTone ? 1 : 0.7}>{caption}</Text>}
-          {onInfo ? <Pressable accessibilityRole="button" accessibilityLabel={`Información sobre ${label}`} onPress={e => { e.stopPropagation(); onInfo(); }} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: tight ? 28 : 36, minHeight: 40 }} /> : null}
+          {onInfo ? <Pressable accessibilityRole="button" accessibilityLabel={`Información sobre ${label}`} onPress={e => { e.stopPropagation(); onInfo(); }} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: tight ? 28 : 36, minHeight: combatTone ? 36 : 40 }} /> : null}
           {sub ? <Text style={[s.btnSub, primary && { color: '#4a3b26' }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{sub}</Text> : null}
           {badge ? <View pointerEvents="none" style={[s.badge, { borderColor: badge.color }]}><Text style={[s.badgeTxt, { color: badge.color }]} numberOfLines={1}>{badge.text}</Text></View> : null}
         </>

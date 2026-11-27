@@ -627,13 +627,11 @@ function firePiece(g: Game, cb: Combat) {
   const eff = pc.fx;
   if (goalOpen(cb, 'piece')) goalDone(cb, false);
   if (eff.spawn) {
+    // Lo que anuncia la pieza se cumple siempre (el autor 2026-11-27: «suena el cuerno y no acude nadie»):
+    // los refuerzos llegan aunque se pase el tope de enemigos del grupo; con las dos filas llenas, van atrás.
     const m = MONSTERS[eff.spawn.mon];
-    const cap = maxFoesFor(g.party.filter(c => !c.dead).length);
-    const added: Unit[] = [];
     for (let i = 0; i < eff.spawn.count; i++) {
-      if (cb.units.filter(x => x.side === 'enemy' && conscious(x) && !isPiece(x)).length >= cap) break;
-      const row: Row | undefined = rowSpace(cb, 'enemy', 'front') ? 'front' : rowSpace(cb, 'enemy', 'back') ? 'back' : undefined;
-      if (!row) break;
+      const row: Row = rowSpace(cb, 'enemy', 'front') ? 'front' : 'back';
       const u: Unit = {
         key: `e_pieza_${cb.round}_${i}`, side: 'enemy', mon: eff.spawn.mon, name: eff.spawn.count > 1 ? `${eff.spawn.name} ${i + 1}` : eff.spawn.name,
         img: m.img, hp: m.hp, maxHp: m.hp, ac: m.ac, row, init: die(g.rng, 20) + m.dexMod, recharge: {},
@@ -641,9 +639,8 @@ function firePiece(g: Game, cb: Combat) {
       cb.units.push(u);
       cb.order.push(u.key);
       cb.bonusXp = (cb.bonusXp ?? 0) + m.xp;
-      added.push(u);
     }
-    say(cb, added.length ? eff.text : `${eff.text.split(/[.!] /)[0].replace(/[¡!.]/g, '')}, pero no acude nadie más.`, 'big');
+    say(cb, eff.text, 'big');
   } else if (eff.cage) {
     const out = cb.caged ?? [];
     cb.caged = undefined;
@@ -1099,6 +1096,16 @@ export function startCombat(g: Game, encounterId: string): Combat {
     say(cb, '¡Los habéis sorprendido! Tiran la iniciativa con desventaja.', 'big');
   }
   g.surprise = undefined;
+  // Emboscada (sorpresa del SRD 5.2.1, al revés): los bichos del bosque os sorprendieron y sois vosotros quienes tiráis con desventaja.
+  if (g.ambush && group.now.includes(g.ambush)) {
+    for (const u of cb.units.filter(x => x.side === 'party')) {
+      const d = Math.min(u.initD20!, die(g.rng, 20));
+      u.init += d - u.initD20!;
+      u.initD20 = d;
+    }
+    say(cb, '¡Os han emboscado! Tiráis la iniciativa con desventaja.', 'big');
+  }
+  g.ambush = undefined;
   if (cb.units.some(x => x.side === 'enemy' && isLeader(x)) && cb.units.filter(x => x.side === 'enemy' && moraleFoe(x)).length >= 2
     && !cb.units.some(x => x.side === 'enemy' && (isBoss(x) || !moraleFoe(x)))) cb.morale = 0;
   cb.order = [...cb.units].sort((a, b) => b.init - a.init).map(u => u.key);

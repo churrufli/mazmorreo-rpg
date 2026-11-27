@@ -6,7 +6,7 @@ import { bossEncounter, encounterById, Ev, ShownRoll } from './dungeon';
 import { enemiesOf } from './escenas';
 import type { Game } from './game';
 import { die } from './rng';
-import { Char, elvenBoots, isDown, skillBonus } from './rules';
+import { Char, elvenBoots, isDown, passivePerception, skillBonus } from './rules';
 
 /** ¿Se puede elegir cómo empezar este combate? No con el jefe ni con un grupo del que ya huisteis. */
 export const approachable = (g: Game, id: string) =>
@@ -65,5 +65,36 @@ export function study(g: Game, id: string): Ev {
     kind: 'msg', title: 'Estudiarlos',
     rolls: [{ d20: d, bonus, dc: STUDY_DC, ok, text: `${SKILLS[skill].name} de ${c.name}` }],
     lines: ok ? [`${c.name} los observa con calma y reconoce lo que son.`, ...kinds.map(traitsOf)] : [`${c.name} no saca nada en claro desde aquí.`],
+  };
+}
+
+/**
+ * Criaturas que acechan y pueden emboscar al grupo, con su Sigilo del SRD 5.2.1 (sin la habilidad, su Destreza).
+ * Solo los bichos del bosque: arañas, lobos, jabalíes y serpientes (el autor 2026-11-27).
+ */
+export const LURKERS: Record<string, number> = {
+  Spider: 4, 'Giant Spider': 7, Wolf: 4, 'Dire Wolf': 4, 'Winter Wolf': 5,
+  Boar: 0, 'Giant Boar': 0, 'Venomous Snake': 2, 'Giant Constrictor Snake': 2,
+};
+
+/**
+ * Emboscada: si todo el grupo enemigo son criaturas que acechan, el más sigiloso tira Sigilo contra la
+ * Percepción pasiva más alta del grupo. Si gana, no hay cuadro de elegir: el grupo queda sorprendido
+ * (tira la iniciativa con desventaja). Solo se intenta una vez por grupo de enemigos.
+ */
+export function ambush(g: Game, id: string): Ev | undefined {
+  if (g.lurked?.includes(id)) return undefined;
+  const foes = enemiesOf(g, id).filter(e => e.count > 0 && MONSTERS[e.srd_creature]);
+  if (!foes.length || !foes.every(e => e.srd_creature in LURKERS)) return undefined;
+  g.lurked = [...(g.lurked ?? []), id];
+  const up = g.party.filter(c => !isDown(c));
+  if (!up.length) return undefined;
+  const lead = [...foes].sort((a, b) => LURKERS[b.srd_creature] - LURKERS[a.srd_creature])[0];
+  const pp = Math.max(...up.map(passivePerception));
+  if (die(g.rng, 20) + LURKERS[lead.srd_creature] < pp) return undefined;
+  g.ambush = id;
+  return {
+    kind: 'msg', title: '¡Emboscada!', img: MONSTERS[lead.srd_creature].img,
+    lines: ['Salen de su escondite antes de que los veáis.', 'Os han sorprendido: tiráis la iniciativa con desventaja.'],
   };
 }
