@@ -18,7 +18,7 @@
   <header class="portada">
     <div class="portada-fondo" aria-hidden="true"><span class="portada-centro"></span></div>
     <div class="portada-contenido">
-      <h1><img class="logo" src="../../assets/img/logo.webp" alt="Mazmorreo" width="1200" height="340" /></h1>
+      <h1><img fetchpriority="high" class="logo" src="../../assets/img/logo.webp" alt="Mazmorreo" width="1200" height="340" /></h1>
       <p class="lema">Tu historia comienza donde termina la luz</p>
       <p class="entradilla">Un RPG de fantasía medieval para jugar en solitario. Explora mazmorras, toma decisiones y combate por turnos junto a tus compañeros.</p>
       <a class="boton boton-oro boton-grande" href="../">
@@ -54,7 +54,7 @@
     <!-- Pantallas -->
     <section class="bloque pantallas" aria-labelledby="t-pantallas">
       <h2 id="t-pantallas">Así se juega</h2>
-      <ul class="tira">
+      <ul class="tira" tabindex="0" aria-label="Capturas del juego en móvil; desplaza horizontalmente para verlas todas">
         <li><figure><img src="./capturas/movil-heroe.webp" alt="Creación del héroe: una paladina elfa" width="540" height="1168" loading="lazy" /><figcaption>Crea tu héroe</figcaption></figure></li>
         <li><figure><img src="./capturas/movil-pueblo.webp" alt="El pueblo de Valdescarcha con sus tiendas, templo y posada" width="540" height="1168" loading="lazy" /><figcaption>Prepárate en el pueblo</figcaption></figure></li>
         <li><figure><img src="./capturas/movil-mapa.webp" alt="Mapa de casillas hexagonales de una tumba" width="540" height="1168" loading="lazy" /><figcaption>Explora el mapa</figcaption></figure></li>
@@ -127,5 +127,7 @@
     <p>Reglas del <a href="https://github.com/churrufli/mazmorreo-rpg/blob/master/NOTICE.md" rel="noopener">SRD 5.2.1</a> (CC BY 4.0). «La Tumba de los Reyes Serpiente» se basa en <i>Tomb of the Serpent Kings</i>, de Skerples (CC BY-NC-SA).</p>
     <p><a href="https://github.com/churrufli/mazmorreo-rpg/blob/master/LICENSE" rel="noopener">Código MIT</a> · <a href="https://github.com/churrufli/mazmorreo-rpg/blob/master/LICENSE-CONTENIDO.md" rel="noopener">Contenido CC BY-NC-SA 4.0</a> · <a href="https://github.com/churrufli/mazmorreo-rpg/blob/master/CREDITS.md" rel="noopener">Créditos</a></p>
   </footer>
+  <div class="jugar-fijo" hidden><a class="boton boton-oro" href="../">Jugar gratis</a></div>
+  <script type="module" src="./presentacion.js"></script>
 </body>
 </html>
