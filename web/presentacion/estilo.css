@@ -155,8 +155,6 @@ a:focus-visible,.tira:focus-visible{outline:3px solid #e0b56e;outline-offset:4px
 .acceso-titulo{font-size:clamp(20px,2.5vw,28px)}
 .acceso-jugar{box-shadow:0 8px 30px #b8894a30}
 .apk a,.pie a{text-decoration-thickness:1px;text-underline-offset:3px}
-.jugar-fijo{display:none}
-.jugar-fijo[hidden]{display:none!important}
 @media (hover:hover) and (pointer:fine){
   .carta:hover{transform:translateY(-4px);border-color:var(--oro-hi)}
   .boton:hover{box-shadow:0 8px 30px #b8894a55}
@@ -168,9 +166,6 @@ a:focus-visible,.tira:focus-visible{outline:3px solid #e0b56e;outline-offset:4px
   .acceso svg{width:42px;height:42px}
   .carta div{padding:14px 12px}
   .carta p{font-size:17px}
-  .jugar-fijo{position:fixed;z-index:10;bottom:0;left:0;right:0;display:flex;justify-content:center;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#0d0b09f5;border-top:1px solid var(--borde)}
-  .jugar-fijo .boton{width:min(100%,420px);padding:14px 24px}
-  body:has(.jugar-fijo:not([hidden])){padding-bottom:calc(70px + env(safe-area-inset-bottom))}
   html{scroll-padding-bottom:calc(80px + env(safe-area-inset-bottom))}
 }
 @media (max-width:380px){.cartas{grid-template-columns:1fr}.carta img{aspect-ratio:4/3}}
@@ -210,5 +205,58 @@ a:focus-visible,.tira:focus-visible{outline:3px solid #e0b56e;outline-offset:4px
   .tira img,.escritorio img{transition:filter .25s,border-color .25s}
   .tira img:hover,.escritorio img:hover{filter:brightness(1.08);border-color:var(--oro-hi)}
 }
-@media (max-width:719px){.motas{opacity:.3}.bruma{animation:none}}
+@media (max-width:719px){.bruma{animation:none}}
 @media (prefers-reduced-motion:reduce){.ambiente{display:none}.carta:hover,.boton:hover,.acceso:hover{transform:none}}
+
+/* ---------- Nueva disposición (27-nov): barra arriba, portada más clara y motas del juego ---------- */
+/* Barra superior fija: transparente sobre la portada y opaca al bajar. */
+.barra{position:fixed;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px clamp(12px,3vw,32px);padding-top:max(10px,env(safe-area-inset-top));transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.barra.opaca{background:#0d0b09ee;border-bottom-color:var(--borde);backdrop-filter:blur(6px)}
+.barra-logo img{width:clamp(120px,22vw,170px);filter:drop-shadow(0 2px 8px #000)}
+.barra-enlaces{display:flex;align-items:center;gap:clamp(6px,1.4vw,14px)}
+.barra-icono{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;color:var(--oro-hi);background:#0d0b0999;border:1px solid var(--borde)}
+.barra-icono svg{width:22px;height:22px}
+.barra-icono:hover{border-color:var(--oro-hi)}
+.boton-barra{min-height:42px;padding:10px 18px;font-size:clamp(13px,3.2vw,16px);letter-spacing:.06em}
+@media (max-width:420px){.barra-icono{width:38px;height:38px}.barra-icono svg{width:20px;height:20px}.boton-barra{padding:9px 12px}}
+
+/* Portada: la mazmorra del título se ve clara; solo se oscurece donde va el texto y al final. */
+.portada{min-height:94svh;align-items:flex-start;padding:clamp(84px,14vh,150px) 20px 80px}
+.portada-fondo::after{background:
+  radial-gradient(ellipse 70% 45% at 50% 42%,rgba(13,11,9,.45),transparent 75%),
+  linear-gradient(to bottom,rgba(13,11,9,.35),transparent 18%,transparent 62%,rgba(13,11,9,.8) 88%,var(--bg))}
+@media (min-aspect-ratio:4/5){.portada-fondo::before{filter:blur(28px) brightness(.55)}}
+.portada-contenido{gap:clamp(10px,2vh,18px)}
+.logo{width:min(560px,84vw)}
+.lema{font-size:clamp(22px,4.2vw,32px)}
+.entradilla{font-size:clamp(18px,2.4vw,21px)}
+.botones-sec{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.boton-sec{min-height:48px;padding:12px 26px;font-size:16px;color:var(--oro-hi);background:#0d0b09cc;border:1px solid var(--oro);box-shadow:0 6px 20px #0008}
+.boton-sec svg{width:22px;height:22px}
+.boton-sec:hover{background:#1a1612ee;border-color:var(--oro-hi)}
+.boton-sec::after{display:none}
+
+/* Motas de luz que suben despacio, como en la pantalla principal del juego (presentacion.js). */
+.particulas{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.mota{position:absolute;bottom:0;border-radius:50%;background:#e0b56e;box-shadow:0 0 6px 1px #e0b56e;opacity:0;
+  animation:mota var(--dur) linear var(--delay) infinite}
+@keyframes mota{
+  0%{opacity:0;transform:translate(0,0)}
+  10%{opacity:.9}
+  50%{transform:translate(var(--deriva),calc(var(--alto) * -.5))}
+  80%{opacity:.6}
+  100%{opacity:0;transform:translate(calc(var(--deriva) * .3),calc(var(--alto) * -.87))}
+}
+@media (prefers-reduced-motion:reduce){.particulas{display:none}}
+
+/* Fase alfa: sello en la portada y bloque de colaboración. */
+.alfa{margin:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;font:600 15px/1.3 var(--cuerpo);color:var(--texto);text-shadow:0 1px 6px #000}
+.alfa span{font:700 12px/1 var(--titulo);letter-spacing:.14em;text-transform:uppercase;color:#1f1710;background:var(--oro-hi);padding:6px 10px;border-radius:4px;text-shadow:none}
+.aviso-alfa{max-width:820px;margin:0 auto;text-align:center;padding:clamp(28px,5vw,48px) clamp(18px,4vw,48px);border:1px solid var(--borde);border-radius:16px;
+  background:radial-gradient(ellipse at 50% 0,#2a2117,transparent 70%),linear-gradient(#1d1813,#14100d)}
+.aviso-alfa h2{margin-bottom:18px}
+.aviso-alfa p{margin:0 auto 14px;max-width:62ch}
+.aviso-alfa .botones-sec{margin-top:22px}
+.sello{display:inline-block;margin:0 0 14px!important;font:700 13px/1 var(--titulo);letter-spacing:.16em;text-transform:uppercase;color:var(--oro-hi);border:1px solid var(--oro);padding:8px 14px;border-radius:4px}
+@media (max-width:480px){.botones-sec{flex-wrap:nowrap;gap:10px}.boton-sec{flex:1;padding:12px 10px;font-size:14px;gap:8px;letter-spacing:.05em}}
