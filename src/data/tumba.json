@@ -2376,7 +2376,8 @@
                     "text": "Os alejáis. A vuestra espalda, Baltoplat canturrea vuestros nombres."
                   }
                 }
-              ]
+              ],
+              "margin": true
             }
           ]
         },
@@ -2548,7 +2549,8 @@
                     "fight": "s3_e05"
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "dialogue",

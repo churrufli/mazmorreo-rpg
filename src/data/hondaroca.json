@@ -521,7 +521,8 @@
                     "sub": "z1_e05"
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "encounter",
@@ -2099,7 +2100,8 @@
                     "reveal": "z2_s01"
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "encounter",
@@ -3510,7 +3512,8 @@
                     "heal": 4
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "prop",

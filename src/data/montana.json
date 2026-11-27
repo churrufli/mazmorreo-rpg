@@ -356,7 +356,8 @@
                     "text": "Seguís adelante."
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "dialogue",
@@ -1904,7 +1905,8 @@
                     "reveal": "m2_s01"
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "prop",
@@ -4111,7 +4113,8 @@
                   "tone": "dureza",
                   "skill": "athletics"
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "prop",

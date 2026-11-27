@@ -78,3 +78,22 @@ describe('habilidades', () => {
     expect(spent).toBeGreaterThan(0);
   });
 });
+
+describe('escenas con margen', () => {
+  it('el primer fallo deja un segundo intento con desventaja; el segundo fallo cierra la vía', () => {
+    for (let seed = 1; seed <= 40; seed++) {
+      const g = game('wizard', 'human', 'z1');
+      g.rng.seed = seed;
+      const s = sceneById('z1_q01')!;
+      expect(s.margin).toBe(true);
+      const i = s.options.findIndex(o => o.attr);
+      chooseOption(g, 'z1_q01', i);
+      const st = g.scenes?.z1_q01;
+      if (!st?.tried?.includes(i)) continue;
+      expect(st.closed).not.toContain(i);
+      chooseOption(g, 'z1_q01', i);
+      return;
+    }
+    throw new Error('ninguna semilla falla la primera tirada');
+  });
+});

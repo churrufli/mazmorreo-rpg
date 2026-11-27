@@ -461,7 +461,8 @@
                     "text": "Se aleja cojeando entre los helechos."
                   }
                 }
-              ]
+              ],
+              "margin": true
             }
           ]
         },
@@ -4519,7 +4520,8 @@
                     "text": "Guardáis silencio. La luz roja continúa palpitando bajo las raíces."
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "prop",

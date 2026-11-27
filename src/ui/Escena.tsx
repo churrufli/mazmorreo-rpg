@@ -68,7 +68,9 @@ export function Escena({ g, id, onChoose, onLeave }: { g: Game; id: string; onCh
                 const open = optionOpen(g, s, i);
                 const best = op.attr ? bestFor(g, op.attr, op.skill) : undefined;
                 const ally = op.ally ? g.party.find(c => c.id === op.ally) : traitWho(g, op);
+                const again = !!s.margin && !!sceneState(g, s.id).tried?.includes(i) && !shut;
                 const sub = shut ? 'Ya lo intentasteis: esta vía está cerrada'
+                  : again && op.attr && best ? `Último intento, con desventaja · ${testLabel(op)} CD ${op.dc}`
                   : ally ? `Se encarga ${ally.name.split(' ')[0]}: sin tirada`
                   : op.if && !op.attr ? 'Por lo que hicisteis antes: sin tirada'
                   : !open && op.needs && !g.party.some(c => !c.dead && c.items.some(it => it.id === op.needs)) ? `Hace falta: ${ITEMS[op.needs]?.name ?? op.needs}`
