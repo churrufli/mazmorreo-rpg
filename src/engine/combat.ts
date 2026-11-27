@@ -665,7 +665,8 @@ function moraleHit(cb: Combat, why: string) {
 
 function heal(cb: Combat, u: Unit, amount: number) {
   if (u.dead) return;
-  if (u.cursed) { say(cb, `La maldición de la momia impide curar a ${u.name}.`, 'info'); return; }
+  // Maldición de la momia: toda curación se queda en la mitad hasta quitarla en el templo (ajuste de equilibrio del SRD, 2026-11-27).
+  if (u.cursed) { amount = Math.max(1, Math.floor(amount / 2)); say(cb, `La maldición de la momia reduce a la mitad la curación de ${u.name}.`, 'info'); }
   const wasDown = u.hp <= 0;
   const before = Math.max(0, u.hp);
   u.hp = Math.min(u.maxHp, before + amount);

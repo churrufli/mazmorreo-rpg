@@ -31,14 +31,17 @@ describe('la Tumba con sus reglas', () => {
     expect(foe.splits).toBe(2);
   });
 
-  it('la maldición de la momia impide recuperar PG hasta el templo', () => {
+  it('la maldición de la momia deja la curación en la mitad hasta el templo', () => {
     const g = newGame(1, 'Prueba', 'fighter', 'human');
     const c = g.party[0];
     c.cursed = true;
-    c.hp = 3;
+    c.hp = 1;
+    c.hitDice = 0;
     shortRest(c, g.rng);
+    expect(c.hp).toBe(1);
     longRest(c);
-    expect(c.hp).toBe(3);
+    expect(c.hp).toBe(1 + Math.floor((c.maxHp - 1) / 2));
+    expect(c.hp).toBeLessThan(c.maxHp);
   });
 
   it('la mirada del basilisco apresa y, si se vuelve a fallar, petrifica', () => {

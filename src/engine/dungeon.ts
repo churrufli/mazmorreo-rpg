@@ -1025,8 +1025,8 @@ export function itemOutside(g: Game, fromId: string, uid: string, toId: string):
   const d = ITEMS[it.id];
   it.charges = (it.charges ?? d.charges ?? 1) - 1;
   if (it.charges <= 0) from.items = from.items.filter(i => i.uid !== uid);
-  if (to.cursed) return `La maldición de la momia impide curar a ${to.name}. Hay que quitársela en el templo.`;
-  const n = Math.min(to.maxHp - to.hp, roll(g.rng, d.heal!));
+  const r = roll(g.rng, d.heal!);
+  const n = Math.min(to.maxHp - to.hp, to.cursed ? Math.max(1, Math.floor(r / 2)) : r);
   to.hp += n;
   if (to.hp > 0) { to.stable = false; to.deathS = to.deathF = 0; }
   const line = from === to ? `${to.name} usa ${d.name} y recupera ${n} PG.` : `${from.name} usa ${d.name} con ${to.name}: recupera ${n} PG.`;

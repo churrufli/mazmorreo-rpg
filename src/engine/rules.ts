@@ -455,12 +455,14 @@ export function shortRestGain(c: Char): string | undefined {
 export function shortRest(c: Char, rng: Rng, dice = c.hitDice): number {
   if (c.dead) return 0;
   let healed = 0;
-  let left = c.cursed ? 0 : dice;
+  let left = dice;
   while (left > 0 && c.hitDice > 0 && c.hp < c.maxHp) {
     left--;
     c.hitDice--;
     const periapt = c.items.some(i => i.id === 'periapt_wound_closure') ? 2 : 1;
-    const h = Math.max(1, roll(rng, `1d${CLASSES[c.cls].hitDie}`) + abilMod(c, 'con')) * periapt;
+    const h0 = Math.max(1, roll(rng, `1d${CLASSES[c.cls].hitDie}`) + abilMod(c, 'con')) * periapt;
+    // Maldición de la momia: la curación se queda en la mitad hasta quitarla en el templo.
+    const h = c.cursed ? Math.max(1, Math.floor(h0 / 2)) : h0;
     healed += Math.min(h, c.maxHp - c.hp);
     c.hp = Math.min(c.maxHp, c.hp + h);
   }
@@ -486,7 +488,7 @@ export function shortRest(c: Char, rng: Rng, dice = c.hitDice): number {
 export function longRest(c: Char) {
   if (c.dead) return;
   Object.assign(c, {
-    hp: c.cursed ? c.hp : c.maxHp, hitDice: c.level, slots: slotsAt(c.cls, c.level), secondWind: 2, actionSurge: 1, channel: maxChannel(c),
+    hp: c.cursed ? Math.max(c.hp, c.hp + Math.floor((c.maxHp - c.hp) / 2)) : c.maxHp, hitDice: c.level, slots: slotsAt(c.cls, c.level), secondWind: 2, actionSurge: 1, channel: maxChannel(c),
     racial: maxRacial(c), cunning: false, arcaneRec: false, relentless: false, stable: false, deathS: 0, deathF: 0,
   });
 }

@@ -29,7 +29,7 @@ export const STATES: Record<StateKey, { name: string; orb: ImgKey; icon: string;
   reckless: { name: 'Temerario', orb: 'esfera_roja', icon: mdiFire, desc: 'Ataca con ventaja este turno, y los ataques contra él también la tienen hasta su siguiente turno.' },
   turned: { name: 'Expulsado', orb: 'esfera_dorada', icon: mdiRunFast, desc: 'Huye de la luz sagrada y pierde sus turnos hasta que le hagan daño.' },
   watch: { name: 'Vigila', orb: 'esfera_turquesa', icon: mdiEye, desc: 'Si un enemigo ataca al aliado que vigila, le dispara con su reacción.' },
-  cursed: { name: 'Maldito', orb: 'esfera_sombra', icon: mdiSkullCrossbones, desc: 'Maldición de la momia: no recupera PG con nada. El templo del pueblo se la quita.' },
+  cursed: { name: 'Maldito', orb: 'esfera_sombra', icon: mdiSkullCrossbones, desc: 'Maldición de la momia: toda curación se queda en la mitad. El templo del pueblo se la quita.' },
   stoning: { name: 'Volviéndose piedra', orb: 'esfera_piedra', icon: mdiLock, desc: 'Al acabar su turno repite la salvación de Constitución: si la falla, queda petrificado.' },
   death: { name: 'Muerte', orb: 'esfera_sombra', icon: mdiSkull, desc: 'Caído: tira salvaciones de muerte. Tres éxitos lo estabilizan; tres fallos, muere.' },
 };

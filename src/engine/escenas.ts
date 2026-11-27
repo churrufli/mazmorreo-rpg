@@ -133,7 +133,7 @@ export function applyEffect(g: Game, e: Effect, who?: Char): { lines: string[]; 
     if (d) lines.push(`${t.name} pierde ${d} PG.`);
   }
   if (e.heal) {
-    for (const c of g.party.filter(x => !isDown(x) && !x.cursed)) c.hp = Math.min(c.maxHp, c.hp + e.heal);
+    for (const c of g.party.filter(x => !isDown(x))) c.hp = Math.min(c.maxHp, c.hp + (c.cursed ? Math.floor(e.heal / 2) : e.heal));
     lines.push(`Todos recuperáis ${e.heal} PG.`);
   }
   if (e.add) g.encMod = { ...g.encMod, [e.add]: (g.encMod?.[e.add] ?? 0) + 1 };
