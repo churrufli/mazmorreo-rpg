@@ -1,6 +1,6 @@
 import type { ImgKey } from '../assets';
 import {
-  ABIL_NAME, Ability, CLASSES, ClassId, HALF_SLOTS, ITEMS, ITEM_BY_NAME, MAX_LEVEL, SLOTS, Slots, SPECIES, SpeciesId, XP_LEVELS, prof,
+  ABIL_NAME, Ability, CLASSES, CLASS_SKILLS, ClassId, EXPERTISE, HALF_SLOTS, ITEMS, ITEM_BY_NAME, MAX_LEVEL, SKILLS, SLOTS, Skill, Slots, SPECIES, SpeciesId, XP_LEVELS, prof,
 } from '../data/srd';
 import { roll, Rng } from './rng';
 import { ADVS, AdvId } from './aventuras';
@@ -279,6 +279,15 @@ export function passivePerception(c: Char): number {
   const p = CLASSES[c.cls].perception || c.species === 'elf' || c.species === 'human';
   return 10 + abilMod(c, 'wis') + (p ? prof(c.level) : 0);
 }
+
+/** Veces que suma la competencia en una habilidad: 0 (sin competencia), 1 o 2 (pericia del pícaro). */
+export function skillProf(c: Char, s: Skill): 0 | 1 | 2 {
+  if (EXPERTISE[c.cls]?.includes(s)) return 2;
+  if (s === 'perception') return CLASSES[c.cls].perception || c.species === 'elf' || c.species === 'human' ? 1 : 0;
+  return CLASS_SKILLS[c.cls].includes(s) ? 1 : 0;
+}
+/** Bonificador de una prueba de habilidad: su característica más la competencia (doble con pericia). */
+export const skillBonus = (c: Char, s: Skill) => abilMod(c, SKILLS[s].abil) + skillProf(c, s) * prof(c.level);
 
 /** La niebla se ve a 2 casillas si alguien lleva antorcha o sabe el truco Luz (clérigo o mago). */
 export const sightRadius = (party: Char[]) =>

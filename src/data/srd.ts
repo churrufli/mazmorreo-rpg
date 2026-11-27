@@ -99,6 +99,36 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   orc: { name: 'Orco', blurb: 'Aguante incansable: una vez por descanso largo se queda con 1 PG en vez de caer. Descarga de adrenalina: PG temporales como acción adicional.' },
 };
 
+/** Habilidades del SRD 5.2.1 (sin herramientas): cada una va con su característica. */
+export type Skill = 'athletics' | 'acrobatics' | 'sleight' | 'stealth' | 'arcana' | 'history' | 'investigation' | 'nature' | 'religion'
+  | 'animal' | 'insight' | 'medicine' | 'perception' | 'survival' | 'deception' | 'intimidation' | 'performance' | 'persuasion';
+export const SKILLS: Record<Skill, { name: string; abil: Ability }> = {
+  athletics: { name: 'Atletismo', abil: 'str' },
+  acrobatics: { name: 'Acrobacias', abil: 'dex' }, sleight: { name: 'Juego de manos', abil: 'dex' }, stealth: { name: 'Sigilo', abil: 'dex' },
+  arcana: { name: 'Arcanos', abil: 'int' }, history: { name: 'Historia', abil: 'int' }, investigation: { name: 'Investigación', abil: 'int' },
+  nature: { name: 'Naturaleza', abil: 'int' }, religion: { name: 'Religión', abil: 'int' },
+  animal: { name: 'Trato con animales', abil: 'wis' }, insight: { name: 'Perspicacia', abil: 'wis' }, medicine: { name: 'Medicina', abil: 'wis' },
+  perception: { name: 'Percepción', abil: 'wis' }, survival: { name: 'Supervivencia', abil: 'wis' },
+  deception: { name: 'Engaño', abil: 'cha' }, intimidation: { name: 'Intimidación', abil: 'cha' }, performance: { name: 'Interpretación', abil: 'cha' },
+  persuasion: { name: 'Persuasión', abil: 'cha' },
+};
+/**
+ * Competencias en habilidades de cada clase: las que se eligen en el SRD 5.2.1, fijas en el juego.
+ * Percepción va aparte (ClassDef.perception, el elfo y el humano), como en la Percepción pasiva.
+ */
+export const CLASS_SKILLS: Record<ClassId, Skill[]> = {
+  fighter: ['athletics', 'intimidation'],
+  cleric: ['medicine', 'religion'],
+  rogue: ['stealth', 'sleight', 'acrobatics', 'investigation'],
+  wizard: ['arcana', 'history'],
+  ranger: ['survival', 'nature', 'stealth'],
+  paladin: ['athletics', 'persuasion'],
+  barbarian: ['athletics', 'survival'],
+  warlock: ['arcana', 'deception'],
+};
+/** Pericia del pícaro (nivel 1): doble bonificador de competencia en estas dos. */
+export const EXPERTISE: Partial<Record<ClassId, Skill[]>> = { rogue: ['stealth', 'sleight'] };
+
 /** Linaje dracónico de cada retrato (SRD 5.2.1, «Ancestros dracónicos»): el color de las escamas decide el aliento. */
 export const DRACONIC: Record<ClassId, { dragon: string; type: DmgType }> = {
   fighter: { dragon: 'rojo', type: 'fuego' }, cleric: { dragon: 'de plata', type: 'frío' }, rogue: { dragon: 'negro', type: 'ácido' },

@@ -261,7 +261,8 @@
                   },
                   "fail": {
                     "text": "No dais con todos los agujeros y el gas os hace toser."
-                  }
+                  },
+                  "skill": "investigation"
                 },
                 {
                   "label": "Dejarla donde está",
@@ -406,7 +407,8 @@
                   "fail": {
                     "text": "El colmillo os pincha. Soltáis el anillo y cae dentro del sarcófago.",
                     "damage": "1d6"
-                  }
+                  },
+                  "skill": "sleight"
                 },
                 {
                   "label": "Dejarlo en su dedo",
@@ -441,7 +443,8 @@
                   },
                   "fail": {
                     "text": "La corriente se pierde entre las grietas."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Buscar el mecanismo",
@@ -453,6 +456,17 @@
                   },
                   "fail": {
                     "text": "Todas las piedras os parecen iguales."
+                  },
+                  "skill": "investigation"
+                },
+                {
+                  "label": "Notar dónde suena hueca la piedra",
+                  "species": [
+                    "dwarf"
+                  ],
+                  "ok": {
+                    "text": "Un nicho tiene la piedra más gastada. Al empujarla, la pared cede.",
+                    "reveal": "s1_s01"
                   }
                 }
               ]
@@ -508,7 +522,8 @@
                   "fail": {
                     "text": "El martillo os golpea de lleno.",
                     "damage": "2d6"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Esquivar el martillo",
@@ -521,7 +536,8 @@
                   "fail": {
                     "text": "No sois lo bastante rápidos.",
                     "damage": "2d6"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Cortar la cuerda antes",
@@ -534,7 +550,8 @@
                   "fail": {
                     "text": "Tocáis la cuerda equivocada y el martillo se descuelga solo.",
                     "damage": "1d6"
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             }
@@ -679,7 +696,8 @@
                   },
                   "fail": {
                     "text": "Los grabados están demasiado gastados."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -752,7 +770,8 @@
                   "fail": {
                     "text": "Una araña enorme sale de las sombras.",
                     "fight": "s1_e04"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Engancharla desde arriba",
@@ -765,7 +784,8 @@
                   },
                   "fail": {
                     "text": "La bolsa cae más hondo. No vale la pena bajar."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Dejarla allí",
@@ -1104,7 +1124,8 @@
                   },
                   "fail": {
                     "text": "La estatua no se mueve."
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Buscar el mecanismo",
@@ -1116,7 +1137,8 @@
                   },
                   "fail": {
                     "text": "No veis cómo funciona."
-                  }
+                  },
+                  "skill": "investigation"
                 },
                 {
                   "label": "Dejad que Zeyna mire",
@@ -1275,7 +1297,8 @@
                   },
                   "fail": {
                     "text": "El brazalete resbala y se hunde."
-                  }
+                  },
+                  "skill": "sleight"
                 },
                 {
                   "label": "No tocar el agua",
@@ -1495,7 +1518,8 @@
                   },
                   "fail": {
                     "text": "La tablilla está demasiado rota."
-                  }
+                  },
+                  "skill": "history"
                 },
                 {
                   "label": "Buscar otras copias",
@@ -1507,13 +1531,24 @@
                   },
                   "fail": {
                     "text": "No encontráis más copias."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Dejad que Teodor lo lea",
                   "ally": "teodor",
                   "ok": {
                     "text": "Teodor lee en voz baja: «Baltoplat». Se le eriza la piel.",
+                    "flag": "s2_nombre"
+                  }
+                },
+                {
+                  "label": "Descifrar la tablilla con vuestros estudios",
+                  "cls": [
+                    "wizard"
+                  ],
+                  "ok": {
+                    "text": "Las curvas forman un nombre: Baltoplat. Con él se le puede ordenar algo, una vez.",
                     "flag": "s2_nombre"
                   }
                 }
@@ -1651,7 +1686,8 @@
                   "fail": {
                     "text": "La sustancia amarilla se mueve y os envuelve la mano.",
                     "fight": "s2_e05"
-                  }
+                  },
+                  "skill": "sleight"
                 },
                 {
                   "label": "Quemar la sustancia",
@@ -1969,7 +2005,8 @@
                   "fail": {
                     "text": "El jugo os quema las manos.",
                     "damage": "1d8"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Pasar de lado",
@@ -2213,7 +2250,8 @@
                   },
                   "fail": {
                     "text": "El calor os hace llorar los ojos."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Golpear las losas",
@@ -2225,7 +2263,8 @@
                   },
                   "fail": {
                     "text": "Todas suenan igual."
-                  }
+                  },
+                  "skill": "athletics"
                 }
               ]
             }
@@ -2309,7 +2348,8 @@
                   },
                   "fail": {
                     "text": "Se ríe de vuestra oferta. No hay trato."
-                  }
+                  },
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Liberarla",
@@ -2388,7 +2428,8 @@
                   "fail": {
                     "text": "Se detiene del lado malo y os escupe veneno.",
                     "damage": "2d6"
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Estudiar el mecanismo",
@@ -2401,7 +2442,8 @@
                   "fail": {
                     "text": "Os equivocáis por media vuelta y os salpica el veneno.",
                     "damage": "1d6"
-                  }
+                  },
+                  "skill": "investigation"
                 },
                 {
                   "label": "No tocarla",
@@ -2493,7 +2535,8 @@
                   "fail": {
                     "text": "Se revuelve y os encara.",
                     "fight": "s3_e05"
-                  }
+                  },
+                  "skill": "animal"
                 },
                 {
                   "label": "Luchar",
@@ -3062,7 +3105,8 @@
                   "fail": {
                     "text": "El borde no cede y los recién nacidos os rodean.",
                     "fight": "s4_e03"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Pasar de largo",
@@ -3153,6 +3197,18 @@
                   },
                   "fail": {
                     "text": "Las cerraduras se atascan. Acabáis rompiendo las cañas.",
+                    "flag": "s4_libres"
+                  },
+                  "skill": "sleight"
+                },
+                {
+                  "label": "Abrir las jaulas con maña de pícaro",
+                  "cls": [
+                    "rogue"
+                  ],
+                  "ok": {
+                    "text": "Las abrís sin ruido. Un caravanero os da una poción que escondía.",
+                    "item": "potion_healing",
                     "flag": "s4_libres"
                   }
                 }
@@ -3431,12 +3487,25 @@
                   },
                   "fail": {
                     "text": "La piedra negra no se mella."
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Marcharse",
                   "ok": {
                     "text": "Os alejáis. La voz os llama por vuestro nombre hasta que salís de la sala."
+                  }
+                },
+                {
+                  "label": "Rezar contra la voz del trono",
+                  "cls": [
+                    "cleric",
+                    "paladin"
+                  ],
+                  "ok": {
+                    "text": "Apartáis la mirada del trono. Junto a él hay un cofre de ofrendas.",
+                    "gold": 30,
+                    "item": "stone_egg"
                   }
                 }
               ]

@@ -1,7 +1,7 @@
 // Escenas con opciones: pruebas de atributo en el mapa, decisiones con consecuencias y grupos de paso al volver.
 // El jugador elige una opción y, si pide tirada, quién del grupo la hace (se ve el bonificador de cada uno).
 import type { ImgKey } from '../assets';
-import { ABIL_NAME, Ability, ITEMS, MONSTERS } from '../data/srd';
+import { ABIL_NAME, Ability, ClassId, ITEMS, MONSTERS, SKILLS, Skill, SpeciesId } from '../data/srd';
 import { GOALS } from '../data/objetivos';
 import { TONE_LINES, Tone } from '../data/comentarios';
 import { ADVS, advOf } from './aventuras';
@@ -9,7 +9,7 @@ import { logEvs, reached, contentById, dropKey, encounterById, rolledEnemies, Ev
 import type { Game } from './game';
 import { die, pick, roll } from './rng';
 import { setElems } from './elementos';
-import { Char, abilMod, isDown, newItem } from './rules';
+import { Char, abilMod, isDown, newItem, skillBonus, skillProf } from './rules';
 
 /** Lo que pasa al elegir una opción (o al acertar o fallar su tirada). */
 export interface Effect {
@@ -39,6 +39,11 @@ export interface Effect {
 export interface SceneOpt { label: string; attr?: Ability; dc?: number; needs?: string; /** Oro que se paga al elegirla. */ cost?: number;
   /** Vía propia de un aliado: solo sale si va en el grupo y en pie, y sale bien sin tirada. Nunca es la única forma de avanzar. */
   ally?: string;
+  /** Habilidad del SRD de la prueba (Sigilo, Arcanos...): suma la competencia de quien la tenga. */
+  skill?: Skill;
+  /** Vía propia de una clase o una especie: sale si alguien así va en el grupo y en pie, y sale bien sin tirada. */
+  cls?: ClassId[];
+  species?: SpeciesId[];
   /** Vía que solo sale si ya pasó algo antes (un objetivo cumplido, una marca, una sala vista): consecuencia de otra decisión. */
   if?: string;
   /** Cómo la leen los compañeros (perdonar, ser duro, cobrar): uno de ellos comenta la decisión. */
@@ -56,10 +61,21 @@ export interface Scene {
 export const sceneById = (id: string) => contentById(id)?.c as unknown as Scene | undefined;
 export const sceneState = (g: Game, id: string) => g.scenes?.[id] ?? { closed: [] as number[] };
 
-/** Bonificador de la tirada: modificador de la característica. */
-export const testBonus = (c: Char, a: Ability) => abilMod(c, a);
+/** Bonificador de la tirada: la habilidad (característica y competencia) o, si no la hay, solo la característica. */
+export const testBonus = (c: Char, a: Ability, skill?: Skill) => (skill ? skillBonus(c, skill) : abilMod(c, a));
 /** Quién lo haría mejor (el de mayor bonificador entre los que están en pie). */
-export const bestFor = (g: Game, a: Ability) => [...g.party.filter(c => !isDown(c))].sort((x, y) => testBonus(y, a) - testBonus(x, a))[0];
+export const bestFor = (g: Game, a: Ability, skill?: Skill) => [...g.party.filter(c => !isDown(c))].sort((x, y) => testBonus(y, a, skill) - testBonus(x, a, skill))[0];
+/** Nombre de la prueba: «Sigilo (DES)» o «Fuerza». */
+export const testName = (a: Ability, skill?: Skill) => (skill ? SKILLS[skill].name : ABIL_NAME[a]);
+/**
+ * Ayudar (SRD 5.2.1): otro del grupo con competencia en esa habilidad da ventaja a quien hace la prueba.
+ * Devuelve quién ayuda, si hay alguien.
+ */
+export const helperFor = (g: Game, who: Char, skill?: Skill) =>
+  skill ? g.party.find(c => c.id !== who.id && !isDown(c) && skillProf(c, skill) > 0) : undefined;
+/** Vía de clase o de especie: quién del grupo la abre (en pie), si hay alguien. */
+export const traitWho = (g: Game, o: SceneOpt) => (o.cls || o.species)
+  ? g.party.find(c => !isDown(c) && (!o.cls || o.cls.includes(c.cls)) && (!o.species || o.species.includes(c.species))) : undefined;
 
 /** ¿Le queda Inspiración heroica en esta aventura? */
 export const canInspire = (g: Game, c: Char) => !!c.inspired && g.inspUsed?.[c.id] !== advOf(g.zone);
@@ -76,11 +92,15 @@ const has = (g: Game, item: string) => g.party.some(c => !c.dead && c.items.some
 /** ¿Va ese aliado en el grupo y puede actuar? */
 export const allyHere = (g: Game, id: string) => g.party.some(c => c.id === id && !isDown(c));
 /** Las vías de un aliado que no va en el grupo no se enseñan. */
-export const optionShown = (g: Game, s: Scene, i: number) => (!s.options[i].ally || allyHere(g, s.options[i].ally!)) && (!s.options[i].if || reached(g, s.options[i].if!));
+export const optionShown = (g: Game, s: Scene, i: number) => (!s.options[i].ally || allyHere(g, s.options[i].ally!)) && (!s.options[i].if || reached(g, s.options[i].if!))
+  && (!(s.options[i].cls || s.options[i].species) || !!traitWho(g, s.options[i]));
 export const optionOpen = (g: Game, s: Scene, i: number) => optionShown(g, s, i) && !sceneState(g, s.id).closed.includes(i) && (!s.options[i].needs || has(g, s.options[i].needs!)) && g.gold >= (s.options[i].cost ?? 0);
 
-/** Probabilidad (en %) de superar una prueba de escena con ese personaje: d20 + bonificador contra la CD. */
-export const testChance = (c: Char, a: Ability, dc: number) => Math.max(0, Math.min(100, (21 - (dc - testBonus(c, a))) * 5));
+/** Probabilidad (en %) de superar una prueba de escena con ese personaje: d20 + bonificador contra la CD (con ventaja si le ayudan). */
+export const testChance = (c: Char, a: Ability, dc: number, skill?: Skill, adv = false) => {
+  const one = Math.max(0, Math.min(20, 21 - (dc - testBonus(c, a, skill)))) / 20;
+  return Math.round((adv ? 1 - (1 - one) ** 2 : one) * 100);
+};
 
 /** Aplica un efecto y devuelve las líneas que lo cuentan y el combate que empiece, si hay. */
 /** Sala en la que está el grupo ahora. */
@@ -279,17 +299,29 @@ export function chooseOption(g: Game, id: string, i: number, charId?: string, fo
   const s = sceneById(id)!;
   const o = s.options[i];
   const st: { closed: number[]; said?: string[]; fight?: string } = { closed: [...sceneState(g, id).closed] };
-  const who = g.party.find(c => c.id === (charId ?? o.ally)) ?? (o.attr ? bestFor(g, o.attr) : undefined);
+  const who = g.party.find(c => c.id === (charId ?? o.ally)) ?? traitWho(g, o) ?? (o.attr ? bestFor(g, o.attr, o.skill) : undefined);
   const rolls: ShownRoll[] = [];
   const found0 = g.found.length;
   let ok = true;
   if (o.attr && o.dc && who) {
-    const bonus = testBonus(who, o.attr);
-    let d = force20 ? 20 : die(g.rng, 20);
+    const bonus = testBonus(who, o.attr, o.skill);
+    // Ayudar: con alguien competente al lado se tira con ventaja (dos d20, el mejor).
+    const helper = helperFor(g, who, o.skill);
+    const two = () => (helper ? Math.max(die(g.rng, 20), die(g.rng, 20)) : die(g.rng, 20));
+    let d = force20 ? 20 : two();
     ok = force20 || d + bonus >= o.dc;
-    rolls.push({ d20: d, bonus, dc: o.dc, ok, text: `${ABIL_NAME[o.attr]} de ${who.name}` });
+    rolls.push({ d20: d, bonus, dc: o.dc, ok, text: `${testName(o.attr, o.skill)} de ${who.name}${helper ? ` (con ventaja: le ayuda ${helper.name.split(' ')[0]})` : ''}` });
+    // Mente táctica (guerrero de nivel 2): al fallar suma 1d10 gastando un uso de Tomar aliento, solo si así lo consigue.
+    if (!ok && who.cls === 'fighter' && who.level >= 2 && who.secondWind > 0) {
+      const extra = die(g.rng, 10);
+      if (d + bonus + extra >= o.dc) {
+        who.secondWind--;
+        ok = true;
+        rolls.push({ d20: d, bonus: bonus + extra, dc: o.dc, ok, text: `Mente táctica: ${who.name} suma ${extra} (gasta un uso de Tomar aliento)` });
+      }
+    }
     if (!ok && inspire(g, who)) {
-      d = die(g.rng, 20);
+      d = two();
       ok = d + bonus >= o.dc;
       rolls.push({ d20: d, bonus, dc: o.dc, ok, text: `Inspiración heroica: ${who.name} repite` });
     }
@@ -311,7 +343,7 @@ export function chooseOption(g: Game, id: string, i: number, charId?: string, fo
       else r.lines.push(RETRY);
     }
   }
-  const lines = [`${o.label}${who && (o.attr || o.ally) ? ` (${who.name})` : ''}.`, ...(o.cost ? [`Pagáis ${o.cost} monedas de oro.`] : []), ...(rolls.length ? [ok ? '¡Lo consigue!' : 'No lo consigue: esa vía queda cerrada.'] : []), ...r.lines];
+  const lines = [`${o.label}${who && (o.attr || o.ally || o.cls || o.species) ? ` (${who.name})` : ''}.`, ...(o.cost ? [`Pagáis ${o.cost} monedas de oro.`] : []), ...(rolls.length ? [ok ? '¡Lo consigue!' : 'No lo consigue: esa vía queda cerrada.'] : []), ...r.lines];
   // Lo que pasó se guarda para poder releerlo al volver a pisar la casilla.
   if (finished) st.said = lines;
   if (r.fight) st.fight = r.fight;
