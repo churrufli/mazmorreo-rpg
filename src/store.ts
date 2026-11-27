@@ -41,7 +41,7 @@ interface State {
   go: (s: Screen) => void;
   pickSlot: (mode: 'new' | 'load') => void;
   chooseNewSlot: (slot: number) => void;
-  create: (name: string, cls: ClassId, sp: SpeciesId, abil?: Record<Ability, number>, img?: ImgKey) => void;
+  create: (name: string, cls: ClassId, sp: SpeciesId, abil?: Record<Ability, number>, img?: ImgKey, hard?: boolean) => void;
   enterDungeon: () => void;
   loadSlot: (slot: number) => void;
   walkTo: (h: Hex) => void;
@@ -176,8 +176,8 @@ export const useStore = create<State>((set, get) => {
     closeIntro: () => (get().intro ? set({ screen: 'game', intro: undefined }) : get().enterDungeon()),
     pickSlot: slotMode => set({ slotMode, screen: 'slots' }),
     chooseNewSlot: newSlot => set({ newSlot, screen: 'create' }),
-    create: (name, cls, sp, abil, img) => {
-      const g = newGame(get().newSlot, name, cls, sp, abil, img);
+    create: (name, cls, sp, abil, img, hard) => {
+      const g = newGame(get().newSlot, name, cls, sp, abil, img, hard);
       set({ game: g, combat: undefined, queue: [], screen: 'intro', intro: undefined });
     },
     // Partida nueva: tras la imagen de entrada se empieza en el pueblo (el autor 2026-11-06); a la mina se va desde allí.

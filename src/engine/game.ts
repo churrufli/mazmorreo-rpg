@@ -109,13 +109,16 @@ export interface Game {
   elems?: Record<string, string>;
   /** Cambios de elementos por acontecimiento ya contados al jugador. */
   elemNews?: string[];
+  /** Modo desafío (elegido al crear la partida): sin las ayudas de la zona 1, combates a plena fuerza y sin poción tras una derrota. */
+  hard?: boolean;
 }
 
-export function newGame(slot: number, name: string, cls: ClassId, species: SpeciesId, abil?: Record<Ability, number>, img?: ImgKey): Game {
+export function newGame(slot: number, name: string, cls: ClassId, species: SpeciesId, abil?: Record<Ability, number>, img?: ImgKey, hard?: boolean): Game {
   // El héroe empieza solo a nivel 1: lleva una poción de curación para la primera zona (el autor 2026-11-16).
   const hero = createHero(name, cls, species, abil, img);
-  hero.items.push(newItem('potion_healing'));
+  if (!hard) hero.items.push(newItem('potion_healing'));
   return {
+    ...(hard ? { hard: true } : {}),
     slot, savedAt: Date.now(), rng: { seed: (Date.now() % 2147483647) | 0 }, variant: Math.floor(rand({ seed: Date.now() | 0 }) * 2147483647), place: 'dungeon', zone: 'z1',
     pos: [0, 0], prev: [0, 0], visited: [], party: [hero], gold: 0, done: [], found: [],
     enemyHp: {}, fled: [], won: false, log: [], elems: {},
@@ -131,6 +134,7 @@ export function afterDefeat(g: Game) {
   g.gold -= Math.floor(g.gold * 0.1);
   for (const c of g.party) if (!c.dead) Object.assign(c, { hp: c.maxHp, stable: false, deathS: 0, deathF: 0 });
   const hero = g.party.find(c => c.isHero) ?? g.party[0];
+  if (g.hard) return;
   if (hero.items.length < MAX_ITEMS) hero.items.push(newItem('potion_healing'));
   else g.chest = [...(g.chest ?? []), newItem('potion_healing')];
 }

@@ -247,7 +247,7 @@ export function sizeEncounter(g: Game, ids: string[], boss: boolean) {
   const team = g.party.filter(c => !c.dead);
   // Hondaroca empieza con el héroe solo: un único enemigo por combate,
   // y los goblins guerreros se sustituyen por esbirros.
-  if (team.length === 1 && contentById(id)?.zone === 'z1') {
+  if (team.length === 1 && contentById(id)?.zone === 'z1' && !g.hard) {
     g.encSize = { ...g.encSize, [id]: 0 };
     g.weak = [...(g.weak ?? []), id];
     const n = enemiesOf(g, id, false).reduce((m, e) => m + e.count, 0);
@@ -255,7 +255,8 @@ export function sizeEncounter(g: Game, ids: string[], boss: boolean) {
     return;
   }
   const lvl = Math.max(1, Math.min(8, Math.round(team.reduce((n, c) => n + c.level, 0) / Math.max(1, team.length))));
-  const target = (boss ? BUDGET[lvl][0] : LOW[lvl]) * team.length;
+  // Modo desafío: todos los combates con el presupuesto moderado de los jefes.
+  const target = (boss || g.hard ? BUDGET[lvl][0] : LOW[lvl]) * team.length;
   // Las decisiones que añaden o quitan un enemigo no cuentan aquí: se aplican encima (ver enemiesOf).
   const cap = maxFoesFor(team.length);
   const xpOf = (e: any) => MONSTERS[e.srd_creature]?.xp ?? 0;
