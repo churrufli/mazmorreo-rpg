@@ -6,7 +6,7 @@ import { DESIGN_ITEM, ITEMS } from '../data/srd';
 import { PLACE_LINES } from '../data/comentarios';
 import { die, pick, roll } from './rng';
 import {
-  Char, MAX_ITEMS, abilMod, allyFor, createAlly, isDown, newItem, passivePerception, raiseTo, sightRadius, shortRest, longRest, needsRest,
+  Char, MAX_ITEMS, abilMod, allyFor, createAlly, isDown, newItem, passivePerception, raiseTo, sightRadius, shortRest, shortRestGain, longRest, needsRest,
 } from './rules';
 import type { Game } from './game';
 import { bleed } from './muerte';
@@ -969,12 +969,23 @@ export function trap(g: Game, id: string, choice?: string): Ev {
   return out();
 }
 
-export function doRest(g: Game, id: string, long: boolean): string[] {
+/** Descanso corto: cada uno gasta los dados de golpe elegidos (si no se eligen, hasta curarse o quedarse sin ellos). */
+export function shortRestAll(g: Game, dice?: Record<string, number>): string[] {
+  return g.party.filter(c => !c.dead).map(c => {
+    const extra = shortRestGain(c);
+    const before = c.hitDice;
+    const hp = shortRest(c, g.rng, dice?.[c.id] ?? c.hitDice);
+    const used = before - c.hitDice;
+    return `${c.name} ${used ? `gasta ${used} ${used === 1 ? 'dado' : 'dados'} de golpe y recupera ${hp} PG` : 'no gasta dados de golpe'}${extra ? `; ${extra}` : ''}.`;
+  });
+}
+
+export function doRest(g: Game, id: string, long: boolean, dice?: Record<string, number>): string[] {
   g.done.push(id);
   if (long) g.restReady = false;
   const lines = long
     ? (g.party.forEach(longRest), ['Descanso largo: el grupo recupera todos sus PG y conjuros.'])
-    : g.party.filter(c => !c.dead).map(c => `${c.name} recupera ${shortRest(c, g.rng)} PG.`);
+    : shortRestAll(g, dice);
   g.log.push(...lines);
   return lines;
 }

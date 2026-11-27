@@ -46,6 +46,8 @@ export interface Char {
   relentless?: boolean;
   /** Brujo: ya ha usado Astucia mágica desde el último descanso largo. */
   cunning?: boolean;
+  /** Mago: ya ha usado Recuperación arcana desde el último descanso largo. */
+  arcaneRec?: boolean;
   /** Poción de fuerza de gigante bebida en el combate en curso. */
   giantStr?: number;
 }
@@ -415,16 +417,38 @@ export function chooseFeat(c: Char, f: FeatId) {
 
 /** ¿Sirve de algo descansar? Corto: alguien herido. Largo: además, conjuros o usos gastados. */
 export function needsRest(party: Char[], long: boolean): boolean {
-  return party.some(c => !c.dead && (c.hp < c.maxHp || c.secondWind < 2 || (c.cls === 'warlock' && slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0)) || (long && (
+  return party.some(c => !c.dead && (c.hp < c.maxHp || c.secondWind < 2 || ((c.cls === 'warlock' || (c.cls === 'wizard' && !c.arcaneRec)) && slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0)) || (long && (
     (c.racial ?? 0) < maxRacial(c) || !!c.cunning ||
     slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0) || c.hitDice < c.level || c.channel < maxChannel(c) || c.actionSurge < 1))));
 }
 
-export function shortRest(c: Char, rng: Rng): number {
+/** Dados de golpe que harían falta, de media, para curarse del todo (como mucho, los que le quedan). */
+export function diceToHeal(c: Char): number {
+  if (c.dead || c.hp >= c.maxHp) return 0;
+  const avg = Math.max(1, CLASSES[c.cls].hitDie / 2 + 1 + abilMod(c, 'con')) * (c.items.some(i => i.id === 'periapt_wound_closure') ? 2 : 1);
+  return Math.min(c.hitDice, Math.ceil((c.maxHp - c.hp) / avg));
+}
+
+/** Lo que recupera cada clase con un descanso corto, además de los dados de golpe (SRD 5.2.1). */
+export function shortRestGain(c: Char): string | undefined {
+  if (c.cls === 'warlock') return 'recupera todos sus espacios de conjuro';
+  if (c.cls === 'fighter') return 'recupera Tomar aliento y Acción súbita';
+  if (c.cls === 'cleric') return 'recupera Canalizar divinidad';
+  if (c.cls === 'wizard' && !c.arcaneRec && slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0)) return 'recupera espacios con Recuperación arcana';
+  if (c.species === 'orc') return 'recupera Descarga de adrenalina';
+  return undefined;
+}
+
+/**
+ * Descanso corto: gasta hasta `dice` dados de golpe (SRD 5.2.1: el jugador elige cuántos; por defecto, los que
+ * hagan falta para curarse del todo).
+ */
+export function shortRest(c: Char, rng: Rng, dice = c.hitDice): number {
   if (c.dead) return 0;
   let healed = 0;
-  // Gasta dados de golpe hasta curarse del todo o quedarse sin ellos.
-  while (c.hitDice > 0 && c.hp < c.maxHp) {
+  let left = dice;
+  while (left > 0 && c.hitDice > 0 && c.hp < c.maxHp) {
+    left--;
     c.hitDice--;
     const periapt = c.items.some(i => i.id === 'periapt_wound_closure') ? 2 : 1;
     const h = Math.max(1, roll(rng, `1d${CLASSES[c.cls].hitDie}`) + abilMod(c, 'con')) * periapt;
@@ -437,6 +461,14 @@ export function shortRest(c: Char, rng: Rng): number {
   if (c.cls !== 'paladin') c.channel = Math.min(maxChannel(c), c.channel + 1);
   // Magia del pacto: el brujo recupera todos sus espacios con un descanso corto.
   if (c.cls === 'warlock') c.slots = slotsAt(c.cls, c.level);
+  // Recuperación arcana del mago: una vez por descanso largo, espacios gastados que sumen la mitad de su nivel (redondeando arriba).
+  if (c.cls === 'wizard' && !c.arcaneRec) {
+    const max = slotsAt(c.cls, c.level);
+    let budget = Math.ceil(c.level / 2);
+    const s: Slots = [c.slots[0], c.slots[1], c.slots[2] ?? 0];
+    for (let lv = 3; lv >= 1; lv--) while (budget >= lv && s[lv - 1] < max[lv - 1]) { s[lv - 1]++; budget -= lv; }
+    if (budget < Math.ceil(c.level / 2)) { c.slots = s; c.arcaneRec = true; }
+  }
   // Descarga de adrenalina del orco: vuelve con el descanso corto.
   if (c.species === 'orc') c.racial = maxRacial(c);
   return healed;
@@ -446,7 +478,7 @@ export function longRest(c: Char) {
   if (c.dead) return;
   Object.assign(c, {
     hp: c.maxHp, hitDice: c.level, slots: slotsAt(c.cls, c.level), secondWind: 2, actionSurge: 1, channel: maxChannel(c),
-    racial: maxRacial(c), cunning: false, relentless: false, stable: false, deathS: 0, deathF: 0,
+    racial: maxRacial(c), cunning: false, arcaneRec: false, relentless: false, stable: false, deathS: 0, deathF: 0,
   });
 }
 

@@ -46,7 +46,7 @@ interface State {
   walkTo: (h: Hex) => void;
   walkStep: () => void;
   next: () => void;
-  rest: (accept: boolean) => void;
+  rest: (accept: boolean, dice?: Record<string, number>) => void;
   /** Trampa vista: quién la desactiva (id), 'pass' para pasar con cuidado o nada para volver atrás. */
   trapChoice: (choice?: string) => void;
   act: (a: Action, target?: string) => void;
@@ -228,13 +228,13 @@ export const useStore = create<State>((set, get) => {
       });
     },
     next: () => mutate(g => advance(g, get().queue.slice(1))),
-    rest: accept => {
+    rest: (accept, dice) => {
       const ev = get().queue[0];
       if (ev?.kind !== 'rest') return;
       mutate(g => {
         const q = get().queue.slice(1);
         if (!accept) { g.note = 'Puedes volver a este punto a descansar más tarde.'; return advance(g, q); }
-        const lines = doRest(g, ev.id, ev.long);
+        const lines = doRest(g, ev.id, ev.long, dice);
         return advance(g, [{ kind: 'msg', title: ev.long ? 'Descanso largo' : 'Descanso corto', lines }, ...q]);
       }, accept);
     },

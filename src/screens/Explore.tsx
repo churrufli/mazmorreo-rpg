@@ -17,7 +17,7 @@ import { firstFoe, sceneById, sceneSpent } from '../engine/escenas';
 import { dying, medic } from '../engine/muerte';
 import { townRest, rereadAt, sceneOn, sceneFight, wonCell, itemOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, hkey, passable, disarmBonus, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
-import { ITEMS } from '../data/srd';
+import { CLASSES, ITEMS } from '../data/srd';
 import { MONSTERS } from '../data/srd';
 import { Card, CardInfo, CardModal, charInfo } from '../ui/Card';
 import { Dialogue, FadeIn, HOLD_MS, Message, Portrait } from '../ui/Overlays';
@@ -27,7 +27,8 @@ import { AmbienteAgua, AmbienteAire, AmbienteSuelo, Vineta, useAmbientActive } f
 import { ElementoMapa } from '../ui/ElementoMapa';
 import { elemBlocked, elemPasses, elemState, zoneElements } from '../engine/elementos';
 import { getDevOpt } from '../storage';
-import { MAX_ITEMS, isDown, needsRest, sightRadius } from '../engine/rules';
+import { Char, MAX_ITEMS, diceToHeal, isDown, needsRest, shortRestGain, sightRadius } from '../engine/rules';
+import type { Game } from '../engine/game';
 import { FeatPicker } from '../ui/FeatPicker';
 
 const S = 30; // radio del hexágono en píxeles
@@ -206,6 +207,7 @@ export function Explore() {
   const [sheet, setSheet] = useState<string>();
   const [showLog, setShowLog] = useState(false);
   const [showOpts, setShowOpts] = useState(false);
+  const [restDice, setRestDice] = useState<Record<string, number>>({});
   const [showInfo, setShowInfo] = useState(false);
   const [roomTip, setRoomTip] = useState<{ n: number; text: string }>();
   useEffect(() => setRoomTip(undefined), [g.zone, hkey(g.pos)]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -716,9 +718,10 @@ export function Explore() {
         </Message>
       ) : null}
       {head?.kind === 'rest' ? (
-        <Message key={`r${head.id}`} title={head.name} img={restImg} lines={[head.text, head.long ? 'Descanso largo: recuperáis todos los PG y conjuros. Solo se puede usar una vez.' : 'Descanso corto: cada uno gasta dados de golpe para curarse. Solo se puede usar una vez.']}>
+        <Message key={`r${head.id}`} title={head.name} img={restImg} lines={[head.text, head.long ? 'Descanso largo: recuperáis todos los PG y conjuros. Solo se puede usar una vez.' : 'Descanso corto: elegid cuántos dados de golpe gasta cada uno (tocad para cambiarlo). Solo se puede usar una vez.']}>
+          {!head.long && needsRest(g.party, false) ? <RestDice g={g} dice={restDice} setDice={setRestDice} /> : null}
           {needsRest(g.party, head.long)
-            ? <Btn primary label="Descansar" onPress={() => rest(true)} />
+            ? <Btn primary label="Descansar" onPress={() => { rest(true, head.long ? undefined : restDice); setRestDice({}); }} />
             : <Btn off label="Descansar" sub="No es necesario: estáis descansados" onPress={() => undefined} />}
           <Btn label="Ahora no" onPress={() => rest(false)} />
         </Message>
@@ -856,3 +859,18 @@ function Ring({ img, r }: { img: ImgKey; r: number }) {
   return <SvgImage href={IMG[img]} x={-r} y={-r} width={r * 2} height={r * 2} />;
 }
 
+/**
+ * Descanso corto (SRD 5.2.1): cada uno elige cuántos dados de golpe gasta. Se propone lo que haría falta para curarse
+ * del todo; tocar el botón suma uno más hasta los que le quedan y vuelve a cero.
+ */
+function RestDice({ g, dice, setDice }: { g: Game; dice: Record<string, number>; setDice: (d: Record<string, number>) => void }) {
+  const n = (c: Char) => dice[c.id] ?? diceToHeal(c);
+  return <>
+    {g.party.filter(c => !c.dead).map(c => {
+      const gain = shortRestGain(c);
+      const sub = `${c.hp}/${c.maxHp} PG · le quedan ${c.hitDice} d${CLASSES[c.cls].hitDie}${gain ? ` · ${gain}` : ''}`;
+      return <Btn key={c.id} small label={`${c.name.split(' ')[0]}: ${n(c)} ${n(c) === 1 ? 'dado' : 'dados'}`} sub={sub} off={!c.hitDice}
+        onPress={() => setDice({ ...dice, [c.id]: n(c) >= c.hitDice ? 0 : n(c) + 1 })} />;
+    })}
+  </>;
+}
