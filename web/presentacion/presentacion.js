@@ -1,24 +1,23 @@
 // Mejora progresiva: todos los enlaces funcionan sin JavaScript.
+// La barra superior se vuelve opaca al dejar atrás la portada.
 const portada = document.querySelector('.portada');
-const barra = document.querySelector('.jugar-fijo');
-const final = document.querySelector('.acceso-jugar');
-if (portada && barra && final && 'IntersectionObserver' in window) {
-  const movil = window.matchMedia('(max-width: 719px)');
-  let portadaVisible = true;
-  let finalVisible = false;
-  const actualizar = () => {
-    barra.hidden = !movil.matches || portadaVisible || finalVisible;
-  };
-  const observador = new window.IntersectionObserver(entradas => {
-    entradas.forEach(entrada => {
-      if (entrada.target === portada) portadaVisible = entrada.isIntersecting;
-      if (entrada.target === final) finalVisible = entrada.isIntersecting;
-    });
-    actualizar();
-  });
-  observador.observe(portada);
-  observador.observe(final);
-  movil.addEventListener('change', actualizar);
+const barra = document.querySelector('.barra');
+if (portada && barra && 'IntersectionObserver' in window) {
+  new window.IntersectionObserver(([e]) => barra.classList.toggle('opaca', !e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' }).observe(portada);
+}
+
+// Motas de luz sobre la portada, como las de la pantalla principal del juego (Particles en src/screens/Menu.tsx).
+const capa = document.querySelector('.particulas');
+if (capa && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const n = window.innerWidth < 720 ? 18 : 30;
+  for (let i = 0; i < n; i++) {
+    const m = document.createElement('span');
+    const tam = 2 + Math.random() * 3;
+    const dur = 7 + Math.random() * 7;
+    m.className = 'mota';
+    m.style.cssText = `left:${Math.random() * 100}%;width:${tam}px;height:${tam}px;--dur:${dur}s;--delay:${-Math.random() * dur}s;--deriva:${(Math.random() - 0.5) * 60}px;--alto:${capa.clientHeight}px`;
+    capa.appendChild(m);
+  }
 }
 
 // Cada bloque se oculta solo cuando este script lo vigila y aparece al entrar en pantalla (sin JavaScript se ve todo).
