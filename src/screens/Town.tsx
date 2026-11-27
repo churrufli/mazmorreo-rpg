@@ -29,6 +29,8 @@ import { useEscritorio } from '../ui/escritorio';
 type Place = 'menu' | 'tienda' | 'templo' | 'posada' | 'puerta' | 'diario' | 'galeria';
 const HEAL_COST = 10;
 const REVIVE_COST = 50;
+/** Quitar la maldición de la momia (Levantar maldición del SRD). */
+const CURSE_COST = 30;
 /** El tendero paga la mitad; por los objetos mágicos (100 po o más), la cuarta parte: si no, sobra oro. */
 export const sellPrice = (value: number) => Math.floor(value / (value >= 100 ? 4 : 2));
 
@@ -266,13 +268,16 @@ export function Town() {
           <Panel>
             <T>El sacerdote cura heridas por {HEAL_COST} po por persona y devuelve la vida a los caídos por {REVIVE_COST} po.</T>
             {g.party.map(c => c.dead ? (
-              <Btn key={c.id} label={`Resucitar a ${c.name}`} sub={`${REVIVE_COST} po`} disabled={!afford(REVIVE_COST)}
-                onPress={() => { edit(gg => { const x = gg.party.find(y => y.id === c.id)!; gg.gold -= pay(REVIVE_COST); x.dead = false; longRest(x); }, true); say(`${c.name} vuelve a la vida.`); }} />
+              <Btn key={c.id} label={c.petrified ? `Devolver a ${c.name} a la carne` : `Resucitar a ${c.name}`} sub={`${REVIVE_COST} po`} disabled={!afford(REVIVE_COST)}
+                onPress={() => { edit(gg => { const x = gg.party.find(y => y.id === c.id)!; gg.gold -= pay(REVIVE_COST); x.dead = false; x.petrified = false; longRest(x); }, true); say(c.petrified ? `La piedra se agrieta: ${c.name} vuelve a moverse.` : `${c.name} vuelve a la vida.`); }} />
+            ) : c.cursed ? (
+              <Btn key={c.id} label={`Quitar la maldición a ${c.name}`} sub={`${c.hp}/${c.maxHp} PG · ${CURSE_COST} po · queda curado`} disabled={!afford(CURSE_COST)}
+                onPress={() => { edit(gg => { const x = gg.party.find(y => y.id === c.id)!; gg.gold -= pay(CURSE_COST); x.cursed = false; x.hp = x.maxHp; }, true); say(`El sacerdote rompe la maldición de ${c.name}.`); }} />
             ) : c.hp < c.maxHp ? (
               <Btn key={c.id} label={`Curar a ${c.name}`} sub={`${c.hp}/${c.maxHp} PG · ${HEAL_COST} po`} disabled={!afford(HEAL_COST)}
                 onPress={() => { edit(gg => { const x = gg.party.find(y => y.id === c.id)!; gg.gold -= pay(HEAL_COST); x.hp = x.maxHp; }, true); say(`${c.name} queda curado.`); }} />
             ) : null)}
-            {g.party.every(c => !c.dead && c.hp >= c.maxHp) ? <Text style={st.itemDesc}>No es necesario: nadie está herido ni ha caído.</Text> : null}
+            {g.party.every(c => !c.dead && !c.cursed && c.hp >= c.maxHp) ? <Text style={st.itemDesc}>No es necesario: nadie está herido ni ha caído.</Text> : null}
           </Panel>
         ) : null}
         {place === 'posada' ? (

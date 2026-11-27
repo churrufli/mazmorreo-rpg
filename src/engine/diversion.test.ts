@@ -20,7 +20,7 @@ const hero = (cb: Combat) => cb.units.find(u => u.side === 'party' && !['tiko', 
 
 describe('objetivos nuevos', () => {
   it('todos tienen su combate, un premio que existe y, si piden a alguien, ese enemigo está en el encuentro', () => {
-    const json = [require('../data/hondaroca.json'), require('../data/corazon.json'), require('../data/montana.json')];
+    const json = [require('../data/hondaroca.json'), require('../data/corazon.json'), require('../data/montana.json'), require('../data/tumba.json')];
     const encs = json.flatMap((d: any) => d.zones.flatMap((z: any) => z.rooms.flatMap((r: any) => r.contents))).filter((c: any) => c.type === 'encounter');
     for (const goal of GOALS) {
       const enc = encs.find((c: any) => c.id === goal.enc);
@@ -139,7 +139,7 @@ describe('vías de los aliados en las escenas', () => {
   });
 
   it('nunca son la única forma de resolver la escena', () => {
-    const json = [require('../data/hondaroca.json'), require('../data/corazon.json'), require('../data/montana.json')];
+    const json = [require('../data/hondaroca.json'), require('../data/corazon.json'), require('../data/montana.json'), require('../data/tumba.json')];
     const scenes = json.flatMap((d: any) => d.zones.flatMap((z: any) => z.rooms.flatMap((r: any) => r.contents))).filter((c: any) => c.type === 'scene');
     const withAlly = scenes.filter((c: any) => c.options.some((o: any) => o.ally));
     expect(withAlly.length).toBeGreaterThanOrEqual(10);

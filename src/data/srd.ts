@@ -316,6 +316,10 @@ export interface MonsterAttack {
   paralyze?: { dc: number };
   /** Daño cuando el monstruo está maltrecho (la mitad de sus PG o menos), como el enjambre de murciélagos. */
   bloodied?: string;
+  /** Mirada petrificadora del basilisco: sin daño; al fallar, apresado y, si vuelve a fallar, petrificado. */
+  petrify?: boolean;
+  /** Puño putrefacto de la momia: deja maldito al objetivo (no recupera PG hasta que se le quite en el templo). */
+  curse?: boolean;
 }
 
 export interface MonsterDef {
@@ -340,6 +344,8 @@ export interface MonsterDef {
   reach?: boolean;
   /** Nudo de raíz: mientras viva alguno, el jefe resiste todo salvo psíquico y se regenera. */
   knot?: boolean;
+  /** Dividirse (SRD 5.2.1): con daño cortante o de relámpago y 10 PG o más, se parte en dos con la mitad de PG cada una. */
+  split?: boolean;
 }
 
 const goblinSaves = { str: -1, dex: 2, con: 0, int: 0, wis: -1, cha: -1 };
@@ -745,25 +751,28 @@ Object.assign(MONSTERS, {
   },
   Mummy: {
     name: 'Momia', img: 'momia', ac: 11, hp: 58, dexMod: -1, xp: 700, ai: 'undead', noSleep: true, multi: 2, vuln: ['fuego'], immune: ['necrótico', 'veneno'],
-    attacks: [{ name: 'Puño putrefacto', bonus: 5, dice: '1d10+3', type: 'contundente', extra: { dice: '3d6', type: 'necrótico' } }],
+    attacks: [{ name: 'Puño putrefacto', bonus: 5, dice: '1d10+3', type: 'contundente', extra: { dice: '3d6', type: 'necrótico' }, curse: true }],
     saves: { str: 3, dex: -1, con: 2, int: -2, wis: 3, cha: 1 },
   },
   'Ochre Jelly': {
-    name: 'Gelatina ocre', img: 'cieno_ocre', ac: 8, hp: 52, dexMod: -2, xp: 450, ai: 'beast', noSleep: true, resist: ['ácido'], immune: ['relámpago', 'cortante'],
+    name: 'Gelatina ocre', img: 'cieno_ocre', ac: 8, hp: 52, dexMod: -2, xp: 450, ai: 'beast', noSleep: true, resist: ['ácido'], immune: ['relámpago', 'cortante'], split: true,
     attacks: [{ name: 'Pseudópodo', bonus: 4, dice: '3d6+2', type: 'ácido' }],
     saves: { str: 2, dex: -2, con: 2, int: -4, wis: -2, cha: -5 },
   },
   'Black Pudding': {
-    name: 'Pudin negro', img: 'pudin_negro', ac: 7, hp: 68, dexMod: -3, xp: 1100, ai: 'beast', noSleep: true, immune: ['ácido', 'frío', 'relámpago', 'cortante'],
+    name: 'Pudin negro', img: 'pudin_negro', ac: 7, hp: 68, dexMod: -3, xp: 1100, ai: 'beast', noSleep: true, immune: ['ácido', 'frío', 'relámpago', 'cortante'], split: true,
     attacks: [{ name: 'Pseudópodo disolvente', bonus: 5, dice: '4d6+3', type: 'ácido' }],
     saves: { str: 3, dex: -3, con: 3, int: -5, wis: -2, cha: -5 },
   },
-  // Simplificación de la mirada petrificadora (SRD: acción adicional, recarga 4–6, apresado y luego petrificado):
-  // quien recibe el mordisco y falla la salvación de Constitución CD 12 queda paralizado.
-  // Sin implementar del SRD: mirada espantosa de la momia, Dividirse de la gelatina ocre y Forma corrosiva del pudin negro.
+  // Mirada petrificadora del SRD 5.2.1 (recarga 4–6): salvación de Constitución CD 12 de la vanguardia; quien falla
+  // queda apresado y, si vuelve a fallar al acabar su turno, petrificado (hasta que el templo le devuelva a la carne).
+  // Sin implementar del SRD: mirada espantosa de la momia y Forma corrosiva del pudin negro.
   Basilisk: {
     name: 'Basilisco', img: 'basilisco', ac: 15, hp: 52, dexMod: -1, xp: 700, ai: 'beast',
-    attacks: [{ name: 'Mordisco', bonus: 5, dice: '2d6+3', type: 'perforante', extra: { dice: '2d6', type: 'veneno' }, paralyze: { dc: 12 } }],
+    attacks: [
+      { name: 'Mordisco', bonus: 5, dice: '2d6+3', type: 'perforante', extra: { dice: '2d6', type: 'veneno' } },
+      { name: 'Mirada petrificadora', bonus: 0, dice: '0', type: 'psíquico', save: { abil: 'con', dc: 12, half: false, area: true, recharge: 4 }, petrify: true },
+    ],
     saves: { str: 3, dex: -1, con: 2, int: -4, wis: -1, cha: -2 },
   },
   Incubus: {

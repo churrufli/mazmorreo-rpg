@@ -10,9 +10,10 @@ export interface Goal {
   text: string;
   /**
    * kill: derribar a «who» antes del asalto «by»; win: ganar antes del asalto «by»; noflee: que no huya nadie;
-   * spare: rendir a «who» sin matarlo; first: que el primer enemigo en caer sea «who»; nodown: que nadie del grupo caiga a 0 PG.
+   * spare: rendir a «who» sin matarlo; first: que el primer enemigo en caer sea «who»; nodown: que nadie del grupo caiga a 0 PG;
+   * nosplit: que no se divida ningún cieno; noshriek: que el hongo chillón no llegue a chillar; nostone: que nadie quede petrificado.
    */
-  kind: 'kill' | 'win' | 'noflee' | 'spare' | 'first' | 'nodown';
+  kind: 'kill' | 'win' | 'noflee' | 'spare' | 'first' | 'nodown' | 'nosplit' | 'noshriek' | 'nostone';
   who?: string;
   by?: number;
   /** Si se falla por tiempo, «who» se marcha con esta frase. */
@@ -52,4 +53,8 @@ export const GOALS: Goal[] = [
   { enc: 'm1_e03', kind: 'nodown', text: 'Que la manada no derribe a nadie del grupo.', ok: 'La manada no ha derribado a nadie. En la cornisa hay un zurrón con una poción.', gold: 10, items: ['potion_healing'] },
   { enc: 'm3_e02', kind: 'nodown', text: 'Que nadie del grupo caiga a 0 PG.', ok: 'Seguís todos en pie. Entre las cadenas hay un frasco de agua bendita.', gold: 20, items: ['holy_water'] },
   { enc: 'm4_e02', kind: 'nodown', text: 'Que nadie del grupo caiga a 0 PG junto al lago.', ok: 'Nadie ha caído. En la orilla hay oro y una poción.', gold: 25, items: ['potion_healing'] },
+  // La Tumba de los Reyes Serpiente (2026-11-27): sus criaturas tienen reglas propias del SRD.
+  { enc: 's2_e06', kind: 'nosplit', text: 'Que el pudin negro no se divida: nada de armas cortantes ni relámpagos contra él.', ok: 'El pudin se deshace entero. Entre sus restos brilla algo que no ha podido disolver.', gold: 25, items: ['alchemists_fire'] },
+  { enc: 's3_e05', kind: 'nostone', text: 'Que el basilisco no petrifique a nadie.', ok: 'Nadie ha quedado de piedra. Junto al basilisco hay restos de otros que no tuvieron tanta suerte.', gold: 20, items: ['potion_healing'] },
+  { enc: 's4_e01', kind: 'noshriek', text: 'Que el hongo chillón no llegue a chillar: acabad con él en cuanto podáis.', ok: 'Nadie ha oído nada. Los goblins llevaban un frasco robado.', gold: 10, items: ['potion_healing'] },
 ];

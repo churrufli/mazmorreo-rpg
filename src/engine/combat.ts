@@ -118,6 +118,13 @@ export interface Unit {
   dmgBy?: Record<string, number>;
   /** Xiximanter acaba de lanzar su bola de fuego: no anuncia otra este turno. */
   cool?: boolean;
+  /** Mirada del basilisco: apresado por la piedra; si falla otra salvación al acabar su turno, queda petrificado. */
+  stoning?: boolean;
+  petrified?: boolean;
+  /** Maldito por la momia: no recupera PG. */
+  cursed?: boolean;
+  /** Veces que se ha dividido (gelatina ocre y pudin negro: cada mitad es un tamaño menor; las pequeñas ya no se dividen). */
+  splits?: number;
 }
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
@@ -289,7 +296,11 @@ function endConcentration(cb: Combat, caster: Unit) {
 
 export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: DmgType, from: Unit, crit = false) {
   const m = target.mon ? MONSTERS[target.mon] : undefined;
-  if (m?.immune?.includes(type)) { say(cb, `${target.name} es inmune al daño de ${type}.`, 'info'); return; }
+  if (m?.immune?.includes(type)) {
+    say(cb, `${target.name} es inmune al daño de ${type}.`, 'info');
+    if (m.split && (type === 'cortante' || type === 'relámpago')) split(g, cb, target);
+    return;
+  }
   if (type === 'fuego' && target.oiled) { target.oiled = false; amount += 5; say(cb, `El aceite prende: ${target.name} recibe 5 de fuego más.`, 'info'); }
   if (m?.resist?.includes(type)) amount = Math.floor(amount / 2);
   if (target.res?.includes(type)) amount = Math.floor(amount / 2);
@@ -479,6 +490,7 @@ function bossRound(g: Game, cb: Combat) {
  * (el autor 2026-11-25). Llega aunque el grupo sea pequeño: el hongo no ataca, así que el combate no se endurece.
  */
 function shriek(g: Game, cb: Combat, u: Unit) {
+  if (goalOpen(cb, 'noshriek')) goalDone(cb, false);
   if (u.shrieked) { say(cb, `${u.name} sigue chillando.`, 'info'); return; }
   u.shrieked = true;
   u.shriekAt = cb.round;
@@ -502,8 +514,37 @@ function shriekCall(g: Game, cb: Combat) {
   }
 }
 
+/** Dividirse (gelatina ocre y pudin negro): con 10 PG o más se parte en dos, cada mitad con la mitad de los PG. */
+function split(g: Game, cb: Combat, u: Unit) {
+  if (u.hp < 10 || (u.splits ?? 0) >= 2) return;
+  const foes = cb.units.filter(x => x.side === 'enemy' && alive(x));
+  const row: Row | undefined = rowSpace(cb, 'enemy', u.row) ? u.row : rowSpace(cb, 'enemy', u.row === 'front' ? 'back' : 'front') ? (u.row === 'front' ? 'back' : 'front') : undefined;
+  if (!row || foes.length >= MAX_ROW * 2) return;
+  const half = Math.floor(u.hp / 2);
+  u.hp = u.maxHp = half;
+  u.splits = (u.splits ?? 0) + 1;
+  const v: Unit = { ...u, key: `${u.key}_d${cb.units.length}`, row, plan: undefined, init: u.init - 0.01, recharge: {}, dmgBy: undefined };
+  cb.units.push(v);
+  cb.order.splice(cb.order.indexOf(u.key) + 1, 0, v.key);
+  if (goalOpen(cb, 'nosplit')) goalDone(cb, false);
+  say(cb, `¡${u.name} se divide en dos! Cada mitad tiene ${half} PG.`, 'big');
+}
+
+/** Al acabar su turno, quien se está volviendo de piedra repite la salvación: si falla, queda petrificado. */
+function stoneSave(g: Game, cb: Combat, u: Unit) {
+  if (saveRoll(g, cb, u, 'con', 12, 'Constitución')) { u.stoning = false; say(cb, `${u.name} se sacude la piedra y vuelve a moverse.`, 'info'); return; }
+  u.stoning = false;
+  u.petrified = u.dead = true;
+  u.hp = 0;
+  u.plan = undefined;
+  say(cb, `${u.name} queda petrificado. Solo el templo podrá devolverle a la carne.`, 'big');
+  if (goalOpen(cb, 'nostone')) goalDone(cb, false);
+  if (u.side === 'party' && goalOpen(cb, 'nodown')) goalDone(cb, false);
+}
+
 function heal(cb: Combat, u: Unit, amount: number) {
   if (u.dead) return;
+  if (u.cursed) { say(cb, `La maldición de la momia impide curar a ${u.name}.`, 'info'); return; }
   const wasDown = u.hp <= 0;
   const before = Math.max(0, u.hp);
   u.hp = Math.min(u.maxHp, before + amount);
@@ -681,7 +722,7 @@ export function startCombat(g: Game, encounterId: string): Combat {
     if (c.dead) return;
     units.push({
       key: `p_${c.id}`, side: 'party', charId: c.id, name: c.name, img: c.img, hp: c.hp, maxHp: c.maxHp,
-      ac: armorClass(c), row: c.row, init: 0, deathS: c.deathS, deathF: c.deathF, stable: c.stable,
+      ac: armorClass(c), row: c.row, init: 0, deathS: c.deathS, deathF: c.deathF, stable: c.stable, cursed: c.cursed,
     });
   });
   const cb: Combat = {
@@ -808,6 +849,7 @@ export const autoTurn = (cb: Combat) => {
 export function endTurn(g: Game, cb: Combat) {
   const u = current(cb);
   if (u.side === 'enemy' && isBoss(u) && conscious(u)) bossWarn(g, cb, u);
+  if (u.stoning && conscious(u)) stoneSave(g, cb, u);
   if (u.paralyzed && conscious(u)) {
     if (saveRoll(g, cb, u, 'con', 10, 'Constitución')) { u.paralyzed = false; say(cb, `${u.name} ya puede moverse.`, 'info'); }
   }
@@ -860,6 +902,8 @@ function syncParty(g: Game, cb: Combat) {
   for (const u of cb.units) if (u.side === 'party') {
     const c = charOf(g, u);
     Object.assign(c, { hp: Math.max(0, u.hp), dead: !!u.dead, deathS: u.deathS ?? 0, deathF: u.deathF ?? 0, stable: !!u.stable, row: u.row });
+    if (u.petrified) c.petrified = true;
+    if (u.cursed) c.cursed = true;
   }
 }
 
@@ -882,7 +926,7 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
     msgs.push(why);
     cb.endLine = lastEvent?.replace(/[.!¡]+$/g, '') ?? why;
     const open = cb.goal?.status === 'open' ? cb.goal.g : undefined;
-    if (open) goalDone(cb, open.kind === 'noflee' || open.kind === 'nodown' || (open.kind === 'win' && cb.round < (open.by ?? 99)));
+    if (open) goalDone(cb, ['noflee', 'nodown', 'nosplit', 'noshriek', 'nostone'].includes(open.kind) || (open.kind === 'win' && cb.round < (open.by ?? 99)));
     let xp = cb.bonusXp ?? 0, gold = 0;
     for (const id of cb.encounters) {
       const e = encounterById(id)!;
@@ -1593,6 +1637,19 @@ export function enemyTurn(g: Game, cb: Combat) {
     if (u.mon === DRAGON && u.weakBreath) { u.weakBreath = false; dmg = Math.floor(dmg / 2); say(cb, 'El aire templado de las válvulas debilita el aliento: hace la mitad de daño.', 'info'); }
     const hit = u.mon === DRAGON ? cb.units.filter(x => p.targets.includes(x.key) && conscious(x)) : cb.units.filter(x => x.side === 'party' && conscious(x) && x.row === 'front');
     if (!hit.length) say(cb, 'El golpe no alcanza a nadie: os habíais apartado a tiempo.', 'info');
+    if (area.petrify) {
+      for (const t of hit.filter(x => !x.stoning)) {
+        let ok = saveRoll(g, cb, t, 'con', area.save!.dc, 'Constitución');
+        // Espejo de acero: se le mira por el reflejo y la salvación se repite.
+        if (!ok && t.side === 'party' && charOf(g, t).items.some(i => i.id === 'steel_mirror')) {
+          say(cb, `${t.name} aparta la vista y mira al basilisco en el espejo de acero.`, 'info');
+          ok = saveRoll(g, cb, t, 'con', area.save!.dc, 'Constitución');
+        }
+        if (!ok) { t.stoning = true; say(cb, `${t.name} empieza a volverse de piedra: queda apresado.`, 'big'); }
+      }
+      endTurn(g, cb);
+      return;
+    }
     for (const t of hit) {
       const ok = saveRoll(g, cb, t, area.save!.abil, area.save!.dc, area.save!.abil === 'con' ? 'Constitución' : 'Destreza');
       applyDamage(g, cb, t, ok ? Math.floor(dmg / 2) : dmg, area.type, u);
@@ -1644,6 +1701,10 @@ export function enemyTurn(g: Game, cb: Combat) {
     const a = atks[i % atks.length];
     // Maltrecho (la mitad de sus PG o menos): algunos monstruos hacen menos daño (SRD 5.2.1).
     const hit = attack(g, cb, u, t, toOpts(a.bloodied && u.hp <= u.maxHp / 2 ? { ...a, dice: a.bloodied } : a));
+    if (hit && a.curse && t.side === 'party' && !t.dead && !t.cursed) {
+      t.cursed = true;
+      say(cb, `${t.name} queda maldito por la momia: no podrá recuperar PG hasta que el templo le quite la maldición.`, 'big');
+    }
     if (hit && u.mon === 'Treant' && u.half && conscious(t) && !t.restrained) {
       t.restrained = 13;
       say(cb, `Las raíces apresan a ${t.name} (Fuerza CD 13 para soltarse).`, 'big');

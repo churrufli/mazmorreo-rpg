@@ -48,6 +48,10 @@ export interface Char {
   cunning?: boolean;
   /** Mago: ya ha usado Recuperación arcana desde el último descanso largo. */
   arcaneRec?: boolean;
+  /** Maldición de la momia: no recupera PG hasta que el templo se la quite. */
+  cursed?: boolean;
+  /** Petrificado por el basilisco: no puede luchar hasta que el templo le devuelva a la carne. */
+  petrified?: boolean;
   /** Poción de fuerza de gigante bebida en el combate en curso. */
   giantStr?: number;
 }
@@ -446,7 +450,7 @@ export function shortRestGain(c: Char): string | undefined {
 export function shortRest(c: Char, rng: Rng, dice = c.hitDice): number {
   if (c.dead) return 0;
   let healed = 0;
-  let left = dice;
+  let left = c.cursed ? 0 : dice;
   while (left > 0 && c.hitDice > 0 && c.hp < c.maxHp) {
     left--;
     c.hitDice--;
@@ -477,7 +481,7 @@ export function shortRest(c: Char, rng: Rng, dice = c.hitDice): number {
 export function longRest(c: Char) {
   if (c.dead) return;
   Object.assign(c, {
-    hp: c.maxHp, hitDice: c.level, slots: slotsAt(c.cls, c.level), secondWind: 2, actionSurge: 1, channel: maxChannel(c),
+    hp: c.cursed ? c.hp : c.maxHp, hitDice: c.level, slots: slotsAt(c.cls, c.level), secondWind: 2, actionSurge: 1, channel: maxChannel(c),
     racial: maxRacial(c), cunning: false, arcaneRec: false, relentless: false, stable: false, deathS: 0, deathF: 0,
   });
 }
