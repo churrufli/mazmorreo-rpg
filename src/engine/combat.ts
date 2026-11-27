@@ -6,7 +6,7 @@ import { ABIL_NAME, Ability, CLASSES, DmgType, draconic, ITEMS, MONSTERS, Monste
 import B from '../data/corazon.json';
 import { die, pick, rand, roll, tray } from './rng';
 import {
-  Char, abilMod, armorClass, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft, slotsAt, score,
+  Char, abilMod, armorClass, elvenBoots, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft, slotsAt, score,
 } from './rules';
 import { prof } from '../data/srd';
 import type { Game } from './game';
@@ -1135,7 +1135,11 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
     const adv = ADVS[advOf(g.zone)];
     xp = Math.round(xp * (adv.xpScale ?? 1));
     tally(g, { kills: cb.units.filter(u => u.side === 'enemy' && u.dead).length, gold, xp: alive0 ? Math.floor(xp / alive0) : 0 });
-    msgs.push(...gainXp(g.party, xp, adv.level));
+    const spare = { xp: 0 };
+    msgs.push(...gainXp(g.party, xp, adv.level, spare));
+    // Con el nivel ya al tope, la experiencia de más se convierte en botín (1 mo por cada 10 PX) para que explorar compense.
+    const extra = Math.floor(spare.xp / 10);
+    if (extra) { g.gold += extra; msgs.push(`Lo que ya no os hace subir de nivel se queda en botín: ${extra} monedas de oro.`); }
     // Astucia mágica (brujo de nivel 2): tras el combate, un rito de un minuto devuelve la mitad de los espacios de pacto.
     for (const c of g.party.filter(x => !x.dead && x.hp > 0 && x.cls === 'warlock' && x.level >= 2 && !x.cunning)) {
       const full = slotsAt(c.cls, c.level), max = full[0] + full[1] + full[2];
@@ -1697,7 +1701,7 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
     case 'surge': c.actionSurge--; cb.acted = false; say(cb, `${u.name} usa Oleada de acción.`, 'info'); break;
     case 'hide': {
       // SRD 5.2.1: Sigilo (DES + pericia del pícaro) CD 15; el resultado es lo que tendrá que igualar la Percepción de quien le busque.
-      const d20 = die(g.rng, 20), total = d20 + abilMod(c, 'dex') + prof(c.level) * 2, ok = total >= 15;
+      const d20 = elvenBoots(c) ? Math.max(die(g.rng, 20), die(g.rng, 20)) : die(g.rng, 20), total = d20 + abilMod(c, 'dex') + prof(c.level) * 2, ok = total >= 15;
       setRoll(cb, { d20, total, label: `Sigilo de ${u.name} · CD 15`, ok });
       if (ok) { u.hidden = total; say(cb, `${u.name} se esconde (Sigilo ${total}): ventaja en su próximo ataque.`, 'info'); }
       else say(cb, `${u.name} intenta esconderse, pero no lo consigue (Sigilo ${total} contra CD 15).`, 'info');

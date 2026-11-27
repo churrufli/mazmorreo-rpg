@@ -3182,12 +3182,12 @@
               "lock_dc": null,
               "gold": 24,
               "item": {
-                "id": "potion_greater_healing_1",
-                "name": "Poción de curación mayor",
-                "srd_item": "Potion of Greater Healing",
+                "id": "luckstone",
+                "name": "Piedra de la suerte",
+                "srd_item": "Stone of Good Luck (Luckstone)",
                 "rarity": "Uncommon",
                 "magical": true,
-                "description": "Recupera 4d4 + 4 puntos de golpe. Es un recurso de curación útil para cualquier integrante del grupo."
+                "description": "+1 a las pruebas de característica y a las tiradas de salvación."
               }
             },
             {

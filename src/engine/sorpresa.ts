@@ -6,7 +6,7 @@ import { bossEncounter, encounterById, Ev, ShownRoll } from './dungeon';
 import { enemiesOf } from './escenas';
 import type { Game } from './game';
 import { die } from './rng';
-import { Char, isDown, skillBonus } from './rules';
+import { Char, elvenBoots, isDown, skillBonus } from './rules';
 
 /** ¿Se puede elegir cómo empezar este combate? No con el jefe ni con un grupo del que ya huisteis. */
 export const approachable = (g: Game, id: string) =>
@@ -31,7 +31,7 @@ export function sneak(g: Game, id: string): { ok: boolean; rolls: ShownRoll[] } 
   const dc = sneakDc(g, id);
   const up = g.party.filter(c => !isDown(c));
   const rolls = up.map(c => {
-    const d = die(g.rng, 20), bonus = skillBonus(c, 'stealth');
+    const d = elvenBoots(c) ? Math.max(die(g.rng, 20), die(g.rng, 20)) : die(g.rng, 20), bonus = skillBonus(c, 'stealth');
     return { d20: d, bonus, dc, ok: d + bonus >= dc, text: `Sigilo de ${c.name}` };
   });
   const ok = rolls.filter(r => r.ok).length * 2 >= up.length;

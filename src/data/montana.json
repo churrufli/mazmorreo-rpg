@@ -1565,10 +1565,12 @@
               "lock_dc": null,
               "gold": 5,
               "item": {
-                "id": "silver_piece",
-                "name": "Broche del centinela",
-                "srd_item": null,
-                "description": "Broche de plata de un vigía enano."
+                "id": "elven_boots",
+                "name": "Botas élficas",
+                "srd_item": "Boots of Elvenkind",
+                "rarity": "Uncommon",
+                "magical": true,
+                "description": "Ventaja en las pruebas de Sigilo."
               }
             },
             {

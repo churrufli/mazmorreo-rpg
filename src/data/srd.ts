@@ -258,6 +258,9 @@ export const ITEMS: Record<string, ItemDef> = {
   ring_warmth: { name: 'Anillo de calor', kind: 'wondrous', img: 'anillo_calor', value: 500, desc: 'Quien lo lleva tiene resistencia al daño de frío.', resistCold: true },
   cloak_protection: { name: 'Capa de protección', kind: 'wondrous', img: 'capa_proteccion', value: 500, desc: 'Quien la lleva gana +1 a la CA y a las tiradas de salvación.' },
   relic_dwarf: { name: 'Sello del Deshielo', kind: 'gear', img: 'sello_deshielo', value: 250, desc: 'Medallón enano de hierro y ámbar, prueba del tributo y de la paz recuperada. Trofeo: se guarda en el baúl de la posada.' },
+  // Objetos mágicos del SRD con su historia, en los cofres que se encuentran por un secreto (2026-11-27).
+  luckstone: { name: 'Piedra de la suerte', kind: 'wondrous', img: 'reliquia', value: 400, desc: 'Ágata pulida que un capataz enano llevaba siempre en el bolsillo: «la mina me la debe». +1 a las pruebas de característica y a las tiradas de salvación.' },
+  elven_boots: { name: 'Botas élficas', kind: 'wondrous', img: 'botas_invernales', value: 400, desc: 'Botas de cuero fino de un centinela que nunca hacía ruido en la nieve. Ventaja en las pruebas de Sigilo (también al esconderse).' },
   silver_piece: { name: 'Broche del centinela', kind: 'gear', img: 'reliquia', value: 20, desc: 'Broche de plata de un vigía enano. Tesoro: se puede vender.' },
   old_map: { name: 'Plano de los túneles', kind: 'gear', img: 'pergamino_escudo', value: 15, desc: 'Plano deteriorado de las galerías de la fortaleza. Tesoro: se puede vender.' },
   gem_ice: { name: 'Cuarzo glaciar', kind: 'gear', img: 'cristal', value: 50, desc: 'Cristal helado que nunca se derrite. Tesoro: se puede vender.' },

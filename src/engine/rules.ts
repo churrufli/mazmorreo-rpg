@@ -275,7 +275,7 @@ export const weapons = (c: Char) => {
 };
 
 export function saveBonus(c: Char, a: Ability): number {
-  return abilMod(c, a) + (CLASSES[c.cls].saves.includes(a) ? prof(c.level) : 0) + (c.items.some(i => i.id === 'cloak_protection') ? 1 : 0);
+  return abilMod(c, a) + (CLASSES[c.cls].saves.includes(a) ? prof(c.level) : 0) + (c.items.some(i => i.id === 'cloak_protection') ? 1 : 0) + luck(c);
 }
 
 export const spellDc = (c: Char) => 8 + prof(c.level) + abilMod(c, CLASSES[c.cls].spell ?? 'int');
@@ -293,7 +293,11 @@ export function skillProf(c: Char, s: Skill): 0 | 1 | 2 {
   return CLASS_SKILLS[c.cls].includes(s) ? 1 : 0;
 }
 /** Bonificador de una prueba de habilidad: su característica más la competencia (doble con pericia). */
-export const skillBonus = (c: Char, s: Skill) => abilMod(c, SKILLS[s].abil) + skillProf(c, s) * prof(c.level);
+export const skillBonus = (c: Char, s: Skill) => abilMod(c, SKILLS[s].abil) + skillProf(c, s) * prof(c.level) + luck(c);
+/** Piedra de la suerte (SRD): +1 a las pruebas de característica y a las salvaciones. */
+const luck = (c: Char) => (c.items.some(i => i.id === 'luckstone') ? 1 : 0);
+/** Botas élficas (SRD): ventaja en las pruebas de Sigilo. */
+export const elvenBoots = (c: Char) => c.items.some(i => i.id === 'elven_boots');
 
 /** La niebla se ve a 2 casillas si alguien lleva antorcha o sabe el truco Luz (clérigo o mago). */
 export const sightRadius = (party: Char[]) =>
@@ -303,7 +307,8 @@ export const sightRadius = (party: Char[]) =>
  * Reparte PX entre los vivos y sube de nivel. Devuelve los mensajes.
  * `cap` es el nivel objetivo de la aventura: dentro de ella nadie lo pasa y los PX sobrantes se pierden.
  */
-export function gainXp(party: Char[], total: number, cap = MAX_LEVEL): string[] {
+/** `spare` recoge los PX que se pierden por el tope de la aventura (se pagan en oro al ganar un combate). */
+export function gainXp(party: Char[], total: number, cap = MAX_LEVEL, spare?: { xp: number }): string[] {
   const alive = party.filter(c => !c.dead);
   if (!alive.length || !total) return [];
   const each = Math.floor(total / alive.length);
@@ -312,7 +317,7 @@ export function gainXp(party: Char[], total: number, cap = MAX_LEVEL): string[] 
   let capped = false;
   for (const c of alive) {
     const n = Math.max(0, Math.min(each, top - c.xp));
-    if (n < each && c.level <= cap) capped = true;
+    if (n < each && c.level <= cap) { capped = true; if (spare) spare.xp += each - n; }
     msgs.push(...addXp(c, n));
   }
   if (capped) msgs.push(`Nivel ${cap} es el máximo en esta aventura: los PX de más no cuentan.`);
