@@ -120,7 +120,8 @@
                   },
                   "fail": {
                     "text": "La cuerda se pierde entre las hojas."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Soltar el lazo entre las hojas",
@@ -133,7 +134,8 @@
                   "fail": {
                     "text": "El lazo se tensa y os hiere.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "sleight"
                 },
                 {
                   "label": "Estudiar los nudos junto a las raíces",
@@ -145,6 +147,17 @@
                   },
                   "fail": {
                     "text": "El nudo queda trabado entre las raíces."
+                  },
+                  "skill": "nature"
+                },
+                {
+                  "label": "Desmontar el lazo como un cazador",
+                  "cls": [
+                    "ranger"
+                  ],
+                  "ok": {
+                    "text": "Aflojáis el nudo que mantiene tenso el lazo. La trampa del camino queda desactivada.",
+                    "open": "b1_t01"
                   }
                 }
               ],
@@ -334,7 +347,8 @@
                   },
                   "fail": {
                     "text": "No logras cerrar la herida, pero le ayudas a llegar hasta la linde."
-                  }
+                  },
+                  "skill": "medicine"
                 },
                 {
                   "label": "Indicarle la salida",
@@ -438,7 +452,8 @@
                   "fail": {
                     "text": "Desconfía y huye gritando. El ruido atrae a otro lobo hacia la barricada.",
                     "add": "b1_e04"
-                  }
+                  },
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Dejarle marchar",
@@ -446,7 +461,8 @@
                     "text": "Se aleja cojeando entre los helechos."
                   }
                 }
-              ]
+              ],
+              "margin": true
             }
           ]
         },
@@ -514,7 +530,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Escuchar el eco junto al tronco",
@@ -526,7 +543,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             }
@@ -584,7 +602,8 @@
                 }
               ],
               "gold_drop": 9,
-              "xp_total": 75
+              "xp_total": 75,
+              "terrain": "smoke"
             },
             {
               "type": "dialogue",
@@ -684,7 +703,8 @@
                   "fail": {
                     "text": "Los troncos caen con estrépito. Lográis sacarlo, pero el ruido atrae a otro lobo.",
                     "add": "b1_e04"
-                  }
+                  },
+                  "skill": "athletics"
                 }
               ]
             }
@@ -814,7 +834,8 @@
                   "fail": {
                     "text": "Las raíces ceden y os hacen perder el equilibrio.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Apartar las hojas con una rama",
@@ -827,7 +848,8 @@
                   },
                   "fail": {
                     "text": "Las raíces ceden y os hacen perder el equilibrio."
-                  }
+                  },
+                  "skill": "sleight"
                 }
               ],
               "fallback": {
@@ -878,7 +900,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "b1_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -891,7 +914,8 @@
                   "fail": {
                     "text": "No se lo tragan.",
                     "fight": "b1_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             },
@@ -942,7 +966,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Examinar las muescas del tronco",
@@ -954,7 +979,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "investigation"
                 },
                 {
                   "ally": "maren",
@@ -1359,7 +1385,8 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 30
+              "xp_total": 30,
+              "terrain": "narrow"
             },
             {
               "type": "encounter",
@@ -1458,7 +1485,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "b2_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -1471,7 +1499,8 @@
                   "fail": {
                     "text": "No se lo tragan.",
                     "fight": "b2_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             },
@@ -1796,7 +1825,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Examinar los huecos entre las raíces",
@@ -1808,6 +1838,17 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
+                  },
+                  "skill": "nature"
+                },
+                {
+                  "label": "Seguir el rastro con ojos élficos",
+                  "species": [
+                    "elf"
+                  ],
+                  "ok": {
+                    "text": "Siguiendo el rastro encontráis el paso que lleva a la charca.",
+                    "reveal": "b2_s01"
                   }
                 }
               ]
@@ -2024,7 +2065,8 @@
                   "fail": {
                     "text": "Resbaláis sobre la resina caliente. Gastáis una poción de curación al tratar las quemaduras y abandonáis el intento.",
                     "lose": "potion_healing"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Examinar la resina de los troncos",
@@ -2036,7 +2078,8 @@
                   },
                   "fail": {
                     "text": "La resina endurecida impide reconocer las marcas."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Dejarla intacta",
@@ -2225,7 +2268,8 @@
                   },
                   "fail": {
                     "text": "Las marcas no os permiten distinguir un camino seguro."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Comprar su mapa por 10 monedas",
@@ -2496,7 +2540,8 @@
                   "fail": {
                     "text": "El apoyo cede sobre el agua y el barro.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Apoyar un madero entre las raíces",
@@ -2508,7 +2553,8 @@
                   },
                   "fail": {
                     "text": "El apoyo cede sobre el agua y el barro."
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Buscar apoyos en las raíces",
@@ -2520,7 +2566,8 @@
                   },
                   "fail": {
                     "text": "El apoyo cede sobre el agua y el barro."
-                  }
+                  },
+                  "skill": "nature"
                 }
               ],
               "fallback": {
@@ -2594,7 +2641,8 @@
                   "fail": {
                     "text": "La voz os distrae. Entre la niebla se despierta otra presencia hostil cerca de la isla.",
                     "add": "b3_e05"
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Apagar la luz con una piedra",
@@ -2606,7 +2654,8 @@
                   },
                   "fail": {
                     "text": "La piedra cae al agua y la luz sigue flotando."
-                  }
+                  },
+                  "skill": "sleight"
                 },
                 {
                   "label": "Ignorarla",
@@ -2662,7 +2711,8 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 200
+              "xp_total": 200,
+              "terrain": "slippery"
             },
             {
               "type": "chest",
@@ -2882,7 +2932,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Buscar el hueco entre las raíces",
@@ -2894,7 +2945,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "nature"
                 }
               ]
             }
@@ -3024,7 +3076,8 @@
                   },
                   "fail": {
                     "text": "No conseguís localizar el origen del brillo."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Examinar el hueco bajo las raíces",
@@ -3036,7 +3089,8 @@
                   },
                   "fail": {
                     "text": "No conseguís localizar el origen del brillo."
-                  }
+                  },
+                  "skill": "nature"
                 }
               ]
             },
@@ -3061,7 +3115,8 @@
                   "fail": {
                     "text": "La semilla no responde entre las raíces."
                   },
-                  "tone": "piedad"
+                  "tone": "piedad",
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Dejar una poción como ofrenda",
@@ -3209,7 +3264,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "b3_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -3222,7 +3278,8 @@
                   "fail": {
                     "text": "No se lo tragan.",
                     "fight": "b3_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             },
@@ -3307,7 +3364,8 @@
                   },
                   "fail": {
                     "text": "El agua fría os entumece y os obliga a retroceder."
-                  }
+                  },
+                  "skill": "perception"
                 }
               ],
               "fallback": {
@@ -3752,7 +3810,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Seguir las marcas sobre la madera",
@@ -3764,7 +3823,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -3790,7 +3850,8 @@
                   "fail": {
                     "text": "La savia se endurece de golpe. Al otro lado de la grieta, un arbusto cobra vida y espera.",
                     "add": "b4_e06"
-                  }
+                  },
+                  "skill": "history"
                 },
                 {
                   "label": "Dejar 10 monedas de ofrenda",
@@ -3812,6 +3873,18 @@
                   "ok": {
                     "text": "Ivelle recita el juramento de su orden ante el altar. La savia se retira y deja ver una entrada oculta.",
                     "reveal": "b4_s01"
+                  }
+                },
+                {
+                  "label": "Rezar ante el altar partido",
+                  "cls": [
+                    "cleric",
+                    "paladin"
+                  ],
+                  "ok": {
+                    "text": "Apartáis la savia: entre la inscripción hay monedas antiguas incrustadas y, detrás, una abertura oculta.",
+                    "reveal": "b4_s01",
+                    "gold": 8
                   }
                 }
               ]
@@ -3935,7 +4008,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "b4_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -3948,7 +4022,8 @@
                   "fail": {
                     "text": "No se lo tragan.",
                     "fight": "b4_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             },
@@ -4240,7 +4315,8 @@
                   },
                   "fail": {
                     "text": "El hielo no deja ver nada."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Estudiar los trazos de la madera",
@@ -4252,7 +4328,8 @@
                   },
                   "fail": {
                     "text": "No reconocéis el sello."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ],
               "fallback": {
@@ -4416,11 +4493,13 @@
                   "dc": 14,
                   "ok": {
                     "text": "Vuestras palabras llegan al Corazón. Una de las raíces que lo protegen deja de obedecerlo.",
-                    "sub": "b4_e04"
+                    "sub": "b4_e04",
+                    "flag": "b4_promesa"
                   },
                   "fail": {
                     "text": "Las raíces siguen moviéndose. El Corazón no responde."
-                  }
+                  },
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Leer la promesa en voz alta",
@@ -4432,7 +4511,8 @@
                   },
                   "fail": {
                     "text": "Las letras se confunden bajo la luz roja y no lográis completar la lectura."
-                  }
+                  },
+                  "skill": "investigation"
                 },
                 {
                   "label": "Guardar silencio",
@@ -4440,7 +4520,8 @@
                     "text": "Guardáis silencio. La luz roja continúa palpitando bajo las raíces."
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "prop",

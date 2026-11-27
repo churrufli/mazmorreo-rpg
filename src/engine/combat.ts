@@ -6,7 +6,7 @@ import { ABIL_NAME, Ability, CLASSES, DmgType, draconic, ITEMS, MONSTERS, Monste
 import B from '../data/corazon.json';
 import { die, pick, rand, roll, tray } from './rng';
 import {
-  Char, abilMod, armorClass, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft, slotsAt, score,
+  Char, abilMod, armorClass, elvenBoots, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft, slotsAt, score,
 } from './rules';
 import { prof } from '../data/srd';
 import type { Game } from './game';
@@ -103,6 +103,46 @@ export interface Unit {
   plan?: Plan;
   /** No muertos: la presa que persiguen hasta que cae. */
   prey?: string;
+  /** Jefe: golpe grande anunciado para su próximo turno (nombre del ataque) y fila a la que apunta. */
+  warn?: string;
+  aim?: Row;
+  /** Jefe que ya ha bajado a la mitad de sus PG (cambia de táctica una vez). */
+  half?: boolean;
+  /** Vharzûl en vuelo: cuerpo a cuerpo no le alcanza. `flown`: ya ha volado en este combate. */
+  flying?: boolean;
+  flown?: boolean;
+  /** Vharzûl: el aliento está listo al aterrizar; `weakBreath`: el primero sale a mitad de daño (preparativo). */
+  breathNow?: boolean;
+  weakBreath?: boolean;
+  /** Daño recibido de cada personaje (Xiximanter se centra en quien más le ha herido). */
+  dmgBy?: Record<string, number>;
+  /** Xiximanter acaba de lanzar su bola de fuego: no anuncia otra este turno. */
+  cool?: boolean;
+  /** Mirada del basilisco: apresado por la piedra; si falla otra salvación al acabar su turno, queda petrificado. */
+  stoning?: boolean;
+  petrified?: boolean;
+  /** Maldito por la momia: no recupera PG. */
+  cursed?: boolean;
+  /** Veces que se ha dividido (gelatina ocre y pudin negro: cada mitad es un tamaño menor; las pequeñas ya no se dividen). */
+  splits?: number;
+  /** Asalto en que ya ha gastado su reacción (ataque de oportunidad o Vigilar). */
+  reacted?: number;
+  /** Destrabarse: hasta su siguiente turno, salir de la vanguardia no provoca ataques de oportunidad. */
+  disengaged?: boolean;
+  /** Agarrado por esa unidad: no cambia de fila ni huye hasta que se suelte. */
+  grappled?: string;
+  /** Vigilar (Preparar del SRD): si un enemigo ataca a ese aliado, le dispara con su reacción. */
+  watch?: string;
+  /** Ralentizar: no cambia de fila en su próximo turno. */
+  slowed?: boolean;
+  /** Ataque temerario (bárbaro): ventaja en sus golpes este turno; los ataques contra él, con ventaja hasta su siguiente turno. */
+  reckless?: boolean;
+  /** Puntería firme (pícaro): ventaja en su próximo ataque de este turno. */
+  steady?: boolean;
+  /** Golpe astuto (pícaro de nivel 5): cambia un d6 del ataque furtivo por derribar. */
+  trip?: boolean;
+  /** Expulsado por el clérigo: retrocede y pierde su turno hasta que le hagan daño. */
+  turned?: boolean;
 }
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
@@ -127,6 +167,9 @@ export interface Combat {
   acted: boolean;
   bonus: boolean;
   sneakUsed: boolean;
+  /** Hendir y Mella: una vez por turno. */
+  cleaveUsed?: boolean;
+  nickUsed?: boolean;
   /** Último impacto cuerpo a cuerpo, válido para Castigo divino en este turno. */
   smiteHit?: { attacker: string; target: string; crit: boolean };
   /** Atacante salvaje ya usado en este turno. */
@@ -153,15 +196,49 @@ export interface Combat {
   endLine?: string;
   /** PX extra (arbustos que aparecen en el combate del Corazón Hueco). */
   bonusXp?: number;
+  /**
+   * Moral del grupo enemigo (0 a 3), solo en grupos con un líder que no sean no muertos, cienos, construcciones ni jefes.
+   * Sube cuando cae el líder, cuando uno huye o con un crítico del grupo. A la tercera, los malheridos huyen.
+   */
+  morale?: number;
+  /** Proteged a: PG que le quedan a la persona que hay que proteger. */
+  ward?: number;
+  /** Rasgo de la sala (afecta a los dos bandos): angosta (dos por fila), resbaladiza (cambiar de fila pide salvación de
+   * Destreza) o con humo (desventaja al disparar a la otra fila; el fuego lo disipa). */
+  terrain?: Terrain;
+  /** El ruido: el grupo vecino que puede acudir si el combate se alarga o hace mucho ruido, y si ya hubo ruido o aviso. */
+  neighbor?: string;
+  noise?: boolean;
+  noiseWarned?: boolean;
   /** Ataque fallado que se puede repetir con Inspiración heroica (decide el jugador). */
   reroll?: { a: string; t: string; o: AtkOpts; adv: number; total: number };
 }
 
 const MAX_ROW = 3;
+export type Terrain = 'narrow' | 'slippery' | 'smoke';
+export const TERRAIN: Record<Terrain, { name: string; desc: string }> = {
+  narrow: { name: 'Angosto', desc: 'La sala es estrecha: solo caben dos por fila, en los dos bandos.' },
+  slippery: { name: 'Resbaladizo', desc: 'El suelo resbala: para cambiar de fila hay que superar una salvación de Destreza CD 10 o se cae al suelo.' },
+  smoke: { name: 'Humo', desc: 'Hay humo: disparar a la otra fila tiene desventaja. El fuego lo disipa.' },
+};
 /** Jefe de la montaña: Vharzûl, el dragón blanco joven. */
 const DRAGON = 'Young White Dragon';
 /** El aliento del dragón sale en los asaltos 2, 5, 8... (diseño de la aventura). */
 const breathRound = (cb: Combat) => cb.round >= 2 && (cb.round - 2) % 3 === 0;
+/** Los cuatro jefes de las aventuras: anuncian su golpe grande y cambian de táctica a mitad de PG. */
+export const BOSS_MONS = ['Orvane', 'Treant', 'Young White Dragon', 'Xiximanter'];
+const isBoss = (u: Unit) => !!u.mon && BOSS_MONS.includes(u.mon);
+/** ¿Echa Vharzûl el aliento en este turno? En los asaltos fijos o al aterrizar. */
+const breathNow = (cb: Combat, u: Unit) => breathRound(cb) || !!u.breathNow;
+/** El Corazón Hueco tensa sus raíces bajo la retaguardia en los asaltos 3, 6, 9... */
+const rootRound = (r: number) => r >= 3 && r % 3 === 0;
+/** Frase de cada jefe al bajar a la mitad de sus PG. */
+const HALF_LINE: Record<string, string> = {
+  Orvane: 'Orvane retrocede hasta el cristal: «¡No acabaréis conmigo!». Ahora va a por el más débil.',
+  Treant: 'El Corazón Hueco cruje de dolor. Deja de brotar arbustos, pero sus raíces ahora apresan.',
+  'Young White Dragon': 'Vharzûl ruge, herido. Va a alzar el vuelo.',
+  Xiximanter: 'Xiximanter escupe una maldición: se centra en quien más daño le ha hecho.',
+};
 /** Clases con Ataque adicional desde el nivel 5. */
 const EXTRA_ATTACK = ['fighter', 'ranger', 'paladin', 'barbarian'];
 /** ¿Resiste el frío? (poción, anillo de calor o botas de las tierras invernales) */
@@ -172,14 +249,19 @@ const aura = (g: Game, cb: Combat) => Math.max(0, ...cb.units.filter(u => u.side
 /** Nombre corto en los botones de combate para los objetos de nombre muy largo. */
 const SHORT: Record<string, string> = { potion_poison_resistance: 'Poción antiveneno', potion_greater_healing_1: 'Poción mayor' };
 /** Maestría de armas (SRD 5.2.1): solo las que tienen efecto con dos filas. */
-export type Mastery = 'sap' | 'vex' | 'topple' | 'push';
+export type Mastery = 'sap' | 'vex' | 'topple' | 'push' | 'cleave' | 'graze' | 'nick' | 'slow';
 export const MASTERY: Record<string, Mastery> = {
+  // Las cuatro que faltaban (2026-11-27), adaptadas a las filas: Ralentizar impide cambiar de fila en su turno.
+  greataxe: 'cleave', greataxe_plus1: 'cleave', halberd: 'cleave', greatsword: 'graze',
+  dagger: 'nick', silver_dagger: 'nick', scimitar: 'nick', longbow: 'slow', longbow_plus1: 'slow', light_crossbow: 'slow',
   longsword: 'sap', longsword_plus1: 'sap', mace: 'sap', mace_plus1: 'sap', spear: 'sap', pick: 'sap',
   shortsword: 'vex', rapier_plus1: 'vex', shortbow: 'vex',
   quarterstaff: 'topple', battleaxe: 'topple', battleaxe_plus_one: 'topple',
   warhammer: 'push', weapon_plus1_warhammer: 'push',
 };
-export const MASTERY_NAME: Record<Mastery, string> = { sap: 'Debilitar', vex: 'Hostigar', topple: 'Derribar', push: 'Empujar' };
+export const MASTERY_NAME: Record<Mastery, string> = { sap: 'Debilitar', vex: 'Hostigar', topple: 'Derribar', push: 'Empujar', cleave: 'Hendir', graze: 'Rozar', nick: 'Mella', slow: 'Ralentizar' };
+/** Armas ligeras: con Mella, la otra que se lleve golpea también (sin sumar la característica al daño). */
+const LIGHT = ['dagger', 'silver_dagger', 'scimitar', 'shortsword'];
 /** Clases con el rasgo Maestría de armas. */
 const MASTERY_CLS = ['fighter', 'rogue', 'paladin', 'barbarian', 'ranger'];
 export const masteryOf = (c: Char, weapon: string): Mastery | undefined => (MASTERY_CLS.includes(c.cls) ? MASTERY[weapon] : undefined);
@@ -225,7 +307,9 @@ export function validTargets(cb: Combat, attacker: Unit, kind: 'melee' | 'ranged
   const foes = sideUnits(cb, foe).filter(u => attacker.side === 'party' ? u.hp > 0 : true);
   if (kind === 'melee') {
     if (attacker.row !== 'front') return [];
-    return frontHeld(cb, foe) ? foes.filter(u => u.row === 'front') : foes;
+    // Vharzûl en vuelo: solo se le alcanza a distancia o con conjuros.
+    const near = foes.filter(u => !u.flying);
+    return frontHeld(cb, foe) ? near.filter(u => u.row === 'front') : near;
   }
   return foes;
 }
@@ -258,7 +342,13 @@ function endConcentration(cb: Combat, caster: Unit) {
 
 export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, type: DmgType, from: Unit, crit = false) {
   const m = target.mon ? MONSTERS[target.mon] : undefined;
-  if (m?.immune?.includes(type)) { say(cb, `${target.name} es inmune al daño de ${type}.`, 'info'); return; }
+  if (m?.immune?.includes(type)) {
+    say(cb, `${target.name} es inmune al daño de ${type}.`, 'info');
+    if (m.split && (type === 'cortante' || type === 'relámpago')) split(g, cb, target);
+    return;
+  }
+  if (type === 'trueno' && cb.neighbor && !cb.noise) { cb.noise = true; say(cb, 'El estruendo resuena por los pasillos. Alguien lo ha oído.', 'big'); }
+  if (type === 'fuego' && cb.terrain === 'smoke') { cb.terrain = undefined; say(cb, 'El fuego aviva el aire y disipa el humo.', 'info'); }
   if (type === 'fuego' && target.oiled) { target.oiled = false; amount += 5; say(cb, `El aceite prende: ${target.name} recibe 5 de fuego más.`, 'info'); }
   if (m?.resist?.includes(type)) amount = Math.floor(amount / 2);
   if (target.res?.includes(type)) amount = Math.floor(amount / 2);
@@ -269,6 +359,7 @@ export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, t
   target.lastHitBy = from.key;
   fx(cb, target, crit ? 'crit' : PHYSICAL.includes(type) ? 'hit' : 'magic', type);
   if (target.asleep) { target.asleep = false; say(cb, `${target.name} despierta.`, 'info'); }
+  if (target.turned && amount > 0) { target.turned = undefined; say(cb, `${target.name} deja de huir de la luz.`, 'info'); }
   if (target.side === 'party' && target.hp <= 0) {
     target.deathF = (target.deathF ?? 0) + (crit ? 2 : 1);
     say(cb, `${target.name} recibe un golpe estando en el suelo.`, 'dmg');
@@ -284,8 +375,16 @@ export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, t
     if (!amount) return;
   }
   const before = target.hp;
+  if (crit && target.side === 'enemy' && from.side === 'party') moraleHit(cb, 'un golpe crítico');
   target.hp = Math.max(0, target.hp - amount);
   say(cb, `${target.name} recibe ${amount} de daño (${type}).`, 'dmg');
+  if (isBoss(target) && from.side === 'party') target.dmgBy = { ...target.dmgBy, [from.key]: (target.dmgBy?.[from.key] ?? 0) + amount };
+  // Jefe a la mitad de sus PG: una frase y un cambio de táctica (sin curarse ni ganar PG).
+  if (isBoss(target) && !target.half && target.hp > 0 && target.hp <= target.maxHp / 2) {
+    target.half = true;
+    say(cb, HALF_LINE[target.mon!], 'big');
+    if (target.mon === 'Orvane' && target.row === 'front' && rowSpace(cb, 'enemy', 'back')) target.row = 'back';
+  }
   if (target.concentration && amount > 0) {
     if (target.hp <= 0 || !saveRoll(g, cb, target, 'con', Math.max(10, Math.floor(amount / 2)), 'Concentración')) endConcentration(cb, target);
   }
@@ -365,6 +464,7 @@ function kill(cb: Combat, u: Unit) {
   endConcentration(cb, u);
   u.dead = true;
   u.hp = 0;
+  if (u.side === 'enemy' && isLeader(u)) moraleHit(cb, `ha caído ${u.name}`);
   say(cb, u.side === 'enemy' ? `${u.name} cae derrotado.` : `${u.name} ha muerto.`, 'big');
   // Objetivo «primero»: se decide con el primer enemigo que cae.
   const first = goalOpen(cb, 'first');
@@ -382,15 +482,26 @@ function goalDone(cb: Combat, ok: boolean) {
   cb.goal.status = ok ? 'ok' : 'fail';
   say(cb, ok ? '¡Objetivo cumplido!' : 'Objetivo fallado.', ok ? 'big' : 'info');
 }
+export const isPiece = (u: Unit) => !!u.mon && !!MONSTERS[u.mon].piece;
 const goalUnits = (cb: Combat, who: string) => cb.units.filter(u => u.side === 'enemy' && (u.name === who || u.name.startsWith(`${who} `)));
 /** Revisa el objetivo tras cada golpe y al empezar cada asalto. */
-function goalCheck(cb: Combat, newRound = false) {
+function goalCheck(cb: Combat, newRound = false, g?: Game) {
   const k = goalOpen(cb, 'kill');
   if (k && goalUnits(cb, k.who!).every(u => u.dead)) goalDone(cb, true);
   const open = cb.goal?.status === 'open' ? cb.goal.g : undefined;
   if (newRound && open?.by && cb.round >= open.by && open.kind !== 'win') {
     if (open.leave) for (const u of goalUnits(cb, open.who!).filter(conscious)) { u.fled = true; u.plan = undefined; say(cb, `${u.name} ${open.leave}.`, 'big'); }
     goalDone(cb, false);
+  }
+  // Proteged a (2026-11-27): al empezar cada asalto, quien amenaza a la persona indefensa le hace daño si nadie le retiene.
+  const w = goalOpen(cb, 'guard');
+  if (w && newRound && g && cb.ward !== undefined) {
+    const foe = goalUnits(cb, w.who!).find(u => conscious(u) && !u.grappled && !u.prone && !u.asleep && !u.restrained);
+    if (foe) {
+      cb.ward = Math.max(0, cb.ward - roll(g.rng, '1d4'));
+      say(cb, cb.ward ? `${foe.name} ${w.ward!.hurt}: a ${w.ward!.name} le quedan ${cb.ward} PG.` : `${foe.name} ${w.ward!.hurt}. ${w.ward!.name} no aguanta más.`, cb.ward ? 'info' : 'big');
+      if (!cb.ward) goalDone(cb, false);
+    }
   }
 }
 
@@ -422,7 +533,7 @@ function bossRound(g: Game, cb: Combat) {
     say(cb, `Los nudos de raíz alimentan al Corazón: recupera ${h} PG.`, 'info');
   }
   const enemies = cb.units.filter(u => u.side === 'enemy' && alive(u));
-  if ((cb.round === 2 || cb.round === 4) && enemies.filter(u => u.row === 'front').length < MAX_ROW && enemies.length < cap) {
+  if (!boss.half && (cb.round === 2 || cb.round === 4) && enemies.filter(u => u.row === 'front').length < MAX_ROW && enemies.length < cap) {
     const m = MONSTERS['Awakened Shrub'];
     const u: Unit = {
       key: `e_brote_${cb.round}`, side: 'enemy', mon: 'Awakened Shrub', name: 'Arbusto despertado', img: m.img, hp: m.hp, maxHp: m.hp,
@@ -441,6 +552,7 @@ function bossRound(g: Game, cb: Combat) {
  * (el autor 2026-11-25). Llega aunque el grupo sea pequeño: el hongo no ataca, así que el combate no se endurece.
  */
 function shriek(g: Game, cb: Combat, u: Unit) {
+  if (goalOpen(cb, 'noshriek')) goalDone(cb, false);
   if (u.shrieked) { say(cb, `${u.name} sigue chillando.`, 'info'); return; }
   u.shrieked = true;
   u.shriekAt = cb.round;
@@ -464,8 +576,100 @@ function shriekCall(g: Game, cb: Combat) {
   }
 }
 
+/** Dividirse (gelatina ocre y pudin negro): con 10 PG o más se parte en dos, cada mitad con la mitad de los PG. */
+function split(g: Game, cb: Combat, u: Unit) {
+  if (u.hp < 10 || (u.splits ?? 0) >= 2) return;
+  const foes = cb.units.filter(x => x.side === 'enemy' && alive(x));
+  const row: Row | undefined = rowSpace(cb, 'enemy', u.row) ? u.row : rowSpace(cb, 'enemy', u.row === 'front' ? 'back' : 'front') ? (u.row === 'front' ? 'back' : 'front') : undefined;
+  if (!row || foes.length >= MAX_ROW * 2) return;
+  const half = Math.floor(u.hp / 2);
+  u.hp = u.maxHp = half;
+  u.splits = (u.splits ?? 0) + 1;
+  // Cada mitad, con su carta de mitad.
+  u.img = u.mon === 'Black Pudding' ? 'pudin_negro_mitad' : 'gelatina_ocre_mitad';
+  const v: Unit = { ...u, key: `${u.key}_d${cb.units.length}`, row, plan: undefined, init: u.init - 0.01, recharge: {}, dmgBy: undefined };
+  cb.units.push(v);
+  cb.order.splice(cb.order.indexOf(u.key) + 1, 0, v.key);
+  if (goalOpen(cb, 'nosplit')) goalDone(cb, false);
+  say(cb, `¡${u.name} se divide en dos! Cada mitad tiene ${half} PG.`, 'big');
+}
+
+/** Al acabar su turno, quien se está volviendo de piedra repite la salvación: si falla, queda petrificado. */
+function stoneSave(g: Game, cb: Combat, u: Unit) {
+  if (saveRoll(g, cb, u, 'con', 12, 'Constitución')) { u.stoning = false; say(cb, `${u.name} se sacude la piedra y vuelve a moverse.`, 'info'); return; }
+  u.stoning = false;
+  u.petrified = u.dead = true;
+  u.img = 'estatua_petrificada';
+  u.hp = 0;
+  u.plan = undefined;
+  say(cb, `${u.name} queda petrificado. Solo el templo podrá devolverle a la carne.`, 'big');
+  if (goalOpen(cb, 'nostone')) goalDone(cb, false);
+  if (u.side === 'party' && goalOpen(cb, 'nodown')) goalDone(cb, false);
+}
+
+/** CD de Agarrar (SRD 5.2.1): 8 + Fuerza + competencia. */
+const grappleDc = (c: Char) => 8 + abilMod(c, 'str') + prof(c.level);
+/** Ataque cuerpo a cuerpo de un monstruo (el primero que no sea a distancia ni de área). */
+const meleeOf = (u: Unit) => (u.mon ? MONSTERS[u.mon].attacks.find(a => !a.ranged && !a.save) : undefined);
+const canReact = (cb: Combat, x: Unit) => conscious(x) && !x.asleep && !x.paralyzed && !x.restrained && x.reacted !== cb.round;
+/** Quién del otro bando, en su vanguardia, puede dar un ataque de oportunidad a quien sale de la vanguardia. */
+function oppFoe(cb: Combat, u: Unit): Unit | undefined {
+  return cb.units.find(x => x.side !== u.side && x.row === 'front' && !x.fled && canReact(cb, x) && (x.side === 'enemy' ? !!meleeOf(x) && !MONSTERS[x.mon!].reach : true));
+}
+/** Arma cuerpo a cuerpo de un personaje, para sus reacciones. */
+const meleeWeapon = (c: Char) => weapons(c).find(w => !ITEMS[w.id].weapon?.ranged);
+
+/** Ataque de oportunidad (reacción): un solo ataque cuerpo a cuerpo contra quien se retira. */
+function opportunity(g: Game, cb: Combat, by: Unit, t: Unit) {
+  if (by.side === 'enemy') {
+    const a = meleeOf(by);
+    if (!a) return;
+    by.reacted = cb.round;
+    say(cb, `${by.name} aprovecha que ${t.name} se retira: ataque de oportunidad.`, 'big');
+    attack(g, cb, by, t, toOpts(a));
+    return;
+  }
+  const c = charOf(g, by);
+  const w = meleeWeapon(c);
+  if (!w) return;
+  by.reacted = cb.round;
+  const s = weaponStat(c, w.id), wd = ITEMS[w.id].weapon!;
+  say(cb, `${by.name} aprovecha que ${t.name} se retira: ataque de oportunidad.`, 'big');
+  attack(g, cb, by, t, { name: ITEMS[w.id].name, toHit: s.toHit, dice: wd.dice, bonus: s.dmgBonus, type: wd.type, ranged: false });
+}
+
+/** Vigilar: quien vigila a un aliado le dispara a quien le ataque (una vez, con su reacción). */
+function watchShot(g: Game, cb: Combat, foe: Unit, t: Unit) {
+  const w = cb.units.find(x => x.side === 'party' && x.watch === t.key && canReact(cb, x));
+  if (!w) return;
+  const c = charOf(g, w);
+  const bow = weapons(c).find(x => ITEMS[x.id].weapon?.ranged);
+  w.watch = undefined;
+  if (!bow) return;
+  w.reacted = cb.round;
+  const s = weaponStat(c, bow.id), wd = ITEMS[bow.id].weapon!;
+  say(cb, `${w.name} vigilaba a ${t.name} y dispara a ${foe.name}.`, 'big');
+  attack(g, cb, w, foe, { name: ITEMS[bow.id].name, toHit: s.toHit, dice: wd.dice, bonus: s.dmgBonus, type: wd.type, ranged: true });
+}
+
+/** Quién tiene moral: goblins, sectarios y bestias de carne y hueso (no cienos ni construcciones). */
+const moraleFoe = (x: Unit) => !!x.mon && !MONSTERS[x.mon].piece && ['goblin', 'cultist', 'beast'].includes(MONSTERS[x.mon].ai) && !MONSTERS[x.mon].noSleep && !MONSTERS[x.mon].knot;
+/** La moral del grupo enemigo baja un paso; a la tercera, los que están por debajo de la mitad de sus PG huyen. */
+function moraleHit(cb: Combat, why: string) {
+  if (cb.morale === undefined || cb.morale >= 3) return;
+  cb.morale++;
+  say(cb, `La moral enemiga flaquea (${cb.morale}/3): ${why}.`, 'info');
+  if (cb.morale < 3) return;
+  const scared = cb.units.filter(x => x.side === 'enemy' && conscious(x) && !x.grappled && moraleFoe(x) && x.hp < x.maxHp / 2);
+  for (const x of scared) { x.fled = true; x.plan = undefined; say(cb, `${x.name} pierde el valor y huye.`, 'big'); }
+  if (scared.length && goalOpen(cb, 'noflee')) goalDone(cb, false);
+  if (!scared.length) say(cb, 'Los enemigos dudan, pero ninguno está tan herido como para huir.', 'info');
+}
+
 function heal(cb: Combat, u: Unit, amount: number) {
   if (u.dead) return;
+  // Maldición de la momia: toda curación se queda en la mitad hasta quitarla en el templo (ajuste de equilibrio del SRD, 2026-11-27).
+  if (u.cursed) { amount = Math.max(1, Math.floor(amount / 2)); say(cb, `La maldición de la momia reduce a la mitad la curación de ${u.name}.`, 'info'); }
   const wasDown = u.hp <= 0;
   const before = Math.max(0, u.hp);
   u.hp = Math.min(u.maxHp, before + amount);
@@ -477,6 +681,8 @@ function heal(cb: Combat, u: Unit, amount: number) {
 
 interface AtkOpts { name: string; toHit: number; dice: string; bonus: number; type: DmgType; ranged: boolean; extra?: { dice: string; type: DmgType }; sneak?: boolean; spell?: boolean;
   mastery?: Mastery; masteryDc?: number;
+  /** Modificador de característica del daño (Rozar lo hace al fallar; Hendir y Mella no lo suman). Con Mella, la otra arma ligera. */
+  abilDmg?: number; offhand?: string;
   /** Repetición con Inspiración heroica: la misma ventaja o desventaja, sin volver a gastar estados. */
   rerollAdv?: number }
 
@@ -500,9 +706,13 @@ function advFor(cb: Combat, a: Unit, t: Unit, ranged: boolean): { up: string[]; 
   if (a.mon && MONSTERS[a.mon].packTactics && cb.units.some(u => u !== a && u.side === a.side && conscious(u) && u.row === 'front')) up.push('en manada');
   if (a.side === 'party' && t.helped && t.helped !== a.key) up.push('Ayudar');
   if (a.sapped) down.push('debilitado');
+  if (a.reckless && !ranged) up.push('Ataque temerario');
+  if (t.reckless && t.side !== a.side) up.push('objetivo temerario');
+  if (a.steady) up.push('Puntería firme');
   if (a.vex && a.vex === t.key) up.push('Hostigar');
   if (t.prone) { if (ranged) down.push('derribado'); else up.push('objetivo derribado'); }
   if (a.prone) down.push('en el suelo');
+  if (cb.terrain === 'smoke' && ranged && a.row !== t.row) down.push('humo');
   return { up, down };
 }
 
@@ -518,6 +728,7 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     a.invisible = undefined;
     if (a.side === 'party' && t.helped && t.helped !== a.key) t.helped = undefined;
     a.sapped = undefined;
+    a.steady = undefined;
     if (a.vex === t.key) a.vex = undefined;
   }
   const { up, down } = why;
@@ -543,6 +754,8 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     : up.length && down.length ? ` sin ventaja ni desventaja (${up[0]} contra ${down[0]})` : '') + (cover ? ' (media cobertura: +2 CA)' : '');
   if (!hit) {
     say(cb, `${a.name} usa ${o.name}${advTxt}: ${d20}+${o.toHit + bless} = ${total}. Falla.`, 'miss');
+    if (o.mastery === 'graze' && (o.abilDmg ?? 0) > 0) { say(cb, `Rozar: el filo le alcanza igualmente.`, 'info'); applyDamage(g, cb, t, o.abilDmg!, o.type, a); }
+    nick(g, cb, a, t, o);
     // Inspiración heroica: el jugador decide si repite el dado (SRD 5.2.1); se ofrece al acabar la acción.
     if (a.side === 'party' && o.rerollAdv === undefined && canInspire(g, charOf(g, a))) cb.reroll = { a: a.key, t: t.key, o, adv, total };
     return false;
@@ -563,7 +776,14 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     const c = charOf(g, a);
     const ally = cb.units.some(u => u !== a && u.side === 'party' && conscious(u) && u.row === 'front') && t.row === 'front';
     if (c.cls === 'rogue' && (adv > 0 || ally)) {
-      const sa = roll(g.rng, c.level >= 5 ? '3d6' : c.level >= 3 ? '2d6' : '1d6', crit);
+      // Golpe astuto (nivel 5): un d6 menos a cambio de una salvación de Destreza o al suelo.
+      const trip = a.trip && c.level >= 5 && !HUGE.includes(t.mon ?? '') && !t.prone;
+      a.trip = undefined;
+      const sa = roll(g.rng, trip ? '2d6' : c.level >= 5 ? '3d6' : c.level >= 3 ? '2d6' : '1d6', crit);
+      if (trip) {
+        const dc = 8 + abilMod(c, 'dex') + prof(c.level);
+        if (!saveRoll(g, cb, t, 'dex', dc, 'Destreza')) { t.prone = true; say(cb, `Golpe astuto: ${t.name} cae al suelo.`, 'big'); }
+      }
       dmg += sa;
       cb.sneakUsed = true;
       say(cb, `Ataque furtivo: +${sa}.`, 'info');
@@ -578,8 +798,24 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   if (a.concentration === 'mark' && a.mark === t.key && !o.spell) { const bonus = roll(g.rng, '1d6', crit); say(cb, `Marca del cazador: +${bonus} de fuerza.`, 'info'); if (alive(t)) applyDamage(g, cb, t, bonus, 'fuerza', a, crit); }
   if (a.concentration === 'hex' && a.hex === t.key && alive(t)) { const bonus = roll(g.rng, '1d6', crit); say(cb, `Maleficio: +${bonus} necrótico.`, 'info'); applyDamage(g, cb, t, bonus, 'necrótico', a, crit); }
   if (o.mastery && conscious(t)) masteryHit(g, cb, a, t, o.mastery, o.masteryDc ?? 10);
+  if (o.mastery === 'cleave' && !cb.cleaveUsed) {
+    // Hendir: una vez por turno, el golpe sigue hasta otro enemigo de la misma fila (sin sumar la característica).
+    const t2 = cb.units.find(x => x.side === t.side && x !== t && conscious(x) && x.row === t.row && !x.flying);
+    if (t2) { cb.cleaveUsed = true; say(cb, `Hendir: el golpe sigue hasta ${t2.name}.`, 'info'); attack(g, cb, a, t2, { ...o, mastery: undefined, bonus: o.bonus - Math.max(0, o.abilDmg ?? 0) }); }
+  }
+  nick(g, cb, a, t, o);
   if (a.mon === 'Treant') say(cb, pick(g.rng, B.boss.visions), 'info');
   return true;
+}
+
+/** Mella: una vez por turno, la otra arma ligera golpea también (sin sumar la característica al daño). */
+function nick(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts) {
+  if (o.mastery !== 'nick' || !o.offhand || cb.nickUsed || cb.result) return;
+  const t2 = conscious(t) ? t : validTargets(cb, a, 'melee')[0];
+  if (!t2) return;
+  cb.nickUsed = true;
+  const c = charOf(g, a), w = ITEMS[o.offhand].weapon!, s = weaponStat(c, o.offhand);
+  attack(g, cb, a, t2, { name: `${ITEMS[o.offhand].name} (Mella)`, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus - Math.max(0, abilMod(c, s.abil)), type: w.type, ranged: false, sneak: true });
 }
 
 /** Efecto de la maestría del arma tras un impacto. */
@@ -593,6 +829,7 @@ function masteryHit(g: Game, cb: Combat, a: Unit, t: Unit, m: Mastery, dc: numbe
     if (total >= dc) say(cb, `Derribar: ${t.name} resiste (Constitución ${d20}${total - d20 >= 0 ? '+' : ''}${total - d20} = ${total} contra CD ${dc}).`, 'miss');
     else { t.prone = true; say(cb, `Derribar: ${t.name} cae al suelo (Constitución ${d20}${total - d20 >= 0 ? '+' : ''}${total - d20} = ${total} contra CD ${dc}).`, 'big'); }
   }
+  if (m === 'slow' && t.side === 'enemy' && !isBoss(t)) { t.slowed = true; say(cb, `Ralentizar: ${t.name} no podrá cambiar de fila en su próximo turno.`, 'info'); }
   if (m === 'push' && !huge && t.side === 'enemy' && t.row === 'front' && rowSpace(cb, 'enemy', 'back')) {
     t.row = 'back';
     t.plan = undefined;
@@ -643,17 +880,23 @@ export function startCombat(g: Game, encounterId: string): Combat {
     if (c.dead) return;
     units.push({
       key: `p_${c.id}`, side: 'party', charId: c.id, name: c.name, img: c.img, hp: c.hp, maxHp: c.maxHp,
-      ac: armorClass(c), row: c.row, init: 0, deathS: c.deathS, deathF: c.deathF, stable: c.stable,
+      ac: armorClass(c), row: c.row, init: 0, deathS: c.deathS, deathF: c.deathF, stable: c.stable, cursed: c.cursed,
     });
   });
   const cb: Combat = {
     units, order: [], turn: 0, round: 1, encounters: [], pending: [], moved: false, acted: false, bonus: false,
     sneakUsed: false, log: [], bg: g.zoneBg ?? 'combate_mina',
+    terrain: (encounterById(encounterId) as { terrain?: Terrain } | undefined)?.terrain,
   };
+  // Sala angosta: si delante no caben todos, los que sobran empiezan detrás.
+  if (cb.terrain === 'narrow') for (const u of units.filter(x => x.row === 'front').slice(2)) u.row = 'back';
   sizeEncounter(g, group.now, group.now.includes(bossEncounter(g.zone)));
   group.now.forEach(id => addEncounter(g, cb, id, true));
-  // Sin refuerzos de grupos vecinos (el autor 2026-11-06): cada grupo lucha solo.
+  // Sin refuerzos automáticos de grupos vecinos (el autor 2026-11-06): cada grupo lucha solo.
+  // Solo «el ruido» (2026-11-27): si el combate se alarga o hay un estruendo, el vecino puede acudir (una vez y avisado).
   cb.pending = [];
+  cb.neighbor = group.later.find(x => !g.done.includes(x) && x !== bossEncounter(g.zone) && !group.now.includes(bossEncounter(g.zone)));
+  bossPrepFx(g, cb);
   const goal = GOALS.find(x => cb.encounters.includes(x.enc) && !g.goals?.[x.enc]);
   // «Primero» pide que haya alguien más a quien dejar para después; «que no caiga nadie», compañeros a los que cuidar.
   const foes = cb.units.filter(x => x.side === 'enemy');
@@ -665,10 +908,41 @@ export function startCombat(g: Game, encounterId: string): Combat {
     u.initD20 = die(g.rng, 20);
     u.init = u.initD20 + dex + rand(g.rng) * 0.1;
   }
+  // Sorpresa (SRD 5.2.1): los enemigos a los que os acercasteis sin ser vistos tiran la iniciativa con desventaja.
+  if (g.surprise && group.now.includes(g.surprise)) {
+    for (const u of cb.units.filter(x => x.side === 'enemy')) {
+      const d = Math.min(u.initD20!, die(g.rng, 20));
+      u.init += d - u.initD20!;
+      u.initD20 = d;
+    }
+    say(cb, '¡Los habéis sorprendido! Tiran la iniciativa con desventaja.', 'big');
+  }
+  g.surprise = undefined;
+  if (cb.units.some(x => x.side === 'enemy' && isLeader(x)) && cb.units.filter(x => x.side === 'enemy' && moraleFoe(x)).length >= 2
+    && !cb.units.some(x => x.side === 'enemy' && (isBoss(x) || !moraleFoe(x)))) cb.morale = 0;
   cb.order = [...cb.units].sort((a, b) => b.init - a.init).map(u => u.key);
+  // La pieza (2026-11-27): un objeto sin ataques en la retaguardia enemiga que se rompe con la acción. No tiene turno.
+  const pc = cb.goal?.g.piece;
+  if (pc) cb.units.push({ key: 'piece', side: 'enemy', mon: 'Object', name: pc.name, img: pc.img, hp: pc.hp, maxHp: pc.hp, ac: pc.ac, row: 'back', init: 0, encounter: cb.goal!.g.enc, recharge: {} });
+  if (cb.goal?.g.kind === 'guard') cb.ward = cb.goal.g.ward!.hp;
+  if (cb.terrain) say(cb, `${TERRAIN[cb.terrain].name}: ${TERRAIN[cb.terrain].desc}`, 'big');
   say(cb, `¡Combate! Iniciativa: ${cb.order.map(k => cb.units.find(u => u.key === k)!.name).join(', ')}.`, 'info');
   startTurn(g, cb);
   return cb;
+}
+
+/** Preparativos ganados en la aventura (ver bossPrep en dungeon.ts): el jefe llega con algo menos. */
+function bossPrepFx(g: Game, cb: Combat) {
+  const has = (f: string) => !!g.flags?.includes(f);
+  for (const u of cb.units.filter(x => x.side === 'enemy')) {
+    if (u.mon === DRAGON && has('m3_valvulas')) u.weakBreath = true;
+    if (u.mon === 'Xiximanter' && has('s4_libres')) u.spent = 1;
+  }
+  const knot = cb.units.find(x => x.mon && MONSTERS[x.mon].knot);
+  if (knot && has('b4_promesa') && cb.units.some(x => x.mon === 'Treant')) {
+    cb.units = cb.units.filter(x => x !== knot);
+    say(cb, 'Una de las raíces que prometieron proteger no obedece: falta un nudo junto al Corazón.', 'info');
+  }
 }
 
 function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean {
@@ -692,12 +966,13 @@ function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean 
     });
   }
   const count = (r: Row) => cb.units.filter(u => u.side === 'enemy' && alive(u) && u.row === r).length;
+  const rowCap = cb.terrain === 'narrow' ? 2 : MAX_ROW;
   // Refuerzos proporcionados al grupo: como mucho 2 enemigos más que personajes (y 6 en total).
   const cap = Math.min(MAX_ROW * 2, cb.units.filter(u => u.side === 'party').length + 2);
   if (!force && list.length && (count('front') + count('back') + list.length > cap)) return false;
   for (const u of list) {
-    if (count(u.row) >= MAX_ROW) u.row = u.row === 'front' ? 'back' : 'front';
-    if (count(u.row) >= MAX_ROW) continue;
+    if (count(u.row) >= rowCap) u.row = u.row === 'front' ? 'back' : 'front';
+    if (count(u.row) >= rowCap) continue;
     cb.units.push(u);
   }
   cb.encounters.push(id);
@@ -707,7 +982,7 @@ function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean 
 function startTurn(g: Game, cb: Combat) {
   const u = current(cb);
   planAll(g, cb);
-  cb.moved = cb.acted = cb.bonus = cb.sneakUsed = cb.hasteUsed = false;
+  cb.moved = cb.acted = cb.bonus = cb.sneakUsed = cb.hasteUsed = cb.cleaveUsed = cb.nickUsed = false;
   cb.smiteHit = undefined;
   cb.reroll = undefined;
   // Ayudar y Debilitar duran hasta el principio del siguiente turno de quien los hizo; Hostigar, hasta el final.
@@ -718,6 +993,9 @@ function startTurn(g: Game, cb: Combat) {
   if (u.concentration === 'hex' && !cb.units.some(x => x.key === u.hex && conscious(x))) u.hex = undefined;
   cb.savageUsed = false;
   u.dodge = false;
+  u.reckless = u.steady = u.trip = undefined;
+  u.disengaged = false;
+  u.watch = undefined;
   if (u.shield) u.shield = false;
   if (u.side === 'party' && u.hp <= 0 && !u.dead && !u.stable && charOf(g, u).items.some(i => i.id === 'periapt_wound_closure')) {
     u.stable = true;
@@ -744,6 +1022,8 @@ export const autoTurn = (cb: Combat) => {
 
 export function endTurn(g: Game, cb: Combat) {
   const u = current(cb);
+  if (u.side === 'enemy' && isBoss(u) && conscious(u)) bossWarn(g, cb, u);
+  if (u.stoning && conscious(u)) stoneSave(g, cb, u);
   if (u.paralyzed && conscious(u)) {
     if (saveRoll(g, cb, u, 'con', 10, 'Constitución')) { u.paralyzed = false; say(cb, `${u.name} ya puede moverse.`, 'info'); }
   }
@@ -753,7 +1033,7 @@ export function endTurn(g: Game, cb: Combat) {
     if (cb.turn >= cb.order.length) {
       cb.turn = 0;
       cb.round++;
-      goalCheck(cb, true);
+      goalCheck(cb, true, g);
       // Si con el objetivo fallado huye el último enemigo, el combate acaba aquí.
       if (checkEnd(g, cb)) return;
       reinforce(g, cb);
@@ -767,6 +1047,11 @@ export function endTurn(g: Game, cb: Combat) {
 function reinforce(g: Game, cb: Combat) {
   bossRound(g, cb);
   shriekCall(g, cb);
+  // El ruido: al asalto 4 se oyen pasos; al 5 (o tras un estruendo) llega el grupo vecino.
+  if (cb.neighbor && !cb.reinforced) {
+    if (cb.round === 4 && !cb.noise) { cb.noiseWarned = true; say(cb, 'Se oyen pasos cerca: si el combate sigue, llegarán más.', 'big'); }
+    if (cb.round >= 5 || cb.noise) { cb.pending = [cb.neighbor]; cb.neighbor = undefined; }
+  }
   for (const id of [...cb.pending]) {
     if (cb.reinforced) break;
     if (g.done.includes(id)) { cb.pending = cb.pending.filter(x => x !== id); continue; }
@@ -787,7 +1072,7 @@ function reinforce(g: Game, cb: Combat) {
 export function checkEnd(g: Game, cb: Combat): boolean {
   if (cb.result) return true;
   goalCheck(cb);
-  if (!cb.units.some(u => u.side === 'enemy' && conscious(u))) { finish(g, cb, 'win'); return true; }
+  if (!cb.units.some(u => u.side === 'enemy' && conscious(u) && !isPiece(u))) { finish(g, cb, 'win'); return true; }
   if (!cb.units.some(u => u.side === 'party' && conscious(u))) { finish(g, cb, 'lose'); return true; }
   return false;
 }
@@ -796,6 +1081,8 @@ function syncParty(g: Game, cb: Combat) {
   for (const u of cb.units) if (u.side === 'party') {
     const c = charOf(g, u);
     Object.assign(c, { hp: Math.max(0, u.hp), dead: !!u.dead, deathS: u.deathS ?? 0, deathF: u.deathF ?? 0, stable: !!u.stable, row: u.row });
+    if (u.petrified) c.petrified = true;
+    if (u.cursed) c.cursed = true;
   }
 }
 
@@ -818,7 +1105,7 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
     msgs.push(why);
     cb.endLine = lastEvent?.replace(/[.!¡]+$/g, '') ?? why;
     const open = cb.goal?.status === 'open' ? cb.goal.g : undefined;
-    if (open) goalDone(cb, open.kind === 'noflee' || open.kind === 'nodown' || (open.kind === 'win' && cb.round < (open.by ?? 99)));
+    if (open) goalDone(cb, ['noflee', 'nodown', 'nosplit', 'noshriek', 'nostone', 'guard'].includes(open.kind) || (open.kind === 'win' && cb.round < (open.by ?? 99)));
     let xp = cb.bonusXp ?? 0, gold = 0;
     for (const id of cb.encounters) {
       const e = encounterById(id)!;
@@ -852,7 +1139,11 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
     const adv = ADVS[advOf(g.zone)];
     xp = Math.round(xp * (adv.xpScale ?? 1));
     tally(g, { kills: cb.units.filter(u => u.side === 'enemy' && u.dead).length, gold, xp: alive0 ? Math.floor(xp / alive0) : 0 });
-    msgs.push(...gainXp(g.party, xp, adv.level));
+    const spare = { xp: 0 };
+    msgs.push(...gainXp(g.party, xp, adv.level, spare));
+    // Con el nivel ya al tope, la experiencia de más se convierte en botín (1 mo por cada 10 PX) para que explorar compense.
+    const extra = Math.floor(spare.xp / 10);
+    if (extra) { g.gold += extra; msgs.push(`Lo que ya no os hace subir de nivel se queda en botín: ${extra} monedas de oro.`); }
     // Astucia mágica (brujo de nivel 2): tras el combate, un rito de un minuto devuelve la mitad de los espacios de pacto.
     for (const c of g.party.filter(x => !x.dead && x.hp > 0 && x.cls === 'warlock' && x.level >= 2 && !x.cunning)) {
       const full = slotsAt(c.cls, c.level), max = full[0] + full[1] + full[2];
@@ -971,6 +1262,8 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
       A.push({ id: 'guiding_bolt', label: 'Saeta guía', cost: 'action', target: 'enemy', detail: '4d6' });
       A.push({ id: 'bless', label: 'Bendecir', cost: 'action', target: 'none', detail: '+1d4 al grupo' });
     }
+    if (c.level >= 2 && c.channel > 0 && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.mon && MONSTERS[x.mon].ai === 'undead' && !isBoss(x) && !x.turned))
+      A.push({ id: 'turn_undead', label: 'Expulsar muertos vivientes', cost: 'action', target: 'none', detail: `SAB CD ${spellDc(c)} (${c.channel})` });
     if (c.level >= 2 && c.channel > 0) A.push({ id: 'spark', label: 'Chispa divina', cost: 'action', target: 'ally', detail: `cura 1d8+SAB (${c.channel})` });
     if (c.level >= 3 && (u.spiritual || c.slots[1] > 0)) A.push({ id: 'spiritual', label: 'Arma espiritual', cost: 'bonus', target: 'enemy', detail: '1d8+SAB' });
     if (c.level >= 5 && (c.slots[2] ?? 0) > 0) A.push({ id: 'mass_heal', label: 'Curación en masa', cost: 'bonus', target: 'none', detail: 'todo el grupo 2d4+SAB' });
@@ -1001,11 +1294,14 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
   if (c.species === 'dragonborn' && (c.racial ?? 0) > 0) A.push({ id: 'breath', label: 'Ataque de aliento', cost: 'action', target: 'enemy', detail: `una fila ${c.level >= 5 ? '2d10' : '1d10'} ${draconic(c).type} (${c.racial})` });
   if (c.species === 'tiefling' && c.cls !== 'wizard') A.push({ id: 'infernal_bolt', label: 'Descarga de fuego', cost: 'action', target: 'enemy', detail: c.level >= 5 ? '2d10' : '1d10' });
   if (c.species === 'orc' && (c.racial ?? 0) > 0) A.push({ id: 'adrenaline', label: 'Descarga de adrenalina', cost: 'bonus', target: 'none', detail: `+${prof(c.level)} PG temporales (${c.racial})` });
+  if (c.cls === 'barbarian' && c.level >= 2 && !cb.acted && !u.reckless) A.push({ id: 'reckless', label: 'Ataque temerario', cost: 'free', target: 'none', detail: 'ventaja, y contra ti' });
   if (c.cls === 'barbarian' && c.channel > 0 && !u.rage) A.push({ id: 'rage', label: 'Furia', cost: 'bonus', target: 'none', detail: `+2 daño, resiste golpes (${c.channel})` });
   if (c.cls === 'fighter') {
     if (c.secondWind > 0) A.push({ id: 'second_wind', label: 'Tomar aliento', cost: 'bonus', target: 'none', detail: `1d10+${c.level} (${c.secondWind})` });
     if (c.level >= 2 && c.actionSurge > 0 && cb.acted) A.push({ id: 'surge', label: 'Oleada de acción', cost: 'free', target: 'none', detail: 'otra acción' });
   }
+  if (c.cls === 'rogue' && c.level >= 3 && !cb.moved && !u.steady) A.push({ id: 'steady', label: 'Puntería firme', cost: 'bonus', target: 'none', detail: 'ventaja, sin moverte' });
+  if (c.cls === 'rogue' && c.level >= 5 && !cb.acted && !u.trip) A.push({ id: 'trip', label: 'Golpe astuto', cost: 'free', target: 'none', detail: 'furtivo −1d6: derribar' });
   if (c.cls === 'rogue' && c.level >= 2) A.push({ id: 'hide', label: 'Esconderse', cost: 'bonus', target: 'none', detail: 'Sigilo' });
   if (c.cls === 'ranger') {
     if (u.concentration === 'mark' && !u.mark) A.push({ id: 'mark_move', label: 'Mover Marca del cazador', cost: 'bonus', target: 'enemy', detail: 'Sin gastar conjuro' });
@@ -1042,6 +1338,16 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     if (d.kind === 'scroll' && !d.spell && c.cls === 'wizard') A.push({ id: `scroll:${it.uid}`, label: 'Pergamino de escudo', cost: 'action', target: 'none', detail: '+5 CA' });
   }
   A.push({ id: 'help', label: 'Ayudar', cost: 'action', target: 'enemy-melee', detail: 'ventaja a un aliado' });
+  // Agarrar (SRD 5.2.1, golpe sin armas): el agarrado no cambia de fila ni huye hasta que se suelte.
+  A.push({ id: 'grapple', label: 'Agarrar', cost: 'action', target: 'enemy-melee', detail: `FUE o DES CD ${grappleDc(c)}` });
+  // Destrabarse: salir de la vanguardia este turno sin ataques de oportunidad.
+  if (u.row === 'front' && oppFoe(cb, u)) A.push({ id: 'disengage', label: 'Destrabarse', cost: 'action', target: 'none', detail: 'cambiar de fila sin ataque de oportunidad' });
+  // Poner a salvo a un caído de la vanguardia: acción y movimiento.
+  if (u.row === 'front' && !cb.moved && cb.units.some(x => x.side === 'party' && x !== u && alive(x) && x.hp <= 0 && x.row === 'front'))
+    A.push({ id: 'rescue', label: 'Poner a salvo', cost: 'action', target: 'ally-down', detail: 'llevar a un caído a la retaguardia' });
+  // Vigilar a un aliado: si le atacan, disparas con tu reacción (Preparar del SRD con un solo disparador).
+  const bow = weapons(c).find(w => ITEMS[w.id].weapon?.ranged);
+  if (bow) A.push({ id: `watch:${bow.id}`, label: 'Vigilar', cost: 'action', target: 'ally', detail: 'dispara a quien le ataque' });
   A.push({ id: 'dodge', label: 'Esquivar', cost: 'action', target: 'none' });
   A.push({ id: 'row', label: u.row === 'front' ? 'Ir atrás' : 'Ir delante', cost: 'move', target: 'none' });
   A.push({ id: 'flee', label: 'Huir', cost: 'action', target: 'none' });
@@ -1051,8 +1357,15 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
     .map(a => { const off = uselessWhy(g, cb, a); return off ? { ...a, off } : a; });
 }
 
-// El grupo cabe entero en una fila (hasta 4); los enemigos, 3 por fila como mucho.
-const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r).length < (s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
+// El grupo cabe entero en una fila (hasta 4); los enemigos, 3 por fila como mucho. En una sala angosta, dos.
+const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r).length < (cb.terrain === 'narrow' ? 2 : s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
+/** Suelo resbaladizo: cambiar de fila pide una salvación de Destreza CD 10; quien la falla cae al suelo y no se mueve. */
+function slip(g: Game, cb: Combat, u: Unit): boolean {
+  if (cb.terrain !== 'slippery' || saveRoll(g, cb, u, 'dex', 10, 'Destreza')) return false;
+  u.prone = true;
+  say(cb, `${u.name} resbala y cae al suelo.`, 'big');
+  return true;
+}
 
 const KEEP_INVISIBLE = ['dodge', 'help', 'row', 'potion', 'dust', 'surge', 'second_wind', 'rage', 'hide', 'adrenaline'];
 const CURE = 'cura el veneno';
@@ -1078,6 +1391,8 @@ export function targetsFor(cb: Combat, a: Action): Unit[] {
   // Las curaciones solo se ofrecen a quien le falta vida.
   if (a.detail === ELIXIR) return cb.units.filter(x => x.side === 'party' && alive(x) && (x.poisoned || x.paralyzed));
   if (a.target === 'ally' && (HEALS.includes(a.id) || a.heal)) return hurt(cb);
+  if (a.id === 'rescue') return cb.units.filter(x => x.side === 'party' && x !== u && alive(x) && x.hp <= 0 && x.row === 'front');
+  if (a.id.startsWith('watch:')) return cb.units.filter(x => x.side === 'party' && x !== u && conscious(x));
   if (a.target === 'ally' || a.target === 'ally-down') return validTargets(cb, u, 'ally');
   return [];
 }
@@ -1152,7 +1467,10 @@ function extraAttack(g: Game, cb: Combat, u: Unit, c: Char, t: Unit, weapon: str
   attack(g, cb, u, t2, { name: ITEMS[weapon].name, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus, type: w.type, ranged: !!w.ranged, sneak: !!(w.finesse || w.ranged), ...masteryOpts(c, weapon) });
 }
 
-const masteryOpts = (c: Char, weapon: string) => ({ mastery: masteryOf(c, weapon), masteryDc: 8 + abilMod(c, weaponStat(c, weapon).abil) + prof(c.level) });
+const masteryOpts = (c: Char, weapon: string) => ({
+  mastery: masteryOf(c, weapon), masteryDc: 8 + abilMod(c, weaponStat(c, weapon).abil) + prof(c.level), abilDmg: abilMod(c, weaponStat(c, weapon).abil),
+  offhand: LIGHT.includes(weapon) || MASTERY[weapon] === 'nick' ? c.items.find(i => i.id !== weapon && LIGHT.includes(i.id) && !ITEMS[i.id].weapon?.ranged)?.id : undefined,
+});
 
 /** Ejecuta un paso de combate y pega a la última tirada los dados de daño o curación que se hayan tirado. */
 export function withDice(cb: Combat, run: () => void) {
@@ -1373,10 +1691,21 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       for (let i = 0; i < (c.cls === 'warlock' ? pactLevel(c) + 1 : 3) && alive(t!) && t!.hp > 0; i++) attack(g, cb, u, t!, { name: 'Rayo abrasador', toHit: spellAttack(c), dice: '2d6', bonus: 0, type: 'fuego', ranged: true, spell: true });
       break;
     case 'second_wind': c.secondWind--; heal(cb, u, roll(g.rng, '1d10') + c.level); break;
+    case 'reckless': u.reckless = true; say(cb, `${u.name} ataca temerariamente: ventaja en sus golpes, pero se expone.`, 'info'); break;
+    case 'steady': u.steady = true; cb.moved = true; say(cb, `${u.name} apunta con calma: su próximo ataque tendrá ventaja.`, 'info'); break;
+    case 'trip': u.trip = true; say(cb, `${u.name} prepara un golpe astuto para derribar.`, 'info'); break;
+    case 'turn_undead': {
+      c.channel--;
+      say(cb, `${u.name} alza el símbolo sagrado: ¡Expulsar muertos vivientes!`, 'big');
+      for (const x of cb.units.filter(y => y.side === 'enemy' && conscious(y) && y.mon && MONSTERS[y.mon].ai === 'undead' && !isBoss(y))) {
+        if (!saveRoll(g, cb, x, 'wis', spellDc(c), 'Sabiduría')) { x.turned = true; x.plan = undefined; say(cb, `${x.name} queda expulsado: huirá hasta que le hagan daño.`, 'info'); }
+      }
+      break;
+    }
     case 'surge': c.actionSurge--; cb.acted = false; say(cb, `${u.name} usa Oleada de acción.`, 'info'); break;
     case 'hide': {
       // SRD 5.2.1: Sigilo (DES + pericia del pícaro) CD 15; el resultado es lo que tendrá que igualar la Percepción de quien le busque.
-      const d20 = die(g.rng, 20), total = d20 + abilMod(c, 'dex') + prof(c.level) * 2, ok = total >= 15;
+      const d20 = elvenBoots(c) ? Math.max(die(g.rng, 20), die(g.rng, 20)) : die(g.rng, 20), total = d20 + abilMod(c, 'dex') + prof(c.level) * 2, ok = total >= 15;
       setRoll(cb, { d20, total, label: `Sigilo de ${u.name} · CD 15`, ok });
       if (ok) { u.hidden = total; say(cb, `${u.name} se esconde (Sigilo ${total}): ventaja en su próximo ataque.`, 'info'); }
       else say(cb, `${u.name} intenta esconderse, pero no lo consigue (Sigilo ${total} contra CD 15).`, 'info');
@@ -1407,8 +1736,30 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       break;
     }
     case 'dodge': u.dodge = true; say(cb, `${u.name} se pone a la defensiva.`, 'info'); break;
+    case 'disengage': u.disengaged = true; say(cb, `${u.name} se destraba: puede retirarse sin que le golpeen.`, 'info'); break;
+    case 'rescue':
+      cb.moved = true;
+      t!.row = 'back';
+      say(cb, `${u.name} arrastra a ${t!.name} hasta la retaguardia.`, 'big');
+      break;
+    case 'watch': u.watch = t!.key; say(cb, `${u.name} vigila a ${t!.name}: disparará a quien le ataque.`, 'info'); break;
+    case 'grapple': {
+      const m = MONSTERS[t!.mon!];
+      const abil: Ability = (m.saves.str ?? 0) >= (m.saves.dex ?? 0) ? 'str' : 'dex';
+      if (saveRoll(g, cb, t!, abil, grappleDc(c), abil === 'str' ? 'Fuerza' : 'Destreza')) say(cb, `${t!.name} se zafa de ${u.name}.`, 'miss');
+      else { t!.grappled = u.key; t!.plan = undefined; say(cb, `${u.name} agarra a ${t!.name}: no podrá cambiar de fila ni huir.`, 'big'); }
+      break;
+    }
     case 'help': t!.helped = u.key; say(cb, `${u.name} distrae a ${t!.name}: el próximo ataque de un aliado contra él tendrá ventaja.`, 'info'); break;
     case 'row':
+      // Salir de la vanguardia con un enemigo cuerpo a cuerpo delante provoca un ataque de oportunidad (salvo Destrabarse).
+      if (u.row === 'front' && !u.disengaged) {
+        const foe = oppFoe(cb, u);
+        if (foe) opportunity(g, cb, foe, u);
+        if (!conscious(u) || checkEnd(g, cb)) break;
+      }
+      for (const x of cb.units) if (x.grappled === u.key) { x.grappled = undefined; say(cb, `${u.name} suelta a ${x.name}.`, 'info'); }
+      if (slip(g, cb, u)) break;
       u.row = u.row === 'front' ? 'back' : 'front';
       say(cb, `${u.name} pasa a la fila ${u.row === 'front' ? 'delantera' : 'trasera'}.`, 'info');
       if (u.hidden && u.row === 'front') { u.hidden = undefined; say(cb, `${u.name} sale de su escondite.`, 'info'); }
@@ -1458,6 +1809,12 @@ export function enemyTurn(g: Game, cb: Combat) {
   }
   if (!conscious(u)) { endTurn(g, cb); return; }
   if (u.asleep) { say(cb, `${u.name} duerme.`, 'info'); endTurn(g, cb); return; }
+  if (u.turned) {
+    if (u.row === 'front' && rowSpace(cb, 'enemy', 'back')) { u.row = 'back'; say(cb, `${u.name} huye de la luz sagrada a la retaguardia.`, 'info'); }
+    else say(cb, `${u.name} se encoge ante el símbolo sagrado.`, 'info');
+    endTurn(g, cb);
+    return;
+  }
   if (u.burn) {
     u.burn--;
     say(cb, `${u.name} sigue ardiendo.`, 'info');
@@ -1472,29 +1829,74 @@ export function enemyTurn(g: Game, cb: Combat) {
     return;
   }
   if (u.prone) { u.prone = false; say(cb, `${u.name} se levanta del suelo.`, 'info'); }
+  // Agarre: se acaba si quien agarra cae o ya no está delante.
+  if (u.grappled && !cb.units.some(x => x.key === u.grappled && conscious(x) && x.row === 'front')) u.grappled = undefined;
   const m = MONSTERS[u.mon!];
   if (u.mon === 'Shrieker') { shriek(g, cb, u); if (!checkEnd(g, cb)) endTurn(g, cb); return; }
   // Goblins malheridos huyen; sin su jefe, antes (a la mitad de sus PG).
   const leaderless = leaderDown(cb, u);
-  if (m.ai === 'goblin' && u.hp < u.maxHp * (leaderless ? 0.5 : 0.25) && rand(g.rng) < 0.5) {
+  if (m.ai === 'goblin' && !u.grappled && u.hp < u.maxHp * (leaderless ? 0.5 : 0.25) && rand(g.rng) < 0.5) {
+    // Huir desde la vanguardia también provoca un ataque de oportunidad.
+    const opp = u.row === 'front' ? oppFoe(cb, u) : undefined;
+    if (opp) { opportunity(g, cb, opp, u); if (checkEnd(g, cb)) return; if (!conscious(u)) { endTurn(g, cb); return; } }
     u.fled = true;
     u.plan = undefined;
+    moraleHit(cb, `${u.name} huye`);
     say(cb, leaderless ? `${u.name} huye: sin su jefe, no piensa morir aquí.` : `${u.name} huye despavorido.`, 'info');
     if (goalOpen(cb, 'noflee')) goalDone(cb, false);
     if (checkEnd(g, cb)) return;
     endTurn(g, cb);
     return;
   }
-  for (const a of m.attacks) if (a.save?.recharge && u.recharge![a.name] === false && die(g.rng, 6) >= a.save.recharge) u.recharge![a.name] = true;
+  // Los jefes recargan al acabar su turno, para anunciar el golpe antes (ver bossWarn).
+  if (!isBoss(u)) for (const a of m.attacks) if (a.save?.recharge && u.recharge![a.name] === false && die(g.rng, 6) >= a.save.recharge) u.recharge![a.name] = true;
+  // Vharzûl a mitad de PG: alza el vuelo un asalto; al bajar, el aliento está listo.
+  if (u.mon === DRAGON && u.flying) {
+    u.flying = false;
+    u.img = MONSTERS[DRAGON].img;
+    u.breathNow = true;
+    say(cb, `${u.name} desciende en picado.`, 'big');
+  } else if (u.mon === DRAGON && u.half && !u.flown) {
+    u.flying = u.flown = true;
+    u.img = 'dragon_blanco_vuelo';
+    u.plan = undefined;
+    say(cb, `${u.name} alza el vuelo: cuerpo a cuerpo no le alcanzáis.`, 'big');
+    endTurn(g, cb);
+    return;
+  }
   // Lo que había anunciado (si sigue valiendo) o una decisión nueva.
-  const p = u.plan && planOk(cb, u, u.plan) ? u.plan : decide(g, cb, u);
+  let p = u.plan && planOk(cb, u, u.plan) ? u.plan : decide(g, cb, u);
   u.plan = undefined;
   if (!p && u.mon === DRAGON) say(cb, `${u.name} observa desde atrás, tras sus siervos.`, 'info');
   // Cuerpo a cuerpo detrás con la fila delantera llena: espera su hueco (y se dice, para que no parezca que no hace nada).
   else if (!p && u.row === 'back' && m.attacks.some(a => !a.ranged && !a.save)) say(cb, `${u.name} espera detrás a que se abra un hueco.`, 'info');
   if (!p) { endTurn(g, cb); return; }
+  if (u.slowed) {
+    u.slowed = undefined;
+    if (p.move && p.move !== u.row) {
+      say(cb, `${u.name} va ralentizado: no cambia de fila.`, 'info');
+      if (p.kind === 'melee' && u.row === 'back') { endTurn(g, cb); return; }
+      p = { ...p, move: undefined, swap: undefined };
+    }
+  }
+  // Agarrado: para cambiar de fila primero tiene que soltarse, y eso le cuesta el turno.
+  if (p.move && p.move !== u.row && u.grappled) {
+    const by = cb.units.find(x => x.key === u.grappled);
+    const dc = by?.side === 'party' ? grappleDc(charOf(g, by)) : 10;
+    const abil: Ability = (m.saves.str ?? 0) >= (m.saves.dex ?? 0) ? 'str' : 'dex';
+    if (saveRoll(g, cb, u, abil, dc, abil === 'str' ? 'Fuerza' : 'Destreza')) { u.grappled = undefined; say(cb, `${u.name} se suelta.`, 'info'); }
+    else say(cb, `${u.name} forcejea, pero sigue agarrado.`, 'info');
+    endTurn(g, cb);
+    return;
+  }
+  // Retirarse de la vanguardia con un personaje cuerpo a cuerpo delante provoca un ataque de oportunidad.
+  if (p.move === 'back' && u.row === 'front') {
+    const opp = oppFoe(cb, u);
+    if (opp) { opportunity(g, cb, opp, u); if (checkEnd(g, cb)) return; if (!conscious(u)) { endTurn(g, cb); return; } }
+  }
+  if (p.move && p.move !== u.row && slip(g, cb, u)) { endTurn(g, cb); return; }
   if (p.move && p.move !== u.row) {
-    const mate = p.swap ? cb.units.find(x => x.key === p.swap && conscious(x) && x.row === p.move) : undefined;
+    const mate = p.swap ? cb.units.find(x => x.key === p.swap && conscious(x) && x.row === p.move && !x.grappled) : undefined;
     if (mate && !rowSpace(cb, 'enemy', p.move)) {
       mate.row = u.row;
       mate.plan = undefined;
@@ -1509,8 +1911,26 @@ export function enemyTurn(g: Game, cb: Combat) {
     u.spent = (u.spent ?? 0) + 1;
     if (!area.save!.uses || u.spent >= area.save!.uses) u.recharge![area.name] = false;
     say(cb, `${u.name} usa ${area.name}.`, 'big');
-    const dmg = roll(g.rng, area.dice);
+    u.warn = u.aim = undefined;
+    if (u.mon === DRAGON) u.breathNow = false;
+    if (u.mon === 'Xiximanter') u.cool = true;
+    let dmg = roll(g.rng, area.dice);
+    if (u.mon === DRAGON && u.weakBreath) { u.weakBreath = false; dmg = Math.floor(dmg / 2); say(cb, 'El aire templado de las válvulas debilita el aliento: hace la mitad de daño.', 'info'); }
     const hit = u.mon === DRAGON ? cb.units.filter(x => p.targets.includes(x.key) && conscious(x)) : cb.units.filter(x => x.side === 'party' && conscious(x) && x.row === 'front');
+    if (!hit.length) say(cb, 'El golpe no alcanza a nadie: os habíais apartado a tiempo.', 'info');
+    if (area.petrify) {
+      for (const t of hit.filter(x => !x.stoning)) {
+        let ok = saveRoll(g, cb, t, 'con', area.save!.dc, 'Constitución');
+        // Espejo de acero: se le mira por el reflejo y la salvación se repite.
+        if (!ok && t.side === 'party' && charOf(g, t).items.some(i => i.id === 'steel_mirror')) {
+          say(cb, `${t.name} aparta la vista y mira al basilisco en el espejo de acero.`, 'info');
+          ok = saveRoll(g, cb, t, 'con', area.save!.dc, 'Constitución');
+        }
+        if (!ok) { t.stoning = true; say(cb, `${t.name} empieza a volverse de piedra: queda apresado.`, 'big'); }
+      }
+      endTurn(g, cb);
+      return;
+    }
     for (const t of hit) {
       const ok = saveRoll(g, cb, t, area.save!.abil, area.save!.dc, area.save!.abil === 'con' ? 'Constitución' : 'Destreza');
       applyDamage(g, cb, t, ok ? Math.floor(dmg / 2) : dmg, area.type, u);
@@ -1536,8 +1956,11 @@ export function enemyTurn(g: Game, cb: Combat) {
   if (!atks.length) { endTurn(g, cb); return; }
   let told = false;
   const lost: string[] = [];
+  // El Corazón Hueco había tensado las raíces bajo la retaguardia: esta vez llegan allí.
+  const roots = u.mon === 'Treant' && u.warn ? cb.units.filter(x => x.side === 'party' && conscious(x) && x.row === 'back') : [];
+  if (u.mon === 'Treant') u.warn = u.aim = undefined;
   for (let i = 0; i < p.targets.length; i++) {
-    const pool = reach(cb, u, ranged);
+    const pool = roots.length ? roots : reach(cb, u, ranged);
     let t = cb.units.find(x => x.key === p.targets[i] && pool.includes(x) && conscious(x));
     if (!t) t = chooseTarget(g, cb, u, pool.filter(x => !lost.includes(x.key)), ranged);
     // Jefe: a veces remata a un caído a su alcance (cuerpo a cuerpo contra un caído es crítico: dos fallos; el autor 2026-11-25).
@@ -1557,8 +1980,19 @@ export function enemyTurn(g: Game, cb: Combat) {
       say(cb, `No queda nadie delante: ${u.name} llega hasta ${t.name}.`, 'info');
     }
     const a = atks[i % atks.length];
+    watchShot(g, cb, u, t);
+    if (checkEnd(g, cb)) return;
+    if (!conscious(u)) break;
     // Maltrecho (la mitad de sus PG o menos): algunos monstruos hacen menos daño (SRD 5.2.1).
     const hit = attack(g, cb, u, t, toOpts(a.bloodied && u.hp <= u.maxHp / 2 ? { ...a, dice: a.bloodied } : a));
+    if (hit && a.curse && t.side === 'party' && !t.dead && !t.cursed) {
+      t.cursed = true;
+      say(cb, `${t.name} queda maldito por la momia: no podrá recuperar PG hasta que el templo le quite la maldición.`, 'big');
+    }
+    if (hit && u.mon === 'Treant' && u.half && conscious(t) && !t.restrained) {
+      t.restrained = 13;
+      say(cb, `Las raíces apresan a ${t.name} (Fuerza CD 13 para soltarse).`, 'big');
+    }
     if (hit && a.paralyze && conscious(t) && !t.paralyzed && !saveRoll(g, cb, t, 'con', a.paralyze.dc, 'Constitución')) {
       // Basilisco: con el espejo de acero se le mira por el reflejo y la salvación se repite.
       const mirror = u.mon === 'Basilisk' && t.side === 'party' && charOf(g, t).items.some(i => i.id === 'steel_mirror');
@@ -1593,7 +2027,9 @@ const isGuard = (cb: Combat, u: Unit, row: Row) => row === 'front' && u.maxHp >=
   cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'back' && MONSTERS[x.mon!].attacks.some(a => a.ranged));
 
 const planOk = (cb: Combat, u: Unit, p: Plan) => {
-  if (u.mon === DRAGON && (p.kind === 'area') !== breathRound(cb)) return false;
+  if (u.mon === DRAGON && (p.kind === 'area') !== breathNow(cb, u)) return false;
+  // El golpe anunciado de un jefe sale aunque ya no alcance a nadie (apartarse era la respuesta).
+  if (p.kind === 'area' && isBoss(u) && u.warn) return true;
   if (p.kind === 'area') return cb.units.some(x => x.side === 'party' && conscious(x) && (x.row === 'front' || u.mon === DRAGON));
   if (p.move && p.move !== u.row && !rowSpace(cb, 'enemy', p.move) && !(p.swap && cb.units.some(x => x.key === p.swap && conscious(x) && x.row === p.move))) return false;
   const pool = p.kind === 'magic' ? cb.units.filter(x => x.side === 'party' && conscious(x)) : reach(cb, u, p.kind === 'ranged', p.move ?? u.row);
@@ -1611,10 +2047,22 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
     for (let i = 0; i < times; i++) { const t = chooseTarget(g, cb, u, pool, ranged); if (t) out.push(t.key); }
     return out;
   };
-  if (m.reach) return { kind: 'melee', targets: picks(reach(cb, u, false), false) };
+  if (m.reach) {
+    // Raíces bajo la retaguardia (anunciadas): con todos los nudos rotos, solo un golpe.
+    const back = u.warn ? up.filter(x => x.row === 'back') : [];
+    if (back.length) {
+      const n = knotsUp(cb) ? times : 1;
+      return { kind: 'melee', targets: Array.from({ length: n }, () => chooseTarget(g, cb, u, back)!.key) };
+    }
+    return { kind: 'melee', targets: picks(reach(cb, u, false), false) };
+  }
   if (u.mon === DRAGON) {
-    // Aliento en asaltos fijos contra hasta tres personajes (primero los de delante).
-    if (breathRound(cb)) return { kind: 'area', targets: [...up.filter(x => x.row === 'front'), ...up.filter(x => x.row === 'back')].slice(0, 3).map(x => x.key) };
+    if (u.flying) return undefined;
+    // Aliento en asaltos fijos (o al aterrizar) contra la fila anunciada; quien está escondido no es objetivo.
+    if (breathNow(cb, u)) {
+      const row = u.aim ?? breathAim(cb);
+      return { kind: 'area', targets: up.filter(x => x.row === row && !x.hidden).slice(0, 3).map(x => x.key) };
+    }
     // Mientras su vanguardia aguante, espera detrás; cuando cae, avanza.
     if (u.row === 'back' && cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'front')) return undefined;
     const targets = picks(reach(cb, u, false, 'front'), false);
@@ -1622,7 +2070,9 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
   }
   const area = m.attacks.find(a => a.save);
   const partyFront = up.filter(x => x.row === 'front');
-  if (area && u.recharge![area.name] !== false && (partyFront.length >= 2 || m.ai !== 'caster') && partyFront.length)
+  // Los jefes solo usan su golpe grande después de anunciarlo (ver bossWarn).
+  if (area && isBoss(u)) { if (u.warn === area.name) return { kind: 'area', targets: partyFront.map(x => x.key) }; }
+  else if (area && u.recharge![area.name] !== false && (partyFront.length >= 2 || m.ai !== 'caster') && partyFront.length)
     return { kind: 'area', targets: partyFront.map(x => x.key) };
   // Lanzador delante con alguien que le cubra: se retira a la retaguardia y lanza desde allí.
   const cover = cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'front');
@@ -1653,6 +2103,77 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
   const targets = picks(reach(cb, u, useRanged, row), useRanged);
   if (!targets.length) return undefined;
   return { kind: useRanged ? 'ranged' : 'melee', targets, move: row !== u.row ? row : undefined, guard: isGuard(cb, u, row), swap: row !== u.row ? swap : undefined };
+}
+
+/**
+ * Cómo se comporta un enemigo, en una o dos frases para su carta (sale de la misma IA que decide su turno).
+ * Así se juega contra un plan y no contra un dado oculto.
+ */
+export function behaviorOf(g: Game, cb: Combat, u: Unit): string[] {
+  if (u.side !== 'enemy' || !u.mon) return [];
+  const m = MONSTERS[u.mon];
+  const out: string[] = [];
+  const first = (k?: string) => cb.units.find(x => x.key === k)?.name.split(' ')[0];
+  if (m.piece) return ['Un objeto: no ataca ni tiene turno. Rompedlo para cumplir el objetivo; no hace falta para ganar.'];
+  if (m.knot) return ['Alimenta al Corazón: mientras quede algún nudo, el Corazón se cura y resiste el daño.'];
+  if (u.mon === 'Shrieker') return ['No ataca: si chilla, atrae a otra criatura.'];
+  if (cb.morale !== undefined && moraleFoe(u)) out.push(`Moral del grupo: ${cb.morale}/3. A la tercera, los malheridos huyen.`);
+  if (u.warn) out.push(u.mon === 'Treant' ? 'Prepara un golpe de raíz contra la retaguardia.'
+    : `Prepara ${m.attacks.find(a => a.name === u.warn)?.name ?? u.warn} contra la ${u.mon === DRAGON && u.aim === 'back' ? 'retaguardia' : 'vanguardia'}.`);
+  if (u.flying) out.push('En vuelo: solo se le alcanza a distancia o con conjuros.');
+  if (isBoss(u)) {
+    if (u.mon === 'Treant') out.push(u.half ? 'Sus raíces apresan a quien golpean.' : 'Cada pocos asaltos brota un arbusto despertado.');
+    else if (u.mon === 'Orvane') out.push(u.half ? 'Va a por el más débil.' : 'Se protege con Escudo y ataca al de menor CA.');
+    else if (u.mon === 'Xiximanter') out.push(u.half ? 'Se centra en quien más daño le ha hecho.' : 'Ataca al de menor CA desde detrás de sus siervos.');
+    else if (u.mon === DRAGON) out.push('Espera detrás mientras le cubren; su aliento sale cada pocos asaltos.');
+    out.push('Puede rematar a un caído que tenga a su alcance.');
+    return out;
+  }
+  if (m.ai === 'goblin') {
+    const lead = cb.units.some(x => x.side === 'enemy' && conscious(x) && isLeader(x) && MONSTERS[x.mon!].ai === 'goblin' && x !== u);
+    out.push(isLeader(u) ? 'Jefe de su grupo: si cae, los demás huyen antes.' : lead ? 'Huye si cae su jefe o si queda malherido.' : 'Va a por el más débil y huye si queda malherido.');
+  } else if (m.ai === 'undead') out.push(first(u.prey) ? `No suelta a ${first(u.prey)} hasta que caiga.` : 'Elige a alguien de delante y no lo suelta hasta que cae.');
+  else if (m.ai === 'caster') out.push('Se retira detrás si alguien le cubre y ataca al de menor CA.');
+  else if (m.ai === 'cultist') out.push(isLeader(u) ? 'Sus seguidores le defienden.' : 'Defiende a su líder: va a por quien le hiera.');
+  else if (m.packTactics) out.push('Caza en manada: va a por el más débil.');
+  else out.push(first(u.lastHitBy) ? `Se revuelve contra ${first(u.lastHitBy)}, que le ha herido.` : 'Se revuelve contra quien le hiera.');
+  if (m.attacks.some(a => a.ranged) && !m.attacks.every(a => a.ranged)) out.push('Si queda malherido y alguien le cubre, se retira a disparar desde atrás.');
+  return out;
+}
+
+/** Fila a la que apunta el aliento de Vharzûl: la que tenga más personajes a la vista (si empatan, la delantera). */
+function breathAim(cb: Combat): Row {
+  const n = (r: Row) => cb.units.filter(x => x.side === 'party' && conscious(x) && x.row === r && !x.hidden).length;
+  return n('back') > n('front') ? 'back' : 'front';
+}
+
+/**
+ * Al acabar su turno, cada jefe anuncia el golpe grande del turno siguiente (diseño de jefes del 23-nov):
+ * Orvane recarga la Onda, el Corazón tensa raíces bajo la retaguardia, Vharzûl toma aire y Xiximanter traza runas.
+ */
+function bossWarn(g: Game, cb: Combat, u: Unit) {
+  const m = MONSTERS[u.mon!];
+  const area = m.attacks.find(a => a.save);
+  if (u.warn) return;
+  if (u.mon === 'Orvane' && area) {
+    if (u.recharge![area.name] === false && die(g.rng, 6) >= area.save!.recharge!) u.recharge![area.name] = true;
+    if (u.recharge![area.name] !== false) { u.warn = area.name; say(cb, 'Orvane reúne energía: el próximo turno estallará contra la vanguardia.', 'big'); }
+  } else if (u.mon === 'Xiximanter' && area) {
+    // Una bola de fuego anunciada cada dos turnos, mientras le queden.
+    if (u.cool) u.cool = false;
+    else if ((u.spent ?? 0) < (area.save!.uses ?? 1) && u.recharge![area.name] !== false) {
+      u.warn = area.name;
+      say(cb, 'Xiximanter traza runas de fuego: el próximo turno, bola de fuego contra la vanguardia.', 'big');
+    }
+  } else if (u.mon === DRAGON && !u.flying) {
+    if (breathRound({ ...cb, round: cb.round + 1 })) { u.warn = area!.name; u.aim = breathAim(cb); say(cb, `Vharzûl toma aire: su aliento irá contra la ${u.aim === 'front' ? 'vanguardia' : 'retaguardia'}.`, 'big'); }
+  } else if (u.mon === DRAGON && u.flying) {
+    u.warn = area!.name; u.aim = breathAim(cb);
+    say(cb, `Vharzûl vuela en círculos y toma aire: al bajar, su aliento irá contra la ${u.aim === 'front' ? 'vanguardia' : 'retaguardia'}.`, 'big');
+  } else if (u.mon === 'Treant' && rootRound(cb.round + 1)) {
+    u.warn = 'Raíz'; u.aim = 'back';
+    say(cb, 'Las raíces se tensan bajo la retaguardia: el próximo turno el Corazón golpeará allí.', 'big');
+  }
 }
 
 /** Anuncia (o corrige) lo que harán los enemigos: se llama al empezar cada turno y tras cada acción. */
@@ -1695,6 +2216,8 @@ function chooseTarget(g: Game, cb: Combat, u: Unit, opts: Unit[], ranged = false
   // Manadas (ratas, lobos) y cualquiera que ya no tenga a nadie delante: a por el más débil.
   if (MONSTERS[u.mon!].packTactics || (!ranged && !frontHeld(cb, 'party'))) return weakest(pool);
   if (ai === 'beast') return pool.find(x => x.key === u.lastHitBy) ?? pick(g.rng, pool);
+  if (u.half && u.mon === 'Orvane') return weakest(pool);
+  if (u.half && u.mon === 'Xiximanter') return [...pool].sort((a, b) => (u.dmgBy?.[b.key] ?? 0) - (u.dmgBy?.[a.key] ?? 0) || a.hp - b.hp)[0];
   if (ai === 'caster') return [...pool].sort((a, b) => a.ac - b.ac || a.hp - b.hp)[0];
   // Sectarios: defienden a su líder y van a por quien le ha herido.
   if (ai === 'cultist') {

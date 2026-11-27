@@ -227,12 +227,24 @@
                   },
                   "fail": {
                     "text": "Hacéis lo que podéis y lo dejáis abrigado junto al fuego."
-                  }
+                  },
+                  "skill": "medicine"
                 },
                 {
                   "label": "Marcar el lugar y seguir",
                   "ok": {
                     "text": "Marcáis la ubicación del refugio antes de seguir."
+                  }
+                },
+                {
+                  "label": "Imponerle las manos",
+                  "cls": [
+                    "cleric",
+                    "paladin"
+                  ],
+                  "ok": {
+                    "text": "Conseguís estabilizarlo. Agradecido, os entrega unas monedas de su bolsa.",
+                    "gold": 5
                   }
                 }
               ]
@@ -303,7 +315,8 @@
                 }
               ],
               "gold_drop": 2,
-              "xp_total": 50
+              "xp_total": 50,
+              "terrain": "slippery"
             },
             {
               "type": "scene",
@@ -334,7 +347,8 @@
                   "fail": {
                     "text": "Se escabulle sin decir nada."
                   },
-                  "tone": "dureza"
+                  "tone": "dureza",
+                  "skill": "intimidation"
                 },
                 {
                   "label": "Dejarle donde está",
@@ -342,7 +356,8 @@
                     "text": "Seguís adelante."
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "dialogue",
@@ -447,7 +462,8 @@
                   },
                   "fail": {
                     "text": "No encontráis el hueco bajo la roca."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Examinar las juntas bajo la nieve",
@@ -459,7 +475,8 @@
                   },
                   "fail": {
                     "text": "La nieve oculta el ensamblaje."
-                  }
+                  },
+                  "skill": "nature"
                 }
               ]
             }
@@ -689,7 +706,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "m1_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -702,7 +720,8 @@
                   "fail": {
                     "text": "No retroceden.",
                     "fight": "m1_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             },
@@ -757,7 +776,8 @@
                   "fail": {
                     "text": "El frío os cala.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Comparar el hielo de las rocas",
@@ -769,7 +789,8 @@
                   },
                   "fail": {
                     "text": "El hielo oculta los apoyos."
-                  }
+                  },
+                  "skill": "nature"
                 },
                 {
                   "label": "Abrirse paso por la nieve profunda",
@@ -866,7 +887,8 @@
                   "fail": {
                     "text": "El ruido de las piedras provoca un enfrentamiento.",
                     "fight": "m1_e05"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Estudiar las piedras bajo la nieve",
@@ -878,7 +900,8 @@
                   },
                   "fail": {
                     "text": "Las piedras se deslizan y os obligan a retroceder."
-                  }
+                  },
+                  "skill": "nature"
                 },
                 {
                   "label": "Buscar un rodeo entre las rocas",
@@ -890,7 +913,8 @@
                   "fail": {
                     "text": "Las piedras se deslizan y os golpean.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "acrobatics"
                 }
               ],
               "fallback": {
@@ -949,7 +973,8 @@
                   },
                   "fail": {
                     "text": "El viento apaga las chispas una y otra vez."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Dejarle comida y una manta",
@@ -1246,7 +1271,8 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 200
+              "xp_total": 200,
+              "terrain": "narrow"
             },
             {
               "type": "trap",
@@ -1317,7 +1343,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "m2_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -1330,7 +1357,8 @@
                   "fail": {
                     "text": "No retroceden.",
                     "fight": "m2_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             }
@@ -1537,10 +1565,12 @@
               "lock_dc": null,
               "gold": 5,
               "item": {
-                "id": "silver_piece",
-                "name": "Broche del centinela",
-                "srd_item": null,
-                "description": "Broche de plata de un vigía enano."
+                "id": "elven_boots",
+                "name": "Botas élficas",
+                "srd_item": "Boots of Elvenkind",
+                "rarity": "Uncommon",
+                "magical": true,
+                "description": "Ventaja en las pruebas de Sigilo."
               }
             },
             {
@@ -1561,7 +1591,8 @@
                   },
                   "fail": {
                     "text": "La nieve oculta el rastro."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Examinar los cortes de las ramas",
@@ -1573,7 +1604,8 @@
                   },
                   "fail": {
                     "text": "La nieve oculta el rastro."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             }
@@ -1738,7 +1770,8 @@
                   "fail": {
                     "text": "El hielo cede y el frío os obliga a retroceder.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Inmovilizar una raíz agrietada",
@@ -1750,7 +1783,8 @@
                   },
                   "fail": {
                     "text": "El hielo cede y el frío os obliga a retroceder."
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Resistir el frío al buscar un rodeo",
@@ -1845,7 +1879,8 @@
                   "fail": {
                     "text": "Silba, y salen más kobolds de entre las cuerdas.",
                     "fight": "m2_e06"
-                  }
+                  },
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Desarmar las trampas",
@@ -1858,9 +1893,22 @@
                   "fail": {
                     "text": "Una cuerda salta y el vigía llama a los suyos.",
                     "fight": "m2_e06"
+                  },
+                  "skill": "investigation"
+                },
+                {
+                  "label": "Desmontar los cepos como un cazador",
+                  "cls": [
+                    "ranger",
+                    "rogue"
+                  ],
+                  "ok": {
+                    "text": "Desarmáis las trampas y encontráis una nota sobre un escondite de porteadores.",
+                    "reveal": "m2_s01"
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "prop",
@@ -1924,7 +1972,8 @@
                   },
                   "fail": {
                     "text": "El cuero se deshace y la bolsita cae entre las raíces."
-                  }
+                  },
+                  "skill": "sleight"
                 },
                 {
                   "label": "Dejar una marca para otros viajeros",
@@ -1943,7 +1992,8 @@
                   },
                   "fail": {
                     "text": "No sacáis nada en claro."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -2465,7 +2515,8 @@
                 }
               ],
               "gold_drop": 7,
-              "xp_total": 150
+              "xp_total": 150,
+              "terrain": "smoke"
             },
             {
               "type": "encounter",
@@ -2577,7 +2628,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "m3_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -2590,7 +2642,8 @@
                   "fail": {
                     "text": "No retroceden.",
                     "fight": "m3_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             },
@@ -2670,7 +2723,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Comparar las juntas de los bloques",
@@ -2682,7 +2736,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -2703,7 +2758,8 @@
                   },
                   "fail": {
                     "text": "Solo veis hielo."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Buscar una marca enana",
@@ -2715,6 +2771,17 @@
                   },
                   "fail": {
                     "text": "No encontráis ninguna marca."
+                  },
+                  "skill": "history"
+                },
+                {
+                  "label": "Reconocer la marca de vuestro pueblo",
+                  "species": [
+                    "dwarf"
+                  ],
+                  "ok": {
+                    "text": "Encontráis la marca de las tablillas: un ojo y un sol naciente. Esta puerta se abrirá algún día con una luz traída de lejos.",
+                    "flag": "m3_s02_visto"
                   }
                 }
               ],
@@ -2845,7 +2912,8 @@
                   "fail": {
                     "text": "La piedra se mueve bruscamente y os obliga a retroceder.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "investigation"
                 },
                 {
                   "label": "Escuchar el crujido de la piedra",
@@ -2857,7 +2925,8 @@
                   },
                   "fail": {
                     "text": "La piedra se mueve bruscamente y os obliga a retroceder."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Sostener la losa y registrar el hueco",
@@ -2871,7 +2940,8 @@
                   "fail": {
                     "text": "La piedra se mueve bruscamente y os obliga a retroceder.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "ally": "vurka",
@@ -2935,11 +3005,13 @@
                   "dc": 13,
                   "ok": {
                     "text": "La tubería libera aire templado. Abrís el cajón y encontráis monedas.",
-                    "gold": 9
+                    "gold": 9,
+                    "flag": "m3_valvulas"
                   },
                   "fail": {
                     "text": "La rueda no cede."
-                  }
+                  },
+                  "skill": "sleight"
                 },
                 {
                   "label": "Forzarla y vaciar el cajón",
@@ -2952,7 +3024,8 @@
                   },
                   "fail": {
                     "text": "La válvula sigue helada."
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "No tocar el mecanismo",
@@ -2965,7 +3038,8 @@
                   "label": "Dejar que Durnok ajuste la válvula",
                   "ok": {
                     "text": "Durnok conoce estas válvulas: gira la rueda pequeña antes que la grande. El cajón queda libre y encontráis monedas.",
-                    "gold": 9
+                    "gold": 9,
+                    "flag": "m3_valvulas"
                   }
                 }
               ]
@@ -3015,7 +3089,8 @@
                   "fail": {
                     "text": "Huye con los sellos."
                   },
-                  "tone": "piedad"
+                  "tone": "piedad",
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Comprarle los sellos",
@@ -3391,7 +3466,8 @@
                 }
               ],
               "gold_drop": 0,
-              "xp_total": 700
+              "xp_total": 700,
+              "terrain": "slippery"
             }
           ]
         },
@@ -3497,7 +3573,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "m4_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -3510,7 +3587,8 @@
                   "fail": {
                     "text": "No retroceden.",
                     "fight": "m4_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             }
@@ -3612,7 +3690,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Buscar la unión con el muro",
@@ -3624,7 +3703,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -3654,7 +3734,8 @@
                   },
                   "fail": {
                     "text": "El hielo no deja distinguir nada."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Dejar el testimonio intacto",
@@ -3913,7 +3994,8 @@
                   "fail": {
                     "text": "La ráfaga os alcanza.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Escuchar el aire entre las grietas",
@@ -3925,7 +4007,8 @@
                   },
                   "fail": {
                     "text": "El ritmo cambia sin aviso."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Resistir el frío junto a la grieta",
@@ -4006,7 +4089,8 @@
                     "text": "El kobold sacude la cuerda y hace sonar la campanilla.",
                     "fight": "m4_e06"
                   },
-                  "tone": "piedad"
+                  "tone": "piedad",
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Pagar por su silencio",
@@ -4028,9 +4112,11 @@
                     "text": "El kobold toca la campanilla antes de que podáis detenerlo.",
                     "fight": "m4_e06"
                   },
-                  "tone": "dureza"
+                  "tone": "dureza",
+                  "skill": "athletics"
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "prop",
@@ -4088,7 +4174,8 @@
                   "fail": {
                     "text": "La ráfaga os alcanza.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Calcular las ráfagas y vaciar el nicho",
@@ -4102,7 +4189,8 @@
                   "fail": {
                     "text": "Los destellos os engañan.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "investigation"
                 },
                 {
                   "ally": "syrael",

@@ -128,7 +128,7 @@ export const TOWNS: Record<TownId, Town> = {
   valdescarcha: {
     name: 'Valdescarcha', adv: 'hondaroca',
     bg: { menu: 'valdescarcha', tienda: 'pueblo_tienda', templo: 'pueblo_templo', posada: 'pueblo_posada', puerta: 'pueblo_puerta' },
-    stock: [...COMUNES, ...B.shops.valdescarcha],
+    stock: [...COMUNES, ...B.shops.valdescarcha, 'greataxe', 'greatsword', 'halberd'],
   },
   vegahumbria: {
     name: 'Vegaumbría', adv: 'corazon_hueco',

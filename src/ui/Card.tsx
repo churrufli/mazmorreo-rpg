@@ -336,7 +336,9 @@ function OrbOut({ k, size }: { k: StateTag['key']; size: number }) {
 }
 
 /** Carta en grande: tocar la ilustración la gira a la ficha; tocar la ficha (fuera de los objetos) vuelve. */
-export function CardModal({ char, monster, info, onClose, party, onGive, onDrop, onUse, town = 'Valdescarcha', intent, others, onPick }: {
+export function CardModal({ char, monster, info, onClose, party, onGive, onDrop, onUse, town = 'Valdescarcha', intent, others, onPick, notes }: {
+  /** Cómo se comporta el enemigo (una frase por línea). */
+  notes?: string[];
   /** Las demás cartas (en pequeño, abajo): tocar una amplía esa sin cerrar esta. */
   others?: { key: string; info: CardInfo }[]; onPick?: (key: string) => void;
   char?: Char; monster?: string; info: CardInfo; onClose: () => void; intent?: { icon: string; faces: ImgKey[] }; party?: Char[]; onGive?: (uid: string, to: string) => void;
@@ -371,7 +373,7 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
   const miniW = strip ? Math.min(52, (width - 24 - (strip.length - 1) * 6) / strip.length) : 0;
   const stripH = strip ? miniW * 1.5 + 14 : 0;
   // Lo más grande que quepa: 4 px de margen a cada lado y el alto justo para los botones (el autor 2026-11-25).
-  const W = Math.min(width - 8, (height - 118 - stripH - sts.length * 46) / 1.5);
+  const W = Math.min(width - 8, (height - 118 - stripH - sts.length * 46 - (notes?.length ?? 0) * 22) / 1.5);
   return (
     <Modal transparent animationType="fade" onRequestClose={art ? () => setArt(false) : onClose}>
       <View style={st.modalBg}>
@@ -384,6 +386,12 @@ export function CardModal({ char, monster, info, onClose, party, onGive, onDrop,
             {char ? <Sheet c={char} party={party} onGive={onGive} onDrop={onDrop} onUse={onUse} onFlip={() => setBack(false)} /> : <MonsterSheet id={monster!} info={info} onFlip={() => setBack(false)} />}
           </Animated.View>
         </Animated.View>
+        {/* Cómo se comporta (enemigos): sale de la misma IA que decide su turno. */}
+        {notes?.length ? (
+          <View style={{ width: Math.max(W, Math.min(width - 24, 360)), marginTop: 8 }}>
+            {notes.map(t => <Text key={t} style={st.stateDesc}>• {t}</Text>)}
+          </View>
+        ) : null}
         {/* Estados explicados: su esfera, el nombre y qué hace. */}
         {sts.length ? (
           <View style={{ width: Math.max(W, Math.min(width - 24, 360)), marginTop: 8 }}>

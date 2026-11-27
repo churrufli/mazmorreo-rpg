@@ -1,3 +1,4 @@
+import { pace } from '../ui/ritmos';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useEscritorio } from '../ui/escritorio';
@@ -7,7 +8,7 @@ import { IMG } from '../assets';
 import { C, F } from '../theme';
 import { foeList } from '../ui/anuncio';
 import { useStore } from '../store';
-import { Action, MASTERY_NAME, Unit, actionsFor, autoTurn, current, hasUseful, masteryOf, preview, targetsFor } from '../engine/combat';
+import { Action, MASTERY_NAME, Unit, actionsFor, autoTurn, behaviorOf, current, hasUseful, masteryOf, preview, targetsFor } from '../engine/combat';
 import { Card, CardInfo, CardModal, resetFx, slotsOf } from '../ui/Card';
 import { statesOf } from '../ui/estados';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
@@ -203,7 +204,7 @@ export function Combat() {
     if (!auto || !ready || paused) return;
     // Ritmo ágil (Ajustes): los enemigos no esperan a que se vaya el dado, solo a que se lea.
     const fast = !getFlag('pausado');
-    const t = setTimeout(enemyStep, fast ? Math.max(Math.min(rollLeft(), 700), me.side === 'enemy' ? 650 : 400) : Math.max(rollLeft(), me.side === 'enemy' ? 1400 : 700));
+    const t = setTimeout(enemyStep, fast ? Math.max(Math.min(rollLeft(), pace(700)), pace(me.side === 'enemy' ? 650 : 400)) : Math.max(rollLeft(), pace(me.side === 'enemy' ? 1400 : 700)));
     return () => clearTimeout(t);
   }, [auto, ready, paused, cb, enemyStep, me.side]);
 
@@ -213,7 +214,7 @@ export function Combat() {
     if (!cb.result) { setEndShown(false); setEndBanner(undefined); return; }
     const delay = rollLeft();
     if (cb.endLine) setEndBanner({ text: cb.endLine, delay });
-    const t = setTimeout(() => setEndShown(true), delay + (cb.endLine ? END_MS : 300));
+    const t = setTimeout(() => setEndShown(true), delay + pace(cb.endLine ? END_MS : 300));
     return () => clearTimeout(t);
   }, [cb.result]); // eslint-disable-line react-hooks/exhaustive-deps
   // La música de victoria o derrota empieza con el cuadro, no con el golpe final.
@@ -245,7 +246,7 @@ export function Combat() {
   const idle = ready && !paused && !rerollAsk && !auto && !cb.result && !sel && !tip && !askFlee && !hasUseful(g, cb) && (!rowAct || !!rowAct.off);
   useEffect(() => {
     if (!idle) return;
-    const t = setTimeout(endTurn, 1100);
+    const t = setTimeout(endTurn, pace(1100));
     return () => clearTimeout(t);
   }, [idle, cb, endTurn]);
   const targets = pending ? targetsFor(cb, pending).map(u => u.key) : [];
@@ -655,7 +656,7 @@ export function Combat() {
         const pick = (key: string) => setSheet(cb.units.find(u => u.key === key));
         return sheet.side === 'party'
           ? <CardModal key={sheet.key} char={g.party.find(c => c.id === sheet.charId)} town={TOWNS[ADVS[advOf(g.zone)].town].name} info={info(cb.units.find(u => u.key === sheet.key)!)} others={others} onPick={pick} onClose={() => setSheet(undefined)} />
-          : <CardModal key={sheet.key} monster={sheet.mon} info={info(cb.units.find(u => u.key === sheet.key)!)} intent={intentOf(cb.units.find(u => u.key === sheet.key)!)} others={others} onPick={pick} onClose={() => setSheet(undefined)} />;
+          : <CardModal key={sheet.key} monster={sheet.mon} info={info(cb.units.find(u => u.key === sheet.key)!)} intent={intentOf(cb.units.find(u => u.key === sheet.key)!)} notes={behaviorOf(g, cb, cb.units.find(u => u.key === sheet.key)!)} others={others} onPick={pick} onClose={() => setSheet(undefined)} />;
       })() : null}
     </Bg>
   );
@@ -741,6 +742,7 @@ function EncounterIntro({ cb, onDone }: { cb: ReturnType<typeof useStore.getStat
       <FadeIn delay={500}><Text style={st.introSub}>{foeText}</Text></FadeIn>
       {cb.goal ? (
         <FadeIn delay={700} style={{ width: boxW, marginBottom: 10 }}>
+          {cb.goal.g.img ? <Image source={IMG[cb.goal.g.img]} style={{ width: '100%', height: 170, borderRadius: 6, marginBottom: 6 }} resizeMode="cover" /> : null}
           <View style={st.goalIntro}>
             <Icon path={mdiBullseyeArrow} size={22} color={C.goldHi} />
             <Text style={st.goalIntroTxt}>Objetivo opcional: {cb.goal.g.text}</Text>

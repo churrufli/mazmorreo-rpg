@@ -1,6 +1,6 @@
 import type { ImgKey } from '../assets';
 import {
-  ABIL_NAME, Ability, CLASSES, ClassId, HALF_SLOTS, ITEMS, ITEM_BY_NAME, MAX_LEVEL, SLOTS, Slots, SPECIES, SpeciesId, XP_LEVELS, prof,
+  ABIL_NAME, Ability, CLASSES, CLASS_SKILLS, ClassId, EXPERTISE, HALF_SLOTS, ITEMS, ITEM_BY_NAME, MAX_LEVEL, SKILLS, SLOTS, Skill, Slots, SPECIES, SpeciesId, XP_LEVELS, prof,
 } from '../data/srd';
 import { roll, Rng } from './rng';
 import { ADVS, AdvId } from './aventuras';
@@ -46,6 +46,12 @@ export interface Char {
   relentless?: boolean;
   /** Brujo: ya ha usado Astucia mágica desde el último descanso largo. */
   cunning?: boolean;
+  /** Mago: ya ha usado Recuperación arcana desde el último descanso largo. */
+  arcaneRec?: boolean;
+  /** Maldición de la momia: no recupera PG hasta que el templo se la quite. */
+  cursed?: boolean;
+  /** Petrificado por el basilisco: no puede luchar hasta que el templo le devuelva a la carne. */
+  petrified?: boolean;
   /** Poción de fuerza de gigante bebida en el combate en curso. */
   giantStr?: number;
 }
@@ -269,7 +275,7 @@ export const weapons = (c: Char) => {
 };
 
 export function saveBonus(c: Char, a: Ability): number {
-  return abilMod(c, a) + (CLASSES[c.cls].saves.includes(a) ? prof(c.level) : 0) + (c.items.some(i => i.id === 'cloak_protection') ? 1 : 0);
+  return abilMod(c, a) + (CLASSES[c.cls].saves.includes(a) ? prof(c.level) : 0) + (c.items.some(i => i.id === 'cloak_protection') ? 1 : 0) + luck(c);
 }
 
 export const spellDc = (c: Char) => 8 + prof(c.level) + abilMod(c, CLASSES[c.cls].spell ?? 'int');
@@ -280,6 +286,19 @@ export function passivePerception(c: Char): number {
   return 10 + abilMod(c, 'wis') + (p ? prof(c.level) : 0);
 }
 
+/** Veces que suma la competencia en una habilidad: 0 (sin competencia), 1 o 2 (pericia del pícaro). */
+export function skillProf(c: Char, s: Skill): 0 | 1 | 2 {
+  if (EXPERTISE[c.cls]?.includes(s)) return 2;
+  if (s === 'perception') return CLASSES[c.cls].perception || c.species === 'elf' || c.species === 'human' ? 1 : 0;
+  return CLASS_SKILLS[c.cls].includes(s) ? 1 : 0;
+}
+/** Bonificador de una prueba de habilidad: su característica más la competencia (doble con pericia). */
+export const skillBonus = (c: Char, s: Skill) => abilMod(c, SKILLS[s].abil) + skillProf(c, s) * prof(c.level) + luck(c);
+/** Piedra de la suerte (SRD): +1 a las pruebas de característica y a las salvaciones. */
+const luck = (c: Char) => (c.items.some(i => i.id === 'luckstone') ? 1 : 0);
+/** Botas élficas (SRD): ventaja en las pruebas de Sigilo. */
+export const elvenBoots = (c: Char) => c.items.some(i => i.id === 'elven_boots');
+
 /** La niebla se ve a 2 casillas si alguien lleva antorcha o sabe el truco Luz (clérigo o mago). */
 export const sightRadius = (party: Char[]) =>
   party.some(c => !c.dead && (c.cls === 'cleric' || c.cls === 'wizard' || c.items.some(i => i.id === 'torch'))) ? 2 : 1;
@@ -288,7 +307,8 @@ export const sightRadius = (party: Char[]) =>
  * Reparte PX entre los vivos y sube de nivel. Devuelve los mensajes.
  * `cap` es el nivel objetivo de la aventura: dentro de ella nadie lo pasa y los PX sobrantes se pierden.
  */
-export function gainXp(party: Char[], total: number, cap = MAX_LEVEL): string[] {
+/** `spare` recoge los PX que se pierden por el tope de la aventura (se pagan en oro al ganar un combate). */
+export function gainXp(party: Char[], total: number, cap = MAX_LEVEL, spare?: { xp: number }): string[] {
   const alive = party.filter(c => !c.dead);
   if (!alive.length || !total) return [];
   const each = Math.floor(total / alive.length);
@@ -297,7 +317,7 @@ export function gainXp(party: Char[], total: number, cap = MAX_LEVEL): string[] 
   let capped = false;
   for (const c of alive) {
     const n = Math.max(0, Math.min(each, top - c.xp));
-    if (n < each && c.level <= cap) capped = true;
+    if (n < each && c.level <= cap) { capped = true; if (spare) spare.xp += each - n; }
     msgs.push(...addXp(c, n));
   }
   if (capped) msgs.push(`Nivel ${cap} es el máximo en esta aventura: los PX de más no cuentan.`);
@@ -406,19 +426,43 @@ export function chooseFeat(c: Char, f: FeatId) {
 
 /** ¿Sirve de algo descansar? Corto: alguien herido. Largo: además, conjuros o usos gastados. */
 export function needsRest(party: Char[], long: boolean): boolean {
-  return party.some(c => !c.dead && (c.hp < c.maxHp || c.secondWind < 2 || (c.cls === 'warlock' && slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0)) || (long && (
+  return party.some(c => !c.dead && (c.hp < c.maxHp || c.secondWind < 2 || ((c.cls === 'warlock' || (c.cls === 'wizard' && !c.arcaneRec)) && slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0)) || (long && (
     (c.racial ?? 0) < maxRacial(c) || !!c.cunning ||
     slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0) || c.hitDice < c.level || c.channel < maxChannel(c) || c.actionSurge < 1))));
 }
 
-export function shortRest(c: Char, rng: Rng): number {
+/** Dados de golpe que harían falta, de media, para curarse del todo (como mucho, los que le quedan). */
+export function diceToHeal(c: Char): number {
+  if (c.dead || c.hp >= c.maxHp) return 0;
+  const avg = Math.max(1, CLASSES[c.cls].hitDie / 2 + 1 + abilMod(c, 'con')) * (c.items.some(i => i.id === 'periapt_wound_closure') ? 2 : 1);
+  return Math.min(c.hitDice, Math.ceil((c.maxHp - c.hp) / avg));
+}
+
+/** Lo que recupera cada clase con un descanso corto, además de los dados de golpe (SRD 5.2.1). */
+export function shortRestGain(c: Char): string | undefined {
+  if (c.cls === 'warlock') return 'recupera todos sus espacios de conjuro';
+  if (c.cls === 'fighter') return 'recupera Tomar aliento y Acción súbita';
+  if (c.cls === 'cleric') return 'recupera Canalizar divinidad';
+  if (c.cls === 'wizard' && !c.arcaneRec && slotsLeft(c) < slotsAt(c.cls, c.level).reduce((a, b) => a + b, 0)) return 'recupera espacios con Recuperación arcana';
+  if (c.species === 'orc') return 'recupera Descarga de adrenalina';
+  return undefined;
+}
+
+/**
+ * Descanso corto: gasta hasta `dice` dados de golpe (SRD 5.2.1: el jugador elige cuántos; por defecto, los que
+ * hagan falta para curarse del todo).
+ */
+export function shortRest(c: Char, rng: Rng, dice = c.hitDice): number {
   if (c.dead) return 0;
   let healed = 0;
-  // Gasta dados de golpe hasta curarse del todo o quedarse sin ellos.
-  while (c.hitDice > 0 && c.hp < c.maxHp) {
+  let left = dice;
+  while (left > 0 && c.hitDice > 0 && c.hp < c.maxHp) {
+    left--;
     c.hitDice--;
     const periapt = c.items.some(i => i.id === 'periapt_wound_closure') ? 2 : 1;
-    const h = Math.max(1, roll(rng, `1d${CLASSES[c.cls].hitDie}`) + abilMod(c, 'con')) * periapt;
+    const h0 = Math.max(1, roll(rng, `1d${CLASSES[c.cls].hitDie}`) + abilMod(c, 'con')) * periapt;
+    // Maldición de la momia: la curación se queda en la mitad hasta quitarla en el templo.
+    const h = c.cursed ? Math.max(1, Math.floor(h0 / 2)) : h0;
     healed += Math.min(h, c.maxHp - c.hp);
     c.hp = Math.min(c.maxHp, c.hp + h);
   }
@@ -428,6 +472,14 @@ export function shortRest(c: Char, rng: Rng): number {
   if (c.cls !== 'paladin') c.channel = Math.min(maxChannel(c), c.channel + 1);
   // Magia del pacto: el brujo recupera todos sus espacios con un descanso corto.
   if (c.cls === 'warlock') c.slots = slotsAt(c.cls, c.level);
+  // Recuperación arcana del mago: una vez por descanso largo, espacios gastados que sumen la mitad de su nivel (redondeando arriba).
+  if (c.cls === 'wizard' && !c.arcaneRec) {
+    const max = slotsAt(c.cls, c.level);
+    let budget = Math.ceil(c.level / 2);
+    const s: Slots = [c.slots[0], c.slots[1], c.slots[2] ?? 0];
+    for (let lv = 3; lv >= 1; lv--) while (budget >= lv && s[lv - 1] < max[lv - 1]) { s[lv - 1]++; budget -= lv; }
+    if (budget < Math.ceil(c.level / 2)) { c.slots = s; c.arcaneRec = true; }
+  }
   // Descarga de adrenalina del orco: vuelve con el descanso corto.
   if (c.species === 'orc') c.racial = maxRacial(c);
   return healed;
@@ -436,8 +488,8 @@ export function shortRest(c: Char, rng: Rng): number {
 export function longRest(c: Char) {
   if (c.dead) return;
   Object.assign(c, {
-    hp: c.maxHp, hitDice: c.level, slots: slotsAt(c.cls, c.level), secondWind: 2, actionSurge: 1, channel: maxChannel(c),
-    racial: maxRacial(c), cunning: false, relentless: false, stable: false, deathS: 0, deathF: 0,
+    hp: c.cursed ? Math.max(c.hp, c.hp + Math.floor((c.maxHp - c.hp) / 2)) : c.maxHp, hitDice: c.level, slots: slotsAt(c.cls, c.level), secondWind: 2, actionSurge: 1, channel: maxChannel(c),
+    racial: maxRacial(c), cunning: false, arcaneRec: false, relentless: false, stable: false, deathS: 0, deathF: 0,
   });
 }
 

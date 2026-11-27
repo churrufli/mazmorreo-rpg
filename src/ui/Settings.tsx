@@ -10,6 +10,7 @@ import { BUILD } from '../version';
 import { CAMBIOS } from '../versionWeb';
 import { CREDITOS, NOVEDADES, PRIVACIDAD } from '../data/ayuda';
 import { FxMode, setFx, useFxMode } from './movimiento';
+import { setRapido } from './ritmos';
 import { ComoFunciona } from './ComoFunciona';
 
 const RELEASES = 'https://api.github.com/repos/churrufli/mazmorreo-rpg/releases?per_page=10';
@@ -45,6 +46,8 @@ export function Settings({ onClose }: { onClose: () => void }) {
   const [vibra, setVibra] = useState(storage.getFlag('vibra'));
   // Combate pausado: los turnos enemigos esperan a que se vea cada dado entero. Apagado, van más rápido.
   const [pausado, setPausado] = useState(storage.getFlag('pausado'));
+  // Animaciones rápidas: dados y animaciones del combate a la mitad de tiempo.
+  const [rapido, setRapidoV] = useState(storage.getRapido());
   // Mientras se arrastra una barra de volumen, el panel no se desplaza (si no, se queda con el dedo).
   const [scroll, setScroll] = useState(true);
   const [pidiendo, setPidiendo] = useState(false);
@@ -90,6 +93,8 @@ export function Settings({ onClose }: { onClose: () => void }) {
               <Row label="Vibración" value={vibra} onChange={toggle('vibra', setVibra)} />
               <Row label="Combate pausado" value={pausado} onChange={toggle('pausado', setPausado)} />
               <Text style={st.note}>Combate pausado: los enemigos esperan a que se vea cada dado. Apagado, sus turnos pasan más rápido.</Text>
+              <Row label="Animaciones rápidas" value={rapido} onChange={v => { storage.setRapido(v); setRapido(v); setRapidoV(v); }} />
+              <Text style={st.note}>Animaciones rápidas: los dados y las animaciones de todo el combate van al doble de velocidad.</Text>
               <Efectos />
               <Enlace label="Cómo funciona" onPress={() => setView('como')} />
               <Enlace label="Novedades" onPress={() => setView('novedades')} />

@@ -13,11 +13,12 @@ import { useStore } from '../store';
 import { hasPortraitFrame } from '../data/portraitFrames';
 import { SvgFaceImage } from '../ui/FaceImage';
 import { Escena } from '../ui/Escena';
-import { firstFoe, sceneById, sceneSpent } from '../engine/escenas';
+import { enemiesOf, firstFoe, sceneById, sceneSpent } from '../engine/escenas';
 import { dying, medic } from '../engine/muerte';
 import { townRest, rereadAt, sceneOn, sceneFight, wonCell, itemOutside, FLOOR_PROPS, OVER_PROPS, bossEncounter, contentById, npcSpots, pendingAllies, zoneProgress, Hex, KEY_ITEM, atTownRest, blockedCells, bridgedWater, keyCell, cellMap, dropKey, hkey, passable, disarmBonus, plan, previousZone, visibleCells, zoneArt, zoneById } from '../engine/dungeon';
 import { ADVS, TOWNS, advOf } from '../engine/aventuras';
-import { ITEMS } from '../data/srd';
+import { CLASSES, ITEMS, SKILLS } from '../data/srd';
+import { STUDY_DC, sneakDc, studyWho } from '../engine/sorpresa';
 import { MONSTERS } from '../data/srd';
 import { Card, CardInfo, CardModal, charInfo } from '../ui/Card';
 import { Dialogue, FadeIn, HOLD_MS, Message, Portrait } from '../ui/Overlays';
@@ -27,7 +28,8 @@ import { AmbienteAgua, AmbienteAire, AmbienteSuelo, Vineta, useAmbientActive } f
 import { ElementoMapa } from '../ui/ElementoMapa';
 import { elemBlocked, elemPasses, elemState, zoneElements } from '../engine/elementos';
 import { getDevOpt } from '../storage';
-import { MAX_ITEMS, isDown, needsRest, sightRadius } from '../engine/rules';
+import { Char, MAX_ITEMS, diceToHeal, skillBonus, isDown, needsRest, shortRestGain, sightRadius } from '../engine/rules';
+import type { Game } from '../engine/game';
 import { FeatPicker } from '../ui/FeatPicker';
 
 const S = 30; // radio del hexágono en píxeles
@@ -185,7 +187,7 @@ const PartyCard = memo(function PartyCard({ info, id, width, dead, onOpen }: { i
 }, (a, b) => a.width === b.width && a.dead === b.dead && JSON.stringify(a.info) === JSON.stringify(b.info));
 
 export function Explore() {
-  const { game, queue, walking, walkTo, walkStep, next, rest, trapChoice, edit, zoom, setZoom, goTown, drop, pickUp, sceneChoose, sceneLeave, swapOut, reread, devPass, stabilize } = useStore();
+  const { game, queue, walking, walkTo, walkStep, next, rest, trapChoice, approach, edit, zoom, setZoom, goTown, drop, pickUp, sceneChoose, sceneLeave, swapOut, reread, devPass, stabilize } = useStore();
   const g = game!;
   const ins = useSafeAreaInsets();
   const win = useWindowDimensions();
@@ -206,6 +208,7 @@ export function Explore() {
   const [sheet, setSheet] = useState<string>();
   const [showLog, setShowLog] = useState(false);
   const [showOpts, setShowOpts] = useState(false);
+  const [restDice, setRestDice] = useState<Record<string, number>>({});
   const [showInfo, setShowInfo] = useState(false);
   const [roomTip, setRoomTip] = useState<{ n: number; text: string }>();
   useEffect(() => setRoomTip(undefined), [g.zone, hkey(g.pos)]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -715,10 +718,25 @@ export function Explore() {
           <Btn small label="Volver atrás" onPress={() => trapChoice()} />
         </Message>
       ) : null}
+      {head?.kind === 'approach' ? (() => {
+        const foes = enemiesOf(g, head.id).filter(e => MONSTERS[e.srd_creature]);
+        const sw = studyWho(g);
+        const studied = g.studied?.includes(head.id);
+        return (
+          <Message key={`a${head.id}`} title="Enemigos a la vista" img={MONSTERS[foes[0]?.srd_creature]?.img ?? 'trampa'}
+            lines={['Todavía no os han visto. ¿Cómo empezáis?']} onDone={() => undefined}>
+            <Btn small label="Acercarse en sigilo" sub={`Sigilo del grupo contra CD ${sneakDc(g, head.id)}: si lo logra al menos la mitad, los sorprendéis`} onPress={() => approach('sneak')} />
+            <Btn small primary label="Atacar" sub="Empieza el combate" onPress={() => approach('attack')} />
+            <Btn small label="Estudiarlos" off={studied} sub={studied ? 'Ya los habéis estudiado' : `${SKILLS[sw.skill].name} de ${sw.c.name.split(' ')[0]} (${skillBonus(sw.c, sw.skill) >= 0 ? '+' : ''}${skillBonus(sw.c, sw.skill)}) contra CD ${STUDY_DC}: desvela sus rasgos`}
+              onPress={studied ? () => undefined : () => approach('study')} />
+          </Message>
+        );
+      })() : null}
       {head?.kind === 'rest' ? (
-        <Message key={`r${head.id}`} title={head.name} img={restImg} lines={[head.text, head.long ? 'Descanso largo: recuperáis todos los PG y conjuros. Solo se puede usar una vez.' : 'Descanso corto: cada uno gasta dados de golpe para curarse. Solo se puede usar una vez.']}>
+        <Message key={`r${head.id}`} title={head.name} img={restImg} lines={[head.text, head.long ? 'Descanso largo: recuperáis todos los PG y conjuros. Solo se puede usar una vez.' : 'Descanso corto: elegid cuántos dados de golpe gasta cada uno (tocad para cambiarlo). Solo se puede usar una vez.']}>
+          {!head.long && needsRest(g.party, false) ? <RestDice g={g} dice={restDice} setDice={setRestDice} /> : null}
           {needsRest(g.party, head.long)
-            ? <Btn primary label="Descansar" onPress={() => rest(true)} />
+            ? <Btn primary label="Descansar" onPress={() => { rest(true, head.long ? undefined : restDice); setRestDice({}); }} />
             : <Btn off label="Descansar" sub="No es necesario: estáis descansados" onPress={() => undefined} />}
           <Btn label="Ahora no" onPress={() => rest(false)} />
         </Message>
@@ -856,3 +874,18 @@ function Ring({ img, r }: { img: ImgKey; r: number }) {
   return <SvgImage href={IMG[img]} x={-r} y={-r} width={r * 2} height={r * 2} />;
 }
 
+/**
+ * Descanso corto (SRD 5.2.1): cada uno elige cuántos dados de golpe gasta. Se propone lo que haría falta para curarse
+ * del todo; tocar el botón suma uno más hasta los que le quedan y vuelve a cero.
+ */
+function RestDice({ g, dice, setDice }: { g: Game; dice: Record<string, number>; setDice: (d: Record<string, number>) => void }) {
+  const n = (c: Char) => dice[c.id] ?? diceToHeal(c);
+  return <>
+    {g.party.filter(c => !c.dead).map(c => {
+      const gain = shortRestGain(c);
+      const sub = `${c.hp}/${c.maxHp} PG · le quedan ${c.hitDice} d${CLASSES[c.cls].hitDie}${gain ? ` · ${gain}` : ''}`;
+      return <Btn key={c.id} small label={`${c.name.split(' ')[0]}: ${n(c)} ${n(c) === 1 ? 'dado' : 'dados'}`} sub={sub} off={!c.hitDice}
+        onPress={() => setDice({ ...dice, [c.id]: n(c) >= c.hitDice ? 0 : n(c) + 1 })} />;
+    })}
+  </>;
+}

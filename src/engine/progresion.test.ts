@@ -86,3 +86,10 @@ test('al entrar en la sala del jefe el grupo sube al nivel objetivo de la aventu
     expect(evs.some((e: any) => e.kind === 'msg' && e.title === `Nivel ${level}`)).toBe(true);
   }
 });
+
+test('con el nivel al tope, los PX de más se apuntan para pagarlos en oro', () => {
+  const hero = createHero('Prueba', 'fighter', 'human');
+  const spare = { xp: 0 };
+  gainXp([hero], 5000, 2, spare);
+  expect(spare.xp).toBe(4700);
+});

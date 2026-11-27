@@ -199,7 +199,8 @@
                   "fail": {
                     "text": "La viga cede y os golpea antes de que podáis soltarla.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Buscar la piedra que sostiene el resto",
@@ -212,7 +213,8 @@
                   },
                   "fail": {
                     "text": "No encontráis la piedra que sostiene el peso. Mejor no arriesgarse."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ],
               "fallback": {
@@ -355,7 +357,8 @@
                   },
                   "fail": {
                     "text": "No das con ello por ahí."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Examinar los apoyos de madera",
@@ -367,7 +370,8 @@
                   },
                   "fail": {
                     "text": "No das con ello por ahí."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -459,7 +463,8 @@
                   },
                   "fail": {
                     "text": "Perdéis el rastro entre las vías."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Examinar el polvo junto a las vigas",
@@ -471,7 +476,8 @@
                   },
                   "fail": {
                     "text": "No encontráis ninguna pista más."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -496,7 +502,8 @@
                   "fail": {
                     "text": "Aprovecha un descuido y huye sin revelar el escondite."
                   },
-                  "tone": "piedad"
+                  "tone": "piedad",
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Quitarle las monedas",
@@ -514,7 +521,8 @@
                     "sub": "z1_e05"
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "encounter",
@@ -560,7 +568,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "z1_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -573,7 +582,8 @@
                   "fail": {
                     "text": "No se lo tragan.",
                     "fight": "z1_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             },
@@ -683,7 +693,8 @@
                   },
                   "fail": {
                     "text": "No conseguís vendarle bien la herida, pero le ayudáis a ponerse a salvo."
-                  }
+                  },
+                  "skill": "medicine"
                 }
               ]
             }
@@ -828,7 +839,8 @@
                   "fail": {
                     "text": "La madera cede y os obliga a retroceder.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Calcular cómo liberar los apoyos",
@@ -840,7 +852,8 @@
                   },
                   "fail": {
                     "text": "La madera cede y os obliga a retroceder."
-                  }
+                  },
+                  "skill": "investigation"
                 },
                 {
                   "label": "Alcanzar la bolsa entre las vigas",
@@ -903,7 +916,8 @@
                   },
                   "fail": {
                     "text": "Las piedras no se mueven y os duelen los brazos."
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Hacer palanca con la palanqueta",
@@ -1029,7 +1043,8 @@
                   ]
                 }
               ],
-              "xp_total": 45
+              "xp_total": 45,
+              "terrain": "slippery"
             },
             {
               "type": "scene",
@@ -1060,7 +1075,8 @@
                   },
                   "fail": {
                     "text": "Intentáis guiarle, pero resbala. Logra salir del agua y se aleja sin fuerzas para hablar."
-                  }
+                  },
+                  "skill": "survival"
                 }
               ]
             },
@@ -1117,7 +1133,8 @@
                   "drop_weapon": false
                 }
               ],
-              "xp_total": 25
+              "xp_total": 25,
+              "terrain": "narrow"
             },
             {
               "type": "chest",
@@ -1693,7 +1710,8 @@
                   },
                   "fail": {
                     "text": "No localizáis el origen de la corriente."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Examinar las juntas de la escalinata",
@@ -1705,7 +1723,8 @@
                   },
                   "fail": {
                     "text": "No localizáis el origen de la corriente."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             }
@@ -1876,7 +1895,8 @@
                   "fail": {
                     "text": "Una losa se hunde y os golpeáis al retroceder.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Examinar los apoyos de los arcos",
@@ -1888,7 +1908,8 @@
                   },
                   "fail": {
                     "text": "Un cascote cae cerca y os obliga a retroceder."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ],
               "fallback": {
@@ -1980,7 +2001,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Comparar las piedras de los arcos",
@@ -1992,7 +2014,8 @@
                   },
                   "fail": {
                     "text": "No dais con ello por ahí."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             }
@@ -2044,7 +2067,8 @@
                   "fail": {
                     "text": "El goblin os cobra diez monedas por mostrar una página. Después huye con el libro.",
                     "gold": -10
-                  }
+                  },
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Arrebatarle el libro y la bolsa",
@@ -2059,7 +2083,8 @@
                     "text": "El goblin escapa dando voces. Sus compañeros estarán prevenidos.",
                     "add": "z2_e04"
                   },
-                  "tone": "dureza"
+                  "tone": "dureza",
+                  "skill": "sleight"
                 },
                 {
                   "label": "Dejarle y seguir",
@@ -2075,7 +2100,8 @@
                     "reveal": "z2_s01"
                   }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "encounter",
@@ -2121,7 +2147,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "z2_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -2134,7 +2161,8 @@
                   "fail": {
                     "text": "No se lo tragan.",
                     "fight": "z2_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             },
@@ -2276,7 +2304,8 @@
                     "text": "Se miran, recogen las armas y atacan.",
                     "fight": "z2_e08"
                   },
-                  "tone": "codicia"
+                  "tone": "codicia",
+                  "skill": "intimidation"
                 },
                 {
                   "label": "Cerrarles el paso",
@@ -2801,7 +2830,8 @@
                   "fail": {
                     "text": "Las piedras se os vienen encima.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Alcanzar la ofrenda entre las grietas",
@@ -2813,7 +2843,8 @@
                   },
                   "fail": {
                     "text": "Los escombros se desplazan y ocultan la ofrenda."
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Buscar las piedras inestables",
@@ -2825,13 +2856,24 @@
                   },
                   "fail": {
                     "text": "Una piedra rueda y la ofrenda se pierde entre las grietas."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "ally": "brunna",
                   "label": "Dejar que Brunna lea la piedra",
                   "ok": {
                     "text": "Brunna golpea las losas con el mango del pico y aparta la que cede sin derrumbar las demás. Recuperáis las piezas de oro.",
+                    "gold": 7
+                  }
+                },
+                {
+                  "label": "Leer la piedra como un enano",
+                  "species": [
+                    "dwarf"
+                  ],
+                  "ok": {
+                    "text": "Apartáis con cuidado las piedras inestables y recuperáis las piezas de oro.",
                     "gold": 7
                   }
                 }
@@ -2973,7 +3015,8 @@
                   },
                   "fail": {
                     "text": "No lográis seguir la pista."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Comparar los trazos de la piedra",
@@ -2985,7 +3028,8 @@
                   },
                   "fail": {
                     "text": "No lográis seguir la pista."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -3138,12 +3182,12 @@
               "lock_dc": null,
               "gold": 24,
               "item": {
-                "id": "potion_greater_healing_1",
-                "name": "Poción de curación mayor",
-                "srd_item": "Potion of Greater Healing",
+                "id": "luckstone",
+                "name": "Piedra de la suerte",
+                "srd_item": "Stone of Good Luck (Luckstone)",
                 "rarity": "Uncommon",
                 "magical": true,
-                "description": "Recupera 4d4 + 4 puntos de golpe. Es un recurso de curación útil para cualquier integrante del grupo."
+                "description": "+1 a las pruebas de característica y a las tiradas de salvación."
               }
             },
             {
@@ -3185,7 +3229,8 @@
                   },
                   "fail": {
                     "text": "El frío y el polvo os impiden localizarlo."
-                  }
+                  },
+                  "skill": "survival"
                 },
                 {
                   "label": "Examinar las juntas de las losas",
@@ -3197,7 +3242,8 @@
                   },
                   "fail": {
                     "text": "El frío y el polvo os impiden localizarlo."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -3266,7 +3312,8 @@
                   },
                   "fail": {
                     "text": "El aire helado os obliga a retroceder."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Estudiar las grietas de la piedra",
@@ -3279,7 +3326,8 @@
                   },
                   "fail": {
                     "text": "El aire helado os obliga a retroceder."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ],
               "fallback": {
@@ -3315,7 +3363,8 @@
                   },
                   "fail": {
                     "text": "El cerrojo no cede."
-                  }
+                  },
+                  "skill": "sleight"
                 },
                 {
                   "label": "Abrir el cerrojo con las herramientas de ladrón",
@@ -3340,6 +3389,19 @@
                   "fail": {
                     "text": "La puerta resiste y el golpe os deja dolorido el hombro.",
                     "damage": "1d4"
+                  },
+                  "skill": "athletics"
+                },
+                {
+                  "label": "Abrir el cerrojo con maña de pícaro",
+                  "cls": [
+                    "rogue"
+                  ],
+                  "ok": {
+                    "text": "El cerrojo salta con un chasquido. Ya solo queda empujar la puerta.",
+                    "set": {
+                      "z3_x01": "desbloqueada"
+                    }
                   }
                 }
               ]
@@ -3410,7 +3472,8 @@
                   "fail": {
                     "text": "El escriba se desvanece sin creeros."
                   },
-                  "tone": "piedad"
+                  "tone": "piedad",
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Dejar 15 monedas de tributo",
@@ -3436,8 +3499,21 @@
                     "text": "El hermano Edmund recita la oración de su orden. El escriba inclina la cabeza y os muestra una entrada lateral hacia el sepulcro real.",
                     "reveal": "z3_s01"
                   }
+                },
+                {
+                  "label": "Rezar por los nombres de los difuntos",
+                  "cls": [
+                    "cleric",
+                    "paladin"
+                  ],
+                  "ok": {
+                    "text": "El escriba acepta vuestra promesa y os bendice. Os muestra una antigua entrada lateral hacia el sepulcro real.",
+                    "reveal": "z3_s01",
+                    "heal": 4
+                  }
                 }
-              ]
+              ],
+              "margin": true
             },
             {
               "type": "prop",
@@ -3507,7 +3583,8 @@
                   },
                   "fail": {
                     "text": "La estatua permanece inmóvil. No encontráis ninguna pista."
-                  }
+                  },
+                  "skill": "persuasion"
                 },
                 {
                   "label": "Dejar 10 monedas en el cuenco",
@@ -4039,7 +4116,8 @@
                   },
                   "fail": {
                     "text": "El chapoteo os impide distinguir el eco."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Comparar los reflejos de los cristales",
@@ -4051,13 +4129,25 @@
                   },
                   "fail": {
                     "text": "Los reflejos se confunden en el agua."
-                  }
+                  },
+                  "skill": "arcana"
                 },
                 {
                   "ally": "liss",
                   "label": "Dejar que Liss lea el cristal",
                   "ok": {
                     "text": "Liss reconoce los cristales del laboratorio y os indica dónde está el cofre oculto.",
+                    "reveal": "z4_s01"
+                  }
+                },
+                {
+                  "label": "Sentir la magia del cristal apagado",
+                  "cls": [
+                    "wizard",
+                    "warlock"
+                  ],
+                  "ok": {
+                    "text": "Los reflejos delatan el lugar donde los monjes escondieron un cofre.",
                     "reveal": "z4_s01"
                   }
                 }
@@ -4108,7 +4198,8 @@
                   "fail": {
                     "text": "Os descubren.",
                     "fight": "z4_pat01"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Espantarlos",
@@ -4121,7 +4212,8 @@
                   "fail": {
                     "text": "No se lo tragan.",
                     "fight": "z4_pat01"
-                  }
+                  },
+                  "skill": "intimidation"
                 }
               ]
             },
@@ -4221,7 +4313,8 @@
                   "fail": {
                     "text": "Una piedra se desliza y os golpea la mano.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "athletics"
                 },
                 {
                   "label": "Buscar un hueco seguro entre los cristales",
@@ -4234,7 +4327,8 @@
                   },
                   "fail": {
                     "text": "El agua turbia os impide encontrar un acceso seguro."
-                  }
+                  },
+                  "skill": "perception"
                 }
               ],
               "fallback": {
@@ -4462,7 +4556,8 @@
                   },
                   "fail": {
                     "text": "El agua se agita y perdéis el rastro de las ondas."
-                  }
+                  },
+                  "skill": "perception"
                 },
                 {
                   "label": "Interpretar los símbolos violetas",
@@ -4474,7 +4569,8 @@
                   },
                   "fail": {
                     "text": "No conseguís interpretar los trazos."
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ],
               "fallback": {
@@ -4648,7 +4744,8 @@
                   "fail": {
                     "text": "Resbaláis y la corriente os golpea contra la piedra.",
                     "damage": "1d4"
-                  }
+                  },
+                  "skill": "acrobatics"
                 },
                 {
                   "label": "Buscar un remanso entre las columnas",
@@ -4660,7 +4757,8 @@
                   },
                   "fail": {
                     "text": "Los reflejos os impiden calcular la profundidad."
-                  }
+                  },
+                  "skill": "investigation"
                 },
                 {
                   "label": "Soportar el agua helada para recogerlas",
@@ -4781,7 +4879,8 @@
                   "fail": {
                     "text": "Solo comprendéis los turnos de guardia. El escribiente os explica cómo evitar a uno de ellos.",
                     "sub": "z4_e03"
-                  }
+                  },
+                  "skill": "investigation"
                 }
               ]
             },
@@ -4863,7 +4962,8 @@
                     "text": "El cultista huye y da la alarma. Un guardián de vapor más se prepara para combatir.",
                     "add": "z4_e04"
                   },
-                  "tone": "codicia"
+                  "tone": "codicia",
+                  "skill": "intimidation"
                 },
                 {
                   "label": "Rechazar el trato",

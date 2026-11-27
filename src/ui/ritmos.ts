@@ -31,10 +31,17 @@ export const reposo = (k: Ritmo) => REPOSO[k] ?? 1;
 export const derivaY = (period: number) => Math.round(period * 0.63);
 export const respira = (period: number): Paso[] => [[0.7, Math.round(period * 0.41)], [1, Math.round(period * 0.47)]];
 
+/** Animaciones rápidas (Ajustes): todos los dados y animaciones del combate van a la mitad de tiempo. */
+let rapido = false;
+export const setRapido = (on: boolean) => { rapido = on; };
+export const isRapido = () => rapido;
+/** Duración en milisegundos según el ritmo elegido. */
+export const pace = (ms: number) => (rapido ? Math.round(ms * 0.5) : ms);
+
 /** Milisegundos hasta que se ve el resultado de la tirada: el d20 ya parado y los dados de daño en su cara final. */
 export const revealMs = (r: Roll) => {
   const spin = r.enemy ? 320 : 500;
-  if (!r.dice?.length) return r.d20 ? spin : 0;
+  if (!r.dice?.length) return pace(r.d20 ? spin : 0);
   const start = r.d20 === 0 ? 0 : spin;
-  return Math.max(...r.dice.map((d, i) => start + i * 90 + (d.f === 6 ? 750 : 600)));
+  return pace(Math.max(...r.dice.map((d, i) => start + i * 90 + (d.f === 6 ? 750 : 600))));
 };

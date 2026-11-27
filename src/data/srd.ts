@@ -99,6 +99,36 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   orc: { name: 'Orco', blurb: 'Aguante incansable: una vez por descanso largo se queda con 1 PG en vez de caer. Descarga de adrenalina: PG temporales como acción adicional.' },
 };
 
+/** Habilidades del SRD 5.2.1 (sin herramientas): cada una va con su característica. */
+export type Skill = 'athletics' | 'acrobatics' | 'sleight' | 'stealth' | 'arcana' | 'history' | 'investigation' | 'nature' | 'religion'
+  | 'animal' | 'insight' | 'medicine' | 'perception' | 'survival' | 'deception' | 'intimidation' | 'performance' | 'persuasion';
+export const SKILLS: Record<Skill, { name: string; abil: Ability }> = {
+  athletics: { name: 'Atletismo', abil: 'str' },
+  acrobatics: { name: 'Acrobacias', abil: 'dex' }, sleight: { name: 'Juego de manos', abil: 'dex' }, stealth: { name: 'Sigilo', abil: 'dex' },
+  arcana: { name: 'Arcanos', abil: 'int' }, history: { name: 'Historia', abil: 'int' }, investigation: { name: 'Investigación', abil: 'int' },
+  nature: { name: 'Naturaleza', abil: 'int' }, religion: { name: 'Religión', abil: 'int' },
+  animal: { name: 'Trato con animales', abil: 'wis' }, insight: { name: 'Perspicacia', abil: 'wis' }, medicine: { name: 'Medicina', abil: 'wis' },
+  perception: { name: 'Percepción', abil: 'wis' }, survival: { name: 'Supervivencia', abil: 'wis' },
+  deception: { name: 'Engaño', abil: 'cha' }, intimidation: { name: 'Intimidación', abil: 'cha' }, performance: { name: 'Interpretación', abil: 'cha' },
+  persuasion: { name: 'Persuasión', abil: 'cha' },
+};
+/**
+ * Competencias en habilidades de cada clase: las que se eligen en el SRD 5.2.1, fijas en el juego.
+ * Percepción va aparte (ClassDef.perception, el elfo y el humano), como en la Percepción pasiva.
+ */
+export const CLASS_SKILLS: Record<ClassId, Skill[]> = {
+  fighter: ['athletics', 'intimidation'],
+  cleric: ['medicine', 'religion'],
+  rogue: ['stealth', 'sleight', 'acrobatics', 'investigation'],
+  wizard: ['arcana', 'history'],
+  ranger: ['survival', 'nature', 'stealth'],
+  paladin: ['athletics', 'persuasion'],
+  barbarian: ['athletics', 'survival'],
+  warlock: ['arcana', 'deception'],
+};
+/** Pericia del pícaro (nivel 1): doble bonificador de competencia en estas dos. */
+export const EXPERTISE: Partial<Record<ClassId, Skill[]>> = { rogue: ['stealth', 'sleight'] };
+
 /** Linaje dracónico de cada retrato (SRD 5.2.1, «Ancestros dracónicos»): el color de las escamas decide el aliento. */
 export const DRACONIC: Record<ClassId, { dragon: string; type: DmgType }> = {
   fighter: { dragon: 'rojo', type: 'fuego' }, cleric: { dragon: 'de plata', type: 'frío' }, rogue: { dragon: 'negro', type: 'ácido' },
@@ -173,7 +203,7 @@ export const ITEMS: Record<string, ItemDef> = {
   quarterstaff: { name: 'Bastón', kind: 'weapon', img: 'baston_mago', value: 2, desc: 'Arma sencilla. 1d6 contundente.', weapon: { dice: '1d6', type: 'contundente' } },
   pick: { name: 'Pico de minero', kind: 'weapon', img: 'pico_minero', value: 5, desc: 'Arma marcial improvisada. 1d8 perforante.', weapon: { dice: '1d8', type: 'perforante', martial: true } },
   shortbow: { name: 'Arco corto', kind: 'weapon', img: 'arco_corto', value: 25, desc: 'Arma sencilla a distancia. 1d6 perforante.', weapon: { dice: '1d6', type: 'perforante', ranged: true } },
-  light_crossbow: { name: 'Ballesta ligera', kind: 'weapon', img: 'arco_corto', value: 25, desc: 'Arma sencilla a distancia. 1d8 perforante.', weapon: { dice: '1d8', type: 'perforante', ranged: true } },
+  light_crossbow: { name: 'Ballesta ligera', kind: 'weapon', img: 'ballesta_ligera', value: 25, desc: 'Arma sencilla a distancia. 1d8 perforante.', weapon: { dice: '1d8', type: 'perforante', ranged: true } },
   leather: { name: 'Armadura de cuero', kind: 'armor', img: 'armadura_cuero', value: 10, desc: 'Armadura ligera. CA 11 + Destreza.', armor: { base: 11, type: 'light' } },
   scale_mail: { name: 'Cota de escamas', kind: 'armor', img: 'armadura_cuero', value: 50, desc: 'Armadura media. CA 14 + Destreza (máx. 2).', armor: { base: 14, type: 'medium', dexMax: 2 } },
   chain_mail: { name: 'Cota de malla', kind: 'armor', img: 'armadura_cuero', value: 75, desc: 'Armadura pesada. CA 16.', armor: { base: 16, type: 'heavy', dexMax: 0 } },
@@ -215,6 +245,10 @@ export const ITEMS: Record<string, ItemDef> = {
   bark_amulet: { name: 'Amuleto de corteza', kind: 'gear', img: 'amuleto_corteza', value: 0, key: true, desc: 'Amuleto antiguo de la orden que protegía Umbría. Su runa aparta las raíces que cierran la salida de una zona. Se consume al usarlo.' },
   druid_relic: { name: 'Semilla de la promesa', kind: 'gear', img: 'semilla_juramento', value: 75, desc: 'Semilla fosilizada que recuerda la promesa original del Corazón Hueco. Tesoro: se puede vender.' },
   // El Invierno del Dragón
+  // Armas del SRD con las maestrías que faltaban (2026-11-27). Las tres son a dos manos.
+  greataxe: { name: 'Gran hacha', kind: 'weapon', img: 'gran_hacha', value: 30, desc: 'Arma marcial a dos manos. 1d12 cortante.', weapon: { dice: '1d12', type: 'cortante', martial: true } },
+  greatsword: { name: 'Mandoble', kind: 'weapon', img: 'mandoble', value: 50, desc: 'Arma marcial a dos manos. 2d6 cortante.', weapon: { dice: '2d6', type: 'cortante', martial: true } },
+  halberd: { name: 'Alabarda', kind: 'weapon', img: 'alabarda', value: 20, desc: 'Arma marcial a dos manos. 1d10 cortante.', weapon: { dice: '1d10', type: 'cortante', martial: true } },
   battleaxe: { name: 'Hacha de guerra', kind: 'weapon', img: 'hacha_guerra_mas1', value: 10, desc: 'Arma marcial. 1d8 cortante.', weapon: { dice: '1d8', type: 'cortante', martial: true } },
   battleaxe_plus_one: { name: 'Hacha de guerra +1', kind: 'weapon', img: 'hacha_guerra_mas1', value: 400, desc: 'Arma mágica: +1 a las tiradas de ataque y daño. 1d8 cortante.', weapon: { dice: '1d8', type: 'cortante', martial: true, bonus: 1 } },
   spear: { name: 'Lanza', kind: 'weapon', img: 'lanza', value: 2, desc: 'Arma sencilla. 1d6 perforante.', weapon: { dice: '1d6', type: 'perforante' } },
@@ -224,6 +258,9 @@ export const ITEMS: Record<string, ItemDef> = {
   ring_warmth: { name: 'Anillo de calor', kind: 'wondrous', img: 'anillo_calor', value: 500, desc: 'Quien lo lleva tiene resistencia al daño de frío.', resistCold: true },
   cloak_protection: { name: 'Capa de protección', kind: 'wondrous', img: 'capa_proteccion', value: 500, desc: 'Quien la lleva gana +1 a la CA y a las tiradas de salvación.' },
   relic_dwarf: { name: 'Sello del Deshielo', kind: 'gear', img: 'sello_deshielo', value: 250, desc: 'Medallón enano de hierro y ámbar, prueba del tributo y de la paz recuperada. Trofeo: se guarda en el baúl de la posada.' },
+  // Objetos mágicos del SRD con su historia, en los cofres que se encuentran por un secreto (2026-11-27).
+  luckstone: { name: 'Piedra de la suerte', kind: 'wondrous', img: 'piedra_suerte', value: 400, desc: 'Ágata pulida que un capataz enano llevaba siempre en el bolsillo: «la mina me la debe». +1 a las pruebas de característica y a las tiradas de salvación.' },
+  elven_boots: { name: 'Botas élficas', kind: 'wondrous', img: 'botas_elficas', value: 400, desc: 'Botas de cuero fino de un centinela que nunca hacía ruido en la nieve. Ventaja en las pruebas de Sigilo (también al esconderse).' },
   silver_piece: { name: 'Broche del centinela', kind: 'gear', img: 'reliquia', value: 20, desc: 'Broche de plata de un vigía enano. Tesoro: se puede vender.' },
   old_map: { name: 'Plano de los túneles', kind: 'gear', img: 'pergamino_escudo', value: 15, desc: 'Plano deteriorado de las galerías de la fortaleza. Tesoro: se puede vender.' },
   gem_ice: { name: 'Cuarzo glaciar', kind: 'gear', img: 'cristal', value: 50, desc: 'Cristal helado que nunca se derrite. Tesoro: se puede vender.' },
@@ -286,6 +323,10 @@ export interface MonsterAttack {
   paralyze?: { dc: number };
   /** Daño cuando el monstruo está maltrecho (la mitad de sus PG o menos), como el enjambre de murciélagos. */
   bloodied?: string;
+  /** Mirada petrificadora del basilisco: sin daño; al fallar, apresado y, si vuelve a fallar, petrificado. */
+  petrify?: boolean;
+  /** Puño putrefacto de la momia: deja maldito al objetivo (no recupera PG hasta que se le quite en el templo). */
+  curse?: boolean;
 }
 
 export interface MonsterDef {
@@ -310,6 +351,10 @@ export interface MonsterDef {
   reach?: boolean;
   /** Nudo de raíz: mientras viva alguno, el jefe resiste todo salvo psíquico y se regenera. */
   knot?: boolean;
+  /** Dividirse (SRD 5.2.1): con daño cortante o de relámpago y 10 PG o más, se parte en dos con la mitad de PG cada una. */
+  split?: boolean;
+  /** La pieza: objeto de un objetivo, sin ataques ni turno (ver objetivos.ts). */
+  piece?: boolean;
 }
 
 const goblinSaves = { str: -1, dex: 2, con: 0, int: 0, wis: -1, cha: -1 };
@@ -532,6 +577,11 @@ Object.assign(MONSTERS, {
     name: 'Nudo de raíz', img: 'nudo_de_raiz', ac: 12, hp: 12, dexMod: -2, xp: 0, ai: 'beast', noSleep: true, knot: true,
     attacks: [], saves: { str: 2, dex: -2, con: 2, int: -2, wis: 0, cha: -2 },
   },
+  // Objeto de un objetivo (la pieza): nombre, imagen, PG y CA salen del objetivo.
+  Object: {
+    name: 'Pieza', img: 'pieza_torno', ac: 12, hp: 8, dexMod: -5, xp: 0, ai: 'beast', noSleep: true, piece: true,
+    attacks: [], saves: { str: -5, dex: -5, con: 0, int: -5, wis: -5, cha: -5 },
+  },
   Treant: {
     name: 'El Corazón Hueco', img: 'corazon_hueco', ac: 15, hp: 80, dexMod: 0, xp: 0, ai: 'beast', multi: 2, noSleep: true, reach: true,
     attacks: [{ name: 'Raíz', bonus: 5, dice: '1d6+3', type: 'contundente' }], saves: { str: 6, dex: -1, con: 5, int: 1, wis: 3, cha: 1 },
@@ -715,25 +765,28 @@ Object.assign(MONSTERS, {
   },
   Mummy: {
     name: 'Momia', img: 'momia', ac: 11, hp: 58, dexMod: -1, xp: 700, ai: 'undead', noSleep: true, multi: 2, vuln: ['fuego'], immune: ['necrótico', 'veneno'],
-    attacks: [{ name: 'Puño putrefacto', bonus: 5, dice: '1d10+3', type: 'contundente', extra: { dice: '3d6', type: 'necrótico' } }],
+    attacks: [{ name: 'Puño putrefacto', bonus: 5, dice: '1d10+3', type: 'contundente', extra: { dice: '3d6', type: 'necrótico' }, curse: true }],
     saves: { str: 3, dex: -1, con: 2, int: -2, wis: 3, cha: 1 },
   },
   'Ochre Jelly': {
-    name: 'Gelatina ocre', img: 'cieno_ocre', ac: 8, hp: 52, dexMod: -2, xp: 450, ai: 'beast', noSleep: true, resist: ['ácido'], immune: ['relámpago', 'cortante'],
+    name: 'Gelatina ocre', img: 'cieno_ocre', ac: 8, hp: 52, dexMod: -2, xp: 450, ai: 'beast', noSleep: true, resist: ['ácido'], immune: ['relámpago', 'cortante'], split: true,
     attacks: [{ name: 'Pseudópodo', bonus: 4, dice: '3d6+2', type: 'ácido' }],
     saves: { str: 2, dex: -2, con: 2, int: -4, wis: -2, cha: -5 },
   },
   'Black Pudding': {
-    name: 'Pudin negro', img: 'pudin_negro', ac: 7, hp: 68, dexMod: -3, xp: 1100, ai: 'beast', noSleep: true, immune: ['ácido', 'frío', 'relámpago', 'cortante'],
+    name: 'Pudin negro', img: 'pudin_negro', ac: 7, hp: 68, dexMod: -3, xp: 1100, ai: 'beast', noSleep: true, immune: ['ácido', 'frío', 'relámpago', 'cortante'], split: true,
     attacks: [{ name: 'Pseudópodo disolvente', bonus: 5, dice: '4d6+3', type: 'ácido' }],
     saves: { str: 3, dex: -3, con: 3, int: -5, wis: -2, cha: -5 },
   },
-  // Simplificación de la mirada petrificadora (SRD: acción adicional, recarga 4–6, apresado y luego petrificado):
-  // quien recibe el mordisco y falla la salvación de Constitución CD 12 queda paralizado.
-  // Sin implementar del SRD: mirada espantosa de la momia, Dividirse de la gelatina ocre y Forma corrosiva del pudin negro.
+  // Mirada petrificadora del SRD 5.2.1 (recarga 4–6): salvación de Constitución CD 12 de la vanguardia; quien falla
+  // queda apresado y, si vuelve a fallar al acabar su turno, petrificado (hasta que el templo le devuelva a la carne).
+  // Sin implementar del SRD: mirada espantosa de la momia y Forma corrosiva del pudin negro.
   Basilisk: {
     name: 'Basilisco', img: 'basilisco', ac: 15, hp: 52, dexMod: -1, xp: 700, ai: 'beast',
-    attacks: [{ name: 'Mordisco', bonus: 5, dice: '2d6+3', type: 'perforante', extra: { dice: '2d6', type: 'veneno' }, paralyze: { dc: 12 } }],
+    attacks: [
+      { name: 'Mordisco', bonus: 5, dice: '2d6+3', type: 'perforante', extra: { dice: '2d6', type: 'veneno' } },
+      { name: 'Mirada petrificadora', bonus: 0, dice: '0', type: 'psíquico', save: { abil: 'con', dc: 12, half: false, area: true, recharge: 4 }, petrify: true },
+    ],
     saves: { str: 3, dex: -1, con: 2, int: -4, wis: -1, cha: -2 },
   },
   Incubus: {

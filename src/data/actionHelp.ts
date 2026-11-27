@@ -25,6 +25,10 @@ export const ACTION_HELP: Record<string, string> = {
   scorching: 'Gasta un espacio de nivel 2: tres rayos de 2d6 de fuego, cada uno con su tirada de ataque (d20 + competencia + Inteligencia + bonificaciones mágicas al ataque de conjuro, contra CA). El brujo usa Carisma y, con espacio de nivel 3, lanza un rayo más.',
   second_wind: 'Acción adicional: recuperas 1d10 + tu nivel en PG. Usos limitados por descanso.',
   surge: 'Consume un uso de Oleada de acción y devuelve la acción de este turno; no gasta la acción adicional. Recuperas el uso al descansar. Mazmorreo permite gastarla después de haber usado la acción; aún no excluye la acción de Magia como exige el SRD 2024.',
+  reckless: 'Bárbaro de nivel 2, antes de tu acción: tus ataques cuerpo a cuerpo de este turno tienen ventaja, pero los ataques contra ti también la tienen hasta tu siguiente turno.',
+  steady: 'Pícaro de nivel 3, acción adicional si aún no te has movido: tu próximo ataque de este turno tiene ventaja (y puede ser furtivo), pero ya no puedes cambiar de fila.',
+  trip: 'Pícaro de nivel 5, antes de tu acción: tu próximo ataque furtivo tira un d6 menos y el objetivo hace una salvación de Destreza o cae al suelo.',
+  turn_undead: 'Canalizar divinidad: consume un uso. Cada muerto viviente enemigo (no los jefes) hace una salvación de Sabiduría; si falla, huye a la retaguardia y pierde sus turnos hasta que le hagan daño.',
   hide: 'Acción adicional, solo desde la retaguardia: Sigilo (d20 + Destreza + el doble de competencia por Pericia) contra CD 15. Si sale bien, tu siguiente ataque tiene ventaja (y puede ser furtivo). Un enemigo que te elija como objetivo tiene que encontrarte: tira Percepción y, si iguala o supera tu Sigilo, dejas de estar escondido; si no, ataca a otro. También sales del escondite al pasar delante o al atacar.',
   throw: 'Acción: consume el objeto arrojado. En esta adaptación el objetivo hace una salvación de Destreza contra CD 10 + tu Destreza; si falla aplica el daño o estado indicado en la ficha. Las redes permiten intentar liberarse; el fuego de alquimista añade 1d4 de fuego durante dos turnos de la víctima.',
   web: 'Acción y una carga: los enemigos de la fila elegida hacen una salvación de Destreza CD 13. Quien falla queda apresado y puede intentar liberarse. La duración y concentración de Telaraña del SRD no se modelan por completo en esta adaptación.',
@@ -32,8 +36,12 @@ export const ACTION_HELP: Record<string, string> = {
   wand: 'Acción: la varita dispara proyectiles mágicos. Gasta una carga.',
   scroll: 'Acción: consume el pergamino. En esta adaptación ganas +5 CA durante el combate. Difiere de Escudo en el SRD: reacción y duración hasta el comienzo de tu siguiente turno.',
   help: 'Acción, desde la vanguardia: distraes a un enemigo a tu alcance. El próximo ataque de un aliado contra él tiene ventaja, si llega antes del principio de tu siguiente turno.',
+  grapple: 'Acción, desde la vanguardia: golpe sin armas con la opción Agarrar del SRD 5.2.1. El enemigo hace una salvación de Fuerza o Destreza (la mejor) contra 8 + tu Fuerza + competencia. Si la falla, queda agarrado: no puede cambiar de fila ni huir hasta que se suelte (gasta su turno en intentarlo) o hasta que caigas o te retires.',
+  disengage: 'Acción: Destrabarse. Hasta tu siguiente turno puedes pasar a la retaguardia sin que el enemigo de delante te dé un ataque de oportunidad.',
+  rescue: 'Acción y movimiento, desde la vanguardia: llevas a un compañero caído a la retaguardia, donde no le alcanzan cuerpo a cuerpo mientras alguien aguante delante. No le cura.',
+  watch: 'Acción: Vigilar (la acción Preparar del SRD con un solo disparador). Si un enemigo ataca a ese aliado antes de tu siguiente turno, le disparas con tu reacción. Si no le atacan, la pierdes.',
   dodge: 'Acción: hasta tu siguiente turno los ataques contra ti tienen desventaja y tus salvaciones de Destreza, ventaja.',
-  row: 'Movimiento: cambias de fila (también después de atacar). En la retaguardia no te alcanzan cuerpo a cuerpo mientras alguien aguante delante, pero tampoco atacas cuerpo a cuerpo. Si vas solo o nadie aguanta delante, te alcanzan igual; aun así, desde atrás disparas sin la desventaja del cuerpo a cuerpo.',
+  row: 'Movimiento: cambias de fila (también después de atacar). Salir de la vanguardia con un enemigo cuerpo a cuerpo delante provoca su ataque de oportunidad, salvo que antes te destrabes. Lo mismo vale para los enemigos que se retiran o huyen. En la retaguardia no te alcanzan cuerpo a cuerpo mientras alguien aguante delante, pero tampoco atacas cuerpo a cuerpo. Si vas solo o nadie aguanta delante, te alcanzan igual; aun así, desde atrás disparas sin la desventaja del cuerpo a cuerpo.',
   eldritch: 'Acción, sin espacios: d20 + competencia + Carisma contra CA; 1d10 de fuerza. Desde nivel 2 (invocación Descarga agónica) suma tu Carisma al daño y a nivel 5 lanza dos rayos, cada uno con su tirada; si el primero tumba al objetivo, el segundo busca a otro enemigo.',
   hex: 'Acción adicional y un espacio de pacto: maldices a un enemigo. Requiere concentración: cada ataque que le impacte añade 1d6 de daño necrótico. En Mazmorreo dura como máximo este combate; la desventaja en una característica del SRD no se modela.',
   hex_move: 'Acción adicional: tras caer el enemigo maldito, pasas Maleficio a otro sin gastar otro espacio, mientras mantengas la concentración.',
@@ -43,7 +51,11 @@ export const ACTION_HELP: Record<string, string> = {
 };
 
 /** Maestría de armas por apartados: el efecto de cada una y la regla común. */
-export const MASTERY_HELP: Record<'sap' | 'vex' | 'topple' | 'push' | 'all', string> = {
+export const MASTERY_HELP: Record<'sap' | 'vex' | 'topple' | 'push' | 'cleave' | 'graze' | 'nick' | 'slow' | 'all', string> = {
+  cleave: 'Una vez por turno, al impactar, el golpe sigue hasta otro enemigo de la misma fila (sin sumar la característica al daño).',
+  graze: 'Si fallas, el enemigo recibe igualmente tanto daño como tu modificador de característica.',
+  nick: 'Una vez por turno, si llevas otra arma ligera, golpeas también con ella (sin sumar la característica al daño).',
+  slow: 'Al impactar, el enemigo no puede cambiar de fila en su próximo turno. A los jefes no les afecta.',
   sap: 'Al impactar, el enemigo ataca con desventaja en su próximo ataque.',
   vex: 'Al impactar, tienes ventaja en tu próximo ataque contra él.',
   topple: 'Al impactar, el enemigo hace una salvación de Constitución o cae al suelo. Derribado, los ataques cuerpo a cuerpo contra él tienen ventaja y los de distancia, desventaja, hasta que se levante en su turno.',

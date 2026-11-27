@@ -6,7 +6,7 @@ import { DESIGN_ITEM, ITEMS } from '../data/srd';
 import { PLACE_LINES } from '../data/comentarios';
 import { die, pick, roll } from './rng';
 import {
-  Char, MAX_ITEMS, abilMod, allyFor, createAlly, isDown, newItem, passivePerception, raiseTo, sightRadius, shortRest, longRest, needsRest,
+  Char, MAX_ITEMS, abilMod, allyFor, createAlly, isDown, newItem, passivePerception, raiseTo, sightRadius, shortRest, shortRestGain, longRest, needsRest,
 } from './rules';
 import type { Game } from './game';
 import { bleed } from './muerte';
@@ -269,7 +269,10 @@ export function pathToward(g: Game, goal: Hex, reveal = false, viaTraps = false)
 
 export type DialogueLine = { speaker: string; text: string };
 export type Ev =
-  | { kind: 'combat'; id: string }
+  /** `walk`: empieza al acercarse por el mapa, y se puede elegir cómo (sigilo, atacar o estudiarlos). */
+  | { kind: 'combat'; id: string; walk?: boolean }
+  /** Antes de un combate por el mapa: acercarse en sigilo, atacar o estudiarlos. */
+  | { kind: 'approach'; id: string }
   | { kind: 'dialogue'; lines: DialogueLine[] }
   | { kind: 'msg'; title: string; lines: string[]; table?: [string, string][]; intro?: string; bg?: ImgKey; img?: ImgKey; img2?: ImgKey; /** Objetos (id de ITEMS, que se pueden tocar para leerlos) o imágenes sueltas. */ items?: string[]; portrait?: ImgKey; rolls?: ShownRoll[]; save?: boolean; pass?: string }
   | { kind: 'rest'; id: string; long: boolean; name: string; text: string }
@@ -417,7 +420,7 @@ export function step(g: Game, to: Hex, free = false): Ev[] {
     const near = g.fled.includes(m.id) ? d === 0 : d <= 1;
     // "A la vista": al cargar una partida la sala ya consta como visitada, así que también salta al acercarse o dentro de su sala.
     const seen = e.trigger === 'seen' && !g.fled.includes(m.id) && (d <= 1 || !!(room?.contents as Content[] | undefined)?.some(c => c.id === m.id));
-    if ((seen || (near && (e.trigger === 'enter' || g.fled.includes(m.id)))) && !evs.some(x => x.kind === 'combat')) evs.push({ kind: 'combat', id: m.id });
+    if ((seen || (near && (e.trigger === 'enter' || g.fled.includes(m.id)))) && !evs.some(x => x.kind === 'combat')) evs.push({ kind: 'combat', id: m.id, walk: true });
   }
   logEvs(g, evs);
   return evs;
@@ -613,7 +616,7 @@ function enterRoom(g: Game, room: Room): Ev[] {
     if (prep.length) evs.push({ kind: 'msg', title: 'Lo que habéis conseguido', lines: prep });
   }
   const seen = (room.contents as Content[]).find(c => c.type === 'encounter' && c.trigger === 'seen' && !g.done.includes(c.id) && !g.fled.includes(c.id));
-  if (seen) evs.push({ kind: 'combat', id: seen.id });
+  if (seen) evs.push({ kind: 'combat', id: seen.id, walk: true });
   else if (boss && !g.done.includes(boss.id)) evs.push({ kind: 'combat', id: boss.id });
   return evs;
 }
@@ -969,12 +972,23 @@ export function trap(g: Game, id: string, choice?: string): Ev {
   return out();
 }
 
-export function doRest(g: Game, id: string, long: boolean): string[] {
+/** Descanso corto: cada uno gasta los dados de golpe elegidos (si no se eligen, hasta curarse o quedarse sin ellos). */
+export function shortRestAll(g: Game, dice?: Record<string, number>): string[] {
+  return g.party.filter(c => !c.dead).map(c => {
+    const extra = shortRestGain(c);
+    const before = c.hitDice;
+    const hp = shortRest(c, g.rng, dice?.[c.id] ?? c.hitDice);
+    const used = before - c.hitDice;
+    return `${c.name} ${used ? `gasta ${used} ${used === 1 ? 'dado' : 'dados'} de golpe y recupera ${hp} PG` : 'no gasta dados de golpe'}${extra ? `; ${extra}` : ''}.`;
+  });
+}
+
+export function doRest(g: Game, id: string, long: boolean, dice?: Record<string, number>): string[] {
   g.done.push(id);
   if (long) g.restReady = false;
   const lines = long
     ? (g.party.forEach(longRest), ['Descanso largo: el grupo recupera todos sus PG y conjuros.'])
-    : g.party.filter(c => !c.dead).map(c => `${c.name} recupera ${shortRest(c, g.rng)} PG.`);
+    : shortRestAll(g, dice);
   g.log.push(...lines);
   return lines;
 }
@@ -1011,7 +1025,8 @@ export function itemOutside(g: Game, fromId: string, uid: string, toId: string):
   const d = ITEMS[it.id];
   it.charges = (it.charges ?? d.charges ?? 1) - 1;
   if (it.charges <= 0) from.items = from.items.filter(i => i.uid !== uid);
-  const n = Math.min(to.maxHp - to.hp, roll(g.rng, d.heal!));
+  const r = roll(g.rng, d.heal!);
+  const n = Math.min(to.maxHp - to.hp, to.cursed ? Math.max(1, Math.floor(r / 2)) : r);
   to.hp += n;
   if (to.hp > 0) { to.stable = false; to.deathS = to.deathF = 0; }
   const line = from === to ? `${to.name} usa ${d.name} y recupera ${n} PG.` : `${from.name} usa ${d.name} con ${to.name}: recupera ${n} PG.`;
@@ -1214,12 +1229,17 @@ export function react(g: Game, why: 'hurt' | 'clear' | 'close'): Ev | undefined 
   return { kind: 'dialogue', lines: [{ speaker: who.isHero ? 'hero' : who.id, text: pick(g.rng, REACT[why === 'close' && g.party.some(c => c.dead) ? 'closeDead' : why]) }] };
 }
 
-/** Lo que las decisiones anteriores cambian en el combate contra el jefe (por ahora, Maese Orvane). */
+/** Lo que las decisiones anteriores cambian en el combate contra el jefe de cada aventura. */
 export function bossPrep(g: Game, boss: string): string[] {
-  if (boss !== 'Orvane') return [];
   const out: string[] = [];
-  if (g.flags?.includes('z4_compuertas')) out.push('El agua vuelve a cubrir el cristal: Orvane no podrá sacar de él tanta magia. Tendrá un Escudo menos.');
-  if (g.goals?.z4_e03 === 'ok') out.push('Cortasteis su ritual: tendrá un Rayo abrasador menos.');
+  const has = (f: string) => !!g.flags?.includes(f);
+  if (boss === 'Orvane') {
+    if (has('z4_compuertas')) out.push('El agua vuelve a cubrir el cristal: Orvane no podrá sacar de él tanta magia. Tendrá un Escudo menos.');
+    if (g.goals?.z4_e03 === 'ok') out.push('Cortasteis su ritual: tendrá un Rayo abrasador menos.');
+  }
+  if (boss === 'Treant' && has('b4_promesa')) out.push('Recordasteis al Corazón su promesa: una de sus raíces ya no le obedece. Tendrá un nudo menos.');
+  if (boss === 'Young White Dragon' && has('m3_valvulas')) out.push('Reparasteis las válvulas: el aire templado sube por la fortaleza. El primer aliento de Vharzûl hará la mitad de daño.');
+  if (boss === 'Xiximanter' && has('s4_libres')) out.push('Los prisioneros que liberasteis rompieron sus pergaminos de fuego. Xiximanter tendrá una Bola de fuego menos.');
   return out;
 }
 

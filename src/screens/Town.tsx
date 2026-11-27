@@ -5,7 +5,7 @@ import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
 import { useStore } from '../store';
 import { Bg, Btn, Panel, T } from '../ui/kit';
-import { ITEMS } from '../data/srd';
+import { ITEMS, MONSTERS } from '../data/srd';
 import { MAX_ITEMS, itemOwnership, keeps, longRest, needsRest, newItem, shortRest } from '../engine/rules';
 import { reopenScenes, sceneSpent } from '../engine/escenas';
 import { FeatPicker } from '../ui/FeatPicker';
@@ -29,6 +29,8 @@ import { useEscritorio } from '../ui/escritorio';
 type Place = 'menu' | 'tienda' | 'templo' | 'posada' | 'puerta' | 'diario' | 'galeria';
 const HEAL_COST = 10;
 const REVIVE_COST = 50;
+/** Quitar la maldición de la momia (Levantar maldición del SRD). */
+const CURSE_COST = 30;
 /** El tendero paga la mitad; por los objetos mágicos (100 po o más), la cuarta parte: si no, sobra oro. */
 export const sellPrice = (value: number) => Math.floor(value / (value >= 100 ? 4 : 2));
 
@@ -186,7 +188,7 @@ export function Town() {
             <Btn label="Posada" sub={allies.some(c => nextTalk(g, c) !== undefined) ? 'Descansar, elegir compañeros y charlar (hay charlas nuevas)' : 'Descansar, elegir compañeros y charlar'} style={placeBtn} onPress={() => { setPlace('posada'); say(''); }} />
             <Btn label="Diario" sub="Historias y diálogos vividos" style={placeBtn} onPress={() => { setPlace('diario'); say(''); }} />
             <Btn label="Puerta del pueblo" sub="Viajar por el reino" style={placeBtn} onPress={() => { setPlace('puerta'); say(''); }} />
-            <Btn label="Galería" sub="Personajes, enemigos y lugares que habéis conocido" style={placeBtn} onPress={() => { setPlace('galeria'); say(''); }} />
+            <Btn label="Galería" sub="Personajes, bestiario, lugares y tesoros que habéis conocido" style={placeBtn} onPress={() => { setPlace('galeria'); say(''); }} />
             </View>
             <View style={st.partyRow}>
               {g.party.map(c => <View key={c.id} style={{ margin: 2 }}><Card info={charInfo(c)} width={70} dim={c.dead} onPress={() => setSheet(c.id)} /></View>)}
@@ -266,13 +268,16 @@ export function Town() {
           <Panel>
             <T>El sacerdote cura heridas por {HEAL_COST} po por persona y devuelve la vida a los caídos por {REVIVE_COST} po.</T>
             {g.party.map(c => c.dead ? (
-              <Btn key={c.id} label={`Resucitar a ${c.name}`} sub={`${REVIVE_COST} po`} disabled={!afford(REVIVE_COST)}
-                onPress={() => { edit(gg => { const x = gg.party.find(y => y.id === c.id)!; gg.gold -= pay(REVIVE_COST); x.dead = false; longRest(x); }, true); say(`${c.name} vuelve a la vida.`); }} />
+              <Btn key={c.id} label={c.petrified ? `Devolver a ${c.name} a la carne` : `Resucitar a ${c.name}`} sub={`${REVIVE_COST} po`} disabled={!afford(REVIVE_COST)}
+                onPress={() => { edit(gg => { const x = gg.party.find(y => y.id === c.id)!; gg.gold -= pay(REVIVE_COST); x.dead = false; x.petrified = false; longRest(x); }, true); say(c.petrified ? `La piedra se agrieta: ${c.name} vuelve a moverse.` : `${c.name} vuelve a la vida.`); }} />
+            ) : c.cursed ? (
+              <Btn key={c.id} label={`Quitar la maldición a ${c.name}`} sub={`${c.hp}/${c.maxHp} PG · ${CURSE_COST} po · queda curado`} disabled={!afford(CURSE_COST)}
+                onPress={() => { edit(gg => { const x = gg.party.find(y => y.id === c.id)!; gg.gold -= pay(CURSE_COST); x.cursed = false; x.hp = x.maxHp; }, true); say(`El sacerdote rompe la maldición de ${c.name}.`); }} />
             ) : c.hp < c.maxHp ? (
               <Btn key={c.id} label={`Curar a ${c.name}`} sub={`${c.hp}/${c.maxHp} PG · ${HEAL_COST} po`} disabled={!afford(HEAL_COST)}
                 onPress={() => { edit(gg => { const x = gg.party.find(y => y.id === c.id)!; gg.gold -= pay(HEAL_COST); x.hp = x.maxHp; }, true); say(`${c.name} queda curado.`); }} />
             ) : null)}
-            {g.party.every(c => !c.dead && c.hp >= c.maxHp) ? <Text style={st.itemDesc}>No es necesario: nadie está herido ni ha caído.</Text> : null}
+            {g.party.every(c => !c.dead && !c.cursed && c.hp >= c.maxHp) ? <Text style={st.itemDesc}>No es necesario: nadie está herido ni ha caído.</Text> : null}
           </Panel>
         ) : null}
         {place === 'posada' ? (
@@ -429,11 +434,11 @@ function Diary() {
                 {pendingNotes(g, a.id).map((t, i) => <Text key={i} style={[st.itemDesc, { color: C.text, fontSize: 15 }]}>• {t}</Text>)}
               </View>
             ) : null}
-            {/* Lo que ya juega a vuestro favor contra el jefe (por ahora, Maese Orvane). */}
-            {a.id === 'hondaroca' && !wonAdv(g, a.id) && bossPrep(g, 'Orvane').length ? (
+            {/* Lo que ya juega a vuestro favor contra el jefe de la aventura. */}
+            {!wonAdv(g, a.id) && bossPrep(g, a.boss).length ? (
               <View style={{ marginVertical: 6 }}>
-                <Text style={st.diaryWho}>Preparativos contra Maese Orvane</Text>
-                {bossPrep(g, 'Orvane').map((t, i) => <Text key={i} style={[st.itemDesc, { color: C.text, fontSize: 15 }]}>• {t}</Text>)}
+                <Text style={st.diaryWho}>Preparativos contra {MONSTERS[a.boss].name}</Text>
+                {bossPrep(g, a.boss).map((t, i) => <Text key={i} style={[st.itemDesc, { color: C.text, fontSize: 15 }]}>• {t}</Text>)}
               </View>
             ) : null}
             {/* Quién es quién: cada personaje con el que se ha hablado, una sola vez. */}

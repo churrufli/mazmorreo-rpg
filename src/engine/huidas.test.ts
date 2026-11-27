@@ -22,7 +22,8 @@ function fight(g: Game, enc: string, wait: number): Combat {
 }
 
 describe('objetivos opcionales y huidas', () => {
-  for (const goal of GOALS) for (const hit of [false, true]) for (const cls of HERO_CLASSES as readonly ClassId[]) {
+  // El pudin negro no se vence solo con armas cortantes (se divide y es inmune): esa es la gracia de su objetivo.
+  for (const goal of GOALS.filter(x => x.kind !== 'nosplit')) for (const hit of [false, true]) for (const cls of HERO_CLASSES as readonly ClassId[]) {
     it(`${goal.enc} (${goal.kind}) ${hit ? 'atacando' : 'esperando'} con ${cls}`, () => {
       for (let seed = 1; seed <= 6; seed++) {
         const g = newGame(seed, 'Prueba', cls, 'human');

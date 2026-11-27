@@ -268,6 +268,7 @@ export function Create() {
   const [editing, setEditing] = useState(false);
   const [abil, setAbil] = useState<Record<Ability, number>>(CLASSES[REC_CLS].abil);
   const [dice, setDice] = useState<Record<Ability, number[]>>();
+  const [hard, setHard] = useState(false);
   const [rolls, setRolls] = useState(0); // 0 = recomendados; 1 = tirada; 2 = ya repetida
   const [sel, setSel] = useState<Ability>();
   const ins = useSafeAreaInsets();
@@ -296,7 +297,7 @@ export function Create() {
     if (dice) setDice({ ...dice, [k]: dice[sel], [sel]: dice[k] });
     setSel(undefined);
   };
-  const forward = () => (step < 4 ? setStep(step + 1) : create(name.trim(), cls, sp, abil, img));
+  const forward = () => (step < 4 ? setStep(step + 1) : create(name.trim(), cls, sp, abil, img, hard));
   const head = (
       <>
         <Text style={st.createTitle}>Crea a tu héroe</Text>
@@ -404,6 +405,10 @@ export function Create() {
             </Panel>
           ) : null}
           {step === 4 ? <Text style={st.blurbSmall}>Toca el nombre para escribir uno propio, o el dado para otro al azar.</Text> : null}
+          {step === 4 ? (
+            <Btn small label={hard ? 'Modo desafío: sí' : 'Modo desafío: no'} onPress={() => setHard(!hard)} style={{ marginTop: 8 }} />
+          ) : null}
+          {step === 4 && hard ? <Text style={st.blurbSmall}>Sin poción inicial ni ayudas en la primera zona, combates más duros y sin poción de regalo tras una derrota.</Text> : null}
           <Btn primary label={NEXT[step]} disabled={step === 4 && !ok} onPress={forward} style={{ marginTop: 12 }} />
           <Btn label={step ? 'Atrás' : 'Volver'} onPress={() => (step ? setStep(step - 1) : go('slots'))} />
         </View>

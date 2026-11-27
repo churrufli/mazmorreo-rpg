@@ -90,6 +90,22 @@ export const AYUDA_COMBATE: { title: string; text: string }[] = [
 ];
 
 export const NOVEDADES: { version: string; items: string[] }[] = [
+  { version: 'v0.149', items: [
+    'Escenas con habilidades del SRD (Atletismo, Sigilo, Arcanos…): la competencia suma, la Pericia del pícaro cuenta doble y un compañero competente os da ventaja. Algunas vías solo salen con cierta clase o especie.',
+    'En unas pocas escenas clave, fallar no cierra la vía: hay un segundo intento con desventaja.',
+    'Descanso corto a vuestra elección: cuántos dados de golpe gasta cada uno. El mago recupera espacios con Recuperación arcana.',
+    'Animaciones rápidas en Ajustes.',
+    'Los cuatro jefes avisan de su golpe grande y cambian de táctica a mitad de PG. Lo que hacéis antes en la aventura les quita algo.',
+    'Al llegar a un grupo de enemigos podéis acercaros con sigilo (tiran la iniciativa con desventaja), estudiarlos o atacar.',
+    'La Tumba con sus reglas del SRD: el pudin y la gelatina se dividen, la momia maldice (la curación se queda en la mitad hasta pasar por el templo) y el basilisco petrifica.',
+    'Ataques de oportunidad al salir de la vanguardia, Destrabarse, poner a salvo a un caído, agarrar y vigilar a un aliado.',
+    'Moral enemiga en los grupos con jefe, salas angostas, resbaladizas o con humo, y combates largos que atraen a los vecinos.',
+    'Objetivos nuevos: romper una pieza antes de tiempo o salvar a alguien indefenso.',
+    'Maestrías nuevas: Hendir, Rozar, Mella y Ralentizar, con gran hacha, mandoble y alabarda en la tienda de Valdescarcha.',
+    'Rasgos de clase: Ataque temerario, Puntería firme, Golpe astuto y Expulsar muertos vivientes.',
+    'Modo desafío al crear la partida, objetos mágicos con historia en cofres secretos y oro por los PX que ya no os suben de nivel.',
+    'La galería suma la ficha corta de cada criatura vista y los tesoros de cada aventura, y al terminar una aventura llegan rumores de la siguiente.',
+  ] },
   { version: 'v0.148', items: [
     'Los finales de Hondaroca y de El Corazón Hueco vuelven a ser largos, y el texto del final se puede desplazar con el botón siempre a la vista.',
     'En el Claro maldito ya no hay atajo: primero la abuela Brezna, luego la bruja, después el Corazón Hueco y al final la Raíz silenciosa.',
