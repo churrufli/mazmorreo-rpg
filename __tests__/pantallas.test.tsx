@@ -58,9 +58,9 @@ test('recorre título, creación, exploración y combate sin romperse', async ()
     const { game, combat } = S();
     if (autoTurn(combat!)) { await act(async () => { jest.advanceTimersByTime(1500); }); continue; }
     if (!budgetSeen) {
-      // Cada símbolo de lo que queda del turno lleva su nombre al lado, en cualquier anchura.
-      const budget = JSON.stringify(r.root.findByProps({ testID: 'combat-budget' }).findAllByType(require('react-native').Text).map(t => t.props.children));
-      for (const l of ['Acción', 'Acción adicional', 'Movimiento']) expect(budget).toContain(`"${l}"`);
+      // Lo que queda del turno va solo con sus símbolos junto al nombre (2026-11-27); el nombre de cada uno, para lectores de pantalla.
+      const budget = JSON.stringify(r.root.findByProps({ testID: 'combat-budget' }).findAll(n => typeof n.props.accessibilityLabel === 'string').map(n => n.props.accessibilityLabel));
+      for (const l of ['Acción', 'Acción adicional', 'Movimiento']) expect(budget).toContain(`"${l}: `);
       budgetSeen = true;
     }
     const a = actionsFor(game!, combat!).find(x => x.target.startsWith('enemy') && targetsFor(combat!, x).length);

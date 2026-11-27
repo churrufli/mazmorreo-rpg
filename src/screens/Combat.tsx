@@ -264,8 +264,8 @@ export function Combat() {
   // La columna del flanco puede ser más alta que las filas enemigas: la pieza, quien esté junto a ella y el botón.
   const flankNear = flankUs.filter(u => u !== pieceU);
   const enemyRows = (['front', 'back'] as const).filter(r => rowOf('enemy', r).length).length;
-  const flankRows = flankUs.length ? (pieceU ? 1 : 0) + flankNear.length * 0.72 : 0;
-  const flankPx = flankUs.length ? 22 + (flankAct && !flankAct.off ? 38 : 0) : 0;
+  const flankRows = flankUs.length ? (pieceU ? 1 : 0) + flankNear.length : 0;
+  const flankPx = flankUs.length ? 8 + (flankAct && !flankAct.off ? 38 : 0) : 0;
   const byWidth = (boardWidth - 12) / (Math.max(2.2, ...counts) + (flankUs.length ? 1 : 0)) - 6;
   const byHeight = free / Math.max(2, counts.length) / 1.5;
   // Con el flanco, las cartas encogen para que quepa la columna, pero nunca por debajo del 80 %: si no cabe, el campo se desliza.
@@ -394,7 +394,8 @@ export function Combat() {
     return { icon, faces };
   };
 
-  // Lo que queda del turno, con los mismos símbolos que llevan los botones y su nombre al lado, en una línea propia.
+  // Lo que queda del turno: solo los símbolos que llevan los botones, junto al nombre de quien juega (sin línea
+  // propia, para descargar la pantalla; el autor 2026-11-27). Su nombre se explica en la ayuda del combate.
   const budget = !auto && !cb.result && me.side === 'party' ? (
     <View testID="combat-budget" style={[st.budget, lit('budget')]}>
       {BUDGET.map(([k, label]) => {
@@ -402,12 +403,11 @@ export function Combat() {
         return (
           <View key={k} style={[st.budgetItem, used && { opacity: 0.35 }]} accessible accessibilityLabel={`${label}: ${used ? 'gastada' : 'disponible'}`}>
             <Icon path={COST_ICON[k]} size={12} color={used ? C.textDim : C.goldHi} />
-            <Text style={[st.budgetTxt, used && { textDecorationLine: 'line-through' }]}>{label}</Text>
             <Text testID={`budget-${k}`} style={st.budgetTxt}>{used ? '0' : '1'}</Text>
           </View>
         );
       })}
-      {slots !== undefined ? <Text style={st.budgetTxt} accessibilityLabel={`Espacios de conjuro: ${slots}`}>{`Conjuros ${slots}`}</Text> : null}
+      {slots !== undefined ? <Text style={st.budgetTxt} accessibilityLabel={`Espacios de conjuro: ${slots}`}>{`✦${slots}`}</Text> : null}
     </View>
   ) : null;
 
@@ -453,12 +453,12 @@ export function Combat() {
     const by = cb.goal?.g.by;
     const tag = pieceU && !pieceU.dead && by ? (cb.fired ? '¡Activa!' : `⌛ ${by}`) : undefined;
     const near = flankNear;
-    const w = cardW * 0.72;
+    // Zona propia, como una fila más: sin marco, con su nombre en vertical y cartas del mismo tamaño que las demás (el autor 2026-11-27).
     return (
-      <View testID="combat-flank" style={[st.rowBand, st.flank, { width: cardW + 12 }, lit('enemies')]}>
-        <Text numberOfLines={1} style={st.flankLabel}>Flanco</Text>
+      <View testID="combat-flank" style={[st.rowBand, st.flank, { width: cardW + 26 }, lit('enemies')]}>
+        <View pointerEvents="none" style={[st.rowLabelBox, { width: cardW * 1.5, left: 7 - cardW * 0.75, top: cardW * 0.75 - 6 }]}><Text numberOfLines={1} style={st.rowLabel}>Flanco</Text></View>
         {pieceU ? renderUnit(pieceU, cardW, tag) : null}
-        {near.length ? <View style={st.flankNear}>{near.map(u => renderUnit(u, w))}</View> : null}
+        {near.length ? <View style={st.flankNear}>{near.map(u => renderUnit(u, cardW))}</View> : null}
         {flankAct && !flankAct.off ? (
           <Pressable testID="combat-flank-move" disabled={!ready} onPress={() => go(flankAct)} onLongPress={() => choose(flankAct, true)} accessibilityRole="button" accessibilityLabel={flankAct.label} style={[st.flankBtn, { width: cardW + 4 }]}>
             <Icon path={COST_ICON.move} size={12} color={C.goldHi} />
@@ -543,6 +543,7 @@ export function Combat() {
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text accessibilityLiveRegion="polite" style={[st.round, { flex: 1 }, !!sel && { color: C.goldHi }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{!sel ? `Turno de ${me.name}`
               : `${sel.label}: ${targetFeedback ?? `toca ${sel.target === 'ally' ? 'un aliado' : 'un objetivo'}`}`}</Text>
+            {!sel ? budget : null}
             <Pressable onPress={() => setLogOpen(o => !o)} accessibilityRole="button" accessibilityLabel={logOpen ? 'Plegar el registro' : 'Desplegar el registro'} hitSlop={6} style={{ padding: 4 }}><Icon path={logOpen ? mdiChevronUp : mdiChevronDown} size={20} /></Pressable>
             <Pressable onPress={() => setShowLog(true)} accessibilityRole="button" accessibilityLabel="Registro del combate" style={{ padding: 4 }}><Icon path={mdiScriptTextOutline} size={20} /></Pressable>
             {sel && !tip ? <Pressable accessibilityRole="button" accessibilityLabel="CANCELAR ACCIÓN" onPress={close} hitSlop={8} style={{ padding: 5, minHeight: 28, justifyContent: 'center' }}><Text style={st.devText}>CANCELAR</Text></Pressable> : null}
@@ -550,7 +551,6 @@ export function Combat() {
               <Icon path={mdiInformationOutline} size={20} />
             </Pressable>
           </View>
-          {!sel ? budget : null}
           {cb.goal ? (
             <View style={[st.goal, lit('goal')]}>
               <Icon path={mdiBullseyeArrow} size={16} color={cb.goal.status === 'ok' ? '#7fcf8f' : cb.goal.status === 'fail' ? C.textDim : C.goldHi} />
@@ -560,7 +560,7 @@ export function Combat() {
             </View>
           ) : null}
           {/* Desliza para ver todo el registro del combate. En pantallas bajas, una línea menos cuando se ve lo que queda del turno. */}
-          <ScrollView ref={logRef} style={{ height: logOpen ? 85 : (height < 700 || esc.on) && budget && !sel ? 17 : 34, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
+          <ScrollView ref={logRef} style={{ height: logOpen ? 85 : 34, flexGrow: 0, flexShrink: 0 }} nestedScrollEnabled onContentSizeChange={() => logRef.current?.scrollToEnd({ animated: true })}>
             {cb.log.slice(0, logN).map((l, i) => (
               <Text key={i} style={[st.logLine, l.c === 'dmg' && { color: '#e8796b' }, l.c === 'heal' && { color: '#7fcf8f' }, l.c === 'big' && { color: C.goldHi }, l.c === 'miss' && { color: C.textDim }]}>{l.t}</Text>
             ))}
@@ -581,7 +581,7 @@ export function Combat() {
           </View>
         ) : null}
       </View>
-      <View testID="combat-controls" style={[st.actions, esc.on && { alignSelf: 'center', borderWidth: 1, borderTopLeftRadius: 8, borderTopRightRadius: 8 }, { height: landscape ? height : esc.on ? 176 : 204 + ins.bottom, width: controlsWidth, flexGrow: 0, flexShrink: 0, paddingTop: landscape ? ins.top + 4 : 3, paddingBottom: ins.bottom + 3 }]}>
+      <View testID="combat-controls" style={[st.actions, esc.on && { alignSelf: 'center', borderWidth: 1, borderTopLeftRadius: 8, borderTopRightRadius: 8 }, { height: landscape ? height : esc.on ? 160 : 180 + ins.bottom, width: controlsWidth, flexGrow: 0, flexShrink: 0, paddingTop: landscape ? ins.top + 4 : 3, paddingBottom: ins.bottom + 3 }]}>
         {auto ? (
           <Text style={st.wait}>{me.side === 'enemy' ? `${me.name} actúa…` : me.paralyzed ? `${me.name} está paralizado y no puede actuar…` : `${me.name} no puede actuar…`}</Text>
         ) : !cb.result ? (
@@ -951,10 +951,10 @@ const st = StyleSheet.create({
   // Rótulo de la fila en vertical, pegado a la izquierda (el autor 2026-11-13).
   rowLabelBox: { position: 'absolute', height: 12, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-90deg' }] },
   rowLabel: { textAlign: 'center', fontFamily: F.titleBold, color: C.text, fontSize: 9, letterSpacing: 1, textTransform: 'uppercase', textShadowColor: '#000', textShadowRadius: 4 },
-  rowBand: { borderRadius: 6, borderWidth: 1, borderColor: 'rgba(201,162,92,0.25)', backgroundColor: 'rgba(0,0,0,0.18)' },
-  rowEnemy: { borderColor: 'rgba(181,72,58,0.35)' },
-  flank: { alignItems: 'center', paddingTop: 2, paddingBottom: 4, marginHorizontal: 2, borderColor: 'rgba(201,162,92,0.55)', borderStyle: 'dashed' },
-  flankLabel: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 9, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2, textShadowColor: '#000', textShadowRadius: 4 },
+  // Sin marcos finos alrededor de las zonas (el autor 2026-11-27): solo un velo oscuro, para que el campo respire.
+  rowBand: { borderRadius: 6, backgroundColor: 'rgba(0,0,0,0.18)' },
+  rowEnemy: { backgroundColor: 'rgba(40,8,4,0.2)' },
+  flank: { alignItems: 'center', paddingTop: 4, paddingBottom: 4, paddingLeft: 14, marginHorizontal: 2 },
   flankBtn: { marginTop: 4, minHeight: 32, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 3, borderWidth: 1, borderColor: C.gold, borderRadius: 6, backgroundColor: 'rgba(75,55,32,0.9)', paddingHorizontal: 2 },
   flankBtnTxt: { fontFamily: F.titleBold, color: C.text, fontSize: 10, textAlign: 'center', flexShrink: 1 },
   flankNear: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 4 },
@@ -966,8 +966,8 @@ const st = StyleSheet.create({
   // Tutorial: lo que se explica brilla en dorado y el bocadillo flota sobre el campo.
   tutoLit: { borderWidth: 2, borderColor: C.goldHi, borderRadius: 8, shadowColor: C.goldHi, shadowOpacity: 0.9, shadowRadius: 10, shadowOffset: { width: 0, height: 0 }, elevation: 8 },
   tuto: { position: 'absolute', left: 10, right: 10, zIndex: 20, backgroundColor: '#1b140d', borderWidth: 2, borderColor: C.goldHi, borderRadius: 10, padding: 10 },
-  budget: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 12 },
-  budgetItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  budget: { flexDirection: 'row', alignItems: 'center', columnGap: 8, marginHorizontal: 4 },
+  budgetItem: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   budgetTxt: { fontFamily: F.rulesBold, color: C.text, fontSize: 11, lineHeight: 13 },
   actionGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 4, paddingHorizontal: 2, paddingVertical: 2 },
   gridBtn: { width: '49.4%', flexGrow: 0, flexShrink: 0, minWidth: 0, marginHorizontal: 0, marginVertical: 0 },

@@ -57,6 +57,8 @@ export function resetAdventures(g: Game, from: AdvId) {
   g.fallen = keepKeys(g.fallen);
   g.goals = keepKeys(g.goals);
   g.saved = keepKeys(g.saved);
+  g.lit = keepKeys(g.lit);
+  g.lurked = keep(g.lurked);
   g.drops = keepKeys(g.drops);
   g.chestLeft = keepKeys(g.chestLeft);
   g.stats = keepKeys(g.stats);

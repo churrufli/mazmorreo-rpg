@@ -5,7 +5,7 @@ import { ABIL_NAME, Ability, ClassId, ITEMS, MONSTERS, SKILLS, Skill, SpeciesId 
 import { GOALS } from '../data/objetivos';
 import { TONE_LINES, Tone } from '../data/comentarios';
 import { ADVS, advOf } from './aventuras';
-import { logEvs, reached, contentById, dropKey, encounterById, rolledEnemies, Ev, giveItem, ShownRoll } from './dungeon';
+import { logEvs, reached, contentById, dropKey, encounterById, encounterGroup, lightUp, rolledEnemies, Ev, giveItem, ShownRoll } from './dungeon';
 import type { Game } from './game';
 import { die, pick, roll } from './rng';
 import { setElems } from './elementos';
@@ -145,6 +145,7 @@ export function applyEffect(g: Game, e: Effect, who?: Char): { lines: string[]; 
   if (e.remove && !g.done.includes(e.remove)) { g.done.push(e.remove); g.fallen = { ...g.fallen, [e.remove]: {} }; }
   if (e.reveal && !g.found.includes(e.reveal)) {
     g.found.push(e.reveal);
+    lightUp(g, e.reveal);
     // El descubrimiento se registra en el juego, pero el relato no presupone
     // que exista un saco, pared, puerta o pasadizo visible en la ilustración.
     lines.push('Ya lo puedes ver en el mapa.');
@@ -287,14 +288,19 @@ export function sizeEncounter(g: Game, ids: string[], boss: boolean) {
 }
 
 /**
- * Primer enemigo que tendrá el combate, ya ajustado al grupo y a las escenas: es el que se ve en el mapa
- * (antes salía el primero del encuentro original, aunque el ajuste lo quitara; el autor 2026-11-25).
- * Se calcula sobre una copia: mirar el mapa no fija el tamaño del combate.
+ * Enemigo que se ve en el mapa y en «Enemigos a la vista»: el más potente (más PX, o el jefe) de los que
+ * lucharán de verdad, ya ajustados al grupo y a las escenas, contando los grupos de la misma sala que
+ * entran juntos (el autor 2026-11-27). Se calcula sobre una copia: mirar el mapa no fija el tamaño del combate.
  */
 export function firstFoe(g: Game, id: string, boss: boolean): any {
   const t = { ...g };
-  sizeEncounter(t, [id], boss);
-  return enemiesOf(t, id)[0] ?? rolledEnemies(g, id)[0];
+  const now = encounterGroup(g, id).now;
+  sizeEncounter(t, now, boss);
+  const ref = contentById(id);
+  const bossType = ref ? ADVS[advOf(ref.zone)].boss : undefined;
+  const power = (e: any) => (e.srd_creature === bossType ? Infinity : MONSTERS[e.srd_creature]?.xp ?? -1);
+  const all = now.flatMap(x => enemiesOf(t, x)).filter(e => e.count > 0 && MONSTERS[e.srd_creature]);
+  return all.sort((a, b) => power(b) - power(a))[0] ?? rolledEnemies(g, id)[0];
 }
 
 /** Elige una opción. Devuelve lo que se enseña después (resultado, la escena otra vez o un combate). */

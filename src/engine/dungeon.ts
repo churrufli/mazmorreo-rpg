@@ -178,8 +178,10 @@ export function visibleCells(g: Game, reveal = false): Set<string> {
   // Sin niebla (modo desarrollador): todo el plano, con sus decorados y los muros de alrededor.
   if (reveal) return new Set(plan(g.zone).cells.flatMap(([q, r]) => [hkey([q, r]), ...neighbors([q, r]).map(hkey)]));
   const rad = sightRadius(g.party);
-  const vis = new Set<string>(g.visited);
-  let frontier = [...g.visited];
+  // Lo que una decisión dejó a la vista cuenta como mirado desde ahí, aunque no se haya pisado.
+  const seenFrom = [...g.visited, ...(g.lit?.[g.zone] ?? [])];
+  const vis = new Set<string>(seenFrom);
+  let frontier = [...seenFrom];
   for (let i = 0; i < rad; i++) {
     const next: string[] = [];
     for (const k of frontier) {
@@ -203,6 +205,36 @@ export function visibleCells(g: Game, reveal = false): Set<string> {
     }
   }
   return vis;
+}
+
+/**
+ * Secreto descubierto por una decisión: deja a la vista el camino que lo une con lo ya explorado, para que
+ * no aparezca suelto en medio de la niebla (el autor 2026-11-27). No cuenta como pisado: las salas siguen
+ * dando su aviso al entrar por primera vez.
+ */
+export function lightUp(g: Game, id: string) {
+  const m = plan(g.zone).marks.find(x => x.id === id);
+  if (!m) return;
+  const cells = m.path?.length ? m.path : [`${m.q},${m.r}`];
+  const pass = passable(g, g.zone);
+  const vis = visibleCells(g);
+  // BFS desde el secreto por casillas transitables hasta tocar una ya visible.
+  const from = new Map<string, string | null>(cells.map(k => [k, null]));
+  const q = [...cells];
+  let hit: string | undefined;
+  while (q.length && !hit) {
+    const k = q.shift()!;
+    for (const n of neighbors(k.split(',').map(Number) as Hex)) {
+      const nk = hkey(n);
+      if (from.has(nk) || !pass.has(nk)) continue;
+      from.set(nk, k);
+      if (vis.has(nk)) { hit = nk; break; }
+      q.push(nk);
+    }
+  }
+  const lit = new Set([...(g.lit?.[g.zone] ?? []), ...cells]);
+  for (let k = hit ? from.get(hit) : undefined; k; k = from.get(k)) lit.add(k);
+  g.lit = { ...g.lit, [g.zone]: [...lit] };
 }
 
 /** Camino más corto por casillas conocidas y transitables (BFS). */
@@ -1113,6 +1145,7 @@ export function enterZone(g: Game, zone: string): Ev[] {
   }
   g.zone = zone;
   g.zoneBg = zoneArt(zone).combat;
+  if (g.lit?.[zone]) g.lit = { ...g.lit, [zone]: [] };
   g.pos = plan(zone).start;
   g.prev = g.pos;
   g.visited = [hkey(g.pos)];

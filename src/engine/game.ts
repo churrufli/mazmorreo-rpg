@@ -32,6 +32,12 @@ export interface Game {
   fled: string[];
   /** Grupo al que el grupo se acercó sin ser visto: tira la iniciativa con desventaja (sorpresa del SRD 5.2.1). */
   surprise?: string;
+  /** Grupo que os ha emboscado: el grupo tira la iniciativa con desventaja (sorpresa del SRD 5.2.1, al revés). */
+  ambush?: string;
+  /** Grupos que ya intentaron emboscaros (solo se intenta una vez). */
+  lurked?: string[];
+  /** Casillas que una decisión ha dejado a la vista sin pisarlas, por zona (une lo descubierto con lo explorado). */
+  lit?: Record<string, string[]>;
   /** Grupos de enemigos ya estudiados (no se pueden estudiar dos veces). */
   studied?: string[];
   /** Enemigos que cayeron en cada encuentro ganado (nombre → cuántos). Los que huyeron no cuentan. */
