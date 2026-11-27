@@ -346,6 +346,8 @@ export interface MonsterDef {
   knot?: boolean;
   /** Dividirse (SRD 5.2.1): con daño cortante o de relámpago y 10 PG o más, se parte en dos con la mitad de PG cada una. */
   split?: boolean;
+  /** La pieza: objeto de un objetivo, sin ataques ni turno (ver objetivos.ts). */
+  piece?: boolean;
 }
 
 const goblinSaves = { str: -1, dex: 2, con: 0, int: 0, wis: -1, cha: -1 };
@@ -567,6 +569,11 @@ Object.assign(MONSTERS, {
   'Awakened Tree': {
     name: 'Nudo de raíz', img: 'nudo_de_raiz', ac: 12, hp: 12, dexMod: -2, xp: 0, ai: 'beast', noSleep: true, knot: true,
     attacks: [], saves: { str: 2, dex: -2, con: 2, int: -2, wis: 0, cha: -2 },
+  },
+  // Objeto de un objetivo (la pieza): nombre, imagen, PG y CA salen del objetivo.
+  Object: {
+    name: 'Pieza', img: 'trampa', ac: 12, hp: 8, dexMod: -5, xp: 0, ai: 'beast', noSleep: true, piece: true,
+    attacks: [], saves: { str: -5, dex: -5, con: 0, int: -5, wis: -5, cha: -5 },
   },
   Treant: {
     name: 'El Corazón Hueco', img: 'corazon_hueco', ac: 15, hp: 80, dexMod: 0, xp: 0, ai: 'beast', multi: 2, noSleep: true, reach: true,

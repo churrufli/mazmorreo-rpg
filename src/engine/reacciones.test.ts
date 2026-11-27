@@ -133,3 +133,34 @@ describe('el ruido', () => {
     expect(cb.encounters).toContain('z1_e04');
   });
 });
+
+describe('la pieza y proteged a', () => {
+  it('el torno es una carta sin turno que no hace falta romper para ganar', () => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    for (const a of ['tiko', 'brunna', 'edmund']) g.party.push(createAlly(a, 3, 900));
+    enterZone(g, 'm2');
+    const cb = startCombat(g, 'm2_e06');
+    const piece = cb.units.find(u => u.key === 'piece')!;
+    expect(piece.name).toBe('Torno de la trampa');
+    expect(cb.order).not.toContain('piece');
+    const { applyDamage, checkEnd } = require('./combat');
+    applyDamage(g, cb, piece, 99, 'contundente', cb.units[0]);
+    expect(checkEnd(g, cb)).toBe(false);
+    expect(cb.goal?.status).toBe('ok');
+    for (const u of cb.units) if (u.side === 'enemy' && u !== piece) u.dead = true;
+    checkEnd(g, cb);
+    expect(cb.result).toBe('win');
+  });
+
+  it('el saqueador pierde PG cada asalto mientras la araña esté libre', () => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    g.party.push(createAlly('tiko', 3, 900));
+    enterZone(g, 's1');
+    const cb = startCombat(g, 's1_e04');
+    expect(cb.goal?.g.kind).toBe('guard');
+    const { endTurn } = require('./combat');
+    for (let i = 0; i < 200 && cb.goal?.status === 'open' && !cb.result; i++) { for (const u of cb.units) if (u.side === 'party') u.hp = 999; cb.acted = true; endTurn(g, cb); }
+    expect(cb.ward).toBe(0);
+    expect(cb.goal?.status).toBe('fail');
+  });
+});

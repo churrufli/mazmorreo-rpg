@@ -188,6 +188,8 @@ export interface Combat {
    * Sube cuando cae el líder, cuando uno huye o con un crítico del grupo. A la tercera, los malheridos huyen.
    */
   morale?: number;
+  /** Proteged a: PG que le quedan a la persona que hay que proteger. */
+  ward?: number;
   /** Rasgo de la sala (afecta a los dos bandos): angosta (dos por fila), resbaladiza (cambiar de fila pide salvación de
    * Destreza) o con humo (desventaja al disparar a la otra fila; el fuego lo disipa). */
   terrain?: Terrain;
@@ -461,15 +463,26 @@ function goalDone(cb: Combat, ok: boolean) {
   cb.goal.status = ok ? 'ok' : 'fail';
   say(cb, ok ? '¡Objetivo cumplido!' : 'Objetivo fallado.', ok ? 'big' : 'info');
 }
+export const isPiece = (u: Unit) => !!u.mon && !!MONSTERS[u.mon].piece;
 const goalUnits = (cb: Combat, who: string) => cb.units.filter(u => u.side === 'enemy' && (u.name === who || u.name.startsWith(`${who} `)));
 /** Revisa el objetivo tras cada golpe y al empezar cada asalto. */
-function goalCheck(cb: Combat, newRound = false) {
+function goalCheck(cb: Combat, newRound = false, g?: Game) {
   const k = goalOpen(cb, 'kill');
   if (k && goalUnits(cb, k.who!).every(u => u.dead)) goalDone(cb, true);
   const open = cb.goal?.status === 'open' ? cb.goal.g : undefined;
   if (newRound && open?.by && cb.round >= open.by && open.kind !== 'win') {
     if (open.leave) for (const u of goalUnits(cb, open.who!).filter(conscious)) { u.fled = true; u.plan = undefined; say(cb, `${u.name} ${open.leave}.`, 'big'); }
     goalDone(cb, false);
+  }
+  // Proteged a (2026-11-27): al empezar cada asalto, quien amenaza a la persona indefensa le hace daño si nadie le retiene.
+  const w = goalOpen(cb, 'guard');
+  if (w && newRound && g && cb.ward !== undefined) {
+    const foe = goalUnits(cb, w.who!).find(u => conscious(u) && !u.grappled && !u.prone && !u.asleep && !u.restrained);
+    if (foe) {
+      cb.ward = Math.max(0, cb.ward - roll(g.rng, '1d4'));
+      say(cb, cb.ward ? `${foe.name} ${w.ward!.hurt}: a ${w.ward!.name} le quedan ${cb.ward} PG.` : `${foe.name} ${w.ward!.hurt}. ${w.ward!.name} no aguanta más.`, cb.ward ? 'info' : 'big');
+      if (!cb.ward) goalDone(cb, false);
+    }
   }
 }
 
@@ -618,7 +631,7 @@ function watchShot(g: Game, cb: Combat, foe: Unit, t: Unit) {
 }
 
 /** Quién tiene moral: goblins, sectarios y bestias de carne y hueso (no cienos ni construcciones). */
-const moraleFoe = (x: Unit) => !!x.mon && ['goblin', 'cultist', 'beast'].includes(MONSTERS[x.mon].ai) && !MONSTERS[x.mon].noSleep && !MONSTERS[x.mon].knot;
+const moraleFoe = (x: Unit) => !!x.mon && !MONSTERS[x.mon].piece && ['goblin', 'cultist', 'beast'].includes(MONSTERS[x.mon].ai) && !MONSTERS[x.mon].noSleep && !MONSTERS[x.mon].knot;
 /** La moral del grupo enemigo baja un paso; a la tercera, los que están por debajo de la mitad de sus PG huyen. */
 function moraleHit(cb: Combat, why: string) {
   if (cb.morale === undefined || cb.morale >= 3) return;
@@ -853,6 +866,10 @@ export function startCombat(g: Game, encounterId: string): Combat {
   if (cb.units.some(x => x.side === 'enemy' && isLeader(x)) && cb.units.filter(x => x.side === 'enemy' && moraleFoe(x)).length >= 2
     && !cb.units.some(x => x.side === 'enemy' && (isBoss(x) || !moraleFoe(x)))) cb.morale = 0;
   cb.order = [...cb.units].sort((a, b) => b.init - a.init).map(u => u.key);
+  // La pieza (2026-11-27): un objeto sin ataques en la retaguardia enemiga que se rompe con la acción. No tiene turno.
+  const pc = cb.goal?.g.piece;
+  if (pc) cb.units.push({ key: 'piece', side: 'enemy', mon: 'Object', name: pc.name, img: pc.img, hp: pc.hp, maxHp: pc.hp, ac: pc.ac, row: 'back', init: 0, encounter: cb.goal!.g.enc, recharge: {} });
+  if (cb.goal?.g.kind === 'guard') cb.ward = cb.goal.g.ward!.hp;
   if (cb.terrain) say(cb, `${TERRAIN[cb.terrain].name}: ${TERRAIN[cb.terrain].desc}`, 'big');
   say(cb, `¡Combate! Iniciativa: ${cb.order.map(k => cb.units.find(u => u.key === k)!.name).join(', ')}.`, 'info');
   startTurn(g, cb);
@@ -960,7 +977,7 @@ export function endTurn(g: Game, cb: Combat) {
     if (cb.turn >= cb.order.length) {
       cb.turn = 0;
       cb.round++;
-      goalCheck(cb, true);
+      goalCheck(cb, true, g);
       // Si con el objetivo fallado huye el último enemigo, el combate acaba aquí.
       if (checkEnd(g, cb)) return;
       reinforce(g, cb);
@@ -999,7 +1016,7 @@ function reinforce(g: Game, cb: Combat) {
 export function checkEnd(g: Game, cb: Combat): boolean {
   if (cb.result) return true;
   goalCheck(cb);
-  if (!cb.units.some(u => u.side === 'enemy' && conscious(u))) { finish(g, cb, 'win'); return true; }
+  if (!cb.units.some(u => u.side === 'enemy' && conscious(u) && !isPiece(u))) { finish(g, cb, 'win'); return true; }
   if (!cb.units.some(u => u.side === 'party' && conscious(u))) { finish(g, cb, 'lose'); return true; }
   return false;
 }
@@ -1032,7 +1049,7 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
     msgs.push(why);
     cb.endLine = lastEvent?.replace(/[.!¡]+$/g, '') ?? why;
     const open = cb.goal?.status === 'open' ? cb.goal.g : undefined;
-    if (open) goalDone(cb, ['noflee', 'nodown', 'nosplit', 'noshriek', 'nostone'].includes(open.kind) || (open.kind === 'win' && cb.round < (open.by ?? 99)));
+    if (open) goalDone(cb, ['noflee', 'nodown', 'nosplit', 'noshriek', 'nostone', 'guard'].includes(open.kind) || (open.kind === 'win' && cb.round < (open.by ?? 99)));
     let xp = cb.bonusXp ?? 0, gold = 0;
     for (const id of cb.encounters) {
       const e = encounterById(id)!;
@@ -2002,6 +2019,7 @@ export function behaviorOf(g: Game, cb: Combat, u: Unit): string[] {
   const m = MONSTERS[u.mon];
   const out: string[] = [];
   const first = (k?: string) => cb.units.find(x => x.key === k)?.name.split(' ')[0];
+  if (m.piece) return ['Un objeto: no ataca ni tiene turno. Rompedlo para cumplir el objetivo; no hace falta para ganar.'];
   if (m.knot) return ['Alimenta al Corazón: mientras quede algún nudo, el Corazón se cura y resiste el daño.'];
   if (u.mon === 'Shrieker') return ['No ataca: si chilla, atrae a otra criatura.'];
   if (cb.morale !== undefined && moraleFoe(u)) out.push(`Moral del grupo: ${cb.morale}/3. A la tercera, los malheridos huyen.`);

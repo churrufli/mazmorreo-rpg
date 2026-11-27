@@ -26,7 +26,7 @@ describe('objetivos nuevos', () => {
       const enc = encs.find((c: any) => c.id === goal.enc);
       expect(enc).toBeDefined();
       for (const it of goal.items) expect(ITEMS[it]).toBeDefined();
-      if (goal.who) expect(enc.enemies.some((e: any) => e.name === goal.who)).toBe(true);
+      if (goal.who) expect(enc.enemies.some((e: any) => e.name === goal.who) || goal.piece?.name === goal.who).toBe(true);
     }
     expect(new Set(GOALS.map(x => x.enc)).size).toBe(GOALS.length);
   });
