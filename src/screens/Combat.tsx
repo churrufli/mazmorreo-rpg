@@ -742,6 +742,7 @@ function EncounterIntro({ cb, onDone }: { cb: ReturnType<typeof useStore.getStat
       <FadeIn delay={500}><Text style={st.introSub}>{foeText}</Text></FadeIn>
       {cb.goal ? (
         <FadeIn delay={700} style={{ width: boxW, marginBottom: 10 }}>
+          {cb.goal.g.img ? <Image source={IMG[cb.goal.g.img]} style={{ width: '100%', height: 170, borderRadius: 6, marginBottom: 6 }} resizeMode="cover" /> : null}
           <View style={st.goalIntro}>
             <Icon path={mdiBullseyeArrow} size={22} color={C.goldHi} />
             <Text style={st.goalIntroTxt}>Objetivo opcional: {cb.goal.g.text}</Text>

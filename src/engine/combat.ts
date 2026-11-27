@@ -585,6 +585,8 @@ function split(g: Game, cb: Combat, u: Unit) {
   const half = Math.floor(u.hp / 2);
   u.hp = u.maxHp = half;
   u.splits = (u.splits ?? 0) + 1;
+  // Cada mitad, con su carta de mitad.
+  u.img = u.mon === 'Black Pudding' ? 'pudin_negro_mitad' : 'gelatina_ocre_mitad';
   const v: Unit = { ...u, key: `${u.key}_d${cb.units.length}`, row, plan: undefined, init: u.init - 0.01, recharge: {}, dmgBy: undefined };
   cb.units.push(v);
   cb.order.splice(cb.order.indexOf(u.key) + 1, 0, v.key);
@@ -597,6 +599,7 @@ function stoneSave(g: Game, cb: Combat, u: Unit) {
   if (saveRoll(g, cb, u, 'con', 12, 'Constitución')) { u.stoning = false; say(cb, `${u.name} se sacude la piedra y vuelve a moverse.`, 'info'); return; }
   u.stoning = false;
   u.petrified = u.dead = true;
+  u.img = 'estatua_petrificada';
   u.hp = 0;
   u.plan = undefined;
   say(cb, `${u.name} queda petrificado. Solo el templo podrá devolverle a la carne.`, 'big');
@@ -1850,10 +1853,12 @@ export function enemyTurn(g: Game, cb: Combat) {
   // Vharzûl a mitad de PG: alza el vuelo un asalto; al bajar, el aliento está listo.
   if (u.mon === DRAGON && u.flying) {
     u.flying = false;
+    u.img = MONSTERS[DRAGON].img;
     u.breathNow = true;
     say(cb, `${u.name} desciende en picado.`, 'big');
   } else if (u.mon === DRAGON && u.half && !u.flown) {
     u.flying = u.flown = true;
+    u.img = 'dragon_blanco_vuelo';
     u.plan = undefined;
     say(cb, `${u.name} alza el vuelo: cuerpo a cuerpo no le alcanzáis.`, 'big');
     endTurn(g, cb);

@@ -20,6 +20,8 @@ export interface Goal {
   piece?: { name: string; img: ImgKey; hp: number; ac: number };
   /** Proteged a: quién está indefenso, sus PG y lo que le hace «who» cada asalto. */
   ward?: { name: string; hp: number; hurt: string };
+  /** Ilustración que se enseña con el objetivo al empezar el combate. */
+  img?: ImgKey;
   who?: string;
   by?: number;
   /** Si se falla por tiempo, «who» se marcha con esta frase. */
@@ -63,9 +65,9 @@ export const GOALS: Goal[] = [
   { enc: 's2_e06', kind: 'nosplit', text: 'Que el pudin negro no se divida: nada de armas cortantes ni relámpagos contra él.', ok: 'El pudin se deshace entero. Entre sus restos brilla algo que no ha podido disolver.', gold: 25, items: ['alchemists_fire'] },
   { enc: 's3_e05', kind: 'nostone', text: 'Que el basilisco no petrifique a nadie.', ok: 'Nadie ha quedado de piedra. Junto al basilisco hay restos de otros que no tuvieron tanta suerte.', gold: 20, items: ['potion_healing'] },
   // La pieza y Proteged a (2026-11-27): como mucho una por zona.
-  { enc: 'm2_e06', kind: 'kill', who: 'Torno de la trampa', by: 3, piece: { name: 'Torno de la trampa', img: 'trampa', hp: 8, ac: 12 },
+  { enc: 'm2_e06', kind: 'kill', who: 'Torno de la trampa', by: 3, piece: { name: 'Torno de la trampa', img: 'pieza_torno', hp: 8, ac: 12 },
     text: 'Los kobolds tensan una trampa de rocas: romped el torno antes del asalto 3.', ok: 'El torno se parte y las rocas se quedan donde estaban. Entre los cabos hay oro y una poción.', gold: 15, items: ['potion_healing'] },
-  { enc: 's1_e04', kind: 'guard', who: 'Araña del pozo', ward: { name: 'el saqueador', hp: 9, hurt: 'aprieta la tela del saqueador' },
+  { enc: 's1_e04', kind: 'guard', img: 'escena_saqueador_tela', who: 'Araña del pozo', ward: { name: 'el saqueador', hp: 9, hurt: 'aprieta la tela del saqueador' },
     text: 'Un saqueador cuelga envuelto en la tela: venced a la araña antes de que acabe con él. Agarrarla o tumbarla le da un respiro.', ok: 'Cortáis la tela y el saqueador cae al suelo, vivo. Os da lo que sacó de la tumba.', gold: 20, items: ['antidote'] },
   { enc: 's4_e01', kind: 'noshriek', text: 'Que el hongo chillón no llegue a chillar: acabad con él en cuanto podáis.', ok: 'Nadie ha oído nada. Los goblins llevaban un frasco robado.', gold: 10, items: ['potion_healing'] },
 ];

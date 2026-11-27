@@ -203,7 +203,7 @@ export const ITEMS: Record<string, ItemDef> = {
   quarterstaff: { name: 'Bastón', kind: 'weapon', img: 'baston_mago', value: 2, desc: 'Arma sencilla. 1d6 contundente.', weapon: { dice: '1d6', type: 'contundente' } },
   pick: { name: 'Pico de minero', kind: 'weapon', img: 'pico_minero', value: 5, desc: 'Arma marcial improvisada. 1d8 perforante.', weapon: { dice: '1d8', type: 'perforante', martial: true } },
   shortbow: { name: 'Arco corto', kind: 'weapon', img: 'arco_corto', value: 25, desc: 'Arma sencilla a distancia. 1d6 perforante.', weapon: { dice: '1d6', type: 'perforante', ranged: true } },
-  light_crossbow: { name: 'Ballesta ligera', kind: 'weapon', img: 'arco_corto', value: 25, desc: 'Arma sencilla a distancia. 1d8 perforante.', weapon: { dice: '1d8', type: 'perforante', ranged: true } },
+  light_crossbow: { name: 'Ballesta ligera', kind: 'weapon', img: 'ballesta_ligera', value: 25, desc: 'Arma sencilla a distancia. 1d8 perforante.', weapon: { dice: '1d8', type: 'perforante', ranged: true } },
   leather: { name: 'Armadura de cuero', kind: 'armor', img: 'armadura_cuero', value: 10, desc: 'Armadura ligera. CA 11 + Destreza.', armor: { base: 11, type: 'light' } },
   scale_mail: { name: 'Cota de escamas', kind: 'armor', img: 'armadura_cuero', value: 50, desc: 'Armadura media. CA 14 + Destreza (máx. 2).', armor: { base: 14, type: 'medium', dexMax: 2 } },
   chain_mail: { name: 'Cota de malla', kind: 'armor', img: 'armadura_cuero', value: 75, desc: 'Armadura pesada. CA 16.', armor: { base: 16, type: 'heavy', dexMax: 0 } },
@@ -246,9 +246,9 @@ export const ITEMS: Record<string, ItemDef> = {
   druid_relic: { name: 'Semilla de la promesa', kind: 'gear', img: 'semilla_juramento', value: 75, desc: 'Semilla fosilizada que recuerda la promesa original del Corazón Hueco. Tesoro: se puede vender.' },
   // El Invierno del Dragón
   // Armas del SRD con las maestrías que faltaban (2026-11-27). Las tres son a dos manos.
-  greataxe: { name: 'Gran hacha', kind: 'weapon', img: 'gran_hacha_mas1', value: 30, desc: 'Arma marcial a dos manos. 1d12 cortante.', weapon: { dice: '1d12', type: 'cortante', martial: true } },
-  greatsword: { name: 'Mandoble', kind: 'weapon', img: 'espada_larga_mas1', value: 50, desc: 'Arma marcial a dos manos. 2d6 cortante.', weapon: { dice: '2d6', type: 'cortante', martial: true } },
-  halberd: { name: 'Alabarda', kind: 'weapon', img: 'hacha_guerra_mas1', value: 20, desc: 'Arma marcial a dos manos. 1d10 cortante.', weapon: { dice: '1d10', type: 'cortante', martial: true } },
+  greataxe: { name: 'Gran hacha', kind: 'weapon', img: 'gran_hacha', value: 30, desc: 'Arma marcial a dos manos. 1d12 cortante.', weapon: { dice: '1d12', type: 'cortante', martial: true } },
+  greatsword: { name: 'Mandoble', kind: 'weapon', img: 'mandoble', value: 50, desc: 'Arma marcial a dos manos. 2d6 cortante.', weapon: { dice: '2d6', type: 'cortante', martial: true } },
+  halberd: { name: 'Alabarda', kind: 'weapon', img: 'alabarda', value: 20, desc: 'Arma marcial a dos manos. 1d10 cortante.', weapon: { dice: '1d10', type: 'cortante', martial: true } },
   battleaxe: { name: 'Hacha de guerra', kind: 'weapon', img: 'hacha_guerra_mas1', value: 10, desc: 'Arma marcial. 1d8 cortante.', weapon: { dice: '1d8', type: 'cortante', martial: true } },
   battleaxe_plus_one: { name: 'Hacha de guerra +1', kind: 'weapon', img: 'hacha_guerra_mas1', value: 400, desc: 'Arma mágica: +1 a las tiradas de ataque y daño. 1d8 cortante.', weapon: { dice: '1d8', type: 'cortante', martial: true, bonus: 1 } },
   spear: { name: 'Lanza', kind: 'weapon', img: 'lanza', value: 2, desc: 'Arma sencilla. 1d6 perforante.', weapon: { dice: '1d6', type: 'perforante' } },
@@ -259,8 +259,8 @@ export const ITEMS: Record<string, ItemDef> = {
   cloak_protection: { name: 'Capa de protección', kind: 'wondrous', img: 'capa_proteccion', value: 500, desc: 'Quien la lleva gana +1 a la CA y a las tiradas de salvación.' },
   relic_dwarf: { name: 'Sello del Deshielo', kind: 'gear', img: 'sello_deshielo', value: 250, desc: 'Medallón enano de hierro y ámbar, prueba del tributo y de la paz recuperada. Trofeo: se guarda en el baúl de la posada.' },
   // Objetos mágicos del SRD con su historia, en los cofres que se encuentran por un secreto (2026-11-27).
-  luckstone: { name: 'Piedra de la suerte', kind: 'wondrous', img: 'reliquia', value: 400, desc: 'Ágata pulida que un capataz enano llevaba siempre en el bolsillo: «la mina me la debe». +1 a las pruebas de característica y a las tiradas de salvación.' },
-  elven_boots: { name: 'Botas élficas', kind: 'wondrous', img: 'botas_invernales', value: 400, desc: 'Botas de cuero fino de un centinela que nunca hacía ruido en la nieve. Ventaja en las pruebas de Sigilo (también al esconderse).' },
+  luckstone: { name: 'Piedra de la suerte', kind: 'wondrous', img: 'piedra_suerte', value: 400, desc: 'Ágata pulida que un capataz enano llevaba siempre en el bolsillo: «la mina me la debe». +1 a las pruebas de característica y a las tiradas de salvación.' },
+  elven_boots: { name: 'Botas élficas', kind: 'wondrous', img: 'botas_elficas', value: 400, desc: 'Botas de cuero fino de un centinela que nunca hacía ruido en la nieve. Ventaja en las pruebas de Sigilo (también al esconderse).' },
   silver_piece: { name: 'Broche del centinela', kind: 'gear', img: 'reliquia', value: 20, desc: 'Broche de plata de un vigía enano. Tesoro: se puede vender.' },
   old_map: { name: 'Plano de los túneles', kind: 'gear', img: 'pergamino_escudo', value: 15, desc: 'Plano deteriorado de las galerías de la fortaleza. Tesoro: se puede vender.' },
   gem_ice: { name: 'Cuarzo glaciar', kind: 'gear', img: 'cristal', value: 50, desc: 'Cristal helado que nunca se derrite. Tesoro: se puede vender.' },
@@ -579,7 +579,7 @@ Object.assign(MONSTERS, {
   },
   // Objeto de un objetivo (la pieza): nombre, imagen, PG y CA salen del objetivo.
   Object: {
-    name: 'Pieza', img: 'trampa', ac: 12, hp: 8, dexMod: -5, xp: 0, ai: 'beast', noSleep: true, piece: true,
+    name: 'Pieza', img: 'pieza_torno', ac: 12, hp: 8, dexMod: -5, xp: 0, ai: 'beast', noSleep: true, piece: true,
     attacks: [], saves: { str: -5, dex: -5, con: 0, int: -5, wis: -5, cha: -5 },
   },
   Treant: {
