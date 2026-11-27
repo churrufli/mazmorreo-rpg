@@ -119,3 +119,17 @@ describe('rasgo de la sala', () => {
     expect(fell).toBeGreaterThan(0);
   });
 });
+
+describe('el ruido', () => {
+  it('un combate largo avisa en el asalto 4 y el vecino llega en el 5', () => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    for (const a of ['tiko', 'brunna', 'edmund']) g.party.push(createAlly(a, 2, 300));
+    enterZone(g, 'z1');
+    const cb = startCombat(g, 'z1_e05');
+    expect(cb.neighbor).toBe('z1_e04');
+    const { endTurn } = require('./combat');
+    for (let i = 0; i < 200 && cb.round < 5 && !cb.result; i++) { for (const u of cb.units) if (u.side === 'party') u.hp = 999; cb.acted = true; endTurn(g, cb); }
+    expect(cb.log.some(l => l.t.includes('Se oyen pasos'))).toBe(true);
+    expect(cb.encounters).toContain('z1_e04');
+  });
+});

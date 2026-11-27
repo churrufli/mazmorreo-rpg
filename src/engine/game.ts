@@ -80,7 +80,7 @@ export interface Game {
   /** Aliado de otra aventura que acompaña al héroe al principio del bosque (hasta que se une el primero de allí). */
   escort?: string;
   /** Escenas con opciones: vías ya cerradas por un fallo. */
-  scenes?: Record<string, { closed: number[]; said?: string[]; fight?: string }>;
+  scenes?: Record<string, { closed: number[]; said?: string[]; fight?: string; tried?: number[] }>;
   /** Enemigos de más (o de menos) en un encuentro por las decisiones tomadas. */
   encMod?: Record<string, number>;
   /** Enemigos de más (o de menos) de cada encuentro según el tamaño del grupo, fijado la primera vez que se lucha. */

@@ -191,6 +191,10 @@ export interface Combat {
   /** Rasgo de la sala (afecta a los dos bandos): angosta (dos por fila), resbaladiza (cambiar de fila pide salvación de
    * Destreza) o con humo (desventaja al disparar a la otra fila; el fuego lo disipa). */
   terrain?: Terrain;
+  /** El ruido: el grupo vecino que puede acudir si el combate se alarga o hace mucho ruido, y si ya hubo ruido o aviso. */
+  neighbor?: string;
+  noise?: boolean;
+  noiseWarned?: boolean;
   /** Ataque fallado que se puede repetir con Inspiración heroica (decide el jugador). */
   reroll?: { a: string; t: string; o: AtkOpts; adv: number; total: number };
 }
@@ -323,6 +327,7 @@ export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, t
     if (m.split && (type === 'cortante' || type === 'relámpago')) split(g, cb, target);
     return;
   }
+  if (type === 'trueno' && cb.neighbor && !cb.noise) { cb.noise = true; say(cb, 'El estruendo resuena por los pasillos. Alguien lo ha oído.', 'big'); }
   if (type === 'fuego' && cb.terrain === 'smoke') { cb.terrain = undefined; say(cb, 'El fuego aviva el aire y disipa el humo.', 'info'); }
   if (type === 'fuego' && target.oiled) { target.oiled = false; amount += 5; say(cb, `El aceite prende: ${target.name} recibe 5 de fuego más.`, 'info'); }
   if (m?.resist?.includes(type)) amount = Math.floor(amount / 2);
@@ -819,8 +824,10 @@ export function startCombat(g: Game, encounterId: string): Combat {
   if (cb.terrain === 'narrow') for (const u of units.filter(x => x.row === 'front').slice(2)) u.row = 'back';
   sizeEncounter(g, group.now, group.now.includes(bossEncounter(g.zone)));
   group.now.forEach(id => addEncounter(g, cb, id, true));
-  // Sin refuerzos de grupos vecinos (el autor 2026-11-06): cada grupo lucha solo.
+  // Sin refuerzos automáticos de grupos vecinos (el autor 2026-11-06): cada grupo lucha solo.
+  // Solo «el ruido» (2026-11-27): si el combate se alarga o hay un estruendo, el vecino puede acudir (una vez y avisado).
   cb.pending = [];
+  cb.neighbor = group.later.find(x => !g.done.includes(x) && x !== bossEncounter(g.zone) && !group.now.includes(bossEncounter(g.zone)));
   bossPrepFx(g, cb);
   const goal = GOALS.find(x => cb.encounters.includes(x.enc) && !g.goals?.[x.enc]);
   // «Primero» pide que haya alguien más a quien dejar para después; «que no caiga nadie», compañeros a los que cuidar.
@@ -967,6 +974,11 @@ export function endTurn(g: Game, cb: Combat) {
 function reinforce(g: Game, cb: Combat) {
   bossRound(g, cb);
   shriekCall(g, cb);
+  // El ruido: al asalto 4 se oyen pasos; al 5 (o tras un estruendo) llega el grupo vecino.
+  if (cb.neighbor && !cb.reinforced) {
+    if (cb.round === 4 && !cb.noise) { cb.noiseWarned = true; say(cb, 'Se oyen pasos cerca: si el combate sigue, llegarán más.', 'big'); }
+    if (cb.round >= 5 || cb.noise) { cb.pending = [cb.neighbor]; cb.neighbor = undefined; }
+  }
   for (const id of [...cb.pending]) {
     if (cb.reinforced) break;
     if (g.done.includes(id)) { cb.pending = cb.pending.filter(x => x !== id); continue; }
