@@ -53,6 +53,7 @@ export const PORTRAIT_FRAMES: Partial<Record<ImgKey, [number, number, number]>> 
   monticulo_andante: [0.5, 0.24, 2.5],
   necrofago: [0.62, 0.21, 3.6],
   nudo_de_raiz: [0.5, 0.35, 2.1],
+  trampa: [0.5, 0.5, 1.6],
   oso_lechuza: [0.57, 0.25, 2.8],
   oso_pardo: [0.56, 0.23, 2.9],
   rata_gigante: [0.68, 0.33, 3.0],

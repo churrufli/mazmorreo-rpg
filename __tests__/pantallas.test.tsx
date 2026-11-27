@@ -46,7 +46,8 @@ test('recorre título, creación, exploración y combate sin romperse', async ()
   expect(texts(r)).toContain('Ir a la mazmorra');
   await act(async () => { S().leaveTown(); });
   // Diálogo de entrada y luego combate con las ratas.
-  for (let i = 0; i < 10 && !S().combat; i++) await act(async () => { S().next(); });
+  // Al llegar andando a un grupo se puede acercar con sigilo, estudiarlo o atacar: aquí se ataca.
+  for (let i = 0; i < 10 && !S().combat; i++) await act(async () => { if (S().queue[0]?.kind === 'approach') S().approach('attack'); else S().next(); });
   expect(S().combat).toBeDefined();
   // Pantalla de encuentro con la iniciativa.
   expect(texts(r)).toContain('Iniciativa');
