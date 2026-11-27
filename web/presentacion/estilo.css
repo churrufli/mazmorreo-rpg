@@ -1,0 +1,122 @@
+/* Página de presentación de Mazmorreo: mismas fuentes, colores e ilustraciones que el juego (src/theme.ts). */
+@font-face{font-family:Cinzel;src:url('../../android/app/src/main/assets/fonts/Cinzel-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:Cinzel;src:url('../../android/app/src/main/assets/fonts/Cinzel-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+@font-face{font-family:Cormorant;src:url('../../android/app/src/main/assets/fonts/CormorantGaramond-Medium.ttf') format('truetype');font-weight:500;font-display:swap}
+@font-face{font-family:Cormorant;src:url('../../android/app/src/main/assets/fonts/CormorantGaramond-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+@font-face{font-family:Cormorant;src:url('../../android/app/src/main/assets/fonts/CormorantGaramond-Italic.ttf') format('truetype');font-style:italic;font-display:swap}
+
+:root{
+  --bg:#0d0b09;--panel:#1a1612;--panel-hi:#262019;--borde:#5a4630;
+  --oro:#b8894a;--oro-hi:#e0b56e;--texto:#e8dcc8;--texto-dim:#a3957f;
+  --titulo:Cinzel,Georgia,serif;--cuerpo:Cormorant,Georgia,serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--texto);font:500 20px/1.5 var(--cuerpo);-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:var(--oro-hi)}
+a:focus-visible{outline:2px solid var(--oro-hi);outline-offset:3px}
+h1,h2,h3{font-family:var(--titulo);font-weight:700;margin:0;letter-spacing:.04em}
+h2{color:var(--oro);font-size:clamp(26px,5vw,40px);text-align:center;line-height:1.2}
+h3{color:var(--oro-hi);font-size:20px}
+svg{fill:currentColor}
+
+/* ---------- Portada ---------- */
+.portada{position:relative;min-height:100svh;display:flex;align-items:center;justify-content:center;overflow:hidden;isolation:isolate;padding:48px 16px 96px}
+.portada-fondo{position:absolute;inset:0;z-index:-1;background:url('../../assets/img/titulo.webp') center 30%/cover no-repeat}
+.portada-fondo::after{content:'';position:absolute;inset:0;background:
+  radial-gradient(ellipse at 50% 40%,rgba(13,11,9,.15),rgba(13,11,9,.75) 70%),
+  linear-gradient(to bottom,rgba(13,11,9,.35),rgba(13,11,9,.1) 30%,rgba(13,11,9,.85) 80%,var(--bg))}
+/* En pantallas anchas la ilustración vertical se ve entera en el centro, con los lados desenfocados como en el juego. */
+.portada-centro{display:none}
+@media (min-aspect-ratio:4/5){
+  .portada-fondo{background:none}
+  .portada-fondo::before{content:'';position:absolute;inset:-40px;background:url('../../assets/img/titulo.webp') center/cover;filter:blur(28px) brightness(.45)}
+  .portada-centro{display:block;position:absolute;top:0;bottom:0;left:50%;width:min(100vw,calc(100svh * .5627));transform:translateX(-50%);
+    background:url('../../assets/img/titulo.webp') center/cover;
+    -webkit-mask:linear-gradient(to right,transparent,#000 18%,#000 82%,transparent);mask:linear-gradient(to right,transparent,#000 18%,#000 82%,transparent)}
+}
+.portada-contenido{max-width:640px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
+.logo{width:min(560px,88vw);filter:drop-shadow(0 6px 18px rgba(0,0,0,.8))}
+.lema{margin:0;font:italic 500 clamp(24px,4.6vw,34px)/1.2 var(--cuerpo);color:var(--texto);text-shadow:0 2px 12px #000}
+.entradilla{margin:0;font-size:clamp(19px,2.6vw,22px);color:var(--texto);text-shadow:0 2px 10px #000;max-width:34ch}
+.ventajas{margin:0;font:700 14px/1.4 var(--titulo);letter-spacing:.08em;color:var(--oro-hi);text-shadow:0 1px 6px #000}
+.bajar{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:var(--oro-hi);width:44px;height:44px;display:grid;place-items:center;animation:flota 2.4s ease-in-out infinite}
+.bajar svg{width:36px;height:36px}
+@keyframes flota{50%{transform:translate(-50%,6px)}}
+
+/* Botones con el corte en las esquinas de los botones del juego. */
+.boton{--corte:12px;display:inline-flex;align-items:center;justify-content:center;gap:12px;text-decoration:none;font:700 18px/1 var(--titulo);letter-spacing:.1em;text-transform:uppercase;
+  clip-path:polygon(var(--corte) 0,calc(100% - var(--corte)) 0,100% 50%,calc(100% - var(--corte)) 100%,var(--corte) 100%,0 50%);transition:filter .2s,transform .2s}
+.boton svg{width:26px;height:26px}
+.boton-oro{color:#1f1710;background:linear-gradient(#f4e6c6,#d9bf8d);padding:20px 44px}
+.boton-grande{font-size:22px;padding:24px 56px;margin-top:6px}
+.boton:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
+/* ---------- Bloques ---------- */
+main{display:block}
+.bloque{max-width:1180px;margin:0 auto;padding:72px 16px}
+.bloque>h2{margin-bottom:28px}
+.que-es{max-width:760px;text-align:center;padding-top:40px}
+.que-es p{margin:0 0 14px}
+.adorno{color:var(--oro);font-size:22px;margin:0 0 10px!important}
+.plataformas{list-style:none;margin:26px auto 0;padding:0;display:grid;gap:12px;max-width:620px;text-align:left}
+.plataformas li{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:12px 16px}
+.plataformas svg{width:30px;height:30px;flex:none;color:var(--oro-hi)}
+.plataformas b{color:var(--oro-hi);font-weight:700}
+
+/* Tira de capturas del móvil: se desliza en el móvil y forma una fila en el ordenador. */
+.tira{list-style:none;margin:0 -16px;padding:4px 16px 18px;display:grid;grid-auto-flow:column;grid-auto-columns:min(62vw,240px);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-color:var(--borde) transparent}
+.tira li{scroll-snap-align:center}
+@media (min-width:1040px){.tira{grid-auto-flow:row;grid-template-columns:repeat(6,1fr);overflow:visible;margin:0;padding:4px 0 0}}
+figure{margin:0}
+.tira img{border-radius:18px;border:2px solid var(--borde);box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 0 6px var(--panel)}
+.tira figcaption{margin-top:14px;text-align:center;font:700 15px/1.3 var(--titulo);letter-spacing:.05em;color:var(--oro-hi)}
+.pantallas h3{text-align:center;color:var(--oro);font-size:clamp(20px,3.6vw,26px);margin:56px 0 22px}
+.escritorio{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+.escritorio .principal{grid-column:1/-1}
+.escritorio img{border-radius:10px;border:1px solid var(--borde);box-shadow:0 10px 30px rgba(0,0,0,.6)}
+@media (min-width:900px){.escritorio{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr}.escritorio .principal{grid-column:1;grid-row:1/3}.escritorio .principal img{height:100%;object-fit:cover}}
+
+/* Aventuras como cartas del juego. */
+.cartas{list-style:none;margin:0;padding:0;display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.carta{position:relative;border-radius:12px;overflow:hidden;border:2px solid var(--borde);background:var(--panel);aspect-ratio:3/4;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.carta img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.carta:hover img{transform:scale(1.04)}
+.carta div{position:absolute;left:0;right:0;bottom:0;padding:60px 18px 18px;background:linear-gradient(to bottom,transparent,rgba(13,11,9,.85) 45%,rgba(13,11,9,.95))}
+.carta h3{font-size:19px;line-height:1.25}
+.carta p{margin:6px 0 0;font-size:18px;line-height:1.35;color:var(--texto)}
+
+/* Llamada final con los tres accesos grandes. */
+.final{text-align:center}
+.accesos{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin-top:10px}
+.acceso{display:flex;flex-direction:column;align-items:center;gap:10px;padding:34px 20px 28px;text-decoration:none;color:var(--texto);background:linear-gradient(var(--panel-hi),var(--panel));border:2px solid var(--borde);border-radius:14px;transition:border-color .2s,transform .2s,box-shadow .2s}
+.acceso svg{width:76px;height:76px;color:var(--oro-hi);filter:drop-shadow(0 4px 12px rgba(0,0,0,.6))}
+.acceso-titulo{font:700 28px/1 var(--titulo);letter-spacing:.1em;text-transform:uppercase;color:var(--oro-hi)}
+.acceso-nota{font-size:18px;color:var(--texto-dim)}
+.acceso:hover{transform:translateY(-3px);border-color:var(--oro);box-shadow:0 12px 30px rgba(0,0,0,.6),0 0 24px rgba(184,137,74,.25)}
+.acceso:focus-visible{outline:2px solid var(--oro-hi);outline-offset:4px}
+.acceso-jugar{background:linear-gradient(#f4e6c6,#d9bf8d);border-color:#f4e6c6}
+.acceso-jugar svg,.acceso-jugar .acceso-titulo{color:#1f1710;filter:none}
+.acceso-jugar .acceso-nota{color:#4a3a28}
+.acceso-discord:hover svg{color:#8b95f5}
+.apk{margin:28px auto 0;max-width:640px;color:var(--texto-dim);font-size:18px}
+.apk svg{width:22px;height:22px;vertical-align:-4px;color:#8fbf6a;margin-right:4px}
+
+/* ---------- Pie ---------- */
+.pie{border-top:1px solid var(--borde);background:#090706;padding:40px 16px 48px;text-align:center;color:var(--texto-dim);font-size:16px}
+.pie p{max-width:760px;margin:8px auto}
+.pie-logo{width:180px;margin:0 auto 14px;opacity:.85}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+
+/* En el móvil, las aventuras van de dos en dos para no alargar la página. */
+@media (max-width:560px){
+  .cartas{grid-template-columns:1fr 1fr;gap:12px}
+  .carta div{padding:40px 10px 10px}
+  .carta h3{font-size:14px}
+  .carta p{font-size:15px;line-height:1.25}
+}

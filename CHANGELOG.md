@@ -2,6 +2,10 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 27 de noviembre de 2026 — Página de presentación
+
+- **Presentación** (`web/presentacion/`): una sola página en `/presentacion/` con portada, qué es el juego, capturas del móvil y del modo escritorio, las cuatro aventuras sin destripar nada y accesos grandes a Jugar, Discord y GitHub. El juego sigue en la raíz.
+
 ## 27 de noviembre de 2026 — Nueva versión: mejoras y mecánicas nuevas
 
 - **Escenas** (`src/engine/escenas.ts`): habilidades del SRD con competencia, Pericia y Ayudar; vías de clase y de especie; Mente táctica; escenas con margen (dos intentos, el segundo con desventaja).
