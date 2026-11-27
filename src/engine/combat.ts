@@ -704,6 +704,16 @@ export function startCombat(g: Game, encounterId: string): Combat {
     u.initD20 = die(g.rng, 20);
     u.init = u.initD20 + dex + rand(g.rng) * 0.1;
   }
+  // Sorpresa (SRD 5.2.1): los enemigos a los que os acercasteis sin ser vistos tiran la iniciativa con desventaja.
+  if (g.surprise && group.now.includes(g.surprise)) {
+    for (const u of cb.units.filter(x => x.side === 'enemy')) {
+      const d = Math.min(u.initD20!, die(g.rng, 20));
+      u.init += d - u.initD20!;
+      u.initD20 = d;
+    }
+    say(cb, '¡Los habéis sorprendido! Tiran la iniciativa con desventaja.', 'big');
+  }
+  g.surprise = undefined;
   cb.order = [...cb.units].sort((a, b) => b.init - a.init).map(u => u.key);
   say(cb, `¡Combate! Iniciativa: ${cb.order.map(k => cb.units.find(u => u.key === k)!.name).join(', ')}.`, 'info');
   startTurn(g, cb);

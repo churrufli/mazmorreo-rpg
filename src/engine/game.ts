@@ -30,6 +30,10 @@ export interface Game {
   /** PG de enemigos de los que se huyó. */
   enemyHp: Record<string, number[]>;
   fled: string[];
+  /** Grupo al que el grupo se acercó sin ser visto: tira la iniciativa con desventaja (sorpresa del SRD 5.2.1). */
+  surprise?: string;
+  /** Grupos de enemigos ya estudiados (no se pueden estudiar dos veces). */
+  studied?: string[];
   /** Enemigos que cayeron en cada encuentro ganado (nombre → cuántos). Los que huyeron no cuentan. */
   fallen?: Record<string, Record<string, number>>;
   /** Objetivos opcionales de combate ya resueltos (por encuentro). */

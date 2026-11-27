@@ -1,3 +1,4 @@
+import { approachable, sneak, study } from './engine/sorpresa';
 import { create } from 'zustand';
 import type { ImgKey } from './assets';
 import type { Ability, ClassId, SpeciesId } from './data/srd';
@@ -49,6 +50,8 @@ interface State {
   rest: (accept: boolean, dice?: Record<string, number>) => void;
   /** Trampa vista: quién la desactiva (id), 'pass' para pasar con cuidado o nada para volver atrás. */
   trapChoice: (choice?: string) => void;
+  /** Cómo empieza el combate: acercarse en sigilo, atacar o estudiarlos. */
+  approach: (choice: 'sneak' | 'attack' | 'study') => void;
   act: (a: Action, target?: string) => void;
   endTurn: () => void;
   /** Repetir el último ataque fallado gastando la Inspiración heroica (o descartarlo). */
@@ -146,6 +149,8 @@ export const useStore = create<State>((set, get) => {
         storage.save(g);
         continue;
       }
+      // Combate al acercarse por el mapa: antes se elige cómo empieza (sigilo, atacar o estudiarlos).
+      if (ev.kind === 'combat' && ev.walk && approachable(g, ev.id)) { q[0] = { kind: 'approach', id: ev.id }; break; }
       if (ev.kind === 'combat') {
         q.shift();
         return { queue: q, combat: startCombat(g, ev.id), walking: [] };
@@ -237,6 +242,20 @@ export const useStore = create<State>((set, get) => {
         const lines = doRest(g, ev.id, ev.long, dice);
         return advance(g, [{ kind: 'msg', title: ev.long ? 'Descanso largo' : 'Descanso corto', lines }, ...q]);
       }, accept);
+    },
+    approach: choice => {
+      const ev = get().queue[0];
+      if (ev?.kind !== 'approach') return;
+      mutate(g => {
+        const q = get().queue.slice(1);
+        const fight: Ev = { kind: 'combat', id: ev.id };
+        if (choice === 'attack') return advance(g, [fight, ...q]);
+        if (choice === 'study') return advance(g, [study(g, ev.id), ev, ...q]);
+        const r = sneak(g, ev.id);
+        const msg: Ev = { kind: 'msg', title: r.ok ? 'No os han visto' : 'Os han oído', rolls: r.rolls,
+          lines: [r.ok ? 'Os acercáis sin que lo noten: los sorprendéis.' : 'Un ruido os delata: ya os esperan.'] };
+        return advance(g, [msg, fight, ...q]);
+      }, true);
     },
     trapChoice: choice => {
       const ev = get().queue[0];

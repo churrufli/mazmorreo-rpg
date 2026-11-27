@@ -269,7 +269,10 @@ export function pathToward(g: Game, goal: Hex, reveal = false, viaTraps = false)
 
 export type DialogueLine = { speaker: string; text: string };
 export type Ev =
-  | { kind: 'combat'; id: string }
+  /** `walk`: empieza al acercarse por el mapa, y se puede elegir cómo (sigilo, atacar o estudiarlos). */
+  | { kind: 'combat'; id: string; walk?: boolean }
+  /** Antes de un combate por el mapa: acercarse en sigilo, atacar o estudiarlos. */
+  | { kind: 'approach'; id: string }
   | { kind: 'dialogue'; lines: DialogueLine[] }
   | { kind: 'msg'; title: string; lines: string[]; table?: [string, string][]; intro?: string; bg?: ImgKey; img?: ImgKey; img2?: ImgKey; /** Objetos (id de ITEMS, que se pueden tocar para leerlos) o imágenes sueltas. */ items?: string[]; portrait?: ImgKey; rolls?: ShownRoll[]; save?: boolean; pass?: string }
   | { kind: 'rest'; id: string; long: boolean; name: string; text: string }
@@ -417,7 +420,7 @@ export function step(g: Game, to: Hex, free = false): Ev[] {
     const near = g.fled.includes(m.id) ? d === 0 : d <= 1;
     // "A la vista": al cargar una partida la sala ya consta como visitada, así que también salta al acercarse o dentro de su sala.
     const seen = e.trigger === 'seen' && !g.fled.includes(m.id) && (d <= 1 || !!(room?.contents as Content[] | undefined)?.some(c => c.id === m.id));
-    if ((seen || (near && (e.trigger === 'enter' || g.fled.includes(m.id)))) && !evs.some(x => x.kind === 'combat')) evs.push({ kind: 'combat', id: m.id });
+    if ((seen || (near && (e.trigger === 'enter' || g.fled.includes(m.id)))) && !evs.some(x => x.kind === 'combat')) evs.push({ kind: 'combat', id: m.id, walk: true });
   }
   logEvs(g, evs);
   return evs;
@@ -613,7 +616,7 @@ function enterRoom(g: Game, room: Room): Ev[] {
     if (prep.length) evs.push({ kind: 'msg', title: 'Lo que habéis conseguido', lines: prep });
   }
   const seen = (room.contents as Content[]).find(c => c.type === 'encounter' && c.trigger === 'seen' && !g.done.includes(c.id) && !g.fled.includes(c.id));
-  if (seen) evs.push({ kind: 'combat', id: seen.id });
+  if (seen) evs.push({ kind: 'combat', id: seen.id, walk: true });
   else if (boss && !g.done.includes(boss.id)) evs.push({ kind: 'combat', id: boss.id });
   return evs;
 }
