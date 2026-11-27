@@ -12,7 +12,7 @@ import { prof } from '../data/srd';
 import type { Game } from './game';
 import { ADVS, advOf } from './aventuras';
 import { bossEncounter, dropKey, encounterById, encounterGroup, tally } from './dungeon';
-import { GOALS, Goal } from '../data/objetivos';
+import { GOALS, Goal, Piece } from '../data/objetivos';
 
 export type Row = 'front' | 'back';
 export type Side = 'party' | 'enemy';
@@ -143,6 +143,12 @@ export interface Unit {
   trip?: boolean;
   /** Expulsado por el clérigo: retrocede y pierde su turno hasta que le hagan daño. */
   turned?: boolean;
+  /**
+   * En el flanco (2026-11-27), junto a la pieza: fuera de las filas. Un personaje en el flanco solo alcanza cuerpo a cuerpo
+   * a lo que hay allí (la pieza y el enemigo que corre a usarla), y la vanguardia enemiga le sigue alcanzando.
+   * La pieza y el enemigo que corre a ella solo se alcanzan cuerpo a cuerpo desde el flanco; a distancia, siempre.
+   */
+  flank?: boolean;
 }
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
@@ -212,6 +218,10 @@ export interface Combat {
   noiseWarned?: boolean;
   /** Ataque fallado que se puede repetir con Inspiración heroica (decide el jugador). */
   reroll?: { a: string; t: string; o: AtkOpts; adv: number; total: number };
+  /** La pieza del flanco: el enemigo que corre a usarla, si ya se ha activado y los enemigos encerrados (la jaula). */
+  runner?: string;
+  fired?: boolean;
+  caged?: Unit[];
 }
 
 const MAX_ROW = 3;
@@ -299,7 +309,7 @@ export const conscious = (u: Unit) => alive(u) && u.hp > 0;
 const sideUnits = (cb: Combat, s: Side) => cb.units.filter(u => u.side === s && alive(u));
 
 /** Fila delantera "ocupada": protege a la retaguardia mientras haya alguien en pie. */
-const frontHeld = (cb: Combat, s: Side) => cb.units.some(u => u.side === s && u.row === 'front' && conscious(u));
+const frontHeld = (cb: Combat, s: Side) => cb.units.some(u => u.side === s && u.row === 'front' && !u.flank && conscious(u));
 
 export function validTargets(cb: Combat, attacker: Unit, kind: 'melee' | 'ranged' | 'ally' | 'any'): Unit[] {
   if (kind === 'ally') return cb.units.filter(u => u.side === attacker.side && alive(u));
@@ -307,8 +317,10 @@ export function validTargets(cb: Combat, attacker: Unit, kind: 'melee' | 'ranged
   const foes = sideUnits(cb, foe).filter(u => attacker.side === 'party' ? u.hp > 0 : true);
   if (kind === 'melee') {
     if (attacker.row !== 'front') return [];
+    // El flanco: desde allí solo se alcanza lo que hay en el flanco; desde la vanguardia, todo menos el flanco.
+    if (attacker.flank) return foes.filter(u => u.flank);
     // Vharzûl en vuelo: solo se le alcanza a distancia o con conjuros.
-    const near = foes.filter(u => !u.flying);
+    const near = foes.filter(u => !u.flying && !u.flank);
     return frontHeld(cb, foe) ? near.filter(u => u.row === 'front') : near;
   }
   return foes;
@@ -464,6 +476,13 @@ function kill(cb: Combat, u: Unit) {
   endConcentration(cb, u);
   u.dead = true;
   u.hp = 0;
+  if (isPiece(u)) {
+    say(cb, `${u.name} queda destrozado.`, 'big');
+    if (goalOpen(cb, 'piece')) goalDone(cb, true);
+    pieceGone(cb);
+    return;
+  }
+  if (u.key === cb.runner) runnerDown(cb);
   if (u.side === 'enemy' && isLeader(u)) moraleHit(cb, `ha caído ${u.name}`);
   say(cb, u.side === 'enemy' ? `${u.name} cae derrotado.` : `${u.name} ha muerto.`, 'big');
   // Objetivo «primero»: se decide con el primer enemigo que cae.
@@ -489,7 +508,7 @@ function goalCheck(cb: Combat, newRound = false, g?: Game) {
   const k = goalOpen(cb, 'kill');
   if (k && goalUnits(cb, k.who!).every(u => u.dead)) goalDone(cb, true);
   const open = cb.goal?.status === 'open' ? cb.goal.g : undefined;
-  if (newRound && open?.by && cb.round >= open.by && open.kind !== 'win') {
+  if (newRound && open?.by && cb.round >= open.by && open.kind !== 'win' && open.kind !== 'piece') {
     if (open.leave) for (const u of goalUnits(cb, open.who!).filter(conscious)) { u.fled = true; u.plan = undefined; say(cb, `${u.name} ${open.leave}.`, 'big'); }
     goalDone(cb, false);
   }
@@ -503,6 +522,168 @@ function goalCheck(cb: Combat, newRound = false, g?: Game) {
       if (!cb.ward) goalDone(cb, false);
     }
   }
+}
+
+// ---------- La pieza del flanco (2026-11-27) ----------
+
+/** La pieza entera (sin romper ni gastada). */
+const livePiece = (cb: Combat) => cb.units.find(u => isPiece(u) && conscious(u));
+
+/** Coloca la pieza en el flanco, elige al enemigo que correrá a usarla y encierra a los de la jaula. */
+function startPiece(cb: Combat, pc: Piece) {
+  cb.units.push({ key: 'piece', side: 'enemy', mon: 'Object', name: pc.name, img: pc.img, hp: pc.hp, maxHp: pc.hp, ac: pc.ac, row: 'back', flank: true, init: 0, encounter: cb.goal!.g.enc, recharge: {} });
+  if (pc.runner) {
+    const can = goalUnits(cb, pc.runner).filter(conscious);
+    cb.runner = (can.find(x => x.row === 'back') ?? can[can.length - 1])?.key;
+  }
+  if (pc.fx.cage) {
+    const inside = goalUnits(cb, pc.fx.cage);
+    if (inside.length) {
+      cb.caged = inside;
+      cb.units = cb.units.filter(x => !inside.includes(x));
+      cb.order = cb.order.filter(k => !inside.some(x => x.key === k));
+      say(cb, `${inside.map(x => x.name).join(', ')} espera encerrado en su jaula.`, 'info');
+    }
+  }
+}
+
+/** Ya no hay pieza (rota, gastada o sin nadie que la use): quien estaba en el flanco vuelve a su fila. */
+function pieceGone(cb: Combat) {
+  for (const u of cb.units.filter(x => x.flank && !isPiece(x))) {
+    u.flank = false;
+    if (u.side === 'party' && conscious(u)) say(cb, `${u.name} vuelve a la vanguardia.`, 'info');
+  }
+}
+
+/** Quita la pieza del campo sin romperla (ya se ha activado o ya nadie puede usarla). */
+function dropPiece(cb: Combat) {
+  cb.units = cb.units.filter(x => !isPiece(x));
+  pieceGone(cb);
+}
+
+/** El enemigo que corría a la pieza ha caído o ha huido: ya nadie la usará. */
+function runnerDown(cb: Combat) {
+  const pc = cb.goal?.g.piece;
+  if (!pc || !cb.runner || cb.fired || !livePiece(cb)) return;
+  const r = cb.units.find(x => x.key === cb.runner);
+  if (r && conscious(r)) return;
+  say(cb, `Ya nadie ${pc.use ?? 'usará la pieza'}.`, 'big');
+  if (goalOpen(cb, 'piece')) goalDone(cb, true);
+  dropPiece(cb);
+}
+
+/** ¿Está el enemigo corriendo a la pieza en este asalto? (no planea otra cosa) */
+const runsNow = (cb: Combat, u: Unit) => u.key === cb.runner && !cb.fired && !!livePiece(cb) && cb.round >= (cb.goal?.g.by ?? 3) - 1;
+
+/** Al empezar cada asalto: la pieza sin enemigo que la use se activa en su asalto (la catapulta, en todos desde ahí). */
+function pieceRound(g: Game, cb: Combat) {
+  const pc = cb.goal?.g.piece;
+  if (!pc || !livePiece(cb)) return;
+  if (cb.runner) { runnerDown(cb); return; }
+  const by = cb.goal!.g.by ?? 3;
+  if (cb.round === by - 1) say(cb, `${pc.name} se activará al empezar el próximo asalto.`, 'big');
+  if (cb.round >= by && (!cb.fired || pc.fx.repeat)) firePiece(g, cb);
+}
+
+/** Turno del enemigo que corre a la pieza: va al flanco el asalto anterior y la usa en su turno del asalto «by». */
+function runnerTurn(g: Game, cb: Combat, u: Unit): boolean {
+  const pc = cb.goal?.g.piece;
+  const p = livePiece(cb);
+  if (!pc || !p || cb.fired || u.key !== cb.runner) return false;
+  const by = cb.goal!.g.by ?? 3;
+  if (cb.round < by - 1) return false;
+  const what = p.name.toLowerCase();
+  if (!u.flank) {
+    if (u.grappled) {
+      const by2 = cb.units.find(x => x.key === u.grappled);
+      const dc = by2?.side === 'party' ? grappleDc(charOf(g, by2)) : 10;
+      const m = MONSTERS[u.mon!];
+      const abil: Ability = (m.saves.str ?? 0) >= (m.saves.dex ?? 0) ? 'str' : 'dex';
+      say(cb, `${u.name} intenta llegar a ${what}, pero está agarrado.`, 'info');
+      if (saveRoll(g, cb, u, abil, dc, ABIL_NAME[abil])) { u.grappled = undefined; say(cb, `${u.name} se suelta.`, 'info'); }
+      return true;
+    }
+    if (u.slowed) { say(cb, `${u.name} quiere correr hacia ${what}, pero va ralentizado.`, 'info'); return true; }
+    if (u.row === 'front') {
+      const opp = oppFoe(cb, u);
+      if (opp) { opportunity(g, cb, opp, u); if (!conscious(u)) { runnerDown(cb); return true; } }
+    }
+    if (slip(g, cb, u)) return true;
+    u.flank = true;
+    u.plan = undefined;
+    say(cb, `${u.name} corre hacia ${what}: lo usará en su próximo turno si nadie lo impide.`, 'big');
+    return true;
+  }
+  if (cb.round < by) { say(cb, `${u.name} espera junto a ${what}.`, 'info'); return true; }
+  say(cb, `${u.name} ${pc.use ?? 'usa la pieza'}.`, 'big');
+  firePiece(g, cb);
+  return true;
+}
+
+/** La pieza se activa: salvación contra la trampa, refuerzos o la jaula que se abre. */
+function firePiece(g: Game, cb: Combat) {
+  const pc = cb.goal!.g.piece!;
+  const p = livePiece(cb)!;
+  const eff = pc.fx;
+  if (goalOpen(cb, 'piece')) goalDone(cb, false);
+  if (eff.spawn) {
+    const m = MONSTERS[eff.spawn.mon];
+    const cap = maxFoesFor(g.party.filter(c => !c.dead).length);
+    const added: Unit[] = [];
+    for (let i = 0; i < eff.spawn.count; i++) {
+      if (cb.units.filter(x => x.side === 'enemy' && conscious(x) && !isPiece(x)).length >= cap) break;
+      const row: Row | undefined = rowSpace(cb, 'enemy', 'front') ? 'front' : rowSpace(cb, 'enemy', 'back') ? 'back' : undefined;
+      if (!row) break;
+      const u: Unit = {
+        key: `e_pieza_${cb.round}_${i}`, side: 'enemy', mon: eff.spawn.mon, name: eff.spawn.count > 1 ? `${eff.spawn.name} ${i + 1}` : eff.spawn.name,
+        img: m.img, hp: m.hp, maxHp: m.hp, ac: m.ac, row, init: die(g.rng, 20) + m.dexMod, recharge: {},
+      };
+      cb.units.push(u);
+      cb.order.push(u.key);
+      cb.bonusXp = (cb.bonusXp ?? 0) + m.xp;
+      added.push(u);
+    }
+    say(cb, added.length ? eff.text : `${eff.text.split(/[.!] /)[0].replace(/[¡!.]/g, '')}, pero no acude nadie más.`, 'big');
+  } else if (eff.cage) {
+    const out = cb.caged ?? [];
+    cb.caged = undefined;
+    for (const u of out) {
+      u.init = die(g.rng, 20) + MONSTERS[u.mon!].dexMod;
+      cb.units.push(u);
+      cb.order.push(u.key);
+    }
+    if (out.length) say(cb, eff.text, 'big');
+  } else say(cb, eff.text, 'big');
+  if (eff.save) {
+    const sv = eff.save;
+    const up = cb.units.filter(x => x.side === 'party' && conscious(x));
+    const targets = sv.one ? (up.length ? [pick(g.rng, up)] : []) : up.filter(x => x.row === 'front');
+    for (const t of targets) {
+      const dmg = roll(g.rng, sv.dice);
+      const ok = saveRoll(g, cb, t, sv.abil, sv.dc, ABIL_NAME[sv.abil]);
+      const n = ok ? (sv.half ? Math.floor(dmg / 2) : 0) : dmg;
+      if (n > 0) applyDamage(g, cb, t, n, sv.type, p);
+      else say(cb, `${t.name} se libra.`, 'miss');
+    }
+  }
+  cb.fired = true;
+  if (!eff.repeat) dropPiece(cb);
+}
+
+/** Lo que se ve al mantener pulsada la carta de la pieza. */
+function pieceBehavior(cb: Combat): string[] {
+  const pc = cb.goal?.g.piece;
+  if (!pc) return ['Un objeto: no ataca ni tiene turno.'];
+  const by = cb.goal!.g.by ?? 3;
+  const eff = pc.fx;
+  const what = eff.save
+    ? `salvación de ${ABIL_NAME[eff.save.abil]} CD ${eff.save.dc} o ${eff.save.dice} de daño de ${eff.save.type} ${eff.save.one ? 'a un personaje al azar' : 'a toda la vanguardia'}${eff.save.half ? ' (la mitad si se supera)' : ''}`
+    : eff.spawn ? 'llegan refuerzos' : eff.cage ? `sale ${eff.cage.toLowerCase()}` : 'algo pasa';
+  const runner = cb.units.find(x => x.key === cb.runner && conscious(x));
+  const when = cb.fired && eff.repeat ? `Ya ha empezado: cada asalto, ${what}.`
+    : runner ? `Si ${runner.name} llega y ${pc.use} en el asalto ${by}: ${what}.`
+      : `Se activa al empezar el asalto ${by}${eff.repeat ? ' y en cada asalto siguiente' : ''}: ${what}.`;
+  return [when, 'Cuerpo a cuerpo solo desde el flanco (Ir al flanco); a distancia y con conjuros, desde cualquier fila.', 'No ataca ni tiene turno, y no hace falta romperlo para ganar.'];
 }
 
 const knotsUp = (cb: Combat) => cb.units.some(u => u.mon && MONSTERS[u.mon].knot && alive(u));
@@ -614,7 +795,7 @@ const meleeOf = (u: Unit) => (u.mon ? MONSTERS[u.mon].attacks.find(a => !a.range
 const canReact = (cb: Combat, x: Unit) => conscious(x) && !x.asleep && !x.paralyzed && !x.restrained && x.reacted !== cb.round;
 /** Quién del otro bando, en su vanguardia, puede dar un ataque de oportunidad a quien sale de la vanguardia. */
 function oppFoe(cb: Combat, u: Unit): Unit | undefined {
-  return cb.units.find(x => x.side !== u.side && x.row === 'front' && !x.fled && canReact(cb, x) && (x.side === 'enemy' ? !!meleeOf(x) && !MONSTERS[x.mon!].reach : true));
+  return cb.units.find(x => x.side !== u.side && x.row === 'front' && !x.flank && !x.fled && canReact(cb, x) && (x.side === 'enemy' ? !!meleeOf(x) && !MONSTERS[x.mon!].reach : true));
 }
 /** Arma cuerpo a cuerpo de un personaje, para sus reacciones. */
 const meleeWeapon = (c: Char) => weapons(c).find(w => !ITEMS[w.id].weapon?.ranged);
@@ -688,7 +869,7 @@ interface AtkOpts { name: string; toHit: number; dice: string; bonus: number; ty
 
 /** Un enemigo grande en la vanguardia cubre a su tirador de detrás: media cobertura, +2 a la CA (SRD). */
 const coverOf = (cb: Combat, a: Unit, t: Unit) =>
-  a.side === 'party' && t.side === 'enemy' && t.row === 'back' && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.plan?.guard) ? 2 : 0;
+  a.side === 'party' && t.side === 'enemy' && t.row === 'back' && !t.flank && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.plan?.guard) ? 2 : 0;
 
 /** Motivos de ventaja y de desventaja de un ataque, sin gastar nada: los usan la tirada y la previsión. */
 function advFor(cb: Combat, a: Unit, t: Unit, ranged: boolean): { up: string[]; down: string[] } {
@@ -921,9 +1102,9 @@ export function startCombat(g: Game, encounterId: string): Combat {
   if (cb.units.some(x => x.side === 'enemy' && isLeader(x)) && cb.units.filter(x => x.side === 'enemy' && moraleFoe(x)).length >= 2
     && !cb.units.some(x => x.side === 'enemy' && (isBoss(x) || !moraleFoe(x)))) cb.morale = 0;
   cb.order = [...cb.units].sort((a, b) => b.init - a.init).map(u => u.key);
-  // La pieza (2026-11-27): un objeto sin ataques en la retaguardia enemiga que se rompe con la acción. No tiene turno.
+  // La pieza (2026-11-27): un objeto en el flanco, sin ataques ni turno. Hay que romperlo antes de que se active.
   const pc = cb.goal?.g.piece;
-  if (pc) cb.units.push({ key: 'piece', side: 'enemy', mon: 'Object', name: pc.name, img: pc.img, hp: pc.hp, maxHp: pc.hp, ac: pc.ac, row: 'back', init: 0, encounter: cb.goal!.g.enc, recharge: {} });
+  if (pc) startPiece(cb, pc);
   if (cb.goal?.g.kind === 'guard') cb.ward = cb.goal.g.ward!.hp;
   if (cb.terrain) say(cb, `${TERRAIN[cb.terrain].name}: ${TERRAIN[cb.terrain].desc}`, 'big');
   say(cb, `¡Combate! Iniciativa: ${cb.order.map(k => cb.units.find(u => u.key === k)!.name).join(', ')}.`, 'info');
@@ -1037,6 +1218,8 @@ export function endTurn(g: Game, cb: Combat) {
       // Si con el objetivo fallado huye el último enemigo, el combate acaba aquí.
       if (checkEnd(g, cb)) return;
       reinforce(g, cb);
+      pieceRound(g, cb);
+      if (checkEnd(g, cb)) return;
     }
     const n = current(cb);
     if (alive(n)) break;
@@ -1105,7 +1288,7 @@ function finish(g: Game, cb: Combat, result: 'win' | 'lose' | 'fled') {
     msgs.push(why);
     cb.endLine = lastEvent?.replace(/[.!¡]+$/g, '') ?? why;
     const open = cb.goal?.status === 'open' ? cb.goal.g : undefined;
-    if (open) goalDone(cb, ['noflee', 'nodown', 'nosplit', 'noshriek', 'nostone', 'guard'].includes(open.kind) || (open.kind === 'win' && cb.round < (open.by ?? 99)));
+    if (open) goalDone(cb, ['noflee', 'nodown', 'nosplit', 'noshriek', 'nostone', 'guard', 'piece'].includes(open.kind) || (open.kind === 'win' && cb.round < (open.by ?? 99)));
     let xp = cb.bonusXp ?? 0, gold = 0;
     for (const id of cb.encounters) {
       const e = encounterById(id)!;
@@ -1238,7 +1421,7 @@ function uselessWhy(g: Game, cb: Combat, a: Action): string | undefined {
 
 /** ¿Le queda al personaje algo útil que hacer (cambiar de fila también cuenta)? Si no, su turno acaba solo. */
 // Ir atrás no cuenta: si es lo único que queda, el turno acaba solo.
-export const hasUseful = (g: Game, cb: Combat) => actionsFor(g, cb).some(a => !a.off && !(a.id === 'row' && current(cb).row === 'front'));
+export const hasUseful = (g: Game, cb: Combat) => actionsFor(g, cb).some(a => !a.off && a.id !== 'flank' && !(a.id === 'row' && current(cb).row === 'front'));
 
 export function actionsFor(g: Game, cb: Combat): Action[] {
   const u = current(cb);
@@ -1349,7 +1532,12 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
   const bow = weapons(c).find(w => ITEMS[w.id].weapon?.ranged);
   if (bow) A.push({ id: `watch:${bow.id}`, label: 'Vigilar', cost: 'action', target: 'ally', detail: 'dispara a quien le ataque' });
   A.push({ id: 'dodge', label: 'Esquivar', cost: 'action', target: 'none' });
-  A.push({ id: 'row', label: u.row === 'front' ? 'Ir atrás' : 'Ir delante', cost: 'move', target: 'none' });
+  // El flanco (2026-11-27): desde la vanguardia se va junto a la pieza; desde allí se vuelve.
+  if (u.flank) A.push({ id: 'flank', label: 'Volver a la vanguardia', cost: 'move', target: 'none', detail: 'deja el flanco' });
+  else {
+    if (u.row === 'front' && livePiece(cb)) A.push({ id: 'flank', label: 'Ir al flanco', cost: 'move', target: 'none', detail: `junto a ${livePiece(cb)!.name}` });
+    A.push({ id: 'row', label: u.row === 'front' ? 'Ir atrás' : 'Ir delante', cost: 'move', target: 'none' });
+  }
   A.push({ id: 'flee', label: 'Huir', cost: 'action', target: 'none' });
   // Quita lo que ya no se puede pagar este turno.
   return A.filter(a => (a.cost === 'action' ? !cb.acted : a.cost === 'bonus' ? !cb.bonus : a.cost === 'move' ? !cb.moved : true))
@@ -1358,7 +1546,7 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
 }
 
 // El grupo cabe entero en una fila (hasta 4); los enemigos, 3 por fila como mucho. En una sala angosta, dos.
-const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r).length < (cb.terrain === 'narrow' ? 2 : s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
+const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r && !u.flank).length < (cb.terrain === 'narrow' ? 2 : s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
 /** Suelo resbaladizo: cambiar de fila pide una salvación de Destreza CD 10; quien la falla cae al suelo y no se mueve. */
 function slip(g: Game, cb: Combat, u: Unit): boolean {
   if (cb.terrain !== 'slippery' || saveRoll(g, cb, u, 'dex', 10, 'Destreza')) return false;
@@ -1367,7 +1555,7 @@ function slip(g: Game, cb: Combat, u: Unit): boolean {
   return true;
 }
 
-const KEEP_INVISIBLE = ['dodge', 'help', 'row', 'potion', 'dust', 'surge', 'second_wind', 'rage', 'hide', 'adrenaline'];
+const KEEP_INVISIBLE = ['dodge', 'help', 'row', 'flank', 'potion', 'dust', 'surge', 'second_wind', 'rage', 'hide', 'adrenaline'];
 const CURE = 'cura el veneno';
 const COLD = 'resiste el frío';
 const ELIXIR = 'quita veneno y parálisis';
@@ -1751,6 +1939,19 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       break;
     }
     case 'help': t!.helped = u.key; say(cb, `${u.name} distrae a ${t!.name}: el próximo ataque de un aliado contra él tendrá ventaja.`, 'info'); break;
+    case 'flank':
+      if (u.flank) { u.flank = false; say(cb, `${u.name} vuelve a la vanguardia.`, 'info'); break; }
+      // Ir al flanco es salir del alcance de los enemigos de delante: ataque de oportunidad, salvo Destrabarse.
+      if (!u.disengaged) {
+        const foe = oppFoe(cb, u);
+        if (foe) opportunity(g, cb, foe, u);
+        if (!conscious(u) || checkEnd(g, cb)) break;
+      }
+      for (const x of cb.units) if (x.grappled === u.key) { x.grappled = undefined; say(cb, `${u.name} suelta a ${x.name}.`, 'info'); }
+      if (slip(g, cb, u)) break;
+      u.flank = true;
+      say(cb, `${u.name} corre al flanco, junto a ${livePiece(cb)?.name ?? 'la pieza'}.`, 'info');
+      break;
     case 'row':
       // Salir de la vanguardia con un enemigo cuerpo a cuerpo delante provoca un ataque de oportunidad (salvo Destrabarse).
       if (u.row === 'front' && !u.disengaged) {
@@ -1825,6 +2026,11 @@ export function enemyTurn(g: Game, cb: Combat) {
   if (u.restrained) {
     if (saveRoll(g, cb, u, 'str', u.restrained, 'Fuerza')) { u.restrained = undefined; say(cb, `${u.name} se libera.`, 'info'); }
     else say(cb, `${u.name} forcejea, pero sigue apresado.`, 'info');
+    endTurn(g, cb);
+    return;
+  }
+  if (runnerTurn(g, cb, u)) {
+    if (checkEnd(g, cb)) return;
     endTurn(g, cb);
     return;
   }
@@ -2114,7 +2320,8 @@ export function behaviorOf(g: Game, cb: Combat, u: Unit): string[] {
   const m = MONSTERS[u.mon];
   const out: string[] = [];
   const first = (k?: string) => cb.units.find(x => x.key === k)?.name.split(' ')[0];
-  if (m.piece) return ['Un objeto: no ataca ni tiene turno. Rompedlo para cumplir el objetivo; no hace falta para ganar.'];
+  if (m.piece) return pieceBehavior(cb);
+  if (u.key === cb.runner && !cb.fired && livePiece(cb)) out.push(`Corre a ${cb.goal!.g.piece!.use ?? 'usar la pieza'}: tumbadlo o romped ${livePiece(cb)!.name.toLowerCase()} antes.`);
   if (m.knot) return ['Alimenta al Corazón: mientras quede algún nudo, el Corazón se cura y resiste el daño.'];
   if (u.mon === 'Shrieker') return ['No ataca: si chilla, atrae a otra criatura.'];
   if (cb.morale !== undefined && moraleFoe(u)) out.push(`Moral del grupo: ${cb.morale}/3. A la tercera, los malheridos huyen.`);
@@ -2179,7 +2386,7 @@ function bossWarn(g: Game, cb: Combat, u: Unit) {
 /** Anuncia (o corrige) lo que harán los enemigos: se llama al empezar cada turno y tras cada acción. */
 export function planAll(g: Game, cb: Combat) {
   for (const u of cb.units) {
-    if (u.side !== 'enemy' || !conscious(u) || u.asleep || u.paralyzed || u.restrained) { u.plan = undefined; continue; }
+    if (u.side !== 'enemy' || !conscious(u) || u.asleep || u.paralyzed || u.restrained || u.flank || runsNow(cb, u)) { u.plan = undefined; continue; }
     if (!u.plan || !planOk(cb, u, u.plan)) u.plan = decide(g, cb, u);
     else if (u.plan.kind === 'melee' || u.plan.kind === 'ranged') u.plan.guard = isGuard(cb, u, u.plan.move ?? u.row);
   }

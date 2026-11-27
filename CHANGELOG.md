@@ -11,6 +11,7 @@ Este documento resume hitos funcionales comprobados en el código y en las PR re
 - **Tumba**: Dividirse del pudin y la gelatina, maldición de la momia (se quita en el templo) y mirada petrificadora del basilisco.
 - **Combate**: ataque de oportunidad y Destrabarse (sin +2 a la CA), poner a salvo, agarrar (solo impide cambiar de fila o huir), Vigilar, moral en grupos con jefe, rasgo de la sala (angosto, resbaladizo, humo), el ruido (el vecino acude en el asalto 5, avisado en el 4), la pieza y «Proteged a» (`src/data/objetivos.ts`).
 - **Maestrías** Hendir, Rozar, Mella y Ralentizar; gran hacha, mandoble y alabarda. **Rasgos**: Ataque temerario, Puntería firme, Golpe astuto y Expulsar muertos vivientes.
+- **El flanco** (`src/data/objetivos.ts`, `startPiece` en `src/engine/combat.ts`): ocho objetos rompibles, uno cada dos zonas, en una columna aparte a la izquierda o a la derecha. Se activan en el asalto 3 (la catapulta, desde el 2 y cada asalto) o cuando un enemigo corre a usarlos. «Ir al flanco» (movimiento, con ataque de oportunidad salvo Destrabarse) deja golpearlos cuerpo a cuerpo. CA y PG de la tabla de objetos del SRD; efectos de sus trampas.
 - **Modo desafío**, Piedra de la suerte y Botas élficas en cofres secretos, oro por los PX por encima del tope, bestiario y tesoros en la galería, y rumores entre aventuras (`src/data/hilo.ts`).
 
 ## 26 de noviembre de 2026 — Puntos 22 a 26

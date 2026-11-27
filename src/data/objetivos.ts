@@ -5,6 +5,7 @@
 // El premio suele ser un objeto que abre otra forma de luchar (red, fuego de alquimista, agua bendita…).
 import type { Effect } from '../engine/escenas';
 import type { ImgKey } from '../assets';
+import type { Ability, DmgType } from './srd';
 
 export interface Goal {
   enc: string;
@@ -15,9 +16,14 @@ export interface Goal {
    * nosplit: que no se divida ningún cieno; noshriek: que el hongo chillón no llegue a chillar; nostone: que nadie quede petrificado;
    * guard: ganar antes de que «who» acabe con «ward» (le hace 1d4 al empezar cada asalto si nadie le retiene).
    */
-  kind: 'kill' | 'win' | 'noflee' | 'spare' | 'first' | 'nodown' | 'nosplit' | 'noshriek' | 'nostone' | 'guard';
-  /** La pieza: carta sin ataques en la retaguardia enemiga (con kind 'kill' y who = su nombre). No cuenta para ganar. */
-  piece?: { name: string; img: ImgKey; hp: number; ac: number };
+  kind: 'kill' | 'win' | 'noflee' | 'spare' | 'first' | 'nodown' | 'nosplit' | 'noshriek' | 'nostone' | 'guard' | 'piece';
+  /**
+   * La pieza (kind 'piece', 2026-11-27): un objeto en el flanco izquierdo o derecho del campo, fuera de las filas.
+   * No ataca ni tiene turno y no cuenta para ganar. Se activa al empezar el asalto «by» si sigue entero; con «runner»,
+   * un enemigo corre a usarlo en el asalto anterior y lo activa en su turno del asalto «by» si nadie le para.
+   * CA y PG de las tablas de objetos del SRD 5.2.1; los efectos, de sus trampas.
+   */
+  piece?: Piece;
   /** Proteged a: quién está indefenso, sus PG y lo que le hace «who» cada asalto. */
   ward?: { name: string; hp: number; hurt: string };
   /** Ilustración que se enseña con el objetivo al empezar el combate. */
@@ -32,6 +38,32 @@ export interface Goal {
   /** Consecuencia para el resto de la aventura si se cumple o si se falla (se apunta al ganar el combate). */
   okFx?: Effect;
   failFx?: Effect;
+}
+
+export interface Piece {
+  name: string;
+  img: ImgKey;
+  hp: number;
+  ac: number;
+  side: 'left' | 'right';
+  /** Enemigo (nombre del grupo) que corre al objeto para usarlo. Si cae o no llega, no se activa. */
+  runner?: string;
+  /** Qué hace el runner con el objeto («toca el cuerno»). */
+  use?: string;
+  fx: PieceFx;
+}
+
+/** Lo que pasa cuando se activa la pieza. */
+export interface PieceFx {
+  text: string;
+  /** Salvación contra la trampa: la vanguardia entera (y quien esté en el flanco) o, con «one», un personaje al azar. */
+  save?: { abil: Ability; dc: number; dice: string; type: DmgType; half: boolean; one?: boolean };
+  /** Se repite al empezar cada asalto hasta que se rompa (la catapulta). */
+  repeat?: boolean;
+  /** Llegan criaturas del SRD que ya están en el juego. */
+  spawn?: { mon: string; name: string; count: number };
+  /** Enemigos del combate que empiezan encerrados y salen al activarse (nombre del grupo). */
+  cage?: string;
 }
 
 export const GOALS: Goal[] = [
@@ -65,9 +97,40 @@ export const GOALS: Goal[] = [
   { enc: 's2_e06', kind: 'nosplit', text: 'Que el pudin negro no se divida: nada de armas cortantes ni relámpagos contra él.', ok: 'El pudin se deshace entero. Entre sus restos brilla algo que no ha podido disolver.', gold: 25, items: ['alchemists_fire'] },
   { enc: 's3_e05', kind: 'nostone', text: 'Que el basilisco no petrifique a nadie.', ok: 'Nadie ha quedado de piedra. Junto al basilisco hay restos de otros que no tuvieron tanta suerte.', gold: 20, items: ['potion_healing'] },
   // La pieza y Proteged a (2026-11-27): como mucho una por zona.
-  { enc: 'm2_e06', kind: 'kill', who: 'Torno de la trampa', by: 3, piece: { name: 'Torno de la trampa', img: 'pieza_torno', hp: 8, ac: 12 },
-    text: 'Los kobolds tensan una trampa de rocas: romped el torno antes del asalto 3.', ok: 'El torno se parte y las rocas se quedan donde estaban. Entre los cabos hay oro y una poción.', gold: 15, items: ['potion_healing'] },
+  { enc: 'm2_e06', kind: 'piece', who: 'Torno de la trampa', by: 3,
+    piece: { name: 'Torno de la trampa', img: 'pieza_torno', hp: 10, ac: 15, side: 'right',
+      fx: { text: 'El torno se suelta y las rocas caen sobre la vanguardia.', save: { abil: 'dex', dc: 13, dice: '2d10', type: 'contundente', half: true } } },
+    text: 'Los kobolds tensan una trampa de rocas: romped el torno del flanco antes del asalto 3.', ok: 'El torno se parte y las rocas se quedan donde estaban. Entre los cabos hay oro y una poción.', gold: 15, items: ['potion_healing'] },
   { enc: 's1_e04', kind: 'guard', img: 'escena_saqueador_tela', who: 'Araña del pozo', ward: { name: 'el saqueador', hp: 9, hurt: 'aprieta la tela del saqueador' },
     text: 'Un saqueador cuelga envuelto en la tela: venced a la araña antes de que acabe con él. Agarrarla o tumbarla le da un respiro.', ok: 'Cortáis la tela y el saqueador cae al suelo, vivo. Os da lo que sacó de la tumba.', gold: 20, items: ['antidote'] },
   { enc: 's4_e01', kind: 'noshriek', text: 'Que el hongo chillón no llegue a chillar: acabad con él en cuanto podáis.', ok: 'Nadie ha oído nada. Los goblins llevaban un frasco robado.', gold: 10, items: ['potion_healing'] },
+  // Elementos rompibles del flanco (2026-11-27): uno cada dos zonas.
+  { enc: 'z2_e04', kind: 'piece', who: 'Cuerno de alarma', by: 3,
+    piece: { name: 'Cuerno de alarma', img: 'pieza_cuerno', hp: 10, ac: 15, side: 'right', runner: 'Guardia del jefe goblin', use: 'toca el cuerno',
+      fx: { text: '¡Suena el cuerno! Acuden más goblins.', spawn: { mon: 'Goblin Warrior', name: 'Goblin del cuerno', count: 2 } } },
+    text: 'Un goblin corre a tocar el cuerno de alarma: rompedlo o tumbad al goblin antes del asalto 3.', ok: 'El cuerno no ha sonado. Junto a su soporte hay oro y una poción.', gold: 15, items: ['potion_healing'] },
+  { enc: 'z4_e02', kind: 'piece', who: 'Fuelle de la forja', by: 3,
+    piece: { name: 'Fuelle de la forja', img: 'pieza_fuelle', hp: 18, ac: 11, side: 'left',
+      fx: { text: 'El fuelle revienta y un chorro de vapor ardiente barre la vanguardia.', save: { abil: 'dex', dc: 13, dice: '2d10', type: 'fuego', half: true } } },
+    text: 'El fuelle de la forja se hincha de vapor: rajadlo antes del asalto 3.', ok: 'El fuelle se desinfla sin daño. Entre las herramientas de la forja hay oro y un frasco de fuego de alquimista.', gold: 15, items: ['alchemists_fire'] },
+  { enc: 'b1_e06', kind: 'piece', who: 'Cuerda de la catapulta', by: 2,
+    piece: { name: 'Cuerda de la catapulta', img: 'pieza_catapulta', hp: 10, ac: 11, side: 'right',
+      fx: { text: 'La catapulta de los bandidos dispara una piedra.', repeat: true, save: { abil: 'dex', dc: 13, dice: '1d10', type: 'contundente', half: false, one: true } } },
+    text: 'Desde el asalto 2, la catapulta lanza una piedra cada asalto: cortad su cuerda.', ok: 'La catapulta se queda sin cuerda. Entre las piedras de munición hay oro y una poción.', gold: 15, items: ['potion_healing'] },
+  { enc: 'b4_e01', kind: 'piece', who: 'Vaina de esporas', by: 3,
+    piece: { name: 'Vaina de esporas', img: 'pieza_vaina', hp: 10, ac: 11, side: 'left',
+      fx: { text: 'La vaina revienta y una nube de esporas cae sobre la vanguardia.', save: { abil: 'con', dc: 11, dice: '1d10', type: 'veneno', half: false } } },
+    text: 'Una vaina de esporas está a punto de reventar: rompedla antes del asalto 3.', ok: 'La vaina se seca sin soltar las esporas. Entre sus raíces hay un antídoto.', gold: 10, items: ['antidote'] },
+  { enc: 'm4_e04', kind: 'piece', who: 'Hoguera de aviso', by: 3,
+    piece: { name: 'Hoguera de aviso', img: 'pieza_hoguera', hp: 10, ac: 15, side: 'left', runner: 'Kobold del tributo', use: 'prende la hoguera',
+      fx: { text: '¡La hoguera de aviso arde! Llegan más kobolds.', spawn: { mon: 'Kobold', name: 'Kobold de la hoguera', count: 2 } } },
+    text: 'Un kobold corre a prender la hoguera de aviso: deshacedla o tumbad al kobold antes del asalto 3.', ok: 'La hoguera no ha llegado a arder. Entre la leña hay oro y una poción.', gold: 20, items: ['potion_healing'] },
+  { enc: 's1_e01', kind: 'piece', who: 'Brasero de almas', by: 3,
+    piece: { name: 'Brasero de almas', img: 'pieza_brasero', hp: 10, ac: 17, side: 'right',
+      fx: { text: 'La llama verde del brasero se aviva y alza a otro guardián de hueso.', spawn: { mon: 'Skeleton', name: 'Guardián alzado', count: 1 } } },
+    text: 'El brasero de almas llama a los muertos: volcadlo antes del asalto 3.', ok: 'La llama verde se apaga. Entre la ceniza hay oro y un frasco de agua bendita.', gold: 15, items: ['holy_water'] },
+  { enc: 's4_e04', kind: 'piece', who: 'Palanca de la jaula', by: 3,
+    piece: { name: 'Palanca de la jaula', img: 'pieza_palanca', hp: 5, ac: 19, side: 'left', runner: 'Carcelero', use: 'tira de la palanca',
+      fx: { text: '¡La jaula se abre y el cieno guardián sale reptando!', cage: 'Cieno guardián' } },
+    text: 'El cieno espera enjaulado: romped la palanca o tumbad al carcelero que corre hacia ella antes del asalto 3.', ok: 'La jaula sigue cerrada. Los carceleros llevaban un frasco robado.', gold: 15, items: ['potion_healing'] },
 ];
