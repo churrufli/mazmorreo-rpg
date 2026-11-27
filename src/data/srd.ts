@@ -245,6 +245,10 @@ export const ITEMS: Record<string, ItemDef> = {
   bark_amulet: { name: 'Amuleto de corteza', kind: 'gear', img: 'amuleto_corteza', value: 0, key: true, desc: 'Amuleto antiguo de la orden que protegía Umbría. Su runa aparta las raíces que cierran la salida de una zona. Se consume al usarlo.' },
   druid_relic: { name: 'Semilla de la promesa', kind: 'gear', img: 'semilla_juramento', value: 75, desc: 'Semilla fosilizada que recuerda la promesa original del Corazón Hueco. Tesoro: se puede vender.' },
   // El Invierno del Dragón
+  // Armas del SRD con las maestrías que faltaban (2026-11-27). Las tres son a dos manos.
+  greataxe: { name: 'Gran hacha', kind: 'weapon', img: 'gran_hacha_mas1', value: 30, desc: 'Arma marcial a dos manos. 1d12 cortante.', weapon: { dice: '1d12', type: 'cortante', martial: true } },
+  greatsword: { name: 'Mandoble', kind: 'weapon', img: 'espada_larga_mas1', value: 50, desc: 'Arma marcial a dos manos. 2d6 cortante.', weapon: { dice: '2d6', type: 'cortante', martial: true } },
+  halberd: { name: 'Alabarda', kind: 'weapon', img: 'hacha_guerra_mas1', value: 20, desc: 'Arma marcial a dos manos. 1d10 cortante.', weapon: { dice: '1d10', type: 'cortante', martial: true } },
   battleaxe: { name: 'Hacha de guerra', kind: 'weapon', img: 'hacha_guerra_mas1', value: 10, desc: 'Arma marcial. 1d8 cortante.', weapon: { dice: '1d8', type: 'cortante', martial: true } },
   battleaxe_plus_one: { name: 'Hacha de guerra +1', kind: 'weapon', img: 'hacha_guerra_mas1', value: 400, desc: 'Arma mágica: +1 a las tiradas de ataque y daño. 1d8 cortante.', weapon: { dice: '1d8', type: 'cortante', martial: true, bonus: 1 } },
   spear: { name: 'Lanza', kind: 'weapon', img: 'lanza', value: 2, desc: 'Arma sencilla. 1d6 perforante.', weapon: { dice: '1d6', type: 'perforante' } },

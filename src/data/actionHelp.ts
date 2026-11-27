@@ -47,7 +47,11 @@ export const ACTION_HELP: Record<string, string> = {
 };
 
 /** Maestría de armas por apartados: el efecto de cada una y la regla común. */
-export const MASTERY_HELP: Record<'sap' | 'vex' | 'topple' | 'push' | 'all', string> = {
+export const MASTERY_HELP: Record<'sap' | 'vex' | 'topple' | 'push' | 'cleave' | 'graze' | 'nick' | 'slow' | 'all', string> = {
+  cleave: 'Una vez por turno, al impactar, el golpe sigue hasta otro enemigo de la misma fila (sin sumar la característica al daño).',
+  graze: 'Si fallas, el enemigo recibe igualmente tanto daño como tu modificador de característica.',
+  nick: 'Una vez por turno, si llevas otra arma ligera, golpeas también con ella (sin sumar la característica al daño).',
+  slow: 'Al impactar, el enemigo no puede cambiar de fila en su próximo turno. A los jefes no les afecta.',
   sap: 'Al impactar, el enemigo ataca con desventaja en su próximo ataque.',
   vex: 'Al impactar, tienes ventaja en tu próximo ataque contra él.',
   topple: 'Al impactar, el enemigo hace una salvación de Constitución o cae al suelo. Derribado, los ataques cuerpo a cuerpo contra él tienen ventaja y los de distancia, desventaja, hasta que se levante en su turno.',

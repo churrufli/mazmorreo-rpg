@@ -133,6 +133,8 @@ export interface Unit {
   grappled?: string;
   /** Vigilar (Preparar del SRD): si un enemigo ataca a ese aliado, le dispara con su reacción. */
   watch?: string;
+  /** Ralentizar: no cambia de fila en su próximo turno. */
+  slowed?: boolean;
 }
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
@@ -157,6 +159,9 @@ export interface Combat {
   acted: boolean;
   bonus: boolean;
   sneakUsed: boolean;
+  /** Hendir y Mella: una vez por turno. */
+  cleaveUsed?: boolean;
+  nickUsed?: boolean;
   /** Último impacto cuerpo a cuerpo, válido para Castigo divino en este turno. */
   smiteHit?: { attacker: string; target: string; crit: boolean };
   /** Atacante salvaje ya usado en este turno. */
@@ -236,14 +241,19 @@ const aura = (g: Game, cb: Combat) => Math.max(0, ...cb.units.filter(u => u.side
 /** Nombre corto en los botones de combate para los objetos de nombre muy largo. */
 const SHORT: Record<string, string> = { potion_poison_resistance: 'Poción antiveneno', potion_greater_healing_1: 'Poción mayor' };
 /** Maestría de armas (SRD 5.2.1): solo las que tienen efecto con dos filas. */
-export type Mastery = 'sap' | 'vex' | 'topple' | 'push';
+export type Mastery = 'sap' | 'vex' | 'topple' | 'push' | 'cleave' | 'graze' | 'nick' | 'slow';
 export const MASTERY: Record<string, Mastery> = {
+  // Las cuatro que faltaban (2026-11-27), adaptadas a las filas: Ralentizar impide cambiar de fila en su turno.
+  greataxe: 'cleave', greataxe_plus1: 'cleave', halberd: 'cleave', greatsword: 'graze',
+  dagger: 'nick', silver_dagger: 'nick', scimitar: 'nick', longbow: 'slow', longbow_plus1: 'slow', light_crossbow: 'slow',
   longsword: 'sap', longsword_plus1: 'sap', mace: 'sap', mace_plus1: 'sap', spear: 'sap', pick: 'sap',
   shortsword: 'vex', rapier_plus1: 'vex', shortbow: 'vex',
   quarterstaff: 'topple', battleaxe: 'topple', battleaxe_plus_one: 'topple',
   warhammer: 'push', weapon_plus1_warhammer: 'push',
 };
-export const MASTERY_NAME: Record<Mastery, string> = { sap: 'Debilitar', vex: 'Hostigar', topple: 'Derribar', push: 'Empujar' };
+export const MASTERY_NAME: Record<Mastery, string> = { sap: 'Debilitar', vex: 'Hostigar', topple: 'Derribar', push: 'Empujar', cleave: 'Hendir', graze: 'Rozar', nick: 'Mella', slow: 'Ralentizar' };
+/** Armas ligeras: con Mella, la otra que se lleve golpea también (sin sumar la característica al daño). */
+const LIGHT = ['dagger', 'silver_dagger', 'scimitar', 'shortsword'];
 /** Clases con el rasgo Maestría de armas. */
 const MASTERY_CLS = ['fighter', 'rogue', 'paladin', 'barbarian', 'ranger'];
 export const masteryOf = (c: Char, weapon: string): Mastery | undefined => (MASTERY_CLS.includes(c.cls) ? MASTERY[weapon] : undefined);
@@ -658,6 +668,8 @@ function heal(cb: Combat, u: Unit, amount: number) {
 
 interface AtkOpts { name: string; toHit: number; dice: string; bonus: number; type: DmgType; ranged: boolean; extra?: { dice: string; type: DmgType }; sneak?: boolean; spell?: boolean;
   mastery?: Mastery; masteryDc?: number;
+  /** Modificador de característica del daño (Rozar lo hace al fallar; Hendir y Mella no lo suman). Con Mella, la otra arma ligera. */
+  abilDmg?: number; offhand?: string;
   /** Repetición con Inspiración heroica: la misma ventaja o desventaja, sin volver a gastar estados. */
   rerollAdv?: number }
 
@@ -725,6 +737,8 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     : up.length && down.length ? ` sin ventaja ni desventaja (${up[0]} contra ${down[0]})` : '') + (cover ? ' (media cobertura: +2 CA)' : '');
   if (!hit) {
     say(cb, `${a.name} usa ${o.name}${advTxt}: ${d20}+${o.toHit + bless} = ${total}. Falla.`, 'miss');
+    if (o.mastery === 'graze' && (o.abilDmg ?? 0) > 0) { say(cb, `Rozar: el filo le alcanza igualmente.`, 'info'); applyDamage(g, cb, t, o.abilDmg!, o.type, a); }
+    nick(g, cb, a, t, o);
     // Inspiración heroica: el jugador decide si repite el dado (SRD 5.2.1); se ofrece al acabar la acción.
     if (a.side === 'party' && o.rerollAdv === undefined && canInspire(g, charOf(g, a))) cb.reroll = { a: a.key, t: t.key, o, adv, total };
     return false;
@@ -760,8 +774,24 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   if (a.concentration === 'mark' && a.mark === t.key && !o.spell) { const bonus = roll(g.rng, '1d6', crit); say(cb, `Marca del cazador: +${bonus} de fuerza.`, 'info'); if (alive(t)) applyDamage(g, cb, t, bonus, 'fuerza', a, crit); }
   if (a.concentration === 'hex' && a.hex === t.key && alive(t)) { const bonus = roll(g.rng, '1d6', crit); say(cb, `Maleficio: +${bonus} necrótico.`, 'info'); applyDamage(g, cb, t, bonus, 'necrótico', a, crit); }
   if (o.mastery && conscious(t)) masteryHit(g, cb, a, t, o.mastery, o.masteryDc ?? 10);
+  if (o.mastery === 'cleave' && !cb.cleaveUsed) {
+    // Hendir: una vez por turno, el golpe sigue hasta otro enemigo de la misma fila (sin sumar la característica).
+    const t2 = cb.units.find(x => x.side === t.side && x !== t && conscious(x) && x.row === t.row && !x.flying);
+    if (t2) { cb.cleaveUsed = true; say(cb, `Hendir: el golpe sigue hasta ${t2.name}.`, 'info'); attack(g, cb, a, t2, { ...o, mastery: undefined, bonus: o.bonus - Math.max(0, o.abilDmg ?? 0) }); }
+  }
+  nick(g, cb, a, t, o);
   if (a.mon === 'Treant') say(cb, pick(g.rng, B.boss.visions), 'info');
   return true;
+}
+
+/** Mella: una vez por turno, la otra arma ligera golpea también (sin sumar la característica al daño). */
+function nick(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts) {
+  if (o.mastery !== 'nick' || !o.offhand || cb.nickUsed || cb.result) return;
+  const t2 = conscious(t) ? t : validTargets(cb, a, 'melee')[0];
+  if (!t2) return;
+  cb.nickUsed = true;
+  const c = charOf(g, a), w = ITEMS[o.offhand].weapon!, s = weaponStat(c, o.offhand);
+  attack(g, cb, a, t2, { name: `${ITEMS[o.offhand].name} (Mella)`, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus - Math.max(0, abilMod(c, s.abil)), type: w.type, ranged: false, sneak: true });
 }
 
 /** Efecto de la maestría del arma tras un impacto. */
@@ -775,6 +805,7 @@ function masteryHit(g: Game, cb: Combat, a: Unit, t: Unit, m: Mastery, dc: numbe
     if (total >= dc) say(cb, `Derribar: ${t.name} resiste (Constitución ${d20}${total - d20 >= 0 ? '+' : ''}${total - d20} = ${total} contra CD ${dc}).`, 'miss');
     else { t.prone = true; say(cb, `Derribar: ${t.name} cae al suelo (Constitución ${d20}${total - d20 >= 0 ? '+' : ''}${total - d20} = ${total} contra CD ${dc}).`, 'big'); }
   }
+  if (m === 'slow' && t.side === 'enemy' && !isBoss(t)) { t.slowed = true; say(cb, `Ralentizar: ${t.name} no podrá cambiar de fila en su próximo turno.`, 'info'); }
   if (m === 'push' && !huge && t.side === 'enemy' && t.row === 'front' && rowSpace(cb, 'enemy', 'back')) {
     t.row = 'back';
     t.plan = undefined;
@@ -927,7 +958,7 @@ function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean 
 function startTurn(g: Game, cb: Combat) {
   const u = current(cb);
   planAll(g, cb);
-  cb.moved = cb.acted = cb.bonus = cb.sneakUsed = cb.hasteUsed = false;
+  cb.moved = cb.acted = cb.bonus = cb.sneakUsed = cb.hasteUsed = cb.cleaveUsed = cb.nickUsed = false;
   cb.smiteHit = undefined;
   cb.reroll = undefined;
   // Ayudar y Debilitar duran hasta el principio del siguiente turno de quien los hizo; Hostigar, hasta el final.
@@ -1402,7 +1433,10 @@ function extraAttack(g: Game, cb: Combat, u: Unit, c: Char, t: Unit, weapon: str
   attack(g, cb, u, t2, { name: ITEMS[weapon].name, toHit: s.toHit, dice: w.dice, bonus: s.dmgBonus, type: w.type, ranged: !!w.ranged, sneak: !!(w.finesse || w.ranged), ...masteryOpts(c, weapon) });
 }
 
-const masteryOpts = (c: Char, weapon: string) => ({ mastery: masteryOf(c, weapon), masteryDc: 8 + abilMod(c, weaponStat(c, weapon).abil) + prof(c.level) });
+const masteryOpts = (c: Char, weapon: string) => ({
+  mastery: masteryOf(c, weapon), masteryDc: 8 + abilMod(c, weaponStat(c, weapon).abil) + prof(c.level), abilDmg: abilMod(c, weaponStat(c, weapon).abil),
+  offhand: LIGHT.includes(weapon) || MASTERY[weapon] === 'nick' ? c.items.find(i => i.id !== weapon && LIGHT.includes(i.id) && !ITEMS[i.id].weapon?.ranged)?.id : undefined,
+});
 
 /** Ejecuta un paso de combate y pega a la última tirada los dados de daño o curación que se hayan tirado. */
 export function withDice(cb: Combat, run: () => void) {
@@ -1778,12 +1812,20 @@ export function enemyTurn(g: Game, cb: Combat) {
     return;
   }
   // Lo que había anunciado (si sigue valiendo) o una decisión nueva.
-  const p = u.plan && planOk(cb, u, u.plan) ? u.plan : decide(g, cb, u);
+  let p = u.plan && planOk(cb, u, u.plan) ? u.plan : decide(g, cb, u);
   u.plan = undefined;
   if (!p && u.mon === DRAGON) say(cb, `${u.name} observa desde atrás, tras sus siervos.`, 'info');
   // Cuerpo a cuerpo detrás con la fila delantera llena: espera su hueco (y se dice, para que no parezca que no hace nada).
   else if (!p && u.row === 'back' && m.attacks.some(a => !a.ranged && !a.save)) say(cb, `${u.name} espera detrás a que se abra un hueco.`, 'info');
   if (!p) { endTurn(g, cb); return; }
+  if (u.slowed) {
+    u.slowed = undefined;
+    if (p.move && p.move !== u.row) {
+      say(cb, `${u.name} va ralentizado: no cambia de fila.`, 'info');
+      if (p.kind === 'melee' && u.row === 'back') { endTurn(g, cb); return; }
+      p = { ...p, move: undefined, swap: undefined };
+    }
+  }
   // Agarrado: para cambiar de fila primero tiene que soltarse, y eso le cuesta el turno.
   if (p.move && p.move !== u.row && u.grappled) {
     const by = cb.units.find(x => x.key === u.grappled);
