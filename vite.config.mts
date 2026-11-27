@@ -22,7 +22,7 @@ export default defineConfig({
   build: {
     outDir: resolve('dist'),
     emptyOutDir: true,
-    rollupOptions: { input: resolve('web/index.html') },
+    rollupOptions: { input: { main: resolve('web/index.html'), presentacion: resolve('web/presentacion/index.html') } },
   },
   server: { host: '0.0.0.0' },
 });

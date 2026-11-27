@@ -12,6 +12,10 @@ npm run web:build
 
 El servidor muestra la dirección local. La compilación estática queda en `dist/index.html` y `dist/assets/`, lista para servir por HTTPS, también bajo una subcarpeta. No abrir el HTML directamente desde el disco.
 
+## Página de presentación
+
+`web/presentacion/` es una página estática aparte que presenta el juego. Vite la compila como segunda entrada (`vite.config.mts`) y se publica en `/presentacion/`, junto al juego, sin tocar su dirección ni sus partidas guardadas. Usa el logo, las ilustraciones y las fuentes del juego, sin copiarlos; las capturas están en `web/presentacion/capturas/` (WebP, móvil a 540 px y escritorio a 1200 px).
+
 ## Modo escritorio
 
 Se activa en la web cuando la ventana es apaisada y mide al menos 900 px de ancho (`src/ui/escritorio.ts`). En Android y en móviles nunca se activa.
