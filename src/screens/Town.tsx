@@ -188,7 +188,7 @@ export function Town() {
             <Btn label="Posada" sub={allies.some(c => nextTalk(g, c) !== undefined) ? 'Descansar, elegir compañeros y charlar (hay charlas nuevas)' : 'Descansar, elegir compañeros y charlar'} style={placeBtn} onPress={() => { setPlace('posada'); say(''); }} />
             <Btn label="Diario" sub="Historias y diálogos vividos" style={placeBtn} onPress={() => { setPlace('diario'); say(''); }} />
             <Btn label="Puerta del pueblo" sub="Viajar por el reino" style={placeBtn} onPress={() => { setPlace('puerta'); say(''); }} />
-            <Btn label="Galería" sub="Personajes, enemigos y lugares que habéis conocido" style={placeBtn} onPress={() => { setPlace('galeria'); say(''); }} />
+            <Btn label="Galería" sub="Personajes, bestiario, lugares y tesoros que habéis conocido" style={placeBtn} onPress={() => { setPlace('galeria'); say(''); }} />
             </View>
             <View style={st.partyRow}>
               {g.party.map(c => <View key={c.id} style={{ margin: 2 }}><Card info={charInfo(c)} width={70} dim={c.dead} onPress={() => setSheet(c.id)} /></View>)}

@@ -4,11 +4,16 @@ import { IMG, ImgKey } from '../assets';
 import { C, F } from '../theme';
 import { Btn, Crop, Panel } from '../ui/kit';
 import { ADV_LIST, AdvId, TOWNS, TownId, advOf } from '../engine/aventuras';
-import { MONSTERS } from '../data/srd';
+import { ITEMS, MONSTERS } from '../data/srd';
 import type { Game } from '../engine/game';
 import { useEscritorio } from '../ui/escritorio';
 
-interface Pic { img: ImgKey; name: string; known: boolean; hint?: string }
+interface Pic { img: ImgKey; name: string; known: boolean; hint?: string; /** Ficha corta del bestiario o del tesoro. */ info?: string }
+
+/** Bestiario (2026-11-27): la ficha corta de una criatura ya vista. */
+const ficha = (id: string) => { const m = MONSTERS[id]; return `CA ${m.ac} · ${m.hp} PG${m.attacks.length ? ` · ${m.attacks.map(a => a.name).join(', ')}` : ''}`; };
+/** Tesoros: objetos mágicos de la aventura (los que tienen bonificador, cargas o son maravillosos). */
+const magic = (id: string) => { const d = ITEMS[id]; return !!d && (d.kind === 'wondrous' || d.kind === 'wand' || !!d.weapon?.bonus); };
 
 /** Pista bajo la interrogación de un personaje sin conocer: qué papel tiene, sin decir su nombre. */
 const hintOf = (id: string, img: string) => (['orvane', 'corazon', 'dragon'].includes(id) ? 'Jefe' : img.startsWith('ally_') ? 'Aliado' : 'Personaje');
@@ -30,7 +35,7 @@ function picsOf(g: Game, adv: AdvId): { title: string; pics: Pic[] }[] {
       if (prev) { prev.known = prev.known || fought; continue; }
       if (seenFoe.has(m.img)) continue;
       seenFoe.add(m.img);
-      foes.push({ img: m.img, name: m.name, known: fought });
+      foes.push({ img: m.img, name: m.name, known: fought, info: ficha(e.srd_creature) });
     }
   }
   const places: Pic[] = A.data.zones.map(z => ({ img: A.art[z.id].bg, name: z.name, known: !!g.saved?.[z.id] || g.zone === z.id || !!g.stats?.[z.id] }));
@@ -42,7 +47,17 @@ function picsOf(g: Game, adv: AdvId): { title: string; pics: Pic[] }[] {
     const label: Record<string, string> = { menu: T.name, tienda: `Tienda de ${T.name}`, templo: `Templo de ${T.name}`, posada: `Posada de ${T.name}`, puerta: `Puerta de ${T.name}` };
     places.unshift(...Object.entries(T.bg).map(([k, img]) => ({ img: img as ImgKey, name: label[k] ?? T.name, known: been })));
   }
-  return [{ title: 'Personajes', pics: chars }, { title: 'Enemigos', pics: foes }, { title: 'Lugares', pics: places }];
+  // Tesoros de la aventura: se conocen si alguien los lleva, están en el baúl o se vendieron.
+  const ids = new Set<string>();
+  const walk = (o: unknown): void => {
+    if (Array.isArray(o)) return o.forEach(walk);
+    if (!o || typeof o !== 'object') return;
+    for (const v of Object.values(o)) { if (typeof v === 'string' && magic(v)) ids.add(v); else walk(v); }
+  };
+  walk(A.data.zones);
+  const own = new Set([...g.party, ...(g.bench ?? [])].flatMap(c => c.items.map(i => i.id)).concat((g.chest ?? []).map(i => i.id), Object.values(g.sold ?? {}).flat()));
+  const treasures: Pic[] = [...ids].map(id => ({ img: ITEMS[id].img, name: ITEMS[id].name, known: own.has(id), hint: 'Tesoro', info: ITEMS[id].desc }));
+  return [{ title: 'Personajes', pics: chars }, { title: 'Enemigos', pics: foes }, { title: 'Lugares', pics: places }, { title: 'Tesoros', pics: treasures }];
 }
 
 /** Galería del pueblo: miniaturas por aventura y categoría; tocar una conocida la abre a pantalla completa (deslizable). */
@@ -90,8 +105,9 @@ export function Galeria({ g }: { g: Game }) {
               contentOffset={{ x: open.i * width, y: 0 }}>
               {open.list.map(p => (
                 <Pressable key={p.img} onPress={() => setOpen(undefined)} style={{ width, height, alignItems: 'center', justifyContent: 'center' }}>
-                  <Image source={IMG[p.img]} style={{ width, height: height * 0.82 }} resizeMode="contain" />
+                  <Image source={IMG[p.img]} style={{ width, height: height * (p.info ? 0.7 : 0.82) }} resizeMode="contain" />
                   <Text style={st.fullName}>{p.name}</Text>
+                  {p.info ? <Text style={st.fullInfo}>{p.info}</Text> : null}
                 </Pressable>
               ))}
             </ScrollView>
@@ -116,5 +132,6 @@ const st = StyleSheet.create({
   hint: { fontFamily: F.italic, color: C.textDim, fontSize: 13, marginTop: 2 },
   full: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)' },
   fullName: { fontFamily: F.titleBold, color: C.goldHi, fontSize: 20, marginTop: 8, textAlign: 'center' },
+  fullInfo: { color: C.text, fontFamily: F.rules, fontSize: 13, textAlign: 'center', paddingHorizontal: 24, marginTop: 4 },
   close: { position: 'absolute', top: 40, right: 12 },
 });
