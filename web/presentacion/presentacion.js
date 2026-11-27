@@ -9,7 +9,7 @@ if (portada && barra && final && 'IntersectionObserver' in window) {
   const actualizar = () => {
     barra.hidden = !movil.matches || portadaVisible || finalVisible;
   };
-  const observador = new IntersectionObserver(entradas => {
+  const observador = new window.IntersectionObserver(entradas => {
     entradas.forEach(entrada => {
       if (entrada.target === portada) portadaVisible = entrada.isIntersecting;
       if (entrada.target === final) finalVisible = entrada.isIntersecting;
@@ -21,14 +21,17 @@ if (portada && barra && final && 'IntersectionObserver' in window) {
   movil.addEventListener('change', actualizar);
 }
 
-// Los contenidos nunca se ocultan: el efecto solo se aplica al entrar en pantalla.
+// Cada bloque se oculta solo cuando este script lo vigila y aparece al entrar en pantalla (sin JavaScript se ve todo).
 if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const revelar = new IntersectionObserver(entradas => {
+  const revelar = new window.IntersectionObserver(entradas => {
     entradas.forEach(entrada => {
       if (!entrada.isIntersecting) return;
-      entrada.target.classList.add('revelado');
+      entrada.target.classList.replace('pendiente', 'revelado');
       revelar.unobserve(entrada.target);
     });
   }, { threshold: 0.12 });
-  document.querySelectorAll('.bloque > h2, .tira, .escritorio figure, .carta, .accesos').forEach(elemento => revelar.observe(elemento));
+  document.querySelectorAll('.bloque > h2, .tira, .escritorio figure, .carta, .accesos').forEach(elemento => {
+    elemento.classList.add('pendiente');
+    revelar.observe(elemento);
+  });
 }
