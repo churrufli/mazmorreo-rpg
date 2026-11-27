@@ -23,6 +23,9 @@ export const getZoom = () => { const v = Number(get('opt:zoom')); return v >= 0.
 /** Web apaisada y ancha: el mapa empieza más ampliado (mismo criterio que useEscritorio). */
 const escritorio = () => typeof window !== 'undefined' && window.innerWidth > window.innerHeight && window.innerWidth >= 900;
 export const setZoom = (v: number) => set('opt:zoom', String(v));
+/** Animaciones rápidas: apagado por defecto. */
+export const getRapido = () => get('opt:rapido') === 'on';
+export const setRapido = (on: boolean) => set('opt:rapido', on ? 'on' : 'off');
 export const getDev = () => get('opt:dev') === 'on';
 export const setDev = (on: boolean) => set('opt:dev', on ? 'on' : 'off');
 export type DevOpt = 'mapa' | 'salto' | 'superar' | 'escenas' | 'ganar' | 'oro' | 'viajar' | 'nivel' | 'cero';

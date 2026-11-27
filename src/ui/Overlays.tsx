@@ -1,3 +1,4 @@
+import { pace } from './ritmos';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
 import Svg, { Circle, Line, Polygon, Text as SvgText } from 'react-native-svg';
@@ -136,7 +137,7 @@ function useFlicker(value: number, faces: number, ms: number, key: unknown) {
 export function MiniDie({ value, delay = 0, size = 30, color = C.goldHi, faces = 20, plain }: { value: number; delay?: number; size?: number; color?: string; faces?: number; plain?: boolean }) {
   const spin = useRef(new Animated.Value(0)).current;
   const [shown, setShown] = useState<number>(1 + Math.floor(Math.random() * faces));
-  const ms = faces === 6 ? 750 : 600;
+  const ms = pace(faces === 6 ? 750 : 600);
   useEffect(() => {
     dado(delay);
     const iv = setInterval(() => setShown(1 + Math.floor(Math.random() * faces)), 70);
@@ -154,10 +155,10 @@ export function MiniDie({ value, delay = 0, size = 30, color = C.goldHi, faces =
 /** Dado pequeño que gira y deja ver una tirada contra una CD. */
 function RollBadge({ r }: { r: ShownRoll }) {
   const spin = useRef(new Animated.Value(0)).current;
-  useEffect(() => { dado(); Animated.timing(spin, { toValue: 1, duration: 550, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(); }, [spin]);
-  const face = useFlicker(r.d20, 20, 550, r);
+  useEffect(() => { dado(); Animated.timing(spin, { toValue: 1, duration: pace(550), easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(); }, [spin]);
+  const face = useFlicker(r.d20, 20, pace(550), r);
   const [rolling, setRolling] = useState(true);
-  useEffect(() => { const t = setTimeout(() => setRolling(false), 550); return () => clearTimeout(t); }, [r]);
+  useEffect(() => { const t = setTimeout(() => setRolling(false), pace(550)); return () => clearTimeout(t); }, [r]);
   const col = dieColor(r.d20, r.ok, rolling);
   const txt = dieColor(r.d20, r.ok);
   const total = r.d20 + r.bonus;
@@ -432,7 +433,7 @@ const calcOf = (r: Roll) => {
 /** Dado de veinte caras animado para las tiradas importantes. */
 /** Lo que tarda en irse de la pantalla una tirada (giro, pausa y fundido). */
 export { revealMs } from './ritmos';
-export const rollMs = (r: Roll) => (r.enemy ? 320 : 500) + (r.enemy ? 900 : 650) + (r.dice ? 700 : 0) + 250;
+export const rollMs = (r: Roll) => pace((r.enemy ? 320 : 500) + (r.enemy ? 900 : 650) + (r.dice ? 700 : 0) + 250);
 
 export function D20({ roll }: { roll?: Roll }) {
   const spin = useRef(new Animated.Value(0)).current;
@@ -444,17 +445,18 @@ export function D20({ roll }: { roll?: Roll }) {
     if (roll.d20) { dado(); if (roll.adv) dado(60); }
     spin.setValue(0);
     fade.setValue(1);
-    const hold = (roll.enemy ? 900 : 650) + (roll.dice ? 700 : 0);
+    const hold = pace((roll.enemy ? 900 : 650) + (roll.dice ? 700 : 0));
+    const spinMs = pace(roll.enemy ? 320 : 500);
     Animated.sequence([
-      Animated.timing(spin, { toValue: 1, duration: roll.enemy ? 320 : 500, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+      Animated.timing(spin, { toValue: 1, duration: spinMs, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
       Animated.delay(hold),
-      Animated.timing(fade, { toValue: 0, duration: 250, useNativeDriver: true }),
+      Animated.timing(fade, { toValue: 0, duration: pace(250), useNativeDriver: true }),
     ]).start();
     // En Android el fundido a veces no llega a aplicarse: se quita el dado igualmente al acabar.
-    const t = setTimeout(() => setShown(undefined), (roll.enemy ? 320 : 500) + hold + 400);
+    const t = setTimeout(() => setShown(undefined), spinMs + hold + pace(400));
     return () => clearTimeout(t);
   }, [roll?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-  const ms = roll?.enemy ? 320 : 500;
+  const ms = pace(roll?.enemy ? 320 : 500);
   const face = useFlicker(roll?.d20 ?? 1, 20, ms, roll?.id);
   const [rolling, setRolling] = useState(true);
   useEffect(() => { setRolling(true); const t = setTimeout(() => setRolling(false), ms); return () => clearTimeout(t); }, [roll?.id]); // eslint-disable-line react-hooks/exhaustive-deps

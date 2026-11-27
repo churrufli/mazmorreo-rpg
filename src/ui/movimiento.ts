@@ -2,7 +2,10 @@
 // Todo lo que sea puramente decorativo pregunta aquí si debe verse y con qué intensidad.
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Easing } from 'react-native';
-import { getFxMode, setFxMode } from '../storage';
+import { getFxMode, getRapido, setFxMode } from '../storage';
+import { setRapido } from './ritmos';
+
+setRapido(getRapido());
 
 /** Duraciones en milisegundos. Cortas a propósito: ningún efecto alarga un turno. */
 export const DUR = {

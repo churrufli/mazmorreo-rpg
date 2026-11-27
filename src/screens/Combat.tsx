@@ -1,3 +1,4 @@
+import { pace } from '../ui/ritmos';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useEscritorio } from '../ui/escritorio';
@@ -203,7 +204,7 @@ export function Combat() {
     if (!auto || !ready || paused) return;
     // Ritmo ágil (Ajustes): los enemigos no esperan a que se vaya el dado, solo a que se lea.
     const fast = !getFlag('pausado');
-    const t = setTimeout(enemyStep, fast ? Math.max(Math.min(rollLeft(), 700), me.side === 'enemy' ? 650 : 400) : Math.max(rollLeft(), me.side === 'enemy' ? 1400 : 700));
+    const t = setTimeout(enemyStep, fast ? Math.max(Math.min(rollLeft(), pace(700)), pace(me.side === 'enemy' ? 650 : 400)) : Math.max(rollLeft(), pace(me.side === 'enemy' ? 1400 : 700)));
     return () => clearTimeout(t);
   }, [auto, ready, paused, cb, enemyStep, me.side]);
 
@@ -213,7 +214,7 @@ export function Combat() {
     if (!cb.result) { setEndShown(false); setEndBanner(undefined); return; }
     const delay = rollLeft();
     if (cb.endLine) setEndBanner({ text: cb.endLine, delay });
-    const t = setTimeout(() => setEndShown(true), delay + (cb.endLine ? END_MS : 300));
+    const t = setTimeout(() => setEndShown(true), delay + pace(cb.endLine ? END_MS : 300));
     return () => clearTimeout(t);
   }, [cb.result]); // eslint-disable-line react-hooks/exhaustive-deps
   // La música de victoria o derrota empieza con el cuadro, no con el golpe final.
@@ -245,7 +246,7 @@ export function Combat() {
   const idle = ready && !paused && !rerollAsk && !auto && !cb.result && !sel && !tip && !askFlee && !hasUseful(g, cb) && (!rowAct || !!rowAct.off);
   useEffect(() => {
     if (!idle) return;
-    const t = setTimeout(endTurn, 1100);
+    const t = setTimeout(endTurn, pace(1100));
     return () => clearTimeout(t);
   }, [idle, cb, endTurn]);
   const targets = pending ? targetsFor(cb, pending).map(u => u.key) : [];

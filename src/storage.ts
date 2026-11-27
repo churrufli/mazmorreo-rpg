@@ -53,5 +53,8 @@ export const seenAction = (k: string) => kv.getString(`seen:${k}`) === '1';
 export const markAction = (k: string) => kv.set(`seen:${k}`, '1');
 
 /** Efectos visuales: completos, reducidos o desactivados. Sin valor guardado, se sigue la preferencia del sistema. */
+/** Animaciones rápidas: apagado por defecto. */
+export const getRapido = () => kv.getString('opt:rapido') === 'on';
+export const setRapido = (on: boolean) => kv.set('opt:rapido', on ? 'on' : 'off');
 export const getFxMode = () => kv.getString('opt:efectos') ?? undefined;
 export const setFxMode = (v: string) => kv.set('opt:efectos', v);
