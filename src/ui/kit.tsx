@@ -4,6 +4,8 @@ import Svg, { Defs, LinearGradient, Path, RadialGradient, Stop } from 'react-nat
 import { C, F } from '../theme';
 import { IMG, ImgKey } from '../assets';
 import { FACE } from '../data/caras';
+import { MONSTERS } from '../data/srd';
+import { hasPortraitFrame } from '../data/portraitFrames';
 import { buttonLabelLayout } from './buttonLabel';
 import { sfx } from '../sonido';
 import { DUR, EASE, fxOn } from './movimiento';
@@ -28,8 +30,9 @@ export function Bg({ src, dim = 0.35, children, style, full, wash }: { src: Imag
         {wash ? <Image source={src} resizeMode="stretch" blurRadius={24} style={{ position: 'absolute', left: 0, top: 0, width, height }} /> : null}
         <Image source={IMG.grano} resizeMode="repeat" style={[StyleSheet.absoluteFill, wash && { opacity: 0.25 }]} />
         {wash ? <View style={[StyleSheet.absoluteFill, { backgroundColor: `rgba(0,0,0,${WASH})` }]} /> : null}
-        {/* Si no cabe en alto, se recorta solo por abajo: la parte de arriba (caras, cabezas) siempre se ve (el autor 2026-11-25). */}
-        <Image source={src} style={[{ position: 'absolute', left: (width - iw) / 2, top: Math.max(0, (height - ih) / 2), width: iw, height: ih }, wash && WASH_MASK]} resizeMode="cover" />
+        {/* Si no cabe en alto: con personas o criaturas se recorta solo por abajo, para que se vean las caras (el autor 2026-11-25);
+            los paisajes y objetos se centran, recortando lo mismo arriba y abajo (el autor 2026-11-27). */}
+        <Image source={src} style={[{ position: 'absolute', left: (width - iw) / 2, top: figure(src) ? Math.max(0, (height - ih) / 2) : (height - ih) / 2, width: iw, height: ih }, wash && WASH_MASK]} resizeMode="cover" />
         {wash ? null : <Svg width={width} height={height} style={StyleSheet.absoluteFill} pointerEvents="none">
           <Defs>
             <LinearGradient id={`l${gid}`} x1="0" y1="0" x2="1" y2="0"><Stop offset="0" stopColor={BG_EDGE} stopOpacity={1} /><Stop offset="1" stopColor={BG_EDGE} stopOpacity={0} /></LinearGradient>
@@ -51,6 +54,16 @@ export function Bg({ src, dim = 0.35, children, style, full, wash }: { src: Imag
       {children}
     </View>
   );
+}
+/** Escenas y finales sin cara medida en los que sale gente o una criatura. */
+const FIGURE_SCENES: string[] = ['escena_baltoplat_atada', 'escena_basilisco_encadenado', 'escena_saqueador_tela', 'victoria_hondaroca', 'victoria_corazon', 'victoria_montana'];
+const MONSTER_IMGS = new Set<string>(Object.values(MONSTERS).map(m => m.img));
+let KEYS: Map<unknown, string> | undefined;
+/** Si una ilustración muestra a una persona o criatura (héroes, aliados, enemigos y escenas con alguien): esas se anclan arriba. */
+export function figure(src: ImageSourcePropType): boolean {
+  KEYS ??= new Map(Object.entries(IMG).map(([k, v]) => [v, k]));
+  const key = KEYS.get(src);
+  return !!key && (hasPortraitFrame(key as ImgKey) || MONSTER_IMGS.has(key) || FIGURE_SCENES.includes(key));
 }
 /** Ampliación máxima de los fondos en escritorio, color al que se funden y proporción si aún no se conoce. */
 const BG_ZOOM = 1.6;
