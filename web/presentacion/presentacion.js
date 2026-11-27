@@ -9,7 +9,7 @@ if (portada && barra && final && 'IntersectionObserver' in window) {
   const actualizar = () => {
     barra.hidden = !movil.matches || portadaVisible || finalVisible;
   };
-  const observador = new IntersectionObserver(entradas => {
+  const observador = new window.IntersectionObserver(entradas => {
     entradas.forEach(entrada => {
       if (entrada.target === portada) portadaVisible = entrada.isIntersecting;
       if (entrada.target === final) finalVisible = entrada.isIntersecting;
@@ -23,7 +23,7 @@ if (portada && barra && final && 'IntersectionObserver' in window) {
 
 // Cada bloque se oculta solo cuando este script lo vigila y aparece al entrar en pantalla (sin JavaScript se ve todo).
 if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const revelar = new IntersectionObserver(entradas => {
+  const revelar = new window.IntersectionObserver(entradas => {
     entradas.forEach(entrada => {
       if (!entrada.isIntersecting) return;
       entrada.target.classList.replace('pendiente', 'revelado');
