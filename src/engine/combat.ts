@@ -183,6 +183,11 @@ export interface Combat {
   endLine?: string;
   /** PX extra (arbustos que aparecen en el combate del Corazón Hueco). */
   bonusXp?: number;
+  /**
+   * Moral del grupo enemigo (0 a 3), solo en grupos con un líder que no sean no muertos, cienos, construcciones ni jefes.
+   * Sube cuando cae el líder, cuando uno huye o con un crítico del grupo. A la tercera, los malheridos huyen.
+   */
+  morale?: number;
   /** Ataque fallado que se puede repetir con Inspiración heroica (decide el jugador). */
   reroll?: { a: string; t: string; o: AtkOpts; adv: number; total: number };
 }
@@ -334,6 +339,7 @@ export function applyDamage(g: Game, cb: Combat, target: Unit, amount: number, t
     if (!amount) return;
   }
   const before = target.hp;
+  if (crit && target.side === 'enemy' && from.side === 'party') moraleHit(cb, 'un golpe crítico');
   target.hp = Math.max(0, target.hp - amount);
   say(cb, `${target.name} recibe ${amount} de daño (${type}).`, 'dmg');
   if (isBoss(target) && from.side === 'party') target.dmgBy = { ...target.dmgBy, [from.key]: (target.dmgBy?.[from.key] ?? 0) + amount };
@@ -422,6 +428,7 @@ function kill(cb: Combat, u: Unit) {
   endConcentration(cb, u);
   u.dead = true;
   u.hp = 0;
+  if (u.side === 'enemy' && isLeader(u)) moraleHit(cb, `ha caído ${u.name}`);
   say(cb, u.side === 'enemy' ? `${u.name} cae derrotado.` : `${u.name} ha muerto.`, 'big');
   // Objetivo «primero»: se decide con el primer enemigo que cae.
   const first = goalOpen(cb, 'first');
@@ -593,6 +600,20 @@ function watchShot(g: Game, cb: Combat, foe: Unit, t: Unit) {
   const s = weaponStat(c, bow.id), wd = ITEMS[bow.id].weapon!;
   say(cb, `${w.name} vigilaba a ${t.name} y dispara a ${foe.name}.`, 'big');
   attack(g, cb, w, foe, { name: ITEMS[bow.id].name, toHit: s.toHit, dice: wd.dice, bonus: s.dmgBonus, type: wd.type, ranged: true });
+}
+
+/** Quién tiene moral: goblins, sectarios y bestias de carne y hueso (no cienos ni construcciones). */
+const moraleFoe = (x: Unit) => !!x.mon && ['goblin', 'cultist', 'beast'].includes(MONSTERS[x.mon].ai) && !MONSTERS[x.mon].noSleep && !MONSTERS[x.mon].knot;
+/** La moral del grupo enemigo baja un paso; a la tercera, los que están por debajo de la mitad de sus PG huyen. */
+function moraleHit(cb: Combat, why: string) {
+  if (cb.morale === undefined || cb.morale >= 3) return;
+  cb.morale++;
+  say(cb, `La moral enemiga flaquea (${cb.morale}/3): ${why}.`, 'info');
+  if (cb.morale < 3) return;
+  const scared = cb.units.filter(x => x.side === 'enemy' && conscious(x) && !x.grappled && moraleFoe(x) && x.hp < x.maxHp / 2);
+  for (const x of scared) { x.fled = true; x.plan = undefined; say(cb, `${x.name} pierde el valor y huye.`, 'big'); }
+  if (scared.length && goalOpen(cb, 'noflee')) goalDone(cb, false);
+  if (!scared.length) say(cb, 'Los enemigos dudan, pero ninguno está tan herido como para huir.', 'info');
 }
 
 function heal(cb: Combat, u: Unit, amount: number) {
@@ -808,6 +829,8 @@ export function startCombat(g: Game, encounterId: string): Combat {
     say(cb, '¡Los habéis sorprendido! Tiran la iniciativa con desventaja.', 'big');
   }
   g.surprise = undefined;
+  if (cb.units.some(x => x.side === 'enemy' && isLeader(x)) && cb.units.filter(x => x.side === 'enemy' && moraleFoe(x)).length >= 2
+    && !cb.units.some(x => x.side === 'enemy' && (isBoss(x) || !moraleFoe(x)))) cb.morale = 0;
   cb.order = [...cb.units].sort((a, b) => b.init - a.init).map(u => u.key);
   say(cb, `¡Combate! Iniciativa: ${cb.order.map(k => cb.units.find(u => u.key === k)!.name).join(', ')}.`, 'info');
   startTurn(g, cb);
@@ -1680,6 +1703,7 @@ export function enemyTurn(g: Game, cb: Combat) {
     if (opp) { opportunity(g, cb, opp, u); if (checkEnd(g, cb)) return; if (!conscious(u)) { endTurn(g, cb); return; } }
     u.fled = true;
     u.plan = undefined;
+    moraleHit(cb, `${u.name} huye`);
     say(cb, leaderless ? `${u.name} huye: sin su jefe, no piensa morir aquí.` : `${u.name} huye despavorido.`, 'info');
     if (goalOpen(cb, 'noflee')) goalDone(cb, false);
     if (checkEnd(g, cb)) return;
@@ -1943,6 +1967,7 @@ export function behaviorOf(g: Game, cb: Combat, u: Unit): string[] {
   const first = (k?: string) => cb.units.find(x => x.key === k)?.name.split(' ')[0];
   if (m.knot) return ['Alimenta al Corazón: mientras quede algún nudo, el Corazón se cura y resiste el daño.'];
   if (u.mon === 'Shrieker') return ['No ataca: si chilla, atrae a otra criatura.'];
+  if (cb.morale !== undefined && moraleFoe(u)) out.push(`Moral del grupo: ${cb.morale}/3. A la tercera, los malheridos huyen.`);
   if (u.warn) out.push(u.mon === 'Treant' ? 'Prepara un golpe de raíz contra la retaguardia.'
     : `Prepara ${m.attacks.find(a => a.name === u.warn)?.name ?? u.warn} contra la ${u.mon === DRAGON && u.aim === 'back' ? 'retaguardia' : 'vanguardia'}.`);
   if (u.flying) out.push('En vuelo: solo se le alcanza a distancia o con conjuros.');

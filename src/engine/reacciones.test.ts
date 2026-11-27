@@ -74,3 +74,21 @@ describe('reacciones y acciones nuevas', () => {
     expect(cb.log.some(l => l.t.includes('vigilaba'))).toBe(true);
   });
 });
+
+describe('moral del grupo enemigo', () => {
+  it('a la tercera, los malheridos huyen', () => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    for (const a of ['tiko', 'brunna', 'edmund']) g.party.push(createAlly(a, 5, 6500));
+    enterZone(g, 's3');
+    const cb = startCombat(g, 's3_e02');
+    expect(cb.morale).toBe(0);
+    const hero = cb.units.find(u => u.side === 'party')!;
+    const foes = cb.units.filter(u => u.side === 'enemy');
+    const weak = foes.find(u => u.hp > 2)!;
+    weak.hp = 1;
+    const { applyDamage } = require('./combat');
+    for (let i = 0; i < 3; i++) applyDamage(g, cb, foes.find(u => !u.dead && !u.fled && u !== weak) ?? weak, 0, 'contundente', hero, true);
+    expect(cb.morale).toBe(3);
+    expect(weak.fled || weak.dead).toBe(true);
+  });
+});
