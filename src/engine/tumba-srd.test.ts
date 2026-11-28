@@ -1,7 +1,8 @@
 // Reglas del SRD 5.2.1 en la Tumba (2026-11-27): Dividirse, maldición de la momia y mirada petrificadora.
 import { newGame, Game } from './game';
 import { enterZone } from './dungeon';
-import { applyDamage, Combat, endTurn, enemyTurn, startCombat, Unit } from './combat';
+import { actionsFor, applyDamage, Combat, endTurn, enemyTurn, fearOf, perform, preview, startCombat, Unit } from './combat';
+import { itemOutside } from './dungeon';
 import { longRest, shortRest } from './rules';
 
 function fight(id: string, zone = id.slice(0, 2)): { g: Game; cb: Combat; foe: Unit; hero: Unit } {
@@ -63,5 +64,57 @@ describe('la Tumba con sus reglas', () => {
       }
     }
     expect(stone).toBeGreaterThan(0);
+  });
+
+  it('la mirada espantosa de la momia asusta: desventaja y no se le acerca', () => {
+    let scared = 0, safe = 0;
+    for (let seed = 1; seed <= 20; seed++) {
+      const { g, cb, foe, hero } = fight('s2_e02');
+      g.rng.seed = seed;
+      hero.row = 'back';
+      foe.row = 'front';
+      cb.turn = cb.order.indexOf(foe.key);
+      foe.plan = undefined;
+      enemyTurn(g, cb);
+      if (hero.glareSafe?.includes(foe.key)) safe++;
+      if (!fearOf(cb, hero) || !hero.hp) continue;
+      scared++;
+      cb.turn = cb.order.indexOf(hero.key);
+      cb.moved = cb.acted = cb.bonus = false;
+      expect(actionsFor(g, cb).some(a => a.id === 'row')).toBe(false);
+      const atk = actionsFor(g, cb).find(a => a.id.startsWith('atk:'))!;
+      expect(preview(g, cb, atk, foe)?.why.join(' ')).toContain('asustado');
+    }
+    expect(scared).toBeGreaterThan(0);
+    expect(safe).toBeGreaterThan(0);
+  });
+
+  it('la forma corrosiva del pudin quema a quien le acierta y corroe su arma', () => {
+    const { g, cb, foe, hero } = fight('s2_e06');
+    hero.row = foe.row = 'front';
+    cb.turn = cb.order.indexOf(hero.key);
+    const atk = actionsFor(g, cb).find(a => a.id.startsWith('atk:'))!;
+    let tries = 0;
+    while (!hero.corroded && tries++ < 30) {
+      cb.acted = false;
+      hero.hp = hero.maxHp;
+      perform(g, cb, atk, foe.key);
+    }
+    expect(hero.corroded).toBeDefined();
+    expect(Object.values(hero.corroded!)[0]).toBe(1);
+    expect(cb.log.some(l => l.t.includes('forma corrosiva'))).toBe(true);
+  });
+
+  it('el pepino azul devuelve la carne a quien se volvió piedra', () => {
+    const g = newGame(1, 'Prueba', 'fighter', 'human');
+    const c = g.party[0];
+    c.dead = c.petrified = true;
+    c.hp = 0;
+    c.items.push({ uid: 'pep', id: 'blue_cucumber' } as any);
+    const t = itemOutside(g, c.id, 'pep', c.id);
+    expect(t).toContain('vuelve a la carne');
+    expect(c.dead).toBe(false);
+    expect(c.petrified).toBe(false);
+    expect(c.hp).toBeGreaterThan(0);
   });
 });

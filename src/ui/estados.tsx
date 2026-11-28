@@ -2,11 +2,11 @@ import React from 'react';
 import { Image, View } from 'react-native';
 import { mdiHandBackRight, mdiEye, mdiSkullCrossbones, mdiAlertDecagram, mdiFeather, mdiBottleTonicSkull, mdiCreation, mdiEyeOff, mdiArrowCollapseDown, mdiFire, mdiHandshake, mdiLinkVariant, mdiShieldOff, mdiLock, mdiRunFast, mdiSkull, mdiSleep, mdiStarFourPoints, mdiTarget } from '@mdi/js';
 import { ImgKey, IMG } from '../assets';
-import type { Combat, Unit } from '../engine/combat';
+import { fearOf, type Combat, type Unit } from '../engine/combat';
 import { Icon } from './kit';
 
 /** Estados que se ven en las cartas: cada uno con su esfera de color, su icono y una explicación corta. */
-export type StateKey = 'dodge' | 'bless' | 'asleep' | 'paralyzed' | 'guided' | 'hidden' | 'restrained' | 'burn' | 'poisoned' | 'mark' | 'death' | 'helped' | 'sapped' | 'prone' | 'warn' | 'flying' | 'cursed' | 'stoning' | 'grappled' | 'watch' | 'slowed' | 'reckless' | 'turned';
+export type StateKey = 'dodge' | 'bless' | 'asleep' | 'paralyzed' | 'guided' | 'hidden' | 'restrained' | 'burn' | 'poisoned' | 'mark' | 'death' | 'helped' | 'sapped' | 'prone' | 'warn' | 'flying' | 'cursed' | 'stoning' | 'frightened' | 'corroded' | 'grappled' | 'watch' | 'slowed' | 'reckless' | 'turned';
 
 export const STATES: Record<StateKey, { name: string; orb: ImgKey; icon: string; desc: string }> = {
   dodge: { name: 'Esquiva', orb: 'esfera_dorada', icon: mdiRunFast, desc: 'Los ataques contra él tienen desventaja hasta su siguiente turno.' },
@@ -31,6 +31,8 @@ export const STATES: Record<StateKey, { name: string; orb: ImgKey; icon: string;
   watch: { name: 'Vigila', orb: 'esfera_turquesa', icon: mdiEye, desc: 'Si un enemigo ataca al aliado que vigila, le dispara con su reacción.' },
   cursed: { name: 'Maldito', orb: 'esfera_sombra', icon: mdiSkullCrossbones, desc: 'Maldición de la momia: toda curación se queda en la mitad. El templo del pueblo se la quita.' },
   stoning: { name: 'Volviéndose piedra', orb: 'esfera_piedra', icon: mdiLock, desc: 'Al acabar su turno repite la salvación de Constitución: si la falla, queda petrificado.' },
+  frightened: { name: 'Asustado', orb: 'esfera_sombra', icon: mdiEye, desc: 'Mirada espantosa de la momia: ataca con desventaja y no puede acercarse a ella.' },
+  corroded: { name: 'Arma corroída', orb: 'esfera_verde', icon: mdiShieldOff, desc: 'Forma corrosiva del pudin negro: el arma que le golpea pierde precisión en este combate.' },
   death: { name: 'Muerte', orb: 'esfera_sombra', icon: mdiSkull, desc: 'Caído: tira salvaciones de muerte. Tres éxitos lo estabilizan; tres fallos, muere.' },
 };
 
@@ -52,6 +54,8 @@ export function statesOf(cb: Combat, u: Unit): StateTag[] {
   const marker = cb.units.find(x => x.mark === u.key && !x.dead && !x.fled && x.hp > 0);
   if (marker) add('mark', `Marcado por ${marker.name.split(' ')[0]}`, marker.concentration === 'mark' ? `Mientras ${marker.name.split(' ')[0]} mantenga la concentración.` : undefined);
   if (u.stoning) add('stoning');
+  if (fearOf(cb, u)) add('frightened', undefined, 'Hasta el final del siguiente turno de la momia.');
+  for (const [w, n] of Object.entries(u.corroded ?? {})) add('corroded', `${w} −${n}`, 'Hasta que acabe el combate.');
   if (u.grappled) add('grappled', `Agarrado por ${first(u.grappled) ?? 'alguien'}`);
   if (u.watch) add('watch', `Vigila a ${first(u.watch) ?? 'un aliado'}`);
   if (u.cursed) add('cursed');

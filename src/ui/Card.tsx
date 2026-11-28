@@ -556,8 +556,8 @@ function Sheet({ c, party, onGive, onDrop, onUse, onFlip }: { c: Char; party?: C
           <FichaObjeto id={it.id} owner={c} item={it} />
           {onUse && party && usableOutside(it.id) ? (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 4 }}>
-              {party.filter(p => !p.dead && p.hp < p.maxHp).map(p => (
-                <Btn key={p.id} small primary label={`Curar a ${p.name.split(' ')[0]}`} onPress={() => { onUse(it.uid, p.id); setSel(undefined); }} />
+              {party.filter(p => (!p.dead && p.hp < p.maxHp) || (p.petrified && ITEMS[it.id].unstone)).map(p => (
+                <Btn key={p.id} small primary label={p.petrified ? `Devolver a ${p.name.split(' ')[0]} a la carne` : `Curar a ${p.name.split(' ')[0]}`} onPress={() => { onUse(it.uid, p.id); setSel(undefined); }} />
               ))}
             </View>
           ) : null}

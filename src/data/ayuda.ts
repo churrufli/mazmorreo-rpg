@@ -97,7 +97,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Animaciones rápidas en Ajustes.',
     'Los cuatro jefes avisan de su golpe grande y cambian de táctica a mitad de PG. Lo que hacéis antes en la aventura les quita algo.',
     'Al llegar a un grupo de enemigos podéis acercaros con sigilo (tiran la iniciativa con desventaja), estudiarlos o atacar.',
-    'La Tumba con sus reglas del SRD: el pudin y la gelatina se dividen, la momia maldice (la curación se queda en la mitad hasta pasar por el templo) y el basilisco petrifica.',
+    'La Tumba con sus reglas del SRD: el pudin y la gelatina se dividen, la momia maldice (la curación se queda en la mitad hasta pasar por el templo) y asusta con su mirada, el pudin quema y corroe las armas que le golpean, y el basilisco petrifica (el pepino azul devuelve la carne).',
     'Ataques de oportunidad al salir de la vanguardia, Destrabarse, poner a salvo a un caído, agarrar y vigilar a un aliado.',
     'Moral enemiga en los grupos con jefe, salas angostas, resbaladizas o con humo, y combates largos que atraen a los vecinos.',
     'Objetivos nuevos: romper una pieza antes de tiempo o salvar a alguien indefenso.',

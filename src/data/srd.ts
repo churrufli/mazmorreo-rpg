@@ -179,6 +179,8 @@ export interface ItemDef {
   web?: boolean;
   resistPoison?: boolean;
   curePoison?: boolean;
+  /** Pepino azul: devuelve la carne a quien se ha vuelto piedra (fuera de combate). */
+  unstone?: boolean;
   /** Resistencia al frío: la poción durante el combate; anillo y botas mientras se llevan. */
   resistCold?: boolean;
   /** Poción de resistencia a un tipo de daño durante el combate. */
@@ -269,7 +271,7 @@ export const ITEMS: Record<string, ItemDef> = {
   fang_ring: { name: 'Anillo del colmillo', kind: 'gear', img: 'anillo_colmillo', value: 150, desc: 'Anillo de oro con un colmillo de serpiente que aún gotea. Nadie quiere llevarlo puesto. Tesoro: se puede vender.' },
   dagger_plus1: { name: 'Daga +1', kind: 'weapon', img: 'dagas', value: 300, desc: 'La daga de Baltoplat. Arma mágica sutil: +1 a las tiradas de ataque y daño. 1d4 perforante.', weapon: { dice: '1d4', type: 'perforante', finesse: true, bonus: 1 } },
   steel_mirror: { name: 'Espejo de acero', kind: 'gear', img: 'espejo_acero', value: 5, desc: 'Espejo de mano de acero pulido. Quien lo lleva mira al basilisco por el reflejo: si falla la salvación contra su mirada, la repite.' },
-  blue_cucumber: { name: 'Pepino azul', kind: 'potion', img: 'pepino_azul', value: 50, desc: 'Pepino del huerto de Xiximanter. Fresco y amargo. Comerlo es una acción adicional: recupera 2d4 + 2 PG.', heal: '2d4+2' },
+  blue_cucumber: { name: 'Pepino azul', kind: 'potion', img: 'pepino_azul', value: 50, desc: 'Pepino del huerto de Xiximanter. Fresco y amargo. Comerlo es una acción adicional: recupera 2d4 + 2 PG. Fuera de combate, devuelve la carne a quien se ha vuelto piedra.', heal: '2d4+2', unstone: true },
   stone_egg: { name: 'Huevo de piedra cálido', kind: 'gear', img: 'huevo_piedra', value: 100, desc: 'Huevo de piedra que nunca se enfría. Tesoro: se puede vender.' },
   serpent_crown: { name: 'Corona de los Reyes Serpiente', kind: 'gear', img: 'corona_serpiente', value: 300, desc: 'Corona de oro y escamas del último imperio de los hombres serpiente. Trofeo: se guarda en el baúl de la posada.' },
   heart_fragment: { name: 'Astilla del Corazón', kind: 'gear', img: 'astilla_corazon', value: 150, desc: 'Astilla de madera petrificada del Corazón Hueco. Ya no tiene poder. Trofeo que se guarda en el baúl de la posada.' },
@@ -780,7 +782,6 @@ Object.assign(MONSTERS, {
   },
   // Mirada petrificadora del SRD 5.2.1 (recarga 4–6): salvación de Constitución CD 12 de la vanguardia; quien falla
   // queda apresado y, si vuelve a fallar al acabar su turno, petrificado (hasta que el templo le devuelva a la carne).
-  // Sin implementar del SRD: mirada espantosa de la momia y Forma corrosiva del pudin negro.
   Basilisk: {
     name: 'Basilisco', img: 'basilisco', ac: 15, hp: 52, dexMod: -1, xp: 700, ai: 'beast',
     attacks: [
