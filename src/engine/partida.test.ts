@@ -81,7 +81,8 @@ function fight(g: Game, id: string): Combat {
 
 function play(cls: ClassId, sp: SpeciesId, seed?: number, start = 'z1', xp = 0, feat: FeatId = 'asi', escort?: string) {
   const g = newGame(1, 'Prueba', cls, sp);
-  if (seed !== undefined) g.rng.seed = seed;
+  // La semilla fija también las variantes de enemigos y los sitios especiales del campo: así el bot es reproducible.
+  if (seed !== undefined) { g.rng.seed = seed; g.variant = seed; }
   gainXp(g.party, xp);
   g.party.forEach(c => chooseFeat(c, feat));
   if (escort) {
