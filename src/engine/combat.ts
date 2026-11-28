@@ -123,6 +123,12 @@ export interface Unit {
   petrified?: boolean;
   /** Maldito por la momia: no recupera PG. */
   cursed?: boolean;
+  /** Asustado por la mirada espantosa de esa momia: ataca con desventaja y no se le acerca. */
+  frightened?: string;
+  /** Momias cuya mirada espantosa ya ha resistido: no le vuelve a afectar en este combate. */
+  glareSafe?: string[];
+  /** Forma corrosiva del pudin negro: penalizador a los ataques con cada arma (por nombre) en este combate. */
+  corroded?: Record<string, number>;
   /** Veces que se ha dividido (gelatina ocre y pudin negro: cada mitad es un tamaño menor; las pequeñas ya no se dividen). */
   splits?: number;
   /** Asalto en que ya ha gastado su reacción (ataque de oportunidad o Vigilar). */
@@ -772,6 +778,25 @@ function split(g: Game, cb: Combat, u: Unit) {
   say(cb, `¡${u.name} se divide en dos! Cada mitad tiene ${half} PG.`, 'big');
 }
 
+/**
+ * Mirada espantosa de la momia (SRD 5.2.1), con su ataque múltiple: salvación de Sabiduría CD 11 de alguien a quien vea.
+ * Si falla, queda asustado hasta el final del siguiente turno de la momia; si la supera, ya no le afecta la de esa momia.
+ */
+function dreadGlare(g: Game, cb: Combat, u: Unit) {
+  for (const x of cb.units) if (x.frightened === u.key) x.frightened = undefined;
+  const pool = cb.units.filter(x => x.side === 'party' && conscious(x) && !x.hidden && !x.invisible && !x.glareSafe?.includes(u.key));
+  if (!pool.length) return;
+  const t = pick(g.rng, pool);
+  say(cb, `${u.name} clava en ${t.name} su mirada espantosa.`, 'info');
+  if (saveRoll(g, cb, t, 'wis', 11, 'Sabiduría')) {
+    t.glareSafe = [...(t.glareSafe ?? []), u.key];
+    say(cb, `${t.name} le aguanta la mirada: ya no le asusta esta momia.`, 'info');
+    return;
+  }
+  t.frightened = u.key;
+  say(cb, `${t.name} queda asustado: ataca con desventaja y no puede acercarse a la momia.`, 'big');
+}
+
 /** Al acabar su turno, quien se está volviendo de piedra repite la salvación: si falla, queda petrificado. */
 function stoneSave(g: Game, cb: Combat, u: Unit) {
   if (saveRoll(g, cb, u, 'con', 12, 'Constitución')) { u.stoning = false; say(cb, `${u.name} se sacude la piedra y vuelve a moverse.`, 'info'); return; }
@@ -877,6 +902,7 @@ function advFor(cb: Combat, a: Unit, t: Unit, ranged: boolean): { up: string[]; 
   if (t.restrained) up.push('objetivo apresado');
   if (a.restrained) down.push('apresado');
   if (a.poisoned) down.push('envenenado');
+  if (fearOf(cb, a)) down.push('asustado');
   if (a.hidden) up.push('escondido');
   if (a.invisible) up.push('invisible');
   if (t.invisible) down.push('objetivo invisible');
@@ -893,6 +919,12 @@ function advFor(cb: Combat, a: Unit, t: Unit, ranged: boolean): { up: string[]; 
   if (cb.terrain === 'smoke' && ranged && a.row !== t.row) down.push('humo');
   return { up, down };
 }
+
+/** Momia que le tiene asustado, si sigue en pie. */
+export const fearOf = (cb: Combat, u: Unit) => (u.frightened ? cb.units.find(x => x.key === u.frightened && conscious(x)) : undefined);
+
+/** Penalizador de la forma corrosiva del pudin negro al arma de ese ataque. */
+const rustOf = (a: Unit, name: string) => a.corroded?.[name.replace(' (Mella)', '')] ?? 0;
 
 /** Tirada de ataque completa. Devuelve si impactó. */
 function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
@@ -914,7 +946,8 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   const cover = coverOf(cb, a, t);
   let d20 = rollD20(g, adv, isHalfling(g, a));
   const bless = a.bless || a.heroism ? die(g.rng, 4) : 0;
-  let total = d20 + o.toHit + bless;
+  const toHit = o.toHit - rustOf(a, o.name);
+  let total = d20 + toHit + bless;
   const champ = a.side === 'party' && charOf(g, a).cls === 'fighter' && charOf(g, a).level >= 3 && !o.spell;
   const critOf = (d: number) => d === 20 || (champ && d === 19) || (!o.ranged && (t.paralyzed || t.asleep || t.hp <= 0) && d !== 1);
   let crit = critOf(d20);
@@ -931,14 +964,14 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   const advTxt = (adv > 0 ? ` con ventaja${up.length ? ` (${up.join(', ')})` : ''}` : adv < 0 ? ` con desventaja${down.length ? ` (${down.join(', ')})` : ''}`
     : up.length && down.length ? ` sin ventaja ni desventaja (${up[0]} contra ${down[0]})` : '') + (cover ? ' (media cobertura: +2 CA)' : '');
   if (!hit) {
-    say(cb, `${a.name} usa ${o.name}${advTxt}: ${d20}+${o.toHit + bless} = ${total}. Falla.`, 'miss');
+    say(cb, `${a.name} usa ${o.name}${advTxt}: ${d20}+${toHit + bless} = ${total}. Falla.`, 'miss');
     if (o.mastery === 'graze' && (o.abilDmg ?? 0) > 0) { say(cb, `Rozar: el filo le alcanza igualmente.`, 'info'); applyDamage(g, cb, t, o.abilDmg!, o.type, a); }
     nick(g, cb, a, t, o);
     // Inspiración heroica: el jugador decide si repite el dado (SRD 5.2.1); se ofrece al acabar la acción.
     if (a.side === 'party' && o.rerollAdv === undefined && canInspire(g, charOf(g, a))) cb.reroll = { a: a.key, t: t.key, o, adv, total };
     return false;
   }
-  say(cb, `${a.name} usa ${o.name}${advTxt}: ${d20}+${o.toHit + bless} = ${total}. ${crit ? '¡CRÍTICO!' : 'Impacta.'}`, crit ? 'big' : undefined);
+  say(cb, `${a.name} usa ${o.name}${advTxt}: ${d20}+${toHit + bless} = ${total}. ${crit ? '¡CRÍTICO!' : 'Impacta.'}`, crit ? 'big' : undefined);
   if (a.side === 'party' && !o.spell && !o.ranged && charOf(g, a).cls === 'paladin') cb.smiteHit = { attacker: a.key, target: t.key, crit };
   let dice = roll(g.rng, o.dice, crit);
   // Dote Atacante salvaje: una vez por turno, con un arma se tiran los dados de daño dos veces y se elige el mejor.
@@ -981,9 +1014,27 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
     const t2 = cb.units.find(x => x.side === t.side && x !== t && conscious(x) && x.row === t.row && !x.flying);
     if (t2) { cb.cleaveUsed = true; say(cb, `Hendir: el golpe sigue hasta ${t2.name}.`, 'info'); attack(g, cb, a, t2, { ...o, mastery: undefined, bonus: o.bonus - Math.max(0, o.abilDmg ?? 0) }); }
   }
+  if (t.mon === 'Black Pudding' && !o.ranged && !o.spell) corrode(g, cb, a, t, o);
   nick(g, cb, a, t, o);
   if (a.mon === 'Treant') say(cb, pick(g.rng, B.boss.visions), 'info');
   return true;
+}
+
+/**
+ * Forma corrosiva del pudin negro (SRD 5.2.1): quien le acierta cuerpo a cuerpo recibe 1d8 de ácido, y el arma no mágica
+ * se corroe: −1 acumulativo a los ataques con ella. Aquí dura el combate y se queda en −4 (el arma no llega a romperse).
+ */
+function corrode(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts) {
+  const name = o.name.replace(' (Mella)', '');
+  const w = Object.values(ITEMS).find(i => i.name === name && i.weapon);
+  if (a.side === 'party' && w && !w.weapon!.bonus && rustOf(a, name) < 4) {
+    const n = rustOf(a, name) + 1;
+    a.corroded = { ...a.corroded, [name]: n };
+    say(cb, `El ácido corroe ${name}: −${n} a los ataques con esa arma en este combate.`, 'info');
+  }
+  if (!alive(a)) return;
+  say(cb, `La forma corrosiva de ${t.name} quema a ${a.name}.`, 'info');
+  applyDamage(g, cb, a, roll(g.rng, '1d8'), 'ácido', t);
 }
 
 /** Mella: una vez por turno, la otra arma ligera golpea también (sin sumar la característica al daño). */
@@ -1543,7 +1594,8 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
   if (u.flank) A.push({ id: 'flank', label: 'Volver a la vanguardia', cost: 'move', target: 'none', detail: 'deja el flanco' });
   else {
     if (u.row === 'front' && livePiece(cb)) A.push({ id: 'flank', label: 'Ir al flanco', cost: 'move', target: 'none', detail: `junto a ${livePiece(cb)!.name}` });
-    A.push({ id: 'row', label: u.row === 'front' ? 'Ir atrás' : 'Ir delante', cost: 'move', target: 'none' });
+    // Asustado por una momia de la vanguardia: no puede acercarse a ella.
+    if (u.row === 'front' || fearOf(cb, u)?.row !== 'front') A.push({ id: 'row', label: u.row === 'front' ? 'Ir atrás' : 'Ir delante', cost: 'move', target: 'none' });
   }
   A.push({ id: 'flee', label: 'Huir', cost: 'action', target: 'none' });
   // Quita lo que ya no se puede pagar este turno.
@@ -1624,7 +1676,7 @@ export function preview(g: Game, cb: Combat, a: Action, t: Unit): Preview | unde
   const w = kind === 'atk' ? ITEMS[arg]?.weapon : undefined;
   if (kind === 'atk' && !w) return undefined;
   const ranged = spell || !!w!.ranged;
-  const toHit = kind === 'infernal_bolt' ? infernalAttack(c) : spell ? spellAttack(c) : weaponStat(c, arg).toHit;
+  const toHit = kind === 'infernal_bolt' ? infernalAttack(c) : spell ? spellAttack(c) : weaponStat(c, arg).toHit - rustOf(u, ITEMS[arg].name);
   const { up, down } = advFor(cb, u, t, ranged);
   const adv = up.length && down.length ? 0 : up.length ? 1 : down.length ? -1 : 0;
   const cover = coverOf(cb, u, t);
@@ -2063,6 +2115,7 @@ export function enemyTurn(g: Game, cb: Combat) {
   }
   // Los jefes recargan al acabar su turno, para anunciar el golpe antes (ver bossWarn).
   if (!isBoss(u)) for (const a of m.attacks) if (a.save?.recharge && u.recharge![a.name] === false && die(g.rng, 6) >= a.save.recharge) u.recharge![a.name] = true;
+  if (u.mon === 'Mummy') dreadGlare(g, cb, u);
   // Vharzûl a mitad de PG: alza el vuelo un asalto; al bajar, el aliento está listo.
   if (u.mon === DRAGON && u.flying) {
     u.flying = false;

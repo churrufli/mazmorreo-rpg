@@ -1053,10 +1053,21 @@ export const usableOutside = (id: string) => !!ITEMS[id]?.heal;
 export function itemOutside(g: Game, fromId: string, uid: string, toId: string): string {
   const from = g.party.find(c => c.id === fromId), to = g.party.find(c => c.id === toId);
   const it = from?.items.find(i => i.uid === uid);
-  if (!from || !to || !it || to.dead || !usableOutside(it.id)) return '';
-  const d = ITEMS[it.id];
+  const d = ITEMS[it?.id ?? ''];
+  const stone = !!to?.petrified && !!d?.unstone;
+  if (!from || !to || !it || (to.dead && !stone) || !usableOutside(it.id)) return '';
   it.charges = (it.charges ?? d.charges ?? 1) - 1;
   if (it.charges <= 0) from.items = from.items.filter(i => i.uid !== uid);
+  // Pepino azul: la piedra se agrieta y vuelve a la carne con lo que cure el pepino.
+  if (stone) {
+    to.dead = to.petrified = false;
+    to.hp = Math.max(1, Math.min(to.maxHp, roll(g.rng, d.heal!)));
+    to.stable = false;
+    to.deathS = to.deathF = 0;
+    const back = `${from.name} da a comer ${d.name} a ${to.name}: la piedra se agrieta y vuelve a la carne con ${to.hp} PG.`;
+    g.log.push(back);
+    return back;
+  }
   const r = roll(g.rng, d.heal!);
   const n = Math.min(to.maxHp - to.hp, to.cursed ? Math.max(1, Math.floor(r / 2)) : r);
   to.hp += n;
