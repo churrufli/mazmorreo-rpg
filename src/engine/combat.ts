@@ -6,7 +6,7 @@ import { ABIL_NAME, Ability, CLASSES, DmgType, draconic, ITEMS, MONSTERS, Monste
 import B from '../data/corazon.json';
 import { die, pick, rand, roll, tray } from './rng';
 import {
-  Char, abilMod, armorClass, elvenBoots, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft, slotsAt, score,
+  Char, abilMod, armorClass, elvenBoots, saveBonus, spellAttack, spellDc, weaponStat, weapons, newItem, MAX_ITEMS, gainXp, slotsLeft, slotsAt, score, skillBonus,
 } from './rules';
 import { prof } from '../data/srd';
 import type { Game } from './game';
@@ -155,6 +155,8 @@ export interface Unit {
    * La pieza y el enemigo que corre a ella solo se alcanzan cuerpo a cuerpo desde el flanco; a distancia, siempre.
    */
   flank?: boolean;
+  /** En la espalda (2026-11-28): enemigo que ha llegado por detrás del grupo y lucha cuerpo a cuerpo con su retaguardia. */
+  rear?: boolean;
 }
 
 export type FxKind = 'hit' | 'magic' | 'crit' | 'heal';
@@ -228,9 +230,93 @@ export interface Combat {
   runner?: string;
   fired?: boolean;
   caged?: Unit[];
+  /**
+   * Sitio especial del campo (2026-11-28), al azar en 1 de cada 3 combates normales con 3 personajes o más:
+   * la cornisa (tiradores en alto, en la columna del lateral) o la espalda (enemigos que llegan por detrás en el asalto 2).
+   */
+  site?: Site;
+  /** Los que llegarán por la espalda en el asalto 2. */
+  behind?: Unit[];
 }
 
 const MAX_ROW = 3;
+export type Site = 'ledge' | 'rear';
+/** Frases de cada aventura para avisar del sitio especial al empezar el combate. */
+const SITE_LINE: Record<string, Record<Site, string>> = {
+  hondaroca: { ledge: 'Hay tiradores en lo alto de la galería.', rear: 'Oís pasos en un túnel a vuestra espalda.' },
+  corazon_hueco: { ledge: 'Hay tiradores en lo alto de un talud.', rear: 'Algo se mueve en la maleza, a vuestra espalda.' },
+  montana: { ledge: 'Hay tiradores en un saliente de roca.', rear: 'Oís crujir la nieve a vuestra espalda.' },
+  tumba: { ledge: 'Hay tiradores en una galería sobre la sala.', rear: 'Oís pasos en un pasadizo a vuestra espalda.' },
+};
+export const SITE: Record<Site, { name: string; desc: string }> = {
+  ledge: { name: 'Cornisa', desc: 'Desde arriba disparan a cualquiera y tienen media cobertura (+2 CA). Cuerpo a cuerpo solo se les alcanza trepando (Atletismo CD 12).' },
+  rear: { name: 'Espalda', desc: 'En el próximo asalto llegarán enemigos por detrás y lucharán cuerpo a cuerpo con vuestra retaguardia.' },
+};
+/** Zona de una unidad en el campo: su fila, la cornisa o la espalda. */
+type Zone = Row | 'ledge' | 'rear';
+const zoneOf = (cb: Combat, u: Unit): Zone => (u.rear ? 'rear' : u.flank && cb.site === 'ledge' ? 'ledge' : u.row);
+const sameZone = (cb: Combat, a: Unit, b: Unit) => zoneOf(cb, a) === zoneOf(cb, b);
+const ZONE_NAME: Record<Zone, string> = { front: 'la fila delantera', back: 'la fila trasera', ledge: 'la cornisa', rear: 'la espalda' };
+/** Atletismo para trepar a la cornisa. */
+const LEDGE_DC = 12;
+/** Tiradores que siguen en la cornisa. */
+const ledgeFoes = (cb: Combat) => (cb.site === 'ledge' ? cb.units.filter(u => u.side === 'enemy' && u.flank && conscious(u)) : []);
+/** Tiradores: atacan a distancia, sin conjuros de área ni alcance, y no son jefes ni líderes de su grupo. */
+const shooter = (u: Unit) => { const m = MONSTERS[u.mon!]; return !!m && m.ai !== 'caster' && !m.reach && !m.piece && !isBoss(u) && !isLeader(u) && m.attacks.some(a => a.ranged) && !m.attacks.some(a => a.save); };
+/** Cuerpo a cuerpo puro (los que llegan por la espalda). */
+const brawler = (u: Unit) => { const m = MONSTERS[u.mon!]; return !!m && m.ai !== 'caster' && !m.reach && !m.piece && !m.knot && !isBoss(u) && u.mon !== 'Shrieker' && m.attacks.some(a => !a.ranged && !a.save) && !m.attacks.some(a => a.ranged || a.save); };
+
+/**
+ * Sitio especial al azar (el autor 2026-11-28): 1 de cada 3 combates normales, con 3 personajes o más, sin objetivo
+ * (ni pieza), sin jefe y sin ser el combate de una escena. Siempre el mismo para ese encuentro en esa partida.
+ */
+function rollSite(g: Game, cb: Combat, ids: string[]): Site | undefined {
+  if (cb.goal || cb.units.filter(u => u.side === 'party').length < 3) return undefined;
+  if (ids.includes(bossEncounter(g.zone)) || Object.values(g.scenes ?? {}).some(s => s.fight && ids.includes(s.fight))) return undefined;
+  const foes = cb.units.filter(u => u.side === 'enemy');
+  if (foes.length < 2 || foes.some(isBoss)) return undefined;
+  let h = (g.variant ?? 0) | 0;
+  for (const ch of `sitio:${ids[0]}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  h >>>= 0;
+  if (h % 3) return undefined;
+  const can = (['ledge', 'rear'] as Site[]).filter(k => foes.some(k === 'ledge' ? shooter : brawler));
+  return can.length ? can[(h >>> 8) % can.length] : undefined;
+}
+
+/** Coloca el sitio: los tiradores suben a la cornisa o los que vendrán por la espalda esperan fuera hasta el asalto 2. */
+function startSite(g: Game, cb: Combat, site: Site) {
+  const foes = cb.units.filter(u => u.side === 'enemy');
+  const n = Math.min(foes.length >= 4 ? 2 : 1, foes.length - 1);
+  // Los enemigos salen del mismo encuentro (no se añaden): así el escalado no cambia.
+  const pick2 = foes.filter(site === 'ledge' ? shooter : brawler).sort((a, b) => (a.row === 'back' ? 0 : 1) - (b.row === 'back' ? 0 : 1)).slice(0, n);
+  cb.site = site;
+  if (site === 'ledge') for (const u of pick2) { u.flank = true; u.row = 'back'; }
+  else {
+    cb.behind = pick2;
+    cb.units = cb.units.filter(x => !pick2.includes(x));
+    cb.order = cb.order.filter(k => !pick2.some(x => x.key === k));
+  }
+  say(cb, `${SITE_LINE[advOf(g.zone)][site]} ${SITE[site].desc}`, 'big');
+}
+
+/** Llegan los de la espalda: al empezar el asalto 2, o antes si ya no queda nadie más en pie. */
+function arriveBehind(g: Game, cb: Combat) {
+  const list = cb.behind;
+  if (!list?.length) return;
+  cb.behind = undefined;
+  for (const u of list) { u.rear = true; u.row = 'front'; cb.units.push(u); if (!cb.order.includes(u.key)) cb.order.push(u.key); }
+  say(cb, `¡Os atacan por la espalda: ${list.map(u => u.name).join(', ')}!`, 'big');
+  planAll(g, cb);
+}
+
+/** La cornisa ha quedado vacía: quien trepó vuelve a la vanguardia. */
+function ledgeClear(cb: Combat) {
+  if (cb.site !== 'ledge' || ledgeFoes(cb).length) return;
+  for (const u of cb.units.filter(x => x.side === 'party' && x.flank)) {
+    u.flank = false;
+    if (conscious(u)) say(cb, `${u.name} baja de la cornisa y vuelve a la vanguardia.`, 'info');
+  }
+}
 export type Terrain = 'narrow' | 'slippery' | 'smoke';
 export const TERRAIN: Record<Terrain, { name: string; desc: string }> = {
   narrow: { name: 'Angosto', desc: 'La sala es estrecha: solo caben dos por fila, en los dos bandos.' },
@@ -315,18 +401,21 @@ export const conscious = (u: Unit) => alive(u) && u.hp > 0;
 const sideUnits = (cb: Combat, s: Side) => cb.units.filter(u => u.side === s && alive(u));
 
 /** Fila delantera "ocupada": protege a la retaguardia mientras haya alguien en pie. */
-const frontHeld = (cb: Combat, s: Side) => cb.units.some(u => u.side === s && u.row === 'front' && !u.flank && conscious(u));
+const frontHeld = (cb: Combat, s: Side) => cb.units.some(u => u.side === s && u.row === 'front' && !u.flank && !u.rear && conscious(u));
+/** Alguien del grupo en pie en su retaguardia: los de la espalda chocan con él antes de llegar a la vanguardia. */
+const backHeld = (cb: Combat) => cb.units.some(u => u.side === 'party' && u.row === 'back' && conscious(u));
 
 export function validTargets(cb: Combat, attacker: Unit, kind: 'melee' | 'ranged' | 'ally' | 'any'): Unit[] {
   if (kind === 'ally') return cb.units.filter(u => u.side === attacker.side && alive(u));
   const foe: Side = attacker.side === 'party' ? 'enemy' : 'party';
   const foes = sideUnits(cb, foe).filter(u => attacker.side === 'party' ? u.hp > 0 : true);
   if (kind === 'melee') {
-    if (attacker.row !== 'front') return [];
+    // La espalda: desde la retaguardia se alcanza cuerpo a cuerpo a los que han llegado por detrás.
+    if (attacker.row !== 'front') return attacker.side === 'party' ? foes.filter(u => u.rear) : [];
     // El flanco: desde allí solo se alcanza lo que hay en el flanco; desde la vanguardia, todo menos el flanco.
     if (attacker.flank) return foes.filter(u => u.flank);
-    // Vharzûl en vuelo: solo se le alcanza a distancia o con conjuros.
-    const near = foes.filter(u => !u.flying && !u.flank);
+    // Vharzûl en vuelo: solo se le alcanza a distancia o con conjuros. A los de la espalda, solo si la retaguardia está vacía.
+    const near = foes.filter(u => !u.flying && !u.flank && (!u.rear || !backHeld(cb)));
     return frontHeld(cb, foe) ? near.filter(u => u.row === 'front') : near;
   }
   return foes;
@@ -817,7 +906,10 @@ const meleeOf = (u: Unit) => (u.mon ? MONSTERS[u.mon].attacks.find(a => !a.range
 const canReact = (cb: Combat, x: Unit) => conscious(x) && !x.asleep && !x.paralyzed && !x.restrained && x.reacted !== cb.round;
 /** Quién del otro bando, en su vanguardia, puede dar un ataque de oportunidad a quien sale de la vanguardia. */
 function oppFoe(cb: Combat, u: Unit): Unit | undefined {
-  return cb.units.find(x => x.side !== u.side && x.row === 'front' && !x.flank && !x.fled && canReact(cb, x) && (x.side === 'enemy' ? !!meleeOf(x) && !MONSTERS[x.mon!].reach : true));
+  // Con la espalda: quien sale de la retaguardia se aleja de los de detrás, y estos se alejan de la retaguardia.
+  const near = (x: Unit) => (u.side === 'party' && u.row === 'back' ? !!x.rear : u.rear ? x.row === 'back' && !x.flank : x.row === 'front' && !x.flank && !x.rear);
+  if (u.side === 'party' && u.row === 'back' && !cb.units.some(x => x.rear)) return undefined;
+  return cb.units.find(x => x.side !== u.side && near(x) && !x.fled && canReact(cb, x) && (x.side === 'enemy' ? !!meleeOf(x) && !MONSTERS[x.mon!].reach : true));
 }
 /** Arma cuerpo a cuerpo de un personaje, para sus reacciones. */
 const meleeWeapon = (c: Char) => weapons(c).find(w => !ITEMS[w.id].weapon?.ranged);
@@ -891,13 +983,23 @@ interface AtkOpts { name: string; toHit: number; dice: string; bonus: number; ty
 
 /** Un enemigo grande en la vanguardia cubre a su tirador de detrás: media cobertura, +2 a la CA (SRD). */
 const coverOf = (cb: Combat, a: Unit, t: Unit) =>
-  a.side === 'party' && t.side === 'enemy' && t.row === 'back' && !t.flank && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.plan?.guard) ? 2 : 0;
+  a.side === 'party' && t.side === 'enemy' && t.row === 'back' && !t.flank && cb.units.some(x => x.side === 'enemy' && conscious(x) && x.plan?.guard) ? 2
+    // La cornisa: el parapeto da media cobertura (SRD) contra quien no ha trepado.
+    : a.side === 'party' && cb.site === 'ledge' && t.flank && !a.flank ? 2 : 0;
+/** Disparar con un enemigo encima da desventaja (SRD): en la vanguardia, en la cornisa o con los de la espalda. */
+function engaged(cb: Combat, a: Unit, t: Unit): boolean {
+  const up = (f: (x: Unit) => boolean) => cb.units.some(x => x.side !== a.side && conscious(x) && !isPiece(x) && f(x));
+  if (a.flank && cb.site === 'ledge') return up(x => !!x.flank);
+  if (a.side === 'party' && a.row === 'back') return up(x => !!x.rear);
+  if (a.rear) return up(x => x.row === 'back');
+  return a.row === 'front' && frontHeld(cb, t.side) && t.side !== a.side;
+}
 
 /** Motivos de ventaja y de desventaja de un ataque, sin gastar nada: los usan la tirada y la previsión. */
 function advFor(cb: Combat, a: Unit, t: Unit, ranged: boolean): { up: string[]; down: string[] } {
   const up: string[] = [], down: string[] = [];
   if (t.dodge) down.push('esquiva');
-  if (ranged && a.row === 'front' && frontHeld(cb, t.side) && t.side !== a.side) down.push('cuerpo a cuerpo');
+  if (ranged && engaged(cb, a, t)) down.push('cuerpo a cuerpo');
   if (t.guided) up.push('Saeta guía');
   if (t.restrained) up.push('objetivo apresado');
   if (a.restrained) down.push('apresado');
@@ -1011,7 +1113,7 @@ function attack(g: Game, cb: Combat, a: Unit, t: Unit, o: AtkOpts): boolean {
   if (o.mastery && conscious(t)) masteryHit(g, cb, a, t, o.mastery, o.masteryDc ?? 10);
   if (o.mastery === 'cleave' && !cb.cleaveUsed) {
     // Hendir: una vez por turno, el golpe sigue hasta otro enemigo de la misma fila (sin sumar la característica).
-    const t2 = cb.units.find(x => x.side === t.side && x !== t && conscious(x) && x.row === t.row && !x.flying);
+    const t2 = cb.units.find(x => x.side === t.side && x !== t && conscious(x) && sameZone(cb, x, t) && !x.flying);
     if (t2) { cb.cleaveUsed = true; say(cb, `Hendir: el golpe sigue hasta ${t2.name}.`, 'info'); attack(g, cb, a, t2, { ...o, mastery: undefined, bonus: o.bonus - Math.max(0, o.abilDmg ?? 0) }); }
   }
   if (t.mon === 'Black Pudding' && !o.ranged && !o.spell) corrode(g, cb, a, t, o);
@@ -1059,7 +1161,7 @@ function masteryHit(g: Game, cb: Combat, a: Unit, t: Unit, m: Mastery, dc: numbe
     else { t.prone = true; say(cb, `Derribar: ${t.name} cae al suelo (Constitución ${d20}${total - d20 >= 0 ? '+' : ''}${total - d20} = ${total} contra CD ${dc}).`, 'big'); }
   }
   if (m === 'slow' && t.side === 'enemy' && !isBoss(t)) { t.slowed = true; say(cb, `Ralentizar: ${t.name} no podrá cambiar de fila en su próximo turno.`, 'info'); }
-  if (m === 'push' && !huge && t.side === 'enemy' && t.row === 'front' && rowSpace(cb, 'enemy', 'back')) {
+  if (m === 'push' && !huge && t.side === 'enemy' && t.row === 'front' && !t.rear && rowSpace(cb, 'enemy', 'back')) {
     t.row = 'back';
     t.plan = undefined;
     say(cb, `Empujar: ${t.name} sale despedido a la retaguardia.`, 'info');
@@ -1164,6 +1266,8 @@ export function startCombat(g: Game, encounterId: string): Combat {
   const pc = cb.goal?.g.piece;
   if (pc) startPiece(cb, pc);
   if (cb.goal?.g.kind === 'guard') cb.ward = cb.goal.g.ward!.hp;
+  const site = rollSite(g, cb, group.now);
+  if (site) startSite(g, cb, site);
   if (cb.terrain) say(cb, `${TERRAIN[cb.terrain].name}: ${TERRAIN[cb.terrain].desc}`, 'big');
   say(cb, `¡Combate! Iniciativa: ${cb.order.map(k => cb.units.find(u => u.key === k)!.name).join(', ')}.`, 'info');
   startTurn(g, cb);
@@ -1204,7 +1308,7 @@ function addEncounter(g: Game, cb: Combat, id: string, force: boolean): boolean 
       rays: e.srd_creature === 'Orvane' ? (g.goals?.z4_e03 === 'ok' ? 1 : 2) : 0, recharge: {},
     });
   }
-  const count = (r: Row) => cb.units.filter(u => u.side === 'enemy' && alive(u) && u.row === r).length;
+  const count = (r: Row) => cb.units.filter(u => u.side === 'enemy' && alive(u) && u.row === r && !u.rear).length;
   const rowCap = cb.terrain === 'narrow' ? 2 : MAX_ROW;
   // Refuerzos proporcionados al grupo: como mucho 2 enemigos más que personajes (y 6 en total).
   const cap = Math.min(MAX_ROW * 2, cb.units.filter(u => u.side === 'party').length + 2);
@@ -1286,6 +1390,7 @@ export function endTurn(g: Game, cb: Combat) {
 }
 
 function reinforce(g: Game, cb: Combat) {
+  if (cb.round >= 2) arriveBehind(g, cb);
   bossRound(g, cb);
   shriekCall(g, cb);
   // El ruido: al asalto 4 se oyen pasos; al 5 (o tras un estruendo) llega el grupo vecino.
@@ -1313,6 +1418,8 @@ function reinforce(g: Game, cb: Combat) {
 export function checkEnd(g: Game, cb: Combat): boolean {
   if (cb.result) return true;
   goalCheck(cb);
+  ledgeClear(cb);
+  if (!cb.units.some(u => u.side === 'enemy' && conscious(u) && !isPiece(u)) && cb.behind?.length) arriveBehind(g, cb);
   if (!cb.units.some(u => u.side === 'enemy' && conscious(u) && !isPiece(u))) { finish(g, cb, 'win'); return true; }
   if (!cb.units.some(u => u.side === 'party' && conscious(u))) { finish(g, cb, 'lose'); return true; }
   return false;
@@ -1582,7 +1689,7 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
   // Agarrar (SRD 5.2.1, golpe sin armas): el agarrado no cambia de fila ni huye hasta que se suelte.
   A.push({ id: 'grapple', label: 'Agarrar', cost: 'action', target: 'enemy-melee', detail: `FUE o DES CD ${grappleDc(c)}` });
   // Destrabarse: salir de la vanguardia este turno sin ataques de oportunidad.
-  if (u.row === 'front' && oppFoe(cb, u)) A.push({ id: 'disengage', label: 'Destrabarse', cost: 'action', target: 'none', detail: 'cambiar de fila sin ataque de oportunidad' });
+  if (oppFoe(cb, u)) A.push({ id: 'disengage', label: 'Destrabarse', cost: 'action', target: 'none', detail: 'cambiar de fila sin ataque de oportunidad' });
   // Poner a salvo a un caído de la vanguardia: acción y movimiento.
   if (u.row === 'front' && !cb.moved && cb.units.some(x => x.side === 'party' && x !== u && alive(x) && x.hp <= 0 && x.row === 'front'))
     A.push({ id: 'rescue', label: 'Poner a salvo', cost: 'action', target: 'ally-down', detail: 'llevar a un caído a la retaguardia' });
@@ -1590,10 +1697,12 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
   const bow = weapons(c).find(w => ITEMS[w.id].weapon?.ranged);
   if (bow) A.push({ id: `watch:${bow.id}`, label: 'Vigilar', cost: 'action', target: 'ally', detail: 'dispara a quien le ataque' });
   A.push({ id: 'dodge', label: 'Esquivar', cost: 'action', target: 'none' });
-  // El flanco (2026-11-27): desde la vanguardia se va junto a la pieza; desde allí se vuelve.
-  if (u.flank) A.push({ id: 'flank', label: 'Volver a la vanguardia', cost: 'move', target: 'none', detail: 'deja el flanco' });
+  // El flanco (2026-11-27): desde la vanguardia se va junto a la pieza; desde allí se vuelve. La cornisa (2026-11-28): se trepa.
+  const ledge = cb.site === 'ledge' && ledgeFoes(cb).length > 0;
+  if (u.flank) A.push({ id: 'flank', label: ledge ? 'Bajar de la cornisa' : 'Volver a la vanguardia', cost: 'move', target: 'none', detail: ledge ? 'vuelve a la vanguardia' : 'deja el flanco' });
   else {
-    if (u.row === 'front' && livePiece(cb)) A.push({ id: 'flank', label: 'Ir al flanco', cost: 'move', target: 'none', detail: `junto a ${livePiece(cb)!.name}` });
+    if (u.row === 'front' && ledge) A.push({ id: 'flank', label: 'Trepar a la cornisa', cost: 'move', target: 'none', detail: `Atletismo CD ${LEDGE_DC}` });
+    else if (u.row === 'front' && livePiece(cb)) A.push({ id: 'flank', label: 'Ir al flanco', cost: 'move', target: 'none', detail: `junto a ${livePiece(cb)!.name}` });
     // Asustado por una momia de la vanguardia: no puede acercarse a ella.
     if (u.row === 'front' || fearOf(cb, u)?.row !== 'front') A.push({ id: 'row', label: u.row === 'front' ? 'Ir atrás' : 'Ir delante', cost: 'move', target: 'none' });
   }
@@ -1605,7 +1714,7 @@ export function actionsFor(g: Game, cb: Combat): Action[] {
 }
 
 // El grupo cabe entero en una fila (hasta 4); los enemigos, 3 por fila como mucho. En una sala angosta, dos.
-const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r && !u.flank).length < (cb.terrain === 'narrow' ? 2 : s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
+const rowSpace = (cb: Combat, s: Side, r: Row) => cb.units.filter(u => u.side === s && alive(u) && u.row === r && !u.flank && !u.rear).length < (cb.terrain === 'narrow' ? 2 : s === 'enemy' ? MAX_ROW : MAX_ROW + 1);
 /** Suelo resbaladizo: cambiar de fila pide una salvación de Destreza CD 10; quien la falla cae al suelo y no se mueve. */
 function slip(g: Game, cb: Combat, u: Unit): boolean {
   if (cb.terrain !== 'slippery' || saveRoll(g, cb, u, 'dex', 10, 'Destreza')) return false;
@@ -1822,8 +1931,8 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
     case 'web': {
       const it = c.items.find(i => i.uid === arg)!;
       it.charges = (it.charges ?? 1) - 1;
-      say(cb, `${u.name} lanza Telaraña sobre la fila ${t!.row === 'front' ? 'delantera' : 'trasera'}.`, 'info');
-      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && x.row === t!.row))
+      say(cb, `${u.name} lanza Telaraña sobre ${ZONE_NAME[zoneOf(cb, t!)]}.`, 'info');
+      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && sameZone(cb, x, t!)))
         if (!saveRoll(g, cb, e, 'dex', 13, 'Destreza')) { e.restrained = 13; say(cb, `${e.name} queda apresado en la telaraña.`, 'info'); }
       break;
     }
@@ -1869,9 +1978,9 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
     case 'breath': {
       c.racial = (c.racial ?? 1) - 1;
       const type = draconic(c).type;
-      say(cb, `${u.name} exhala su aliento de dragón ${draconic(c).dragon} sobre la fila ${t!.row === 'front' ? 'delantera' : 'trasera'}.`, 'big');
+      say(cb, `${u.name} exhala su aliento de dragón ${draconic(c).dragon} sobre ${ZONE_NAME[zoneOf(cb, t!)]}.`, 'big');
       const dmg = roll(g.rng, c.level >= 5 ? '2d10' : '1d10');
-      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && x.row === t!.row))
+      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && sameZone(cb, x, t!)))
         applyDamage(g, cb, e, saveRoll(g, cb, e, 'dex', speciesDc(c), 'Destreza') ? Math.floor(dmg / 2) : dmg, type, u);
       break;
     }
@@ -1879,9 +1988,9 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
     case 'fireball': {
       if (c.cls === 'warlock') spendSlot(c); else c.slots[2]--;
       const dc = spellDc(c);
-      say(cb, `${u.name} lanza Bola de fuego sobre la fila ${t!.row === 'front' ? 'delantera' : 'trasera'}.`, 'big');
+      say(cb, `${u.name} lanza Bola de fuego sobre ${ZONE_NAME[zoneOf(cb, t!)]}.`, 'big');
       const dmg = roll(g.rng, '8d6');
-      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && x.row === t!.row))
+      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && sameZone(cb, x, t!)))
         applyDamage(g, cb, e, saveRoll(g, cb, e, 'dex', dc, 'Destreza') ? Math.floor(dmg / 2) : dmg, 'fuego', u);
       break;
     }
@@ -1918,15 +2027,15 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       say(cb, `${u.name} lanza Manos ardientes.`, 'info');
       // El brujo la lanza con su espacio de pacto: +1d6 por cada nivel por encima de 1.
       const dmg = roll(g.rng, c.cls === 'warlock' ? `${pactLevel(c) + 2}d6` : '3d6');
-      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && x.row === 'front'))
+      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && zoneOf(cb, x) === 'front'))
         applyDamage(g, cb, e, saveRoll(g, cb, e, 'dex', dc, 'Destreza') ? Math.floor(dmg / 2) : dmg, 'fuego', u);
       break;
     }
     case 'sleep': {
       spendSlot(c);
       const dc = spellDc(c);
-      say(cb, `${u.name} lanza Dormir sobre la fila ${t!.row === 'front' ? 'delantera' : 'trasera'}.`, 'info');
-      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && x.row === t!.row)) {
+      say(cb, `${u.name} lanza Dormir sobre ${ZONE_NAME[zoneOf(cb, t!)]}.`, 'info');
+      for (const e of cb.units.filter(x => x.side === 'enemy' && conscious(x) && sameZone(cb, x, t!))) {
         if (MONSTERS[e.mon!].noSleep) { say(cb, `${e.name} no puede dormir.`, 'miss'); continue; }
         if (!saveRoll(g, cb, e, 'wis', dc, 'Sabiduría')) { e.asleep = true; say(cb, `${e.name} se duerme.`, 'info'); }
       }
@@ -2008,12 +2117,22 @@ export function perform(g: Game, cb: Combat, a: Action, targetKey?: string) {
       }
       for (const x of cb.units) if (x.grappled === u.key) { x.grappled = undefined; say(cb, `${u.name} suelta a ${x.name}.`, 'info'); }
       if (slip(g, cb, u)) break;
+      if (cb.site === 'ledge') {
+        // Trepar: prueba de Atletismo; si falla, se queda abajo (ha gastado el movimiento).
+        const d = die(g.rng, 20), b = skillBonus(c, 'athletics'), ok = d + b >= LEDGE_DC;
+        setRoll(cb, { d20: d, total: d + b, label: `Atletismo (${u.name})`, ok });
+        if (!ok) { say(cb, `${u.name} intenta trepar a la cornisa y resbala (Atletismo ${d + b} contra CD ${LEDGE_DC}).`, 'miss'); break; }
+        u.flank = true;
+        say(cb, `${u.name} trepa a la cornisa (Atletismo ${d + b} contra CD ${LEDGE_DC}): los tiradores le tienen encima.`, 'big');
+        break;
+      }
       u.flank = true;
       say(cb, `${u.name} corre al flanco, junto a ${livePiece(cb)?.name ?? 'la pieza'}.`, 'info');
       break;
     case 'row':
       // Salir de la vanguardia con un enemigo cuerpo a cuerpo delante provoca un ataque de oportunidad (salvo Destrabarse).
-      if (u.row === 'front' && !u.disengaged) {
+      // Con la espalda, salir de la retaguardia también (os alejáis de los de detrás).
+      if (!u.disengaged) {
         const foe = oppFoe(cb, u);
         if (foe) opportunity(g, cb, foe, u);
         if (!conscious(u) || checkEnd(g, cb)) break;
@@ -2070,7 +2189,7 @@ export function enemyTurn(g: Game, cb: Combat) {
   if (!conscious(u)) { endTurn(g, cb); return; }
   if (u.asleep) { say(cb, `${u.name} duerme.`, 'info'); endTurn(g, cb); return; }
   if (u.turned) {
-    if (u.row === 'front' && rowSpace(cb, 'enemy', 'back')) { u.row = 'back'; say(cb, `${u.name} huye de la luz sagrada a la retaguardia.`, 'info'); }
+    if (u.row === 'front' && !u.rear && rowSpace(cb, 'enemy', 'back')) { u.row = 'back'; say(cb, `${u.name} huye de la luz sagrada a la retaguardia.`, 'info'); }
     else say(cb, `${u.name} se encoge ante el símbolo sagrado.`, 'info');
     endTurn(g, cb);
     return;
@@ -2095,7 +2214,7 @@ export function enemyTurn(g: Game, cb: Combat) {
   }
   if (u.prone) { u.prone = false; say(cb, `${u.name} se levanta del suelo.`, 'info'); }
   // Agarre: se acaba si quien agarra cae o ya no está delante.
-  if (u.grappled && !cb.units.some(x => x.key === u.grappled && conscious(x) && x.row === 'front')) u.grappled = undefined;
+  if (u.grappled && !cb.units.some(x => x.key === u.grappled && conscious(x) && (x.row === 'front' || u.rear))) u.grappled = undefined;
   const m = MONSTERS[u.mon!];
   if (u.mon === 'Shrieker') { shriek(g, cb, u); if (!checkEnd(g, cb)) endTurn(g, cb); return; }
   // Goblins malheridos huyen; sin su jefe, antes (a la mitad de sus PG).
@@ -2284,13 +2403,16 @@ function reach(cb: Combat, u: Unit, ranged: boolean, row: Row = u.row): Unit[] {
   const up = cb.units.filter(x => x.side === 'party' && conscious(x));
   if (m.reach) { const front = up.filter(x => x.row === 'front'); return front.length ? front : up; }
   if (ranged) return up;
+  // La cornisa: cuerpo a cuerpo solo llegan a quien ha trepado. La espalda: a la retaguardia y, si está vacía, a todos.
+  if (u.flank && cb.site === 'ledge') return up.filter(x => x.flank);
+  if (u.rear) { const back = up.filter(x => x.row === 'back'); return back.length ? back : up; }
   if (row !== 'front') return [];
   return frontHeld(cb, 'party') ? up.filter(x => x.row === 'front') : up;
 }
 
 /** Enemigo grande delante con un tirador suyo detrás: le cubre. */
-const isGuard = (cb: Combat, u: Unit, row: Row) => row === 'front' && u.maxHp >= 30 && !MONSTERS[u.mon!].reach &&
-  cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'back' && MONSTERS[x.mon!].attacks.some(a => a.ranged));
+const isGuard = (cb: Combat, u: Unit, row: Row) => row === 'front' && !u.rear && u.maxHp >= 30 && !MONSTERS[u.mon!].reach &&
+  cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'back' && !x.flank && MONSTERS[x.mon!].attacks.some(a => a.ranged));
 
 const planOk = (cb: Combat, u: Unit, p: Plan) => {
   if (u.mon === DRAGON && (p.kind === 'area') !== breathNow(cb, u)) return false;
@@ -2349,6 +2471,13 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
   }
   const melee = m.attacks.filter(a => !a.ranged && !a.save);
   const ranged = m.attacks.filter(a => a.ranged);
+  // Cornisa y espalda: no cambian de fila. En la cornisa disparan, salvo que alguien haya trepado y tengan con qué pegarle.
+  if ((u.flank && cb.site === 'ledge') || u.rear) {
+    const climbers = u.flank ? reach(cb, u, false) : [];
+    const useRanged = u.flank ? !(climbers.length && melee.length) && !!ranged.length : !melee.length && !!ranged.length;
+    const targets = picks(reach(cb, u, useRanged), useRanged);
+    return targets.length ? { kind: useRanged ? 'ranged' : 'melee', targets } : undefined;
+  }
   let row = u.row;
   // Tirador malherido: se retira detrás si otro aguanta delante.
   const holds = cb.units.some(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'front');
@@ -2360,7 +2489,7 @@ function decide(g: Game, cb: Combat, u: Unit): Plan | undefined {
   if (!prefersRanged && row === 'back' && melee.length) {
     if (rowSpace(cb, 'enemy', 'front')) row = 'front';
     else {
-      swap = cb.units.find(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'front' && x.mon !== DRAGON && !MONSTERS[x.mon!].reach && MONSTERS[x.mon!].attacks.some(a => a.ranged))?.key;
+      swap = cb.units.find(x => x.side === 'enemy' && x !== u && conscious(x) && x.row === 'front' && !x.rear && x.mon !== DRAGON && !MONSTERS[x.mon!].reach && MONSTERS[x.mon!].attacks.some(a => a.ranged))?.key;
       if (swap) row = 'front';
     }
   }
@@ -2388,6 +2517,8 @@ export function behaviorOf(g: Game, cb: Combat, u: Unit): string[] {
   if (u.warn) out.push(u.mon === 'Treant' ? 'Prepara un golpe de raíz contra la retaguardia.'
     : `Prepara ${m.attacks.find(a => a.name === u.warn)?.name ?? u.warn} contra la ${u.mon === DRAGON && u.aim === 'back' ? 'retaguardia' : 'vanguardia'}.`);
   if (u.flying) out.push('En vuelo: solo se le alcanza a distancia o con conjuros.');
+  if (u.flank && cb.site === 'ledge') out.push(`En la cornisa: media cobertura (+2 CA) contra disparos. Cuerpo a cuerpo hay que trepar (Atletismo CD ${LEDGE_DC}).`);
+  if (u.rear) out.push('Ha llegado por la espalda: lucha cuerpo a cuerpo con vuestra retaguardia.');
   if (isBoss(u)) {
     if (u.mon === 'Treant') out.push(u.half ? 'Sus raíces apresan a quien golpean.' : 'Cada pocos asaltos brota un arbusto despertado.');
     else if (u.mon === 'Orvane') out.push(u.half ? 'Va a por el más débil.' : 'Se protege con Escudo y ataca al de menor CA.');
@@ -2446,7 +2577,7 @@ function bossWarn(g: Game, cb: Combat, u: Unit) {
 /** Anuncia (o corrige) lo que harán los enemigos: se llama al empezar cada turno y tras cada acción. */
 export function planAll(g: Game, cb: Combat) {
   for (const u of cb.units) {
-    if (u.side !== 'enemy' || !conscious(u) || u.asleep || u.paralyzed || u.restrained || u.flank || runsNow(cb, u)) { u.plan = undefined; continue; }
+    if (u.side !== 'enemy' || !conscious(u) || u.asleep || u.paralyzed || u.restrained || (u.flank && cb.site !== 'ledge') || runsNow(cb, u)) { u.plan = undefined; continue; }
     if (!u.plan || !planOk(cb, u, u.plan)) u.plan = decide(g, cb, u);
     else if (u.plan.kind === 'melee' || u.plan.kind === 'ranged') u.plan.guard = isGuard(cb, u, u.plan.move ?? u.row);
   }

@@ -102,6 +102,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Moral enemiga en los grupos con jefe, salas angostas, resbaladizas o con humo, y combates largos que atraen a los vecinos.',
     'Objetivos nuevos: romper una pieza antes de tiempo o salvar a alguien indefenso.',
     'El flanco: en algunos combates hay un objeto a un lado del campo (un cuerno de alarma, una catapulta, una vaina de esporas, un brasero…) que hay que romper antes de que se active. Desde la vanguardia, «Ir al flanco» os pone a su lado para golpearlo; a distancia y con conjuros se le alcanza desde cualquier fila.',
+    'Sitios especiales al azar en algunos combates con tres personajes o más: la cornisa, con tiradores en alto a un lado del campo (media cobertura; para pegarles cuerpo a cuerpo hay que trepar con Atletismo), y la espalda, con enemigos que llegan por detrás en el segundo asalto y luchan con vuestra retaguardia.',
     'Arañas, lobos, jabalíes y serpientes pueden emboscaros: si os sorprenden, sois vosotros quienes tiráis la iniciativa con desventaja.',
     'En el mapa y en «Enemigos a la vista» sale el enemigo más fuerte del grupo, con un medallón que deja ver su cara.',
     'Lo que descubre una decisión aparece unido a lo que ya habéis explorado. Si suena el cuerno, los refuerzos llegan siempre.',
