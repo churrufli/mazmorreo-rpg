@@ -110,6 +110,7 @@ export const NOVEDADES: { version: string; items: string[] }[] = [
     'Rasgos de clase: Ataque temerario, Puntería firme, Golpe astuto y Expulsar muertos vivientes.',
     'Modo desafío al crear la partida, objetos mágicos con historia en cofres secretos y oro por los PX que ya no os suben de nivel.',
     'La galería suma la ficha corta de cada criatura vista y los tesoros de cada aventura, y al terminar una aventura llegan rumores de la siguiente.',
+    'Más color con la paleta del juego: en el pueblo cada lugar tiene el suyo, y en combate Atacar (rojo), Habilidades (azul) y Objetos (verde) tiñen también sus botones.',
   ] },
   { version: 'v0.148', items: [
     'Los finales de Hondaroca y de El Corazón Hueco vuelven a ser largos, y el texto del final se puede desplazar con el botón siempre a la vista.',

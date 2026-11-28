@@ -124,7 +124,7 @@ function split2(t: string): [string, string] {
 
 /** Nueve recortes del PNG original. Las esquinas mantienen escala uniforme;
  * solo se estiran los tramos rectos y el cuero central. Igual en Metro y Vite. */
-function ButtonSkin({ tone, width, height, selected, dim }: { tone: 'parent' | 'child'; width: number; height: number; selected?: boolean; dim?: boolean }) {
+function ButtonSkin({ tone, width, height, selected, dim, tint }: { tone: 'parent' | 'child'; width: number; height: number; selected?: boolean; dim?: boolean; tint?: string }) {
   const scale = 0.14;
   const ys = [0, 100, 176, 276];
   const dy = [0, 100 * scale, height - 100 * scale, height];
@@ -145,6 +145,7 @@ function ButtonSkin({ tone, width, height, selected, dim }: { tone: 'parent' | '
   })}
     <Svg width={width} height={height} style={StyleSheet.absoluteFill}>
       <Path d={oct(0, 0, width, height, 9)} fill={dim ? '#101010' : '#100c08'} fillOpacity={dim ? 0.78 : 0.42} />
+      {tint && !dim ? <Path d={oct(4, 4, width - 8, height - 8, 7)} fill={tint} fillOpacity={selected ? 0.55 : 0.35} stroke={tint} strokeWidth={1.5} /> : null}
       {selected && !dim ? <>
         <Path d={oct(3, 3, width - 6, height - 6, 8)} fill="none" stroke="#ffca5a" strokeWidth={7} strokeOpacity={0.12} />
         <Path d={oct(3, 3, width - 6, height - 6, 8)} fill="none" stroke="#ffca5a" strokeWidth={3.5} strokeOpacity={0.3} />
@@ -156,12 +157,12 @@ function ButtonSkin({ tone, width, height, selected, dim }: { tone: 'parent' | '
 }
 
 /** off = se ve apagado pero se puede tocar (para explicar por qué no sirve ahora). */
-export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, badge, style, danger, primary, combatTone, onInfo, icon, tight }: {
+export function Btn({ tint, label, onPress, onLongPress, disabled, off, small, sub, badge, style, danger, primary, combatTone, onInfo, icon, tight }: {
   /** Botón de combate estrecho (tres en una fila): sin icono y con la zona de información más estrecha. */
   tight?: boolean;
   /** Etiqueta pequeña sobre el borde de abajo (por ejemplo, «Desventaja» en rojo); no ocupa alto. */
   badge?: { text: string; color: string };
-  label: string; onPress?: () => void; onLongPress?: () => void; disabled?: boolean; off?: boolean; small?: boolean; sub?: string; style?: ViewStyle; danger?: boolean; primary?: boolean; combatTone?: 'parent' | 'child'; onInfo?: () => void; icon?: string;
+  tint?: string; label: string; onPress?: () => void; onLongPress?: () => void; disabled?: boolean; off?: boolean; small?: boolean; sub?: string; style?: ViewStyle; danger?: boolean; primary?: boolean; combatTone?: 'parent' | 'child'; onInfo?: () => void; icon?: string;
 }) {
   const { width: screenWidth, fontScale } = useWindowDimensions();
   const combatFont = screenWidth < 350 ? 12 : 13;
@@ -179,7 +180,7 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, ba
     if (small1.lines.length === 1) labelLayout = small1;
   }
   const c = small ? 9 : 12;
-  const edge = dim ? '#756b60' : danger ? C.damage : primary ? PARCH2 : C.gold;
+  const edge = dim ? '#756b60' : danger ? C.damage : primary ? PARCH2 : tint ?? C.gold;
   const ink = combatTone ? (dim ? '#a29c90' : '#f4dcaa') : primary ? '#1a130b' : C.goldHi;
   // Texto largo: en dos líneas con letra algo menor, sin que el botón crezca. Interlineado 1,3: con menos, Android
   // recortaba por abajo la segunda línea de la fuente de título.
@@ -208,7 +209,7 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, ba
       style={({ pressed }) => [s.btn, small && s.btnSmall, combatTone && { marginVertical: 1, marginHorizontal: 1, paddingHorizontal: combatPadding, minHeight: 36, paddingVertical: 1 }, combatTone && tight && { paddingHorizontal: 18 }, two && { paddingVertical: small ? 4 : 8 }, pressed && s.btnPressed, dim && !combatTone && s.btnOff, style]}>
       {({ pressed }) => (
         <>
-          {box && combatTone ? <ButtonSkin tone={combatTone} width={box.width} height={box.height} selected={primary || pressed} dim={!!dim} /> : box ? (
+          {box && combatTone ? <ButtonSkin tone={combatTone} width={box.width} height={box.height} selected={primary || pressed} dim={!!dim} tint={tint} /> : box ? (
             <Svg width={box.width} height={box.height} style={StyleSheet.absoluteFill}>
               <Defs>
                 <LinearGradient id="parch" x1="0" y1="0" x2="0" y2="1">
@@ -218,6 +219,7 @@ export function Btn({ label, onPress, onLongPress, disabled, off, small, sub, ba
               </Defs>
               <Path d={oct(0, 0, box.width, box.height, c)} fill={edge} />
               <Path d={oct(1.5, 1.5, box.width - 3, box.height - 3, c - 0.6)} fill={primary && !dim ? 'url(#parch)' : pressed ? C.panelHi : 'rgba(26,22,18,0.94)'} />
+              {tint && !primary && !dim ? <Path d={oct(1.5, 1.5, box.width - 3, box.height - 3, c - 0.6)} fill={tint} fillOpacity={0.16} /> : null}
               {/* Esquina doblada en dorado: este botón tiene más detalles manteniéndolo pulsado. */}
               {(onInfo || onLongPress) && !dim ? <Path d={`M${box.width - c - 7} 1.5H${box.width - c}L${box.width - 1.5} ${c + 7}V${c + 14}Z`} fill={edge} /> : null}
             </Svg>

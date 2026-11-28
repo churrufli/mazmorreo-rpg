@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG, ImgKey } from '../assets';
-import { C, F } from '../theme';
+import { C, P, F } from '../theme';
 import { useStore } from '../store';
 import { Bg, Btn, Panel, T } from '../ui/kit';
 import { ITEMS, MONSTERS } from '../data/srd';
@@ -183,12 +183,12 @@ export function Town() {
             ) : null}
             {/* Escritorio: los lugares en dos columnas para que quepan sin desplazar. */}
             <View style={esc.on ? st.placeGrid : undefined}>
-            <Btn label="Tienda" sub="Comprar y vender" style={placeBtn} onPress={() => { setPlace('tienda'); say(''); }} />
-            <Btn label="Templo" sub="Curar heridas pagando oro" style={placeBtn} onPress={() => { setPlace('templo'); say(''); }} />
-            <Btn label="Posada" sub={allies.some(c => nextTalk(g, c) !== undefined) ? 'Descansar, elegir compañeros y charlar (hay charlas nuevas)' : 'Descansar, elegir compañeros y charlar'} style={placeBtn} onPress={() => { setPlace('posada'); say(''); }} />
-            <Btn label="Diario" sub="Historias y diálogos vividos" style={placeBtn} onPress={() => { setPlace('diario'); say(''); }} />
-            <Btn label="Puerta del pueblo" sub="Viajar por el reino" style={placeBtn} onPress={() => { setPlace('puerta'); say(''); }} />
-            <Btn label="Galería" sub="Personajes, bestiario, lugares y tesoros que habéis conocido" style={placeBtn} onPress={() => { setPlace('galeria'); say(''); }} />
+            <Btn tint={P.rojo} label="Tienda" sub="Comprar y vender" style={placeBtn} onPress={() => { setPlace('tienda'); say(''); }} />
+            <Btn tint={P.azul} label="Templo" sub="Curar heridas pagando oro" style={placeBtn} onPress={() => { setPlace('templo'); say(''); }} />
+            <Btn tint={P.verde} label="Posada" sub={allies.some(c => nextTalk(g, c) !== undefined) ? 'Descansar, elegir compañeros y charlar (hay charlas nuevas)' : 'Descansar, elegir compañeros y charlar'} style={placeBtn} onPress={() => { setPlace('posada'); say(''); }} />
+            <Btn tint={P.ciruela} label="Diario" sub="Historias y diálogos vividos" style={placeBtn} onPress={() => { setPlace('diario'); say(''); }} />
+            <Btn tint={P.turquesa} label="Puerta del pueblo" sub="Viajar por el reino" style={placeBtn} onPress={() => { setPlace('puerta'); say(''); }} />
+            <Btn tint={P.piedra} label="Galería" sub="Personajes, bestiario, lugares y tesoros que habéis conocido" style={placeBtn} onPress={() => { setPlace('galeria'); say(''); }} />
             </View>
             <View style={st.partyRow}>
               {g.party.map(c => <View key={c.id} style={{ margin: 2 }}><Card info={charInfo(c)} width={70} dim={c.dead} onPress={() => setSheet(c.id)} /></View>)}
