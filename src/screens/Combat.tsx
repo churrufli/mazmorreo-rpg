@@ -253,18 +253,23 @@ export function Combat() {
     return () => clearTimeout(t);
   }, [idle, cb, endTurn]);
   const targets = pending ? targetsFor(cb, pending).map(u => u.key) : [];
-  const rowOf = (side: Unit['side'], row: Unit['row']) => cb.units.filter(u => u.side === side && u.row === row && !u.flank && !u.fled && !(u.side === 'enemy' && u.dead && gone.includes(u.key)));
+  const shown = (u: Unit) => !u.fled && !(u.side === 'enemy' && u.dead && gone.includes(u.key));
+  const rowOf = (side: Unit['side'], row: Unit['row']) => cb.units.filter(u => u.side === side && u.row === row && !u.flank && !u.rear && !u.fled && !(u.side === 'enemy' && u.dead && gone.includes(u.key)));
   // El flanco (2026-11-27): una columna aparte, a la izquierda o a la derecha, con la pieza y quien esté junto a ella.
-  const flankUs = cb.units.filter(u => u.flank && !u.fled && !(u.side === 'enemy' && u.dead && gone.includes(u.key)));
+  const flankUs = cb.units.filter(u => u.flank && shown(u));
+  // La espalda (2026-11-28): los que llegan por detrás, en una fila debajo de vuestra retaguardia.
+  const rearUs = cb.units.filter(u => u.rear && shown(u));
+  const ledge = cb.site === 'ledge';
   const pieceU = flankUs.find(u => u.key === 'piece');
   const flankSide = cb.goal?.g.piece?.side ?? 'right';
   // Las filas enemigas vacías apenas ocupan sitio; las del grupo se ven siempre (se puede tocar para moverse allí).
-  const counts = (['enemy', 'party'] as const).flatMap(sd => (['front', 'back'] as const).map(r => rowOf(sd, r).length)).filter(n => n > 0);
+  const counts = [...(['enemy', 'party'] as const).flatMap(sd => (['front', 'back'] as const).map(r => rowOf(sd, r).length)), rearUs.length].filter(n => n > 0);
   const emptyH = (['front', 'back'] as const).reduce((n, r) => n + (rowOf('enemy', r).length ? 0 : 14) + (rowOf('party', r).length ? 0 : EMPTY_ROW + 4), 0);
   // Alto real libre para las cartas: zona superior menos el registro (los botones de abajo ya se restan solos).
   const free = area && logH ? area - logH - 8 - GEAR_H - 4 * counts.length - emptyH : height - ins.top - ins.bottom - 320;
   // La columna del flanco puede ser más alta que las filas enemigas: la pieza, quien esté junto a ella y el botón.
-  const flankNear = flankUs.filter(u => u !== pieceU);
+  // En la cornisa, arriba los tiradores y debajo quien haya trepado.
+  const flankNear = flankUs.filter(u => u !== pieceU).sort((a, b) => (a.side === 'enemy' ? 0 : 1) - (b.side === 'enemy' ? 0 : 1));
   const enemyRows = (['front', 'back'] as const).filter(r => rowOf('enemy', r).length).length;
   const flankRows = flankUs.length ? (pieceU ? 1 : 0) + flankNear.length : 0;
   const flankPx = flankUs.length ? 8 + (flankAct && !flankAct.off ? 38 : 0) : 0;
@@ -458,13 +463,13 @@ export function Combat() {
     // Zona propia, como una fila más: sin marco, con su nombre en vertical y cartas del mismo tamaño que las demás (el autor 2026-11-27).
     return (
       <View testID="combat-flank" style={[st.rowBand, st.flank, { width: cardW + 26 }, lit('enemies')]}>
-        <View pointerEvents="none" style={[st.rowLabelBox, { width: cardW * 1.5, left: 7 - cardW * 0.75, top: cardW * 0.75 - 6 }]}><Text numberOfLines={1} style={st.rowLabel}>Flanco</Text></View>
+        <View pointerEvents="none" style={[st.rowLabelBox, { width: cardW * 1.5, left: 7 - cardW * 0.75, top: cardW * 0.75 - 6 }]}><Text numberOfLines={1} style={st.rowLabel}>{ledge ? 'Cornisa' : 'Flanco'}</Text></View>
         {pieceU ? renderUnit(pieceU, cardW, tag) : null}
         {near.length ? <View style={st.flankNear}>{near.map(u => renderUnit(u, cardW))}</View> : null}
         {flankAct && !flankAct.off ? (
           <Pressable testID="combat-flank-move" disabled={!ready} onPress={() => go(flankAct)} onLongPress={() => choose(flankAct, true)} accessibilityRole="button" accessibilityLabel={flankAct.label} style={[st.flankBtn, { width: cardW + 4 }]}>
             <Icon path={COST_ICON.move} size={12} color={C.goldHi} />
-            <Text numberOfLines={2} style={st.flankBtnTxt}>{me.flank ? 'VOLVER' : 'IR AL FLANCO'}</Text>
+            <Text numberOfLines={2} style={st.flankBtnTxt}>{ledge ? (me.flank ? 'BAJAR' : 'TREPAR') : me.flank ? 'VOLVER' : 'IR AL FLANCO'}</Text>
           </Pressable>
         ) : null}
       </View>
@@ -489,6 +494,13 @@ export function Combat() {
       </View>
     );
   };
+
+  const renderRear = () => (
+    <View testID="combat-rear" style={[st.row, st.rowBand, st.rowEnemy, { minHeight: cardW * 1.5 + 2 }, lit('enemies')]}>
+      <View pointerEvents="none" style={[st.rowLabelBox, { width: cardW * 1.5, left: 7 - cardW * 0.75, top: cardW * 0.75 - 6 }]}><Text numberOfLines={1} style={st.rowLabel}>Espalda</Text></View>
+      {rearUs.map(u => renderUnit(u, cardW))}
+    </View>
+  );
 
   return (
     <Bg src={IMG[cb.bg]} dim={0.45} full wash>
@@ -570,6 +582,7 @@ export function Combat() {
         </View>
         {renderRow('party', 'front')}
         {renderRow('party', 'back')}
+        {rearUs.length ? renderRear() : null}
         </ScrollView>
         {shot ? <Projectile {...shot} t={fly} /> : null}
         {tuto && !tip && !sel ? (
