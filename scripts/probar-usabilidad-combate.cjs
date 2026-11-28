@@ -9,7 +9,7 @@ const {chromium}=require('playwright');
       const page=await browser.newPage({viewport:{width,height}}),errors=[];
       page.setDefaultTimeout(10000);
       page.on('pageerror',e=>errors.push(e.message));
-      await page.goto(process.env.COMBAT_URL||'http://127.0.0.1:5194');
+      await page.goto(process.env.COMBAT_URL||'http://127.0.0.1:5194/jugar/');
       const button=name=>page.getByRole('button',{name,exact:true});
       await button('Nueva partida').waitFor();
       await page.evaluate(async root=>{

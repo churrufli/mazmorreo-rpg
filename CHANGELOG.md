@@ -2,6 +2,10 @@
 
 Este documento resume hitos funcionales comprobados en el código y en las PR recientes. **No sustituye las notas de versión de cada APK**, cuyo número depende de la ejecución de GitHub Actions.
 
+## 28 de noviembre de 2026 — Presentación en la raíz
+
+- La página de presentación pasa a la raíz de la web y el juego a `/jugar/`. Las partidas guardadas se conservan (van por dominio). `/presentacion/` redirige a la raíz; la app instalada desde el navegador abre el juego.
+
 ## 27 de noviembre de 2026 — Página de presentación
 
 - **Presentación** (`web/presentacion/`): una sola página en `/presentacion/` con portada, qué es el juego, capturas del móvil y del modo escritorio, las cuatro aventuras sin destripar nada y accesos grandes a Jugar, Discord y GitHub. El juego sigue en la raíz.

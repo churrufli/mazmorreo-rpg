@@ -1,8 +1,8 @@
 <p align="center"><img src="assets/img/logo.webp" alt="Mazmorreo" width="480"></p>
 
 <p align="center">
-  <a href="https://churrufli.github.io/mazmorreo-rpg/presentacion/"><b>Web del proyecto</b></a> ·
-  <a href="https://churrufli.github.io/mazmorreo-rpg/"><b>Jugar en el navegador</b></a> ·
+  <a href="https://churrufli.github.io/mazmorreo-rpg/"><b>Web del proyecto</b></a> ·
+  <a href="https://churrufli.github.io/mazmorreo-rpg/jugar/"><b>Jugar en el navegador</b></a> ·
   <a href="../../releases">Descargar APK</a> (se actualiza menos que la web) ·
   <a href="CONTRIBUTING.md"><b>Participa en el proyecto</b></a>
 </p>
@@ -74,13 +74,13 @@ La revisión narrativa de las cuatro aventuras incluye introducciones de escenas
 
 ## Versión para navegador
 
-La adaptación web reutiliza el juego con React Native Web. Incluye guardado local, ilustraciones, fuentes y audio. Se puede jugar en **[churrufli.github.io/mazmorreo-rpg](https://churrufli.github.io/mazmorreo-rpg/)**, y es **la forma recomendada de jugar**: la web recibe las novedades antes y con más frecuencia que la APK. Las partidas se guardan en tu navegador, sin cuentas ni registro.
+La adaptación web reutiliza el juego con React Native Web. Incluye guardado local, ilustraciones, fuentes y audio. Se puede jugar en **[churrufli.github.io/mazmorreo-rpg/jugar](https://churrufli.github.io/mazmorreo-rpg/jugar/)**, y es **la forma recomendada de jugar**: la web recibe las novedades antes y con más frecuencia que la APK. Las partidas se guardan en tu navegador, sin cuentas ni registro.
 
 En el móvil se ve igual que en Android. En una ventana apaisada de al menos 900 px de ancho se activa el **modo escritorio**: la interfaz va en una columna central con las ilustraciones fundidas a negro a los lados, el pueblo, la tienda y la posada en dos columnas, el registro del combate como panel lateral, la rueda del ratón para acercar el mapa y **atajos de teclado en combate** (1-9 eligen las acciones de la categoría abierta y Esc cancela). Consulta [la guía web](docs/WEB.md) para ejecución, pruebas y publicación.
 
 ## Descargar e instalar en Android
 
-> **La APK no se publica con la misma frecuencia ni continuidad que la versión web.** La web se actualiza mucho más a menudo, así que recomendamos jugar desde **[el navegador](https://churrufli.github.io/mazmorreo-rpg/)**.
+> **La APK no se publica con la misma frecuencia ni continuidad que la versión web.** La web se actualiza mucho más a menudo, así que recomendamos jugar desde **[el navegador](https://churrufli.github.io/mazmorreo-rpg/jugar/)**.
 
 1. Abre **[Releases](../../releases)** y descarga el último archivo `mazmorreo-N.apk`.
 2. Instálalo en tu móvil Android; si el sistema lo solicita, autoriza la instalación desde esa fuente.

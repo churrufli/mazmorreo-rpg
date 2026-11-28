@@ -1,3 +1,163 @@
 <!doctype html>
-<html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/><meta name="theme-color" content="#14100e"/><link rel="manifest" href="./manifest.webmanifest"/><link rel="apple-touch-icon" href="./icons/icon-192.png"/><meta name="mobile-web-app-capable" content="yes"/><title>Mazmorreo</title></head>
-<body style="margin:0;background:#14100e"><div id="root"></div><script type="module" src="/main.tsx"></script></body></html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0b09" />
+  <title>Mazmorreo · RPG de fantasía medieval en español</title>
+  <meta name="description" content="Mazmorreo es un RPG de fantasía medieval gratuito para jugar en solitario: explora mazmorras, toma decisiones y combate por turnos. En el navegador y en Android." />
+  <meta property="og:title" content="Mazmorreo" />
+  <meta property="og:description" content="RPG de fantasía medieval gratuito para jugar en solitario, en el navegador y en Android." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./presentacion/estilo.css" />
+</head>
+<body>
+  <!-- Barra superior: el acceso al juego siempre a mano. -->
+  <nav class="barra" aria-label="Accesos">
+    <a class="barra-logo" href="#"><img src="../assets/img/logo.webp" alt="Mazmorreo" width="1200" height="340" /></a>
+    <div class="barra-enlaces">
+      <a class="barra-icono" href="https://discord.gg/VvKXn7ZMEG" rel="noopener" aria-label="Discord"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" /></svg></a>
+      <a class="barra-icono" href="https://github.com/churrufli/mazmorreo-rpg" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21.09C14.5,21.36 14.66,21.67 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" /></svg></a>
+      <a class="boton boton-oro boton-barra" href="./jugar/">Jugar gratis</a>
+    </div>
+  </nav>
+
+  <!-- Portada -->
+  <header class="portada">
+    <div class="portada-fondo" aria-hidden="true"><span class="portada-centro"></span></div>
+    <div class="ambiente" aria-hidden="true"><span class="bruma"></span></div>
+    <div class="particulas" aria-hidden="true"></div>
+    <div class="portada-contenido">
+      <h1><img fetchpriority="high" class="logo" src="../assets/img/logo.webp" alt="Mazmorreo" width="1200" height="340" /></h1>
+      <p class="alfa"><span>Versión alfa</span> En desarrollo: aún quedan cosas por pulir</p>
+      <p class="lema">Tu historia comienza donde termina la luz</p>
+      <p class="entradilla">Un RPG de fantasía medieval para jugar en solitario. Explora mazmorras, toma decisiones y combate por turnos junto a tus compañeros.</p>
+      <a class="boton boton-oro boton-grande" href="./jugar/">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2,2.44L18.1,14.34L20.22,12.22L21.63,13.63L19.16,16.1L22.34,19.28C22.73,19.67 22.73,20.3 22.34,20.69L21.63,21.4C21.24,21.79 20.61,21.79 20.22,21.4L17,18.23L14.56,20.7L13.15,19.29L15.27,17.17L3.37,5.27V2.44H6.2M15.89,10L20.63,5.26V2.44H17.8L13.06,7.18L15.89,10M10.94,15L8.11,12.13L5.9,14.34L3.78,12.22L2.37,13.63L4.84,16.1L1.66,19.29C1.27,19.68 1.27,20.31 1.66,20.7L2.37,21.41C2.76,21.8 3.39,21.8 3.78,21.41L7,18.23L9.39,20.7L10.8,19.29L8.68,17.17L10.94,15Z" /></svg>
+        Jugar gratis
+      </a>
+      <div class="botones-sec">
+        <a class="boton boton-sec" href="https://discord.gg/VvKXn7ZMEG" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" /></svg>Discord</a>
+        <a class="boton boton-sec" href="https://github.com/churrufli/mazmorreo-rpg" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21.09C14.5,21.36 14.66,21.67 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" /></svg>GitHub</a>
+      </div>
+      <p class="ventajas">Gratis · Sin anuncios · Sin registro · En español</p>
+    </div>
+    <a class="bajar" href="#pantallas" aria-label="Ver más">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" /></svg>
+    </a>
+  </header>
+
+  <main>
+    <!-- Pantallas -->
+    <section id="pantallas" class="bloque pantallas" aria-labelledby="t-pantallas">
+      <h2 id="t-pantallas">Así se juega</h2>
+      <ul class="tira" tabindex="0" aria-label="Capturas del juego en móvil; desplaza horizontalmente para verlas todas">
+        <li><figure><img src="./presentacion/capturas/movil-heroe.webp" alt="Creación del héroe: una paladina elfa" width="540" height="1168" loading="lazy" /><figcaption>Crea tu héroe</figcaption></figure></li>
+        <li><figure><img src="./presentacion/capturas/movil-pueblo.webp" alt="El pueblo de Valdescarcha con sus tiendas, templo y posada" width="540" height="1168" loading="lazy" /><figcaption>Prepárate en el pueblo</figcaption></figure></li>
+        <li><figure><img src="./presentacion/capturas/movil-mapa.webp" alt="Mapa de casillas hexagonales de una tumba" width="540" height="1168" loading="lazy" /><figcaption>Explora el mapa</figcaption></figure></li>
+        <li><figure><img src="./presentacion/capturas/movil-encuentro.webp" alt="Aviso de enemigos a la vista con las opciones de acercarse" width="540" height="1168" loading="lazy" /><figcaption>Elige cómo empezar</figcaption></figure></li>
+        <li><figure><img src="./presentacion/capturas/movil-flanco.webp" alt="Combate por turnos con un objeto en el flanco" width="540" height="1168" loading="lazy" /><figcaption>Combate por turnos</figcaption></figure></li>
+        <li><figure><img src="./presentacion/capturas/movil-prueba.webp" alt="Una prueba de habilidad con su ilustración" width="540" height="1168" loading="lazy" /><figcaption>Decide y tira los dados</figcaption></figure></li>
+      </ul>
+
+      <h3>También en el ordenador</h3>
+      <div class="escritorio">
+        <figure class="principal"><img src="./presentacion/capturas/escritorio-combate.webp" alt="Combate en el modo escritorio" width="1200" height="750" loading="lazy" /></figure>
+        <figure><img src="./presentacion/capturas/escritorio-heroe.webp" alt="Creación del héroe en el modo escritorio" width="1200" height="750" loading="lazy" /></figure>
+        <figure><img src="./presentacion/capturas/escritorio-pueblo.webp" alt="El pueblo en el modo escritorio" width="1200" height="750" loading="lazy" /></figure>
+      </div>
+    </section>
+
+    <!-- Aventuras -->
+    <section class="bloque aventuras" aria-labelledby="t-aventuras">
+      <h2 id="t-aventuras">Cuatro aventuras te esperan</h2>
+      <ul class="cartas">
+        <li class="carta">
+          <img src="../assets/img/intro.webp" alt="" loading="lazy" width="720" height="1279" />
+          <div><h3>Las profundidades de Hondaroca</h3><p>Minas abandonadas y ruinas enanas bajo Valdescarcha.</p></div>
+        </li>
+        <li class="carta">
+          <img src="../assets/img/intro_bosque.webp" alt="" loading="lazy" width="720" height="1080" />
+          <div><h3>El Corazón Hueco</h3><p>Un bosque que se ha vuelto hostil, junto a Vegaumbría.</p></div>
+        </li>
+        <li class="carta">
+          <img src="../assets/img/intro_montana.webp" alt="" loading="lazy" width="720" height="1080" />
+          <div><h3>El Invierno del Dragón</h3><p>Pasos nevados y una fortaleza enana sobre Cumbrenieve.</p></div>
+        </li>
+        <li class="carta">
+          <img src="../assets/img/intro_tumba.webp" alt="" loading="lazy" width="720" height="1080" />
+          <div><h3>La Tumba de los Reyes Serpiente</h3><p>Una tumba olvidada bajo las Colinas de Ocre, cerca de Arenaroja.</p></div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Qué es -->
+    <section id="juego" class="bloque que-es">
+      <p class="adorno" aria-hidden="true">✦</p>
+      <h2>Una aventura de rol, sin director de juego</h2>
+      <p>Crea tu héroe, recluta aliados y adéntrate en minas, bosques, montañas y tumbas olvidadas. Cada sala esconde algo: combates tácticos, pruebas con dados y decisiones que cambian el camino.</p>
+      <p>Las reglas parten del SRD 5.2.1 de quinta edición, adaptadas para jugar tocando la pantalla.</p>
+      <ul class="plataformas">
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17,19H7V5H17M17,1H7C5.89,1 5,1.89 5,3V21A2,2 0 0,0 7,23H17A2,2 0 0,0 19,21V3C19,1.89 18.1,1 17,1Z" /></svg>
+          <span><b>Pensado para el móvil en vertical</b>, en Android o en el navegador.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z" /></svg>
+          <span><b>Con modo escritorio</b> al abrirlo en el ordenador.</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Fase alfa y colaboración -->
+    <section class="bloque colabora" aria-labelledby="t-colabora">
+      <div class="aviso-alfa">
+        <p class="sello">Versión alfa</p>
+        <h2 id="t-colabora">Un proyecto vivo que busca compañeros de aventura</h2>
+        <p>Mazmorreo está en una fase inicial. Se puede jugar de principio a fin, pero todavía quedan muchas cosas por depurar: puedes encontrar fallos, textos sin pulir y combates por equilibrar.</p>
+        <p>Si te gusta el rol y quieres ayudar, buscamos colaboradores en código, narrativa, ilustración, mapas, equilibrio y pruebas. Cuéntanos qué falla o ven a construirlo con nosotros.</p>
+        <div class="botones-sec">
+          <a class="boton boton-sec" href="https://github.com/churrufli/mazmorreo-rpg/blob/master/CONTRIBUTING.md" rel="noopener">Cómo colaborar</a>
+          <a class="boton boton-sec" href="https://github.com/churrufli/mazmorreo-rpg/issues" rel="noopener">Avisar de un fallo</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Llamada final -->
+    <section class="bloque final" aria-labelledby="t-final">
+      <h2 id="t-final">Toda leyenda empieza con un primer paso</h2>
+      <div class="accesos">
+        <a class="acceso acceso-jugar" href="./jugar/">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2,2.44L18.1,14.34L20.22,12.22L21.63,13.63L19.16,16.1L22.34,19.28C22.73,19.67 22.73,20.3 22.34,20.69L21.63,21.4C21.24,21.79 20.61,21.79 20.22,21.4L17,18.23L14.56,20.7L13.15,19.29L15.27,17.17L3.37,5.27V2.44H6.2M15.89,10L20.63,5.26V2.44H17.8L13.06,7.18L15.89,10M10.94,15L8.11,12.13L5.9,14.34L3.78,12.22L2.37,13.63L4.84,16.1L1.66,19.29C1.27,19.68 1.27,20.31 1.66,20.7L2.37,21.41C2.76,21.8 3.39,21.8 3.78,21.41L7,18.23L9.39,20.7L10.8,19.29L8.68,17.17L10.94,15Z" /></svg>
+          <span class="acceso-titulo">Jugar</span>
+          <span class="acceso-nota">En el navegador, sin instalar nada</span>
+        </a>
+        <a class="acceso acceso-discord" href="https://discord.gg/VvKXn7ZMEG" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" /></svg>
+          <span class="acceso-titulo">Discord</span>
+          <span class="acceso-nota">Comparte partidas, dudas e ideas</span>
+        </a>
+        <a class="acceso acceso-github" href="https://github.com/churrufli/mazmorreo-rpg" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21.09C14.5,21.36 14.66,21.67 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" /></svg>
+          <span class="acceso-titulo">GitHub</span>
+          <span class="acceso-nota">Código abierto: colabora en el proyecto</span>
+        </a>
+      </div>
+      <p class="apk">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.61 15.15C16.15 15.15 15.77 14.78 15.77 14.32S16.15 13.5 16.61 13.5H16.61C17.07 13.5 17.45 13.86 17.45 14.32C17.45 14.78 17.07 15.15 16.61 15.15M7.41 15.15C6.95 15.15 6.57 14.78 6.57 14.32C6.57 13.86 6.95 13.5 7.41 13.5H7.41C7.87 13.5 8.24 13.86 8.24 14.32C8.24 14.78 7.87 15.15 7.41 15.15M16.91 10.14L18.58 7.26C18.67 7.09 18.61 6.88 18.45 6.79C18.28 6.69 18.07 6.75 18 6.92L16.29 9.83C14.95 9.22 13.5 8.9 12 8.91C10.47 8.91 9 9.24 7.73 9.82L6.04 6.91C5.95 6.74 5.74 6.68 5.57 6.78C5.4 6.87 5.35 7.08 5.44 7.25L7.1 10.13C4.25 11.69 2.29 14.58 2 18H22C21.72 14.59 19.77 11.7 16.91 10.14H16.91Z" /></svg>
+        ¿Prefieres Android? <a href="https://github.com/churrufli/mazmorreo-rpg/releases/latest" rel="noopener">Descarga la APK</a> (versión de prueba; la web recibe antes las novedades).
+      </p>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <img class="pie-logo" src="../assets/img/logo.webp" alt="Mazmorreo" width="1200" height="340" loading="lazy" />
+    <p>Proyecto de fans gratuito y no oficial, sin relación con Wizards of the Coast. Dungeons &amp; Dragons es marca de Wizards of the Coast LLC.</p>
+    <p>Reglas del <a href="https://github.com/churrufli/mazmorreo-rpg/blob/master/NOTICE.md" rel="noopener">SRD 5.2.1</a> (CC BY 4.0). «La Tumba de los Reyes Serpiente» se basa en <i>Tomb of the Serpent Kings</i>, de Skerples (CC BY-NC-SA).</p>
+    <p><a href="https://github.com/churrufli/mazmorreo-rpg/blob/master/LICENSE" rel="noopener">Código MIT</a> · <a href="https://github.com/churrufli/mazmorreo-rpg/blob/master/LICENSE-CONTENIDO.md" rel="noopener">Contenido CC BY-NC-SA 4.0</a> · <a href="https://github.com/churrufli/mazmorreo-rpg/blob/master/CREDITS.md" rel="noopener">Créditos</a></p>
+  </footer>
+  <script type="module" src="./presentacion/presentacion.js"></script>
+</body>
+</html>

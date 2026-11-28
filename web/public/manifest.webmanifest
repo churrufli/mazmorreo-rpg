@@ -4,7 +4,7 @@
   "short_name": "Mazmorreo",
   "description": "Juego de rol de fantasía medieval para un jugador.",
   "lang": "es",
-  "start_url": "./",
+  "start_url": "./jugar/",
   "scope": "./",
   "display": "standalone",
   "background_color": "#14100e",
