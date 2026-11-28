@@ -12,6 +12,16 @@ export const C = {
   fog: '#000000',
 };
 
+/** Paleta de la imagen maestra (abajo): colores de acento además del dorado. */
+export const P = {
+  rojo: '#b0482e',
+  verde: '#4f8a57',
+  azul: '#3f7fae',
+  turquesa: '#3d8a8c',
+  ciruela: '#8a4f7f',
+  piedra: '#6b6a60',
+};
+
 export const F = {
   title: 'Cinzel-Regular',
   titleBold: 'Cinzel-Bold',

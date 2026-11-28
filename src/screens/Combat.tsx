@@ -5,7 +5,7 @@ import { useEscritorio } from '../ui/escritorio';
 import { useTeclas } from '../ui/teclado';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IMG } from '../assets';
-import { C, F } from '../theme';
+import { C, P, F } from '../theme';
 import { foeList } from '../ui/anuncio';
 import { useStore } from '../store';
 import { Action, MASTERY_NAME, Unit, actionsFor, autoTurn, behaviorOf, current, hasUseful, masteryOf, preview, targetsFor } from '../engine/combat';
@@ -45,6 +45,8 @@ type Tip = { title: string; text: string; parts?: TipPart[]; odds?: { title: str
 /** Parte un texto de reglas en frases, una por línea, para leerlo mejor en el móvil. */
 const bullets = (t: string) => t.split(/\.\s+(?=[A-ZÁÉÍÓÚÑ¿¡])/).map((x, i, a) => (i < a.length - 1 ? `${x}.` : x)).filter(Boolean);
 const CATEGORIES = [['attack', 'Atacar'], ['skills', 'Habilidades'], ['items', 'Objetos']] as const;
+/** Color de cada familia de acciones: la pestaña y sus botones lo comparten. */
+const GROUP_TINT: Record<string, string> = { attack: P.rojo, skills: P.azul, items: P.verde };
 
 /** Alto de la franja de arriba con el engranaje de Ajustes. */
 const GEAR_H = 44;
@@ -589,7 +591,7 @@ export function Combat() {
             {groups.length ? (
               <View testID="combat-categories" style={[st.categoryRow, lit('categories')]}>
                 {CATEGORIES.filter(([id]) => groups.includes(id)).map(([id, label]) => (
-                  <Btn key={id} small combatTone="parent" tight={groups.length > 2} disabled={!ready} icon={{attack:mdiSwordCross,skills:mdiCreation,items:mdiSack}[id]} onInfo={() => showCategory(id)} onLongPress={() => showCategory(id)}  primary={activeGroup === id} off={menu.filter(a => groupOf(a) === id).every(a => !!a.off)}
+                  <Btn key={id} tint={GROUP_TINT[id]} small combatTone="parent" tight={groups.length > 2} disabled={!ready} icon={{attack:mdiSwordCross,skills:mdiCreation,items:mdiSack}[id]} onInfo={() => showCategory(id)} onLongPress={() => showCategory(id)}  primary={activeGroup === id} off={menu.filter(a => groupOf(a) === id).every(a => !!a.off)}
                     label={label.toLocaleUpperCase('es-ES')}
                     onPress={() => { lastGroup.current[me.key] = id; setActionGroup(id); close(); }}
                     style={{ ...st.categoryOrnate, ...(tuto?.target === 'items' && id === 'items' ? st.tutoLit : null) }} />
@@ -597,7 +599,7 @@ export function Combat() {
               </View>
             ) : null}
             <ScrollView testID="combat-action-scroll" style={{ flex: 1 }} contentContainerStyle={[st.actionGrid, esc.on && { justifyContent: 'flex-start', columnGap: 4 }]} nestedScrollEnabled>
-              {grouped.map(a => { const t = advTag(a); return <Btn key={a.id} small combatTone="child" icon={COST_ICON[a.cost]} badge={t.adv < 0 ? { text: 'DESVENTAJA', color: '#e0705f' } : t.adv > 0 ? { text: 'VENTAJA', color: '#7fcf8f' } : undefined} disabled={!ready} onInfo={() => choose(a, true)} onLongPress={() => choose(a, true)} primary={sel?.id === a.id || tip?.a?.id === a.id} label={a.label.toLocaleUpperCase('es-ES')} off={!!a.off} onPress={() => choose(a)} style={esc.on ? { ...st.gridBtn, width: Math.floor((controlsWidth - 28) / 3) } : st.gridBtn} />; })}
+              {grouped.map(a => { const t = advTag(a); return <Btn key={a.id} tint={GROUP_TINT[activeGroup]} small combatTone="child" icon={COST_ICON[a.cost]} badge={t.adv < 0 ? { text: 'DESVENTAJA', color: '#e0705f' } : t.adv > 0 ? { text: 'VENTAJA', color: '#7fcf8f' } : undefined} disabled={!ready} onInfo={() => choose(a, true)} onLongPress={() => choose(a, true)} primary={sel?.id === a.id || tip?.a?.id === a.id} label={a.label.toLocaleUpperCase('es-ES')} off={!!a.off} onPress={() => choose(a)} style={esc.on ? { ...st.gridBtn, width: Math.floor((controlsWidth - 28) / 3) } : st.gridBtn} />; })}
             </ScrollView>
             <View style={[st.fixedRow, lit('fixed')]}>
               {dodgeAct ? <Btn small combatTone="child" icon={COST_ICON[dodgeAct.cost]} disabled={!ready} onInfo={() => choose(dodgeAct, true)} onLongPress={() => choose(dodgeAct, true)} primary={tip?.a?.id === dodgeAct.id} label="ESQUIVAR" tight off={!!dodgeAct.off} onPress={() => choose(dodgeAct)} style={st.fixedBtn} /> : null}
