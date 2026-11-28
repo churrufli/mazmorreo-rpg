@@ -9,7 +9,7 @@ const { chromium } = require('playwright');
       const errors = [];
       page.on('pageerror', e => { errors.push(e.message); console.error('Browser:', e.message); });
       page.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); });
-      await page.goto(process.env.COMBAT_URL || 'http://127.0.0.1:5174');
+      await page.goto(process.env.COMBAT_URL || 'http://127.0.0.1:5174/jugar/');
       await page.getByRole('button', { name: 'Nueva partida', exact: true }).waitFor();
       await page.evaluate(async root => {
         const { useStore } = await import(`${root}/src/store.ts`);

@@ -10,7 +10,7 @@ const { chromium } = require('playwright');
       const errors = [];
       page.on('pageerror', e => errors.push(e.message));
       page.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); });
-      await page.goto(process.env.WEB_URL || 'http://127.0.0.1:5173/');
+      await page.goto(process.env.WEB_URL || 'http://127.0.0.1:5173/jugar/');
       if (width > height && width >= 700) {
         const bounds = await page.locator('#root').boundingBox();
         assert.ok(bounds && Math.abs(bounds.width - width) < 2, 'Landscape root must fill the viewport');

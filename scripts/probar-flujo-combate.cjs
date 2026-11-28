@@ -6,7 +6,7 @@ const {chromium}=require('playwright');
     for(const [width,height] of [[320,640],[360,640],[390,844],[844,390]]) {
       const page=await browser.newPage({viewport:{width,height}});
       const errors=[]; page.on('pageerror',e=>errors.push(e.message));
-      await page.goto(process.env.COMBAT_URL||'http://127.0.0.1:5194');
+      await page.goto(process.env.COMBAT_URL||'http://127.0.0.1:5194/jugar/');
       await page.getByRole('button',{name:'Nueva partida',exact:true}).waitFor();
       await page.evaluate(async root=>{
         const {useStore}=await import(`${root}/src/store.ts`);

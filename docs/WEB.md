@@ -10,11 +10,11 @@ npm run web
 npm run web:build
 ```
 
-El servidor muestra la dirección local. La compilación estática queda en `dist/index.html` y `dist/assets/`, lista para servir por HTTPS, también bajo una subcarpeta. No abrir el HTML directamente desde el disco.
+El servidor muestra la dirección local. La compilación estática queda en `dist/` (presentación en `dist/index.html`, juego en `dist/jugar/index.html`, recursos en `dist/assets/`), lista para servir por HTTPS, también bajo una subcarpeta. No abrir el HTML directamente desde el disco.
 
 ## Página de presentación
 
-`web/presentacion/` es una página estática aparte que presenta el juego. Vite la compila como segunda entrada (`vite.config.mts`) y se publica en `/presentacion/`, junto al juego, sin tocar su dirección ni sus partidas guardadas. Usa el logo, las ilustraciones y las fuentes del juego, sin copiarlos; las capturas están en `web/presentacion/capturas/` (WebP, móvil a 540 px y escritorio a 1200 px).
+`web/index.html` es la página de presentación y va en la raíz de la web; el juego (`web/jugar/index.html`) va en `/jugar/`. Vite compila las dos como entradas (`vite.config.mts`). Las partidas se guardan en `localStorage`, que depende del dominio y no de la carpeta, así que cambiar la dirección del juego no las borra. `/presentacion/` redirige a la raíz para no romper enlaces antiguos. El estilo, el script y las capturas de la presentación están en `web/presentacion/` (WebP, móvil a 540 px y escritorio a 1200 px).
 
 ## Modo escritorio
 
@@ -54,7 +54,7 @@ npm run web:test
 
 ## Publicación en GitHub Pages
 
-La web se publica en **https://churrufli.github.io/mazmorreo-rpg/** con el workflow `.github/workflows/pages.yml`. Se ejecuta al actualizar `master` (también al fusionar una PR) o a mano desde **Actions → Web en GitHub Pages → Run workflow**.
+La presentación se publica en **https://churrufli.github.io/mazmorreo-rpg/** y el juego en **https://churrufli.github.io/mazmorreo-rpg/jugar/**, con el workflow `.github/workflows/pages.yml`. Se ejecuta al actualizar `master` (también al fusionar una PR) o a mano desde **Actions → Web en GitHub Pages → Run workflow**.
 
 - Solo se publica desde el repositorio `churrufli/mazmorreo-rpg`; en forks y en otros repositorios el trabajo se salta.
 - En **Settings → Pages**, la fuente debe ser **GitHub Actions**.
